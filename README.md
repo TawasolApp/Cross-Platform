@@ -1,4 +1,4 @@
-Cross-Platform# Tawasol
+# Tawasol - Cross-Platform
 
 ## 🚀 Project Overview
 Tawasol is a LinkedIn clone designed for Android and Desktop applications, built using Flutter and Dart. 
