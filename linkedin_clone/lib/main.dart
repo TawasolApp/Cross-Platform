@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/user_profile.dart'; // Import UserProfile
 
 void main() {
@@ -11,10 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: Theme.of(context).colorScheme,
-      ),
+      title: 'TawasolApp',
+      theme: AppTheme.lightTheme, // Set lightTheme as the theme
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       home: UserProfile(), // Set UserProfile as the home widget
     );
   }
