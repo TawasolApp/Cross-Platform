@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '/../../core/themes/color_scheme.dart';
-import '/../../core/themes/text_styles.dart'; // Import for text styles
+import '/../../core/themes/text_styles.dart'; // Import for linkedinTextTheme
 
 class Comment {
   final String id;

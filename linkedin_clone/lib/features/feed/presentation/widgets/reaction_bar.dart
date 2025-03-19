@@ -34,21 +34,19 @@ class ReactionBar extends StatelessWidget {
     String label,
     VoidCallback onPressed,
   ) {
-    return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: Icon(icon, size: 24, color: Colors.grey[700]),
-            onPressed: onPressed,
-          ),
-          Text(
-            label,
-            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(icon, size: 24, color: Colors.grey[700]),
+          onPressed: onPressed,
+        ),
+        Text(
+          label,
+          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }
