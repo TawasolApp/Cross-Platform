@@ -41,8 +41,20 @@ class AppTheme {
       style: TextButton.styleFrom(
         foregroundColor: linkedinLightColorScheme.primary,
         textStyle: linkedinTextTheme.labelLarge,
+        ),
+      ),
+
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+      foregroundColor: linkedinLightColorScheme.primary,
+      textStyle: linkedinTextTheme.labelLarge,
+      side: BorderSide(color: linkedinLightColorScheme.primary),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
       ),
     ),
+  ),
+
   );
 
   static ThemeData darkTheme = ThemeData(
