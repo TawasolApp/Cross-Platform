@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'features/feed/posts.dart'; // Fixed import path
+import 'features/feed/presentation/widgets/post_card.dart';
+import 'features/feed/presentation/widgets/comment_section.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'LinkedIn Clone',
-      theme: ThemeData.light(), // Use light theme for now
+      theme: ThemeData.light(),
       home: const FeedScreen(),
     );
   }
@@ -23,39 +24,56 @@ class FeedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Create a dummy LinkedInPost instance
-    final dummyPost = LinkedInPost(
-      id: "user123",
-      content: "This is a dummy post for testing the LinkedInPostWidget.",
-      mediaUrls: ["https://via.placeholder.com/200"], // Example image URL
-      taggedUsers: ["user456", "user789"],
-      comments: [
-        Comment(id: "comment1", userId: "user456", text: "Great post!"),
-        Comment(id: "comment2", userId: "user789", text: "Thanks for sharing."),
-      ],
-      likes: {"user123": "like", "user456": "celebrate"},
-      isSaved: false,
-    );
+    // Dummy data for testing
+    final comments = [
+      Comment(id: "comment1", userId: "user456", text: "Great post!"),
+      Comment(id: "comment2", userId: "user789", text: "Thanks for sharing."),
+    ];
 
     return Scaffold(
       appBar: AppBar(title: const Text("Feed")),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: LinkedInPostWidget(
-          post: dummyPost,
-          onLike: (userId, reaction) {
-            // Handle like functionality
-            print("User $userId reacted with $reaction");
-          },
-          onToggleSave: (userId) {
-            // Handle save/unsave functionality
-            print("Post saved/unsaved by $userId");
-          },
-          onComment: (userId, text) {
-            // Handle adding a comment
-            print("User $userId commented: $text");
-          },
-        ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: SingleChildScrollView(
+                child: PostCard(
+                  postId: "user123",
+                  content:
+                      "This is a text-only post for testing the PostCard widget.",
+                  mediaUrls: [], // No image URLs
+                  comments: comments, // Pass comments correctly
+                  likeCount: 10,
+                  isLiked: false,
+                  isSaved: false,
+                  onLike: () {
+                    // Handle like functionality
+                    print("Post liked/unliked");
+                  },
+                  onCelebrate: () {
+                    // Handle celebrate functionality
+                    print("Celebrate reaction added");
+                  },
+                  onToggleSave: () {
+                    // Handle save/unsave functionality
+                    print("Post saved/unsaved");
+                  },
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CommentSection(
+              comments: comments, // Pass comments correctly
+              onComment: (text) {
+                // Handle adding a comment
+                print("New comment: $text");
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/themes/color_scheme.dart'; // Fixed import path
-import '../../core/themes/text_styles.dart'; // Fixed import path
+import '../../core/themes/color_scheme.dart';
+import '../../core/themes/text_styles.dart';
 
 class LinkedInPost {
   String id;
