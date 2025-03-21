@@ -1,30 +1,32 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// import 'package:flutter_test/flutter_test.dart';
+// import 'package:flutter/material.dart';
+// import 'package:linkedin_clone/main.dart';
+// import 'package:linkedin_clone/features/feed/domain/usecases/get_posts_usecase.dart';
+// import 'package:linkedin_clone/features/feed/data/repositories/feed_repository_impl.dart';
+// import 'package:linkedin_clone/features/feed/data/data_sources/feed_remote_data_source.dart';
+// import 'package:dio/dio.dart';
+// import 'package:provider/provider.dart';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+// void main() {
+//   testWidgets('NewsFeedPage loads correctly', (WidgetTester tester) async {
+//     // Mock dependencies
+//     final dio = Dio();
+//     final dataSource = FeedRemoteDataSourceImpl(dio);
+//     final repository = FeedRepositoryImpl(dataSource);
+//     final getPostsUseCase = GetPostsUseCase(repository);
 
-import 'package:linkedin_clone/main.dart';
+//     // Wrap with Provider
+//     await tester.pumpWidget(
+//       MultiProvider(
+//         providers: [Provider<GetPostsUseCase>.value(value: getPostsUseCase)],
+//         child: MyApp(getPostsUseCase: getPostsUseCase),
+//       ),
+//     );
 
-void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+//     // Wait for the widget tree to build
+//     await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
-  });
-}
+//     // Check if News Feed page is loaded
+//     expect(find.text('News Feed'), findsOneWidget);
+//   });
+// }

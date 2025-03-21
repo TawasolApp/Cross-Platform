@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
-import '/../../core/themes/color_scheme.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/themes/app_theme.dart';
 
 class LikeButton extends StatelessWidget {
   final bool isLiked;
-  final VoidCallback onPressed;
+  final VoidCallback onTap;
 
-  LikeButton({required this.isLiked, required this.onPressed});
+  const LikeButton({super.key, required this.isLiked, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      icon: Icon(
-        isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
-        color:
-            isLiked
-                ? linkedinLightColorScheme.primary
-                : linkedinLightColorScheme.onSurfaceVariant,
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(
+            isLiked ? Icons.thumb_up : Icons.thumb_up_off_alt,
+            color:
+                isLiked ? Theme.of(context).colorScheme.primary : Colors.grey,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            "Like",
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color:
+                  isLiked ? Theme.of(context).colorScheme.primary : Colors.grey,
+            ),
+          ),
+        ],
       ),
-      onPressed: onPressed,
     );
   }
 }

@@ -7,7 +7,7 @@ class PostEntity {
   final String? authorPicture;
   final String authorBio;
   final String content;
-  final List<String> media;
+  final List<String>? media;
   final int likes;
   final int comments;
   final int shares;
@@ -22,14 +22,14 @@ class PostEntity {
     required this.id,
     required this.authorId,
     required this.authorName,
-    this.authorPicture, //add default url
+    this.authorPicture,
     required this.authorBio,
     required this.content,
-    required this.media,
-    required this.likes,
-    required this.comments,
-    required this.shares,
-    required this.taggedUsers,
+    this.media,
+    this.likes = 0,
+    this.comments = 0,
+    this.shares = 0,
+    this.taggedUsers,
     required this.visibility,
     required this.authorType,
     required this.isLiked,

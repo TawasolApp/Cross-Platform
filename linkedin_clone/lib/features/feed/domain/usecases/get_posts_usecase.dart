@@ -4,15 +4,12 @@ import '../entities/post_entity.dart';
 import '../../../../core/errors/failures.dart';
 import 'package:fpdart/fpdart.dart';
 
-class GetNewsFeedUseCase {
-  final FeedRepository feedRepository;
+class GetPostsUseCase {
+  final FeedRepository repository;
 
-  GetNewsFeedUseCase(this.feedRepository);
+  GetPostsUseCase(this.repository);
 
-  Future<Either<Failure, List<Post>>> execute({
-    required int page,
-    required int limit,
-  }) {
-    return feedRepository.getNewsFeed(page: page, limit: limit);
+  Future<Either<Failure, List<PostEntity>>> call({int? page, int limit = 10}) {
+    return repository.getPosts(page: page, limit: limit);
   }
 }

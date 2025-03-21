@@ -1,51 +1,30 @@
 import 'package:flutter/material.dart';
-import '/../../core/themes/color_scheme.dart';
-import '/../../core/themes/text_styles.dart';
-import 'like_button.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/themes/app_theme.dart';
 
 class ReactionBar extends StatelessWidget {
-  final VoidCallback onLike;
-  final VoidCallback onComment;
-  final VoidCallback onRepost;
-  final VoidCallback onSend;
+  final int likes;
+  final int comments;
+  final int shares;
 
-  ReactionBar({
-    required this.onLike,
-    required this.onComment,
-    required this.onRepost,
-    required this.onSend,
+  const ReactionBar({
+    super.key,
+    required this.likes,
+    required this.comments,
+    required this.shares,
   });
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildActionButton(Icons.thumb_up_alt_outlined, 'Like', onLike),
-        _buildActionButton(Icons.comment_outlined, 'Comment', onComment),
-        _buildActionButton(Icons.share_outlined, 'Repost', onRepost),
-        _buildActionButton(Icons.send_outlined, 'Send', onSend),
-      ],
-    );
-  }
-
-  Widget _buildActionButton(
-    IconData icon,
-    String label,
-    VoidCallback onPressed,
-  ) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(icon, size: 24, color: Colors.grey[700]),
-          onPressed: onPressed,
-        ),
+        Text("$likes Likes", style: Theme.of(context).textTheme.bodySmall),
         Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.grey[700]),
-          textAlign: TextAlign.center,
+          "$comments Comments",
+          style: Theme.of(context).textTheme.bodySmall,
         ),
+        Text("$shares Shares", style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }

@@ -6,30 +6,30 @@ import 'package:fpdart/fpdart.dart';
 
 abstract class FeedRepository {
   Future<Either<Failure, List<PostEntity>>> getPosts({
-    required int page,
-    int limit = 10, //default value as per API docs
+    int? page,
+    int limit = 10,
   });
-
-  Future<Either<Failure, void>> likePost(String postId);
-
-  Future<Either<Failure, void>> unlikePost(String postId);
-
-  Future<Either<Failure, void>> commentOnPost({
-    required String postId,
-    required String content,
-    List<String>? taggedUsers,
-  });
-
-  Future<Either<Failure, void>> deleteComment(String commentId);
-
-  Future<Either<Failure, void>> repostPost({
-    required String authorId,
-    required String postId,
-    required String content,
-    List<String>? taggedUsers,
-    required String visibility,
-    required String authorType,
-  });
-
-  Future<Either<Failure, void>> deletePost(String postId);
 }
+//   Future<Either<Failure, void>> likePost(String postId);
+
+//   Future<Either<Failure, void>> unlikePost(String postId);
+
+//   Future<Either<Failure, void>> commentOnPost({
+//     required String postId,
+//     required String content,
+//     List<String>? taggedUsers,
+//   });
+
+//   Future<Either<Failure, void>> deleteComment(String commentId);
+
+//   Future<Either<Failure, void>> repostPost({
+//     required String authorId,
+//     required String postId,
+//     required String content,
+//     List<String>? taggedUsers,
+//     required String visibility,
+//     required String authorType,
+//   });
+
+//   Future<Either<Failure, void>> deletePost(String postId);
+// }

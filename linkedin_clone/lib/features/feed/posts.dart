@@ -103,7 +103,7 @@ class LinkedInPostWidget extends StatelessWidget {
   final Function(String userId) onToggleSave;
   final Function(String userId, String text) onComment;
 
-  LinkedInPostWidget({
+  const LinkedInPostWidget({super.key, 
     required this.post,
     required this.onLike,
     required this.onToggleSave,
