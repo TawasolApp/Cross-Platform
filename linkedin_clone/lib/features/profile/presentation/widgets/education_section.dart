@@ -1,11 +1,61 @@
 import 'package:flutter/material.dart';
 import 'education.dart'; // Import Education widget
 
-class EducationSection extends StatelessWidget {
+class EducationSection extends StatefulWidget {
   const EducationSection({super.key});
 
   @override
+  _EducationSectionState createState() => _EducationSectionState();
+}
+
+class _EducationSectionState extends State<EducationSection> {
+  bool showAll = false;
+
+  // Example list of education entries (Replace with dynamic data)
+  final List<Map<String, String>> educationList = [
+    {
+      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/en/e/ed/Cairo_University_Crest.png',
+      'institution': 'Cairo University',
+      'degree': 'Bachelor of Science',
+      'field': 'Computer Engineering',
+      'startDate': '2019',
+      'endDate': '2023',
+      'grade': 'GPA: 3.8/4.0',
+    },
+    {
+      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Siemens-logo.svg',
+      'institution': 'Siemens Digital Industries',
+      'degree': 'Embedded Systems Internship',
+      'field': 'Embedded Systems',
+      'startDate': 'Sep 2023',
+      'endDate': 'Dec 2023',
+      'grade': '',
+    },
+    {
+      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/5/5f/Harvard_University_seal.png',
+      'institution': 'Harvard University (Online Course)',
+      'degree': 'CS50x',
+      'field': 'Computer Science',
+      'startDate': 'Jan 2024',
+      'endDate': 'Ongoing',
+      'grade': '',
+    },
+    {
+      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/4/4f/MIT_Seal.svg',
+      'institution': 'MIT OpenCourseWare',
+      'degree': 'Introduction to Algorithms',
+      'field': 'Computer Science',
+      'startDate': 'Mar 2024',
+      'endDate': 'Ongoing',
+      'grade': '',
+    },
+  ];
+
+  @override
   Widget build(BuildContext context) {
+    // Show only 2 items if `showAll` is false
+    final visibleEducation = showAll ? educationList : educationList.take(2).toList();
+
     return Container(
       color: Colors.white, // Matches Experience section background
       child: Column(
@@ -39,26 +89,34 @@ class EducationSection extends StatelessWidget {
             ),
           ),
 
-          // Education List
-          const Education(
-            institutionLogoUrl: 'https://upload.wikimedia.org/wikipedia/en/e/ed/Cairo_University_Crest.png',
-            institution: 'Cairo University',
-            degree: 'Bachelor of Science',
-            field: 'Computer Engineering',
-            startDate: '2019',
-            endDate: '2023',
-            grade: 'GPA: 3.8/4.0',
+          // Display Education Entries Dynamically
+          Column(
+            children: visibleEducation.map((edu) {
+              return Education(
+                institutionLogoUrl: edu['institutionLogoUrl']!,
+                institution: edu['institution']!,
+                degree: edu['degree']!,
+                field: edu['field']!,
+                startDate: edu['startDate']!,
+                endDate: edu['endDate']!,
+                grade: edu['grade']!,
+              );
+            }).toList(),
           ),
 
-          const Education(
-            institutionLogoUrl: 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Siemens-logo.svg',
-            institution: 'Siemens Digital Industries',
-            degree: 'Embedded Systems Internship',
-            field: 'Embedded Systems',
-            startDate: 'Sep 2023',
-            endDate: 'Dec 2023',
-            grade: '',
-          ),
+          // "Show More / Show Less" Button
+          if (educationList.length > 2)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    showAll = !showAll;
+                  });
+                },
+                child: Text(showAll ? 'Show less' : 'Show more'),
+              ),
+            ),
         ],
       ),
     );

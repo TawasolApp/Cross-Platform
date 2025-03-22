@@ -1,73 +1,83 @@
 import 'package:flutter/material.dart';
 
-class ProfileProvider with ChangeNotifier {
-  String _name = '';
-  String _email = '';
-  String _bio = '';
-  String _profilePictureUrl = '';
-  String _occupation = '';
-  String _address = '';
-  int _connections = 0;
+class ProfileProvider extends ChangeNotifier {
+  String _userBio = '';
+  List<Map<String, String>> _experiences = [];
+  List<Map<String, String>> _educations = [];
+  List<Map<String, String>> _certifications = [];
+  List<String> _skills = [];
+  bool _isExpandedExperiences = false;
+  bool _isExpandedEducation = false;
+  bool _isExpandedCertifications = false;
 
-  String get name => _name;
-  String get email => _email;
-  String get bio => _bio;
-  String get profilePictureUrl => _profilePictureUrl;
-  String get occupation => _occupation;
-  String get address => _address;
-  int get connections => _connections;
+  // Getters
+  String get userBio => _userBio;
+  List<Map<String, String>> get experiences => _experiences;
+  List<Map<String, String>> get educations => _educations;
+  List<Map<String, String>> get certifications => _certifications;
+  List<String> get skills => _skills;
+  bool get isExpandedExperiences => _isExpandedExperiences;
+  bool get isExpandedEducation => _isExpandedEducation;
+  bool get isExpandedCertifications => _isExpandedCertifications;
 
-  void setName(String name) {
-    _name = name;
+  // Setters & Methods
+  void setUserBio(String bio) {
+    _userBio = bio;
     notifyListeners();
   }
 
-  void setEmail(String email) {
-    _email = email;
+  void addExperience(Map<String, String> experience) {
+    _experiences.add(experience);
     notifyListeners();
   }
 
-  void setBio(String bio) {
-    _bio = bio;
+  void removeExperience(int index) {
+    _experiences.removeAt(index);
     notifyListeners();
   }
 
-  void setProfilePictureUrl(String url) {
-    _profilePictureUrl = url;
+  void toggleExperienceExpansion() {
+    _isExpandedExperiences = !_isExpandedExperiences;
     notifyListeners();
   }
 
-  void setOccupation(String occupation) {
-    _occupation = occupation;
+  void addEducation(Map<String, String> education) {
+    _educations.add(education);
     notifyListeners();
   }
 
-  void setAddress(String address) {
-    _address = address;
+  void removeEducation(int index) {
+    _educations.removeAt(index);
     notifyListeners();
   }
 
-  void setConnections(int connections) {
-    _connections = connections;
+  void toggleEducationExpansion() {
+    _isExpandedEducation = !_isExpandedEducation;
     notifyListeners();
   }
 
-  void updateProfile({
-    required String name,
-    required String email,
-    required String bio,
-    required String profilePictureUrl,
-    required String occupation,
-    required String address,
-    required int connections,
-  }) {
-    _name = name;
-    _email = email;
-    _bio = bio;
-    _profilePictureUrl = profilePictureUrl;
-    _occupation = occupation;
-    _address = address;
-    _connections = connections;
+  void addCertification(Map<String, String> certification) {
+    _certifications.add(certification);
+    notifyListeners();
+  }
+
+  void removeCertification(int index) {
+    _certifications.removeAt(index);
+    notifyListeners();
+  }
+
+  void toggleCertificationExpansion() {
+    _isExpandedCertifications = !_isExpandedCertifications;
+    notifyListeners();
+  }
+
+  void addSkill(String skill) {
+    _skills.add(skill);
+    notifyListeners();
+  }
+
+  void removeSkill(int index) {
+    _skills.removeAt(index);
     notifyListeners();
   }
 }

@@ -3,13 +3,13 @@ import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart
 
 class Skill extends Equatable {
   final String skill;
-  final List<Endorsement> endorsements;
+  final List<Endorsement>? endorsements; // Made nullable
 
   const Skill({
     required this.skill,
-    required this.endorsements,
+    this.endorsements, // Nullable
   });
 
   @override
-  List<Object> get props => [skill, endorsements];
+  List<Object?> get props => [skill, endorsements];
 }

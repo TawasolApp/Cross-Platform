@@ -1,90 +1,62 @@
-import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 
-class EducationModel extends Equatable {
-  final String institution;
-  final String? institutionPic; // New field for institution image URL
-  final String degree;
-  final String field;
-  final String startDate;
-  final String? endDate; // Optional if still studying
-  final String description;
-  final String grade;
-
-  const EducationModel({
-    required this.institution,
-    this.institutionPic, // Added here
-    required this.degree,
-    required this.field,
-    required this.startDate,
-    this.endDate, // Nullable
-    required this.description,
-    required this.grade,
+class EducationModel extends Education {
+  EducationModel({
+    required super.school,
+    super.schoolPic,
+    required super.degree,
+    required super.field,
+    required super.startDate,
+    super.endDate,
+    required super.grade,
+    required super.description,
   });
-
-  factory EducationModel.fromJson(Map<String, dynamic> json) {
-    return EducationModel(
-      institution: json['institution'] as String,
-      institutionPic: json['institutionPic'] as String, // Deserialize institutionPic
-      degree: json['degree'] as String,
-      field: json['field'] as String,
-      startDate: json['startDate'] as String,
-      endDate: json['endDate'] as String?,
-      description: json['description'] as String,
-      grade: json['grade'] as String,
-    );
-  }
 
   Map<String, dynamic> toJson() {
     return {
-      'institution': institution,
-      'institutionPic': institutionPic, // Serialize institutionPic
+      'school': school,
+      'schoolPic': schoolPic,
       'degree': degree,
       'field': field,
-      'startDate': startDate,
-      'endDate': endDate,
-      'description': description,
+      'start_date': startDate,
+      'end_date': endDate,
       'grade': grade,
+      'description': description,
     };
   }
 
-  /// Converts `EducationModel` to `Education` entity
-  Education toEntity() {
-    return Education(
-      institution: institution,
-      institutionPic: institutionPic, // Pass institutionPic to entity
-      degree: degree,
-      field: field,
-      startDate: startDate,
-      endDate: endDate,
-      description: description,
-      grade: grade,
-    );
-  }
-
-  /// Creates `EducationModel` from `Education` entity
-  factory EducationModel.fromEntity(Education entity) {
+  factory EducationModel.fromJson(Map<String, dynamic> json) {
     return EducationModel(
-      institution: entity.institution,
-      institutionPic: entity.institutionPic, // Extract from entity
-      degree: entity.degree,
-      field: entity.field,
-      startDate: entity.startDate,
-      endDate: entity.endDate,
-      description: entity.description,
-      grade: entity.grade,
+      school: json['school'] as String,
+      schoolPic: json['schoolPic'] as String?,
+      degree: json['degree'] as String,
+      field: json['field'] as String,
+      startDate: json['start_date'] as String,
+      endDate: json['end_date'] as String?,
+      grade: json['grade'] as String,
+      description: json['description'] as String,
     );
   }
 
-  @override
-  List<Object?> get props => [
-        institution,
-        institutionPic, // Include in props for comparison
-        degree,
-        field,
-        startDate,
-        endDate,
-        description,
-        grade,
-      ];
+  EducationModel copyWith({
+    String? school,
+    String? schoolPic,
+    String? degree,
+    String? field,
+    String? startDate,
+    String? endDate,
+    String? grade,
+    String? description,
+  }) {
+    return EducationModel(
+      school: school ?? this.school,
+      schoolPic: schoolPic ?? this.schoolPic,
+      degree: degree ?? this.degree,
+      field: field ?? this.field,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      grade: grade ?? this.grade,
+      description: description ?? this.description,
+    );
+  }
 }

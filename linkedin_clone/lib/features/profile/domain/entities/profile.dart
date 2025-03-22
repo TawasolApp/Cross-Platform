@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'plan_details.dart';
+import 'plan_statistics.dart';
 import 'skill.dart';
 import 'education.dart';
 import 'certification.dart';
@@ -10,7 +12,7 @@ class Profile extends Equatable {
   final String? profilePicture;
   final String? coverPhoto;
   final String? resume;
-  final String? headLine;
+  final String? headline;
   final String? bio;
   final String? location;
   final String? industry;
@@ -18,7 +20,10 @@ class Profile extends Equatable {
   final List<Education> education;
   final List<Certification> certifications;
   final List<Experience> experience;
-  final String profileVisibility;
+  final String visibility;
+  final int? connectionCount;
+  final PlanDetails? planDetails;
+  final PlanStatistics planStatistics;
 
   const Profile({
     required this.userId,
@@ -26,7 +31,7 @@ class Profile extends Equatable {
     this.profilePicture,
     this.coverPhoto,
     this.resume,
-    this.headLine,
+    this.headline,
     this.bio,
     this.location,
     this.industry,
@@ -34,7 +39,10 @@ class Profile extends Equatable {
     this.education = const [],
     this.certifications = const [],
     this.experience = const [],
-    this.profileVisibility = "Public",
+    this.visibility = "public",
+    this.connectionCount,
+    this.planDetails,
+    required this.planStatistics,
   });
 
   @override
@@ -44,7 +52,7 @@ class Profile extends Equatable {
         profilePicture,
         coverPhoto,
         resume,
-        headLine,
+        headline,
         bio,
         location,
         industry,
@@ -52,6 +60,9 @@ class Profile extends Equatable {
         education,
         certifications,
         experience,
-        profileVisibility,
+        visibility,
+        connectionCount,
+        planDetails,
+        planStatistics,
       ];
 }
