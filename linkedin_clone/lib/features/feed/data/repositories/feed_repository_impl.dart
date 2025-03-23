@@ -1,14 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../domain/repositories/feed_repository.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/post_entity.dart';
 import '../models/post_model.dart';
+import '../data_sources/feed_remote_data_source.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
-  final Dio dio;
+  final FeedRemoteDataSource remoteDataSource;
 
-  FeedRepositoryImpl({required this.dio});
+  FeedRepositoryImpl({required this.remoteDataSource});
 
   // Get Newsfeed
   @override
@@ -17,26 +17,31 @@ class FeedRepositoryImpl implements FeedRepository {
     int limit = 10,
   }) async {
     try {
-      final Map<String, dynamic> queryParams = {'limit': limit};
-
-      if (page != null) {
-        queryParams['page'] = page;
-      }
-
-      final response = await dio.get(
-        'https://your-api.com/posts',
-        queryParameters: queryParams,
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        final posts = data.map((json) => PostModel.fromJson(json)).toList();
-        return Right(posts);
-      } else {
-        return Left(ServerFailure("Failed to fetch posts"));
-      }
+      final posts = await remoteDataSource.getPosts(page: page, limit: limit);
+      return Right(posts);
     } catch (e) {
-      return Left(NetworkFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  // Create a Post
+  @override
+  Future<Either<Failure, PostEntity>> createPost({
+    required String content,
+    List<String>? media,
+    List<String>? taggedUsers,
+    required String visibility,
+  }) async {
+    try {
+      final post = await remoteDataSource.createPost(
+        content: content,
+        media: media,
+        taggedUsers: taggedUsers,
+        visibility: visibility,
+      );
+      return Right(post);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

@@ -9,6 +9,12 @@ abstract class FeedRepository {
     int? page,
     int limit = 10,
   });
+  Future<Either<Failure, PostEntity>> createPost({
+    required String content,
+    List<String>? media,
+    List<String>? taggedUsers,
+    required String visibility,
+  });
 }
 //   Future<Either<Failure, void>> likePost(String postId);
 

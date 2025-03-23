@@ -31,6 +31,15 @@ class FeedPage extends StatelessWidget {
                   return PostCard(post: post);
                 },
               ),
+      //Floating Action Button to Create Post
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/create-post');
+        },
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add),
+        tooltip: 'Create Post',
+      ),
     );
   }
 }
