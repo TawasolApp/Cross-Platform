@@ -97,6 +97,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                           final password = provider.password;
 
                           if (email != null && password != null) {
+                            // Add JavaScript handler for WebView communication
                             final success = await Provider.of<RegisterProvider>(
                               context,
                               listen: false,
@@ -105,6 +106,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                             if (!context.mounted) return;
 
                             if (success) {
+                              // Navigate to email verification page
                               context.go(RouteNames.verifyEmail);
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(

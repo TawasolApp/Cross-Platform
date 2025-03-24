@@ -12,22 +12,35 @@ class RecaptchaWebView extends StatefulWidget {
 
 class _RecaptchaWebViewState extends State<RecaptchaWebView> {
   late final WebViewController _controller;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..addJavaScriptChannel(
-        'RecaptchaChannel',
-        onMessageReceived: (JavaScriptMessage message) {
-          final token = message.message;
-          Navigator.of(context).pop(); // Close dialog
-          widget.onVerified(token);   // Pass token to caller
-        },
+      ..setBackgroundColor(Colors.transparent)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            setState(() => _isLoading = false);
+            // Inject JavaScript to handle the callback
+            _controller.runJavaScript('''
+              function onSuccess(token) {
+                RecaptchaChannel.postMessage(token);
+              }
+              if (typeof window.RecaptchaChannel === 'undefined') {
+                window.RecaptchaChannel = {
+                  postMessage: function(message) {
+                    window.flutter_inappwebview.callHandler('recaptchaCallback', message);
+                  }
+                };
+              }
+            ''');
+          },
+        ),
       )
-      ..loadFlutterAsset('assets/html/recaptcha.html'); // Load your HTML from assets
+      ..loadRequest(Uri.parse('http://localhost:8000/recaptcha.html'));
   }
 
   @override
@@ -40,7 +53,13 @@ class _RecaptchaWebViewState extends State<RecaptchaWebView> {
         child: SizedBox(
           height: 400,
           width: double.infinity,
-          child: WebViewWidget(controller: _controller),
+          child: Stack(
+            children: [
+              WebViewWidget(controller: _controller),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator()),
+            ],
+          ),
         ),
       ),
     );
