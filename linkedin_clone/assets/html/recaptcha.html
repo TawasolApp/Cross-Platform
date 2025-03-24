@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Verification</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        text-align: center;
+      }
+
+      h1 {
+        color: #111;
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+
+      .recaptcha-box {
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Let's do a quick security check</h1>
+    <div class="recaptcha-box">
+      <div
+        class="g-recaptcha"
+        data-sitekey="6LelK_4qAAAAAB7rpFsx2apsYvxivyFY3w4ijF7u"
+        data-callback="onSuccess"
+      ></div>
+    </div>
+
+    <script>
+      function onSuccess(token) {
+        window.flutter_inappwebview.callHandler('recaptchaCallback', token);
+      }
+    </script>
+  </body>
+</html>

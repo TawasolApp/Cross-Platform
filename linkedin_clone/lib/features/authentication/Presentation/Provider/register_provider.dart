@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/authentication/Domain/Entities/user_entity.dart';
+import 'package:linkedin_clone/features/authentication/Domain/UseCases/register_usecase.dart';
+
+class RegisterProvider with ChangeNotifier {
+  // Registration fields
+  final RegisterUsecase registerUsecase;
+
+  RegisterProvider({required this.registerUsecase});
+  String? _firstName;
+  String? _lastName;
+  String? _email;
+  String? _password;
+  String? _location;
+  String? _jobTitle;
+  bool _isStudent = false;
+  bool _showPasswordStep = false;
+  late UserEntity _userEntity;
+  String? _errorMessage;
+  bool _isLoading = false;
+
+  // Getters
+  String? get firstName => _firstName;
+  String? get lastName => _lastName;
+  String? get email => _email;
+  String? get password => _password;
+  String? get location => _location;
+  String? get jobTitle => _jobTitle;
+  bool get isStudent => _isStudent;
+  bool get showPasswordStep => _showPasswordStep;
+  UserEntity get userEntity => _userEntity;
+  String? get errorMessage => _errorMessage;
+  bool get isLoading => _isLoading;
+
+  // Setters
+  void setFirstName(String value) {
+    _firstName = value;
+    notifyListeners();
+  }
+
+  void setLastName(String value) {
+    _lastName = value;
+    notifyListeners();
+  }
+
+  void setEmail(String value) {
+    _email = value;
+    notifyListeners();
+  }
+
+  void setPassword(String value) {
+    _password = value;
+    notifyListeners();
+  }
+
+  void setLocation(String value) {
+    _location = value;
+    notifyListeners();
+  }
+
+  void setJobTitle(String value) {
+    _jobTitle = value;
+    notifyListeners();
+  }
+
+  void toggleIsStudent() {
+    _isStudent = !_isStudent;
+    notifyListeners();
+  }
+  void showPasswordInput() {
+    _showPasswordStep = true;
+    notifyListeners();
+  }
+
+  // You can call this on the last step to finalize
+  Future<bool> register(String email,String password,String recaptchaToken) async {
+    final result= await registerUsecase.call(email, password, recaptchaToken);
+    return result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      },
+      (userEntity) {
+        _userEntity=userEntity;
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      },
+    );
+
+
+  }
+
+
+  void reset() {
+    _firstName = null;
+    _lastName = null;
+    _email = null;
+    _password = null;
+    _location = null;
+    _jobTitle = null;
+    _isStudent = false;
+    notifyListeners();
+  }
+}

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 // Light Mode Colors
 final ColorScheme linkedinLightColorScheme = ColorScheme(
   brightness: Brightness.light,
-  primary: Color(0xFF0077B5),
-  onPrimary: Colors.white,
+  primary: Color.fromRGBO(10, 95, 142, 1),
+  onPrimary: Colors.grey,
   secondary: Color(0xFF004B7C),
   onSecondary: Colors.white,
   surface: Color(0xFFF3F2EF),
@@ -21,7 +21,7 @@ final ColorScheme linkedinDarkColorScheme = ColorScheme(
   onPrimary: Colors.white,
   secondary: Color(0xFF004B7C),
   onSecondary: Colors.white,
-  surface: Color(0xFF121212),
+  surface: Color(0xFF1C1C1C),
   onSurface: Colors.white,
   onSurfaceVariant: Color(0xFFBDBDBD),
   error: Colors.red.shade300,
