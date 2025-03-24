@@ -88,7 +88,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                     final password = provider.password;
 
                     if (email != null && password != null) {
-                      // ⛔ reCAPTCHA temporarily skipped
+                      // reCAPTCHA temporarily skipped
                       final success = await Provider.of<RegisterProvider>(
                         context,
                         listen: false,
