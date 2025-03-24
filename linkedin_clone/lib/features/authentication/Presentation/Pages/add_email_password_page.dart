@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
-import 'package:linkedin_clone/features/authentication/Presentation/Pages/recaptcha_webview.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
+// import 'package:linkedin_clone/features/authentication/Presentation/Pages/recaptcha_webview.dart'; // Uncomment when captcha is ready
 
 class AddEmailPasswordPage extends StatelessWidget {
   const AddEmailPasswordPage({super.key});
@@ -37,14 +37,12 @@ class AddEmailPasswordPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
-              // Email field always shown
               CustomTextField(
                 keyboardType: TextInputType.emailAddress,
                 hintText: "Email",
                 onChanged: provider.setEmail,
               ),
 
-              // Password field conditionally shown
               if (provider.showPasswordStep) ...[
                 const SizedBox(height: 16),
                 CustomTextField(
@@ -66,7 +64,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
-                        // implement Learn More
+                        // Learn more
                       },
                       child: Text(
                         "Learn more",
@@ -86,37 +84,26 @@ class AddEmailPasswordPage extends StatelessWidget {
                   if (!provider.showPasswordStep) {
                     provider.showPasswordInput();
                   } else {
-                    await showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (_) => RecaptchaWebView(
-                        onVerified: (captchaToken) async {
-                          print("Captcha token: $captchaToken");
+                    final email = provider.email;
+                    final password = provider.password;
 
-                          final email = provider.email;
-                          final password = provider.password;
+                    if (email != null && password != null) {
+                      // ⛔ reCAPTCHA temporarily skipped
+                      final success = await Provider.of<RegisterProvider>(
+                        context,
+                        listen: false,
+                      ).register(email, password, "mock-captcha-token");
 
-                          if (email != null && password != null) {
-                            // Add JavaScript handler for WebView communication
-                            final success = await Provider.of<RegisterProvider>(
-                              context,
-                              listen: false,
-                            ).register(email, password, captchaToken);
+                      if (!context.mounted) return;
 
-                            if (!context.mounted) return;
-
-                            if (success) {
-                              // Navigate to email verification page
-                              context.go(RouteNames.verifyEmail);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Registration failed.")),
-                              );
-                            }
-                          }
-                        },
-                      ),
-                    );
+                      if (success) {
+                        context.go(RouteNames.verifyEmail);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Registration failed.")),
+                        );
+                      }
+                    }
                   }
                 },
               ),

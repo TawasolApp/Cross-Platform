@@ -9,13 +9,14 @@ import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/login_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Data/Repository/auth_repository_impl.dart';
 import 'package:linkedin_clone/features/authentication/Data/Data_Sources/auth_remote_data_source.dart';
-
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 void main() {
   final mockRemote  = MockAuthRemoteDataSource(); // your API call layer
   final authRepository = AuthRepositoryImpl(mockRemote);
   final loginUseCase = LoginUseCase(authRepository);
   final registerUseCase = RegisterUsecase(authRepository);
-
+  WebViewPlatform.instance = AndroidWebViewPlatform();
   runApp(
     MultiProvider(
       providers: [

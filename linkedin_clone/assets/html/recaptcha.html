@@ -1,35 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>reCAPTCHA</title>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-  </style>
-</head>
-<body>
-  <div class="g-recaptcha" 
-       data-sitekey="YOUR_SITE_KEY"
-       data-callback="onSuccess"></div>
+  <head>
+    <title>reCAPTCHA</title>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="g-recaptcha"
+         data-sitekey="6LdYnv4qAAAAAIZsXjMoAhDgFajepEeyqhbQXJCw"
+         data-callback="onSuccess"></div>
 
-  <script>
-    function onSuccess(token) {
-      // For webview_flutter
-      if (window.RecaptchaChannel) {
-        RecaptchaChannel.postMessage(token);
+    <script>
+      function onSuccess(token) {
+        if (window.RecaptchaChannel) {
+          RecaptchaChannel.postMessage(token);
+        }
       }
-      // Fallback for other implementations
-      else if (window.flutter_inappwebview) {
-        window.flutter_inappwebview.callHandler('recaptchaCallback', token);
-      }
-    }
-  </script>
-</body>
+    </script>
+  </body>
 </html>

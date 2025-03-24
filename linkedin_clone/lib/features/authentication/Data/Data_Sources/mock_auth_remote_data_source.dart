@@ -22,7 +22,8 @@ class MockAuthRemoteDataSource {
     await Future.delayed(Duration(seconds: 1)); // Simulate delay
 
     // You can add fake registration logic here
-    if (email == "newuser@example.com" && password == "password123" && recaptchaToken == "valid_recaptcha_token") {
+    if (email == "newuser@example.com" && password == "password123" && recaptchaToken == "mock-captcha-token") {
+      print("User registered successfully");
       return UserModel(
       id: '2',
       name: 'New Mock User',

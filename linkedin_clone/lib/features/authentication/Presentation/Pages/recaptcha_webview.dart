@@ -17,30 +17,27 @@ class _RecaptchaWebViewState extends State<RecaptchaWebView> {
   @override
   void initState() {
     super.initState();
+
     _controller = WebViewController()
+      ..setUserAgent(
+          'Mozilla/5.0 (Linux; Android 10; Mobile) AppleWebKit/537.36 '
+          '(KHTML, like Gecko) Chrome/89.0.4389.105 Mobile Safari/537.36'
+        )
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(Colors.transparent)
+      ..addJavaScriptChannel(
+        'RecaptchaChannel',
+        onMessageReceived: (message) {
+          final token = message.message;
+          Navigator.pop(context); // Close the dialog
+          widget.onVerified(token); // Pass token to callback
+        },
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageFinished: (String url) {
-            setState(() => _isLoading = false);
-            // Inject JavaScript to handle the callback
-            _controller.runJavaScript('''
-              function onSuccess(token) {
-                RecaptchaChannel.postMessage(token);
-              }
-              if (typeof window.RecaptchaChannel === 'undefined') {
-                window.RecaptchaChannel = {
-                  postMessage: function(message) {
-                    window.flutter_inappwebview.callHandler('recaptchaCallback', message);
-                  }
-                };
-              }
-            ''');
-          },
+          onPageFinished: (url) => setState(() => _isLoading = false),
         ),
       )
-      ..loadRequest(Uri.parse('http://localhost:8000/recaptcha.html'));
+      ..loadFlutterAsset('assets/html/recaptcha.html'); // Make sure this path is correct
   }
 
   @override
@@ -56,8 +53,7 @@ class _RecaptchaWebViewState extends State<RecaptchaWebView> {
           child: Stack(
             children: [
               WebViewWidget(controller: _controller),
-              if (_isLoading)
-                const Center(child: CircularProgressIndicator()),
+              if (_isLoading) const Center(child: CircularProgressIndicator()),
             ],
           ),
         ),

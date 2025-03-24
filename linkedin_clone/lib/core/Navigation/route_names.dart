@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class RouteNames {
   static const String onboarding = "/onboarding";
   static const String login = "/login";
@@ -10,4 +12,6 @@ class RouteNames {
   static const String addPassword = "/add_password";
   static const String addLocation = "/add_location";
   static const String verifyEmail = "/verify_email";
+  static const String forgotPassword = "/forgot_password";
+  static const String checkemail = "/check_email";
 }

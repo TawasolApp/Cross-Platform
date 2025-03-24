@@ -27,7 +27,6 @@ class _LoginPageState extends State<LoginPage> {
     final textColor = theme.textTheme.bodyMedium?.color;
     final primaryColor = theme.colorScheme.primary;
     final isDarkMode = theme.brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       resizeToAvoidBottomInset: false,
@@ -114,6 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                 child: GestureDetector(
                   onTap: () {
                     // Future Forgot Password
+                    context.go(RouteNames.forgotPassword);
+              
                   },
                   child: Text(
                     "Forgot password?",
