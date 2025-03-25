@@ -37,24 +37,8 @@ class PostCreationHeader extends StatelessWidget {
                 authorTitle,
                 style: const TextStyle(fontSize: 13, color: Colors.grey),
               ),
-              PopupMenuButton<String>(
-                onSelected: onVisibilityChanged,
-                padding: EdgeInsets.zero,
-                itemBuilder:
-                    (context) => [
-                      const PopupMenuItem(
-                        value: "Public",
-                        child: Text("🌍 Public"),
-                      ),
-                      const PopupMenuItem(
-                        value: "Connections",
-                        child: Text("👥 Connections"),
-                      ),
-                      const PopupMenuItem(
-                        value: "Only Me",
-                        child: Text("🔒 Only Me"),
-                      ),
-                    ],
+              GestureDetector(
+                onTap: () => _showVisibilityBottomSheet(context),
                 child: Row(
                   children: [
                     Text(
@@ -75,14 +59,62 @@ class PostCreationHeader extends StatelessWidget {
     );
   }
 
+  void _showVisibilityBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 12),
+            Container(height: 4, width: 40, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            const Text(
+              "Who can see your post?",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            ListTile(
+              leading: const Icon(Icons.public),
+              title: const Text("Anyone"),
+              subtitle: const Text("Anyone on or off LinkedIn"),
+              trailing:
+                  visibility == "Public"
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+              onTap: () {
+                Navigator.pop(context);
+                onVisibilityChanged("Public");
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people),
+              title: const Text("Connections only"),
+              subtitle: const Text("Only your connections"),
+              trailing:
+                  visibility == "Connections"
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : null,
+              onTap: () {
+                Navigator.pop(context);
+                onVisibilityChanged("Connections");
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
+        );
+      },
+    );
+  }
+
   String _getVisibilityText(String visibility) {
     switch (visibility) {
       case "Connections":
-        return "👥 Connections";
-      case "Only Me":
-        return "🔒 Only Me";
+        return "👥 Connections only";
       default:
-        return "🌍 Public";
+        return "🌍 Anyone";
     }
   }
 }

@@ -10,6 +10,13 @@ abstract class FeedRemoteDataSource {
     List<String>? taggedUsers,
     required String visibility,
   });
+  Future<void> deletePost(String postId);
+  Future<void> savePost(String postId);
+  Future<void> reactToPost({
+    required String postId,
+    required Map<String, bool> reactions,
+    required String postType,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -68,6 +75,56 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
     } on DioException catch (e) {
       throw ServerException(e.message ?? 'Failed to create post');
+    }
+  }
+
+  @override
+  Future<void> deletePost(String postId) async {
+    final token = 'mock_Bearer_token';
+
+    final response = await dio.delete(
+      'https://your-api.com/posts/$postId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    if (response.statusCode != 204) {
+      throw ServerException(
+        'Failed to delete post. Status code: ${response.statusCode}',
+      );
+    }
+  }
+
+  @override
+  Future<void> savePost(String postId) async {
+    final response = await dio.post(
+      'https://your-api.com/posts/save/$postId',
+      options: Options(headers: {'Authorization': 'Bearer your_token'}),
+    );
+
+    if (response.statusCode != 200) {
+      throw ServerException('Failed to save post');
+    }
+  }
+
+  @override
+  Future<void> reactToPost({
+    required String postId,
+    required Map<String, bool> reactions,
+    required String postType,
+  }) async {
+    final response = await dio.post(
+      'https://your-api.com/posts/react/$postId',
+      data: {"reactions": reactions, "postType": postType},
+      options: Options(
+        headers: {
+          //'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw ServerException("Failed to update reaction");
     }
   }
 }

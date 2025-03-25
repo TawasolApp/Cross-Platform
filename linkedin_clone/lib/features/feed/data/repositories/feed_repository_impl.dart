@@ -4,6 +4,8 @@ import '../../../../core/errors/failures.dart';
 import '../../domain/entities/post_entity.dart';
 import '../models/post_model.dart';
 import '../data_sources/feed_remote_data_source.dart';
+import '../../../../core/errors/exceptions.dart';
+//import 'package:dartz/dartz.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
   final FeedRemoteDataSource remoteDataSource;
@@ -42,6 +44,50 @@ class FeedRepositoryImpl implements FeedRepository {
       return Right(post);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deletePost(String postId) async {
+    try {
+      await remoteDataSource.deletePost(postId);
+      return const Right(null);
+    } on ServerException {
+      return Left(ServerFailure("Failed to delete post"));
+    } catch (e) {
+      return Left(NetworkFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> savePost(String postId) async {
+    try {
+      await remoteDataSource.savePost(postId);
+      return const Right(unit); // ✅ correct way to return Unit
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(NetworkFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> reactToPost({
+    required String postId,
+    required Map<String, bool> reactions,
+    required String postType,
+  }) async {
+    try {
+      await remoteDataSource.reactToPost(
+        postId: postId,
+        reactions: reactions,
+        postType: postType,
+      );
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(NetworkFailure(e.toString()));
     }
   }
 }

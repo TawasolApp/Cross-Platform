@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../domain/entities/post_entity.dart';
 
 class PostFooter extends StatelessWidget {
   final int likes;
   final int comments;
   final int shares;
+  final PostEntity post;
 
   const PostFooter({
     super.key,
     required this.likes,
     required this.comments,
     required this.shares,
+    required this.post,
   });
 
   @override
@@ -25,7 +28,7 @@ class PostFooter extends StatelessWidget {
                 const Icon(
                   FontAwesomeIcons.thumbsUp,
                   color: Colors.blue,
-                  size: 18,
+                  size: 14,
                 ),
                 const SizedBox(width: 5),
                 Text('$likes'),
@@ -35,7 +38,6 @@ class PostFooter extends StatelessWidget {
           ],
         ),
         const Divider(),
-
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
@@ -58,7 +60,7 @@ class PostFooter extends StatelessWidget {
         Text(
           label,
           style: const TextStyle(
-            color: const Color.fromARGB(255, 78, 78, 78),
+            color: Color.fromARGB(255, 78, 78, 78),
             fontSize: 12,
           ),
         ),

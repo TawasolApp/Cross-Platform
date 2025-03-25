@@ -17,7 +17,7 @@ class PostEntity {
   final bool isLiked;
   final RepostDetails? repostDetails;
   final DateTime timestamp;
-
+  final bool isSaved;
   const PostEntity({
     required this.id,
     required this.authorId,
@@ -35,5 +35,45 @@ class PostEntity {
     required this.isLiked,
     required this.timestamp,
     this.repostDetails,
+    this.isSaved = false,
   });
+  PostEntity copyWith({
+    String? id,
+    String? authorId,
+    String? authorName,
+    String? authorPicture,
+    String? authorBio,
+    String? content,
+    List<String>? media,
+    int? likes,
+    int? comments,
+    int? shares,
+    List<String>? taggedUsers,
+    String? visibility,
+    String? authorType,
+    bool? isLiked,
+    DateTime? timestamp,
+    RepostDetails? repostDetails,
+    bool? isSaved,
+  }) {
+    return PostEntity(
+      id: id ?? this.id,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      authorPicture: authorPicture ?? this.authorPicture,
+      authorBio: authorBio ?? this.authorBio,
+      content: content ?? this.content,
+      media: media ?? this.media,
+      likes: likes ?? this.likes,
+      comments: comments ?? this.comments,
+      shares: shares ?? this.shares,
+      taggedUsers: taggedUsers ?? this.taggedUsers,
+      visibility: visibility ?? this.visibility,
+      authorType: authorType ?? this.authorType,
+      isLiked: isLiked ?? this.isLiked,
+      timestamp: timestamp ?? this.timestamp,
+      repostDetails: repostDetails ?? this.repostDetails,
+      isSaved: isSaved ?? this.isSaved,
+    );
+  }
 }

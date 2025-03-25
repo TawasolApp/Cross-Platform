@@ -4,14 +4,23 @@ import '../../domain/usecases/create_post_usecase.dart';
 import '../../domain/usecases/get_posts_usecase.dart';
 import '../../domain/entities/post_entity.dart';
 import '../../../../core/errors/failures.dart';
+import '../../domain/usecases/delete_post_usecase.dart';
+import '../../domain/usecases/save_post_usecase.dart';
+import '../../domain/usecases/react_to_post_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
   final CreatePostUseCase createPostUseCase;
+  final DeletePostUseCase deletePostUseCase;
+  final SavePostUseCase savePostUseCase;
+  final ReactToPostUseCase reactToPostUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
     required this.createPostUseCase,
+    required this.deletePostUseCase,
+    required this.savePostUseCase,
+    required this.reactToPostUseCase,
   });
 
   List<PostEntity> _posts = [];
@@ -145,16 +154,115 @@ class FeedProvider extends ChangeNotifier {
 
       result.fold(
         (failure) {
-          _errorMessage = failure.message ?? "An error occurred";
+          _errorMessage = failure.message;
         },
         (post) {
-          // If API returns no post, you may skip inserting or create a fallback
+          // If API returns no post, may skip inserting or create a fallback
           _posts.insert(0, post);
         },
       );
     }
 
     _isCreating = false;
+    notifyListeners();
+  }
+
+  Future<void> deletePost(String postId) async {
+    _errorMessage = null;
+    notifyListeners();
+
+    if (useMockData) {
+      // Just simulate local deletion
+      _posts.removeWhere((post) => post.id == postId);
+    } else {
+      final result = await deletePostUseCase(postId);
+      result.fold(
+        (failure) {
+          _errorMessage = failure.message;
+        },
+        (_) {
+          _posts.removeWhere((post) => post.id == postId);
+        },
+      );
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> savePost(String postId) async {
+    _errorMessage = null;
+
+    if (useMockData) {
+      final index = _posts.indexWhere((post) => post.id == postId);
+      if (index != -1) {
+        final post = _posts[index];
+        final updated = post.copyWith(isSaved: !post.isSaved);
+        _posts[index] = updated;
+      }
+    } else {
+      final result = await savePostUseCase(postId);
+      result.fold(
+        (failure) {
+          _errorMessage = failure.message;
+        },
+        (_) {
+          final index = _posts.indexWhere((post) => post.id == postId);
+          if (index != -1) {
+            final post = _posts[index];
+            final updated = post.copyWith(
+              isSaved: true,
+            ); // assume API always saves
+            _posts[index] = updated;
+          }
+        },
+      );
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> reactToPost({
+    required String postId,
+    required Map<String, bool> reactions,
+    String postType = 'Post',
+  }) async {
+    _errorMessage = null;
+
+    if (useMockData) {
+      final index = _posts.indexWhere((post) => post.id == postId);
+      if (index != -1) {
+        final currentPost = _posts[index];
+        final isLiked = reactions["Like"] ?? false;
+
+        final updatedPost = currentPost.copyWith(
+          isLiked: isLiked,
+          likes:
+              isLiked
+                  ? currentPost.likes + 1
+                  : (currentPost.likes > 0 ? currentPost.likes - 1 : 0),
+        );
+
+        _posts[index] = updatedPost;
+        notifyListeners();
+      }
+      return;
+    }
+
+    final result = await reactToPostUseCase(
+      postId: postId,
+      reactions: reactions,
+      postType: postType,
+    );
+
+    result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+      },
+      (_) {
+        // Optional: Update local state/UI if needed after success
+      },
+    );
+
     notifyListeners();
   }
 }

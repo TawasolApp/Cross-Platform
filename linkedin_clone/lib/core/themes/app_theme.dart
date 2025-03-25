@@ -35,9 +35,9 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         elevation: 0,
-        disabledBackgroundColor: linkedinLightColorScheme.primary.withOpacity(
-          0.5,
-        ), // Fixed error
+        disabledBackgroundColor: linkedinLightColorScheme.primary.withAlpha(
+          128,
+        ),
       ),
     ),
 
@@ -81,8 +81,8 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         elevation: 0,
-        disabledBackgroundColor: linkedinDarkColorScheme.primary.withOpacity(
-          0.5,
+        disabledBackgroundColor: linkedinDarkColorScheme.primary.withAlpha(
+          128,
         ), // Fixed error
       ),
     ),

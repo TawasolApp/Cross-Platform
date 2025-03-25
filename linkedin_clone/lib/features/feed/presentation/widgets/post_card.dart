@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'post_header.dart';
 import 'post_content.dart';
 import 'post_footer.dart';
 import '../../domain/entities/post_entity.dart';
+import '../provider/feed_provider.dart';
 
 class PostCard extends StatelessWidget {
   final PostEntity post;
@@ -13,7 +15,9 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-
+    final updatedPost = Provider.of<FeedProvider>(
+      context,
+    ).posts.firstWhere((p) => p.id == post.id, orElse: () => post);
     return Container(
       width: screenWidth,
       color: Colors.white,
@@ -22,14 +26,21 @@ class PostCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          PostHeader(
-            profileImage: post.authorPicture ?? '',
-            authorName: post.authorName,
-            authorTitle: post.authorBio,
-            postTime: timeago.format(post.timestamp),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: PostHeader(
+                  profileImage: post.authorPicture ?? '',
+                  authorName: post.authorName,
+                  authorTitle: post.authorBio,
+                  postTime: timeago.format(post.timestamp),
+                  postId: post.id,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
-
           PostContent(
             content: post.content,
             imageUrl:
@@ -40,9 +51,10 @@ class PostCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           PostFooter(
-            likes: post.likes,
-            comments: post.comments,
-            shares: post.shares,
+            likes: updatedPost.likes,
+            comments: updatedPost.comments,
+            shares: updatedPost.shares,
+            post: updatedPost,
           ),
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 
@@ -9,6 +10,8 @@ import '../features/feed/domain/usecases/create_post_usecase.dart';
 import '../features/feed/presentation/pages/feed_page.dart';
 import '../features/feed/presentation/pages/create_post_page.dart';
 import '../features/feed/presentation/provider/feed_provider.dart';
+import '../features/feed/domain/usecases/delete_post_usecase.dart';
+import '../features/feed/domain/usecases/react_to_post_usecase.dart';
 
 void main() {
   final dio = Dio();
@@ -17,7 +20,9 @@ void main() {
 
   final getPostsUseCase = GetPostsUseCase(repository);
   final createPostUseCase = CreatePostUseCase(repository);
-
+  final deletePostUseCase = DeletePostUseCase(repository);
+  final savePostUseCase = SavePostUseCase(repository);
+  final reactToPostUseCase = ReactToPostUseCase(repository);
   runApp(
     MultiProvider(
       providers: [
@@ -26,6 +31,9 @@ void main() {
               (_) => FeedProvider(
                 getPostsUseCase: getPostsUseCase,
                 createPostUseCase: createPostUseCase,
+                deletePostUseCase: deletePostUseCase,
+                savePostUseCase: savePostUseCase,
+                reactToPostUseCase: reactToPostUseCase,
               )..fetchPosts(),
         ),
       ],

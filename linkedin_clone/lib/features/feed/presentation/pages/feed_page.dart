@@ -37,8 +37,8 @@ class FeedPage extends StatelessWidget {
           Navigator.pushNamed(context, '/create-post');
         },
         backgroundColor: Colors.blue,
-        child: const Icon(Icons.add),
         tooltip: 'Create Post',
+        child: const Icon(Icons.add),
       ),
     );
   }

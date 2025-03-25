@@ -15,6 +15,13 @@ abstract class FeedRepository {
     List<String>? taggedUsers,
     required String visibility,
   });
+  Future<Either<Failure, void>> deletePost(String postId);
+  Future<Either<Failure, Unit>> savePost(String postId);
+  Future<Either<Failure, Unit>> reactToPost({
+    required String postId,
+    required Map<String, bool> reactions,
+    required String postType,
+  });
 }
 //   Future<Either<Failure, void>> likePost(String postId);
 
@@ -36,6 +43,3 @@ abstract class FeedRepository {
 //     required String visibility,
 //     required String authorType,
 //   });
-
-//   Future<Either<Failure, void>> deletePost(String postId);
-// }

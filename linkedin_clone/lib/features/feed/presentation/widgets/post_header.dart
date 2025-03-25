@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'post_actions_bottom_sheet.dart';
 
 class PostHeader extends StatelessWidget {
   final String profileImage;
   final String authorName;
   final String authorTitle;
   final String postTime;
+  final String postId;
 
   const PostHeader({
     super.key,
@@ -12,6 +14,7 @@ class PostHeader extends StatelessWidget {
     required this.authorName,
     required this.authorTitle,
     required this.postTime,
+    required this.postId,
   });
 
   @override
@@ -44,7 +47,15 @@ class PostHeader extends StatelessWidget {
           ),
         ),
 
-        IconButton(icon: const Icon(Icons.more_horiz), onPressed: () {}),
+        IconButton(
+          icon: const Icon(Icons.more_horiz),
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (_) => PostActionsBottomSheet(postId: postId),
+            );
+          },
+        ),
       ],
     );
   }
