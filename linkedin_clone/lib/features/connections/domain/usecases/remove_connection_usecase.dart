@@ -5,7 +5,7 @@ class RemoveConnectionUseCase {
 
   RemoveConnectionUseCase(this.repository);
 
-  Future<bool> call(String userId) async {
-    return await repository.removeConnection(userId);
+  Future<bool> call(String userId, String? token) async {
+    return await repository.removeConnection(userId, token);
   }
 }

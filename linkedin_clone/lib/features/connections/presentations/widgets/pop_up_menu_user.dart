@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 import 'remove_connection_dialog.dart';
+import '../provider/connections_provider.dart';
 
 class PopUpMenuUser extends StatelessWidget {
   final String userId;
   final String userName;
+  final ConnectionsProvider connectionsProvider;
   const PopUpMenuUser({
     super.key,
     required this.userId,
     required this.userName,
+    required this.connectionsProvider,
   });
 
   @override
@@ -27,11 +30,6 @@ class PopUpMenuUser extends StatelessWidget {
   }
 
   void _popUpMenuUser(BuildContext context) {
-    final connectionsProvider = Provider.of<ConnectionsProvider>(
-      context,
-      listen: false,
-    );
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.white,
@@ -73,6 +71,7 @@ class PopUpMenuUser extends StatelessWidget {
                       return RemoveConnectionDialog(
                         userId: userId,
                         userName: userName,
+                        connectionsProvider: connectionsProvider,
                       );
                     },
                   );

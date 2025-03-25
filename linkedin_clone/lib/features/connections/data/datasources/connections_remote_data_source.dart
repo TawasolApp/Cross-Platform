@@ -5,26 +5,31 @@ import 'package:linkedin_clone/features/connections/domain/entities/connections_
 
 class ConnectionsRemoteDataSource {
   final http.Client client;
+  final baseUrl = 'http://192.168.1.9:3000/';
 
   ConnectionsRemoteDataSource({required this.client});
 
   ///////////////////Get connections list
-  Future<List<ConnectionsListUserEntity>> getConnectionsList() async {
+  Future<List<ConnectionsListUserEntity>> getConnectionsList(
+    String? token,
+  ) async {
     final response = await client
         .get(
-          Uri.parse('http://192.168.1.9:3000/connections'),
-          headers: {'Content-Type': 'application/json'},
+          Uri.parse('${baseUrl}connections'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
         )
         .timeout(
           Duration(seconds: 15),
           onTimeout: () {
-            throw Exception('Request Timed Out');
+            return http.Response('Request Timeout', 408);
           },
         );
 
     if (response.statusCode == 200) {
-      final dynamic jsonResponse = json.decode(response.body);
-
+      final jsonResponse = jsonDecode(response.body);
       if (jsonResponse is Map<String, dynamic> &&
           jsonResponse.containsKey('connections')) {
         final List<dynamic> connectionsJson = jsonResponse['connections'];
@@ -33,7 +38,6 @@ class ConnectionsRemoteDataSource {
                 .toList() ??
             [];
       } else if (jsonResponse is List<dynamic>) {
-        print("JSON Response: $jsonResponse");
         return jsonResponse
                 .map((json) => ConnectionsListUserModel.fromJson(json))
                 .toList() ??
@@ -52,22 +56,32 @@ class ConnectionsRemoteDataSource {
 
   ///////////////////remove connection
 
-  Future<bool> removeConnection(String userId) async {
-    print("Removing connection for user ID: $userId");
-    print("API URL: http://192.168.1.9:3000/connections?userId=$userId");
-
-    final checkResponse = await client.get(
-      Uri.parse('http://192.168.1.9:3000/connections?userId=$userId'),
-    );
+  Future<bool> removeConnection(String userId, String? token) async {
+    final checkResponse = await client
+        .get(
+          Uri.parse('${baseUrl}connections?userId=$userId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(
+          Duration(seconds: 15),
+          onTimeout: () {
+            return http.Response('Request Timeout', 408);
+          },
+        );
     if (checkResponse.statusCode == 404) {
-      print("User not found.");
       return false;
     }
 
     final response = await client
         .delete(
-          Uri.parse('http://192.168.1.9:3000/connections?userId=$userId'),
-          headers: {'Content-Type': 'application/json'},
+          Uri.parse('${baseUrl}connections?userId=$userId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
         )
         .timeout(
           Duration(seconds: 15),

@@ -3,7 +3,8 @@ import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 
 class PopUpMenuSortBy extends StatelessWidget {
-  const PopUpMenuSortBy({super.key});
+  final connectionsProvider;
+  const PopUpMenuSortBy({super.key, required this.connectionsProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +20,6 @@ class PopUpMenuSortBy extends StatelessWidget {
 
   void _popUpMenuSortBy(BuildContext context) {
     String selectedFilter = 'Recently added'; // Default selected filter
-    final connectionsProvider = Provider.of<ConnectionsProvider>(
-      context,
-      listen: false,
-    );
 
     showModalBottomSheet(
       context: context,

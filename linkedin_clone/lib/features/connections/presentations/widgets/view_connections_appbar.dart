@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/pop_up_menu_sort_by.dart';
+import '../provider/connections_provider.dart';
 
 /// AppBar for the View Connections Page
 /// icon buttons for search and filtering connections
 class ViewConnectionsAppBar extends StatelessWidget {
+  final ConnectionsProvider connectionsProvider;
   final int connectionsCount;
 
-  const ViewConnectionsAppBar({required this.connectionsCount, super.key});
+  const ViewConnectionsAppBar({
+    required this.connectionsCount,
+    super.key,
+    required this.connectionsProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +36,7 @@ class ViewConnectionsAppBar extends StatelessWidget {
               color: const Color.fromARGB(255, 30, 30, 30),
               onPressed: () {},
             ),
-            PopUpMenuSortBy(),
+            PopUpMenuSortBy(connectionsProvider: connectionsProvider),
           ],
         ),
         Divider(

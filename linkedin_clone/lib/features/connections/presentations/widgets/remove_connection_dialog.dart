@@ -5,19 +5,16 @@ import '../provider/connections_provider.dart';
 class RemoveConnectionDialog extends StatelessWidget {
   final String userId;
   final String userName;
-
+  final ConnectionsProvider connectionsProvider;
   const RemoveConnectionDialog({
     super.key,
     required this.userId,
     required this.userName,
+    required this.connectionsProvider,
   });
 
   @override
   Widget build(BuildContext context) {
-    final connectionsProvider = Provider.of<ConnectionsProvider>(
-      context,
-      listen: false,
-    );
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(7),
@@ -49,6 +46,7 @@ class RemoveConnectionDialog extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Close pop-up menu
                   },
                   child: Text(
                     "Cancel",
@@ -63,6 +61,7 @@ class RemoveConnectionDialog extends StatelessWidget {
                       userId,
                     ); //TODO: Implement  Lw failed hy3mel eh
                     Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Close pop-up menu
                   },
                   child: Text(
                     "Remove",

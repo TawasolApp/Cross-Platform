@@ -8,23 +8,23 @@ class ConnectionsListRepositoryImpl implements ConnectionsListRepository {
   ConnectionsListRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ConnectionsListUserEntity>> getConnectionsList() async {
+  Future<List<ConnectionsListUserEntity>> getConnectionsList(
+    String? token,
+  ) async {
     try {
-      final connectionsList = await remoteDataSource.getConnectionsList();
+      final connectionsList = await remoteDataSource.getConnectionsList(token);
       return connectionsList;
     } catch (e) {
-      print(e); //for debugging
       throw Exception('Failed to load connections list');
     }
   }
 
   @override
-  Future<bool> removeConnection(String userId) async {
+  Future<bool> removeConnection(String userId, String? token) async {
     try {
-      bool removed = await remoteDataSource.removeConnection(userId);
+      bool removed = await remoteDataSource.removeConnection(userId, token);
       return removed;
     } catch (e) {
-      print(e); //for debugging
       throw Exception('Failed to remove connection');
     }
   }

@@ -6,14 +6,29 @@ import '../../domain/entities/connections_list_user_entity.dart';
 class ConnectionsProvider with ChangeNotifier {
   ConnectionsProvider(this.getConnectionsUseCase, this.removeConnectionUseCase);
 
+  /////Token
+  ///
+  String? _token;
+
+  String? get token => _token;
+
+  void setToken(String newToken) {
+    _token = newToken;
+  }
+
+  void clearToken() {
+    _token = null;
+    notifyListeners();
+  }
+
   ////Get connections usecase
   final GetConnectionsUseCase getConnectionsUseCase;
   final RemoveConnectionUseCase removeConnectionUseCase;
   List<ConnectionsListUserEntity>? get connectionsList => _connectionsList;
   List<ConnectionsListUserEntity>? _connectionsList;
 
-  Future<List<ConnectionsListUserEntity>> getConnections() async {
-    _connectionsList = await getConnectionsUseCase.call();
+  Future<List<ConnectionsListUserEntity>> getConnections(String token) async {
+    _connectionsList = await getConnectionsUseCase.call(token);
     notifyListeners();
     return _connectionsList!;
   }
@@ -60,8 +75,11 @@ class ConnectionsProvider with ChangeNotifier {
         ).compareTo(DateTime.parse(a.connectionTime)),
       );
     } else if (_activeFilter == 'Last name') {
-      _connectionsList!.sort((a, b) => a.userName.compareTo(b.userName));
+      _connectionsList!.sort(
+        (a, b) => a.userName.compareTo(b.userName),
+      ); //TODO: Implement sorting by last name lma el backend y3ml el API doc sah
     } else if (_activeFilter == 'First name') {
+      print('Sorting by first name');
       _connectionsList!.sort((a, b) => a.userName.compareTo(b.userName));
     }
     notifyListeners();
@@ -71,7 +89,7 @@ class ConnectionsProvider with ChangeNotifier {
   ///
   ////Remove connection
   Future<bool> removeConnection(String userId) async {
-    bool removed = await removeConnectionUseCase.call(userId);
+    bool removed = await removeConnectionUseCase.call(userId, _token);
     notifyListeners();
     return removed;
   }

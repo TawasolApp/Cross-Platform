@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import '../widgets/view_connections_card.dart';
 import '../../domain/entities/connections_list_user_entity.dart';
 import '../provider/connections_provider.dart';
+import 'package:linkedin_clone/core/themes/app_theme.dart';
 
 class ConnectionsPage extends StatelessWidget {
-  const ConnectionsPage({super.key});
+  final String token;
+  const ConnectionsPage({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,9 @@ class ConnectionsPage extends StatelessWidget {
       context,
       listen: false,
     );
+    connectionsListProvider.setToken(token);
+    Future<List<ConnectionsListUserEntity>> connectionsList =
+        connectionsListProvider.getConnections(token);
 
     return Scaffold(
       backgroundColor: Colors.white, // Directly setting background color
@@ -46,9 +51,7 @@ class ConnectionsPage extends StatelessWidget {
                 color: Color.fromARGB(255, 201, 201, 201),
               ),
               FutureBuilder<List<ConnectionsListUserEntity>>(
-                future:
-                    connectionsListProvider
-                        .getConnections(), // Fetching connections
+                future: connectionsList, // Fetching connections
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Padding(
@@ -60,14 +63,13 @@ class ConnectionsPage extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Text('Error: ${snapshot.error}'),
                     );
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text('No connections available'),
-                    );
                   } else {
                     return ViewConnectionsAppBar(
-                      connectionsCount: snapshot.data!.length,
+                      connectionsCount:
+                          !snapshot.hasData || snapshot.data!.isEmpty
+                              ? snapshot.data!.length
+                              : 0,
+                      connectionsProvider: connectionsListProvider,
                     );
                   }
                 },
@@ -78,7 +80,7 @@ class ConnectionsPage extends StatelessWidget {
       ),
 
       body: FutureBuilder<List<ConnectionsListUserEntity>>(
-        future: connectionsListProvider.getConnections(),
+        future: connectionsList, // Fetching connections
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -108,6 +110,7 @@ class ConnectionsPage extends StatelessWidget {
                           connectionTime: connection.connectionTime,
                           isOnline: false, //connection.isOnline,
                           image: connection.userProfileImage,
+                          connectionsProvider: connectionsListProvider,
                         ),
                       ),
                       onTap: () {

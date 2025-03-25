@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/pop_up_menu_user.dart';
 import 'view_connections_user_data.dart';
+import '../provider/connections_provider.dart';
 
 /// **Connection Card** includes user data and action buttons
 /// - User Data includes user image, name, headline, connection time, and online status
@@ -11,6 +12,7 @@ class ConnectionCard extends StatelessWidget {
   final String connectionTime;
   final String image;
   final bool isOnline;
+  final ConnectionsProvider connectionsProvider;
 
   const ConnectionCard({
     super.key,
@@ -20,6 +22,7 @@ class ConnectionCard extends StatelessWidget {
     required this.connectionTime,
     required this.isOnline,
     required this.image,
+    required this.connectionsProvider,
   });
 
   @override
@@ -41,11 +44,14 @@ class ConnectionCard extends StatelessWidget {
 
           /// **Action Buttons**
           Row(
-            ////////FIXME: this can be listTile
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: PopUpMenuUser(userId: userId, userName: userName),
+                child: PopUpMenuUser(
+                  userId: userId,
+                  userName: userName,
+                  connectionsProvider: connectionsProvider,
+                ),
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
