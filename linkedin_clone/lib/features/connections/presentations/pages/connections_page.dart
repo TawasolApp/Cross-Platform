@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../widgets/view_connections_card.dart';
 import '../../domain/entities/connections_list_user_entity.dart';
 import '../provider/connections_provider.dart';
-import 'package:linkedin_clone/core/themes/app_theme.dart';
 
 class ConnectionsPage extends StatelessWidget {
   final String token;
@@ -109,7 +108,7 @@ class ConnectionsPage extends StatelessWidget {
                           headLine: connection.headLine,
                           connectionTime: connection.connectionTime,
                           isOnline: false, //connection.isOnline,
-                          image: connection.userProfileImage,
+                          image: connection.profilePicture,
                           connectionsProvider: connectionsListProvider,
                         ),
                       ),

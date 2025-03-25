@@ -34,7 +34,13 @@ class ViewConnectionsAppBar extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.search, size: 25),
               color: const Color.fromARGB(255, 30, 30, 30),
-              onPressed: () {},
+              onPressed: () {
+                //placeholder for now
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Routing to search page')),
+                );
+                //TODO: route to search page
+              },
             ),
             PopUpMenuSortBy(connectionsProvider: connectionsProvider),
           ],

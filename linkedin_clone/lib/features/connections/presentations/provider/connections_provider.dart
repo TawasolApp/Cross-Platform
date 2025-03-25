@@ -33,6 +33,11 @@ class ConnectionsProvider with ChangeNotifier {
     return _connectionsList!;
   }
 
+  set connectionsList(List<ConnectionsListUserEntity>? connections) {
+    _connectionsList = connections;
+    notifyListeners();
+  }
+
   ////////////////////////////////////////////////////
   ///
   ////search

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 
 class RemoveConnectionDialog extends StatelessWidget {

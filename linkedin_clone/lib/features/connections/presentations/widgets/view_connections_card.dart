@@ -65,8 +65,8 @@ class ConnectionCard extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    print(
-                      'Send message to $userName ID $userId',
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Routing to Messaging page')),
                     ); //TODO: Navigate to chat
                   },
                 ),
