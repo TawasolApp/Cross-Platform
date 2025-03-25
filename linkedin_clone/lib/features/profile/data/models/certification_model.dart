@@ -1,14 +1,42 @@
 import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
 
-class CertificationModel extends Certification with EquatableMixin {
-  CertificationModel({
-    required super.name,
-    required super.issuingOrganization,
-    super.issuingOrganizationPic,
-    required super.issueDate,
-    super.expirationDate,
+class CertificationModel extends Equatable {
+  final String name;
+  final String issuingOrganization;
+  final String? issuingOrganizationPic;
+  final String issueDate;
+  final String? expirationDate;
+
+  const CertificationModel({
+    required this.name,
+    required this.issuingOrganization,
+    this.issuingOrganizationPic,
+    required this.issueDate,
+    this.expirationDate,
   });
+
+  /// Convert to Domain Entity
+  Certification toEntity() {
+    return Certification(
+      name: name,
+      issuingOrganization: issuingOrganization,
+      issuingOrganizationPic: issuingOrganizationPic,
+      issueDate: issueDate,
+      expirationDate: expirationDate,
+    );
+  }
+
+  /// Create from Domain Entity
+  factory CertificationModel.fromEntity(Certification entity) {
+    return CertificationModel(
+      name: entity.name,
+      issuingOrganization: entity.issuingOrganization,
+      issuingOrganizationPic: entity.issuingOrganizationPic,
+      issueDate: entity.issueDate,
+      expirationDate: entity.expirationDate,
+    );
+  }
 
   /// Convert JSON to `CertificationModel`
   factory CertificationModel.fromJson(Map<String, dynamic> json) {

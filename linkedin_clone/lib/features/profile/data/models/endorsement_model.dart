@@ -1,12 +1,32 @@
 import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 
-class EndorsementModel extends Endorsement with EquatableMixin {
-  EndorsementModel({
-    required super.userId,
-    super.profilePicUrl,
+class EndorsementModel extends Equatable {
+  final String userId;
+  final String? profilePicUrl;
+
+  const EndorsementModel({
+    required this.userId,
+    this.profilePicUrl,
   });
 
+  /// Convert to Domain Entity
+  Endorsement toEntity() {
+    return Endorsement(
+      userId: userId,
+      profilePicUrl: profilePicUrl,
+    );
+  }
+
+  /// Create from Domain Entity
+  factory EndorsementModel.fromEntity(Endorsement entity) {
+    return EndorsementModel(
+      userId: entity.userId,
+      profilePicUrl: entity.profilePicUrl,
+    );
+  }
+
+  /// Convert JSON to EndorsementModel
   factory EndorsementModel.fromJson(Map<String, dynamic> json) {
     return EndorsementModel(
       userId: json['userId'] as String,
@@ -14,6 +34,7 @@ class EndorsementModel extends Endorsement with EquatableMixin {
     );
   }
 
+  /// Convert EndorsementModel to JSON
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
@@ -21,6 +42,7 @@ class EndorsementModel extends Endorsement with EquatableMixin {
     };
   }
 
+  /// Create a copy with modified fields
   EndorsementModel copyWith({
     String? userId,
     String? profilePicUrl,

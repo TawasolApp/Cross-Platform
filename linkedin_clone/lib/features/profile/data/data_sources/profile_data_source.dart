@@ -31,23 +31,23 @@ abstract class ProfileRemoteDataSource {
   // Future<List<ExperienceModel>> getExperiences(String userId);
   Future<void> addExperience(ExperienceModel experience);
   Future<void> updateExperience(ExperienceModel experience);
-  Future<void> deleteExperience(String experience);
+  Future<void> deleteExperience(String experienceId);
 
   /// Education Management
   // Future<List<EducationModel>> getEducation(String userId);
   Future<void> addEducation(EducationModel education);
   Future<void> updateEducation(EducationModel education);
-  Future<void> deleteEducation(String education);
+  Future<void> deleteEducation(String educationId);
 
   /// Skills Management
   // Future<List<SkillModel>> getSkills(String userId);
   Future<void> addSkill(SkillModel skill);
   Future<void> updateSkill(SkillModel skill);
-  Future<void> deleteSkill(String skill);
+  Future<void> deleteSkill(String skillId);
 
   /// Certification Management
   // Future<List<CertificationModel>> getCertifications(String userId);
   Future<void> addCertification(CertificationModel certification);
   Future<void> updateCertification(CertificationModel certification);
-  Future<void> deleteCertification(String certification);
+  Future<void> deleteCertification(String certificationId);
 }

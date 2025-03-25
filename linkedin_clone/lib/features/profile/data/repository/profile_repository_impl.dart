@@ -1,4 +1,6 @@
+import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
+import 'package:linkedin_clone/core/errors/exceptions.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
@@ -6,16 +8,14 @@ import 'package:linkedin_clone/features/profile/data/models/experience_model.dar
 import 'package:linkedin_clone/features/profile/data/models/education_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/certification_model.dart';
-// import 'package:linkedin_clone/features/profile/data/models/plan_details_model.dart';
+import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/profile.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
-// import 'package:linkedin_clone/features/profile/domain/entities/plan_details.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart';
-import 'package:linkedin_clone/core/errors/exceptions.dart';
-import 'package:fpdart/fpdart.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
   final ProfileRemoteDataSource profileRemoteDataSource;
@@ -32,8 +32,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      final profile = await profileRemoteDataSource.getProfile();
-      return right(profile);
+      final profileModel = await profileRemoteDataSource.getProfile();
+      return right(profileModel.toEntity());
     } on ServerException catch (e) {
       return left(Failure(e.message));
     }
@@ -45,7 +45,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.createProfile(profile as ProfileModel);
+      await profileRemoteDataSource.createProfile(ProfileModel.fromEntity(profile));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -53,7 +53,8 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateProfile({String? name,
+  Future<Either<Failure, void>> updateProfile({
+    String? name,
     String? profilePictureUrl,
     String? coverPhoto,
     String? resume,
@@ -82,19 +83,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
     }
   }
 
-  // @override
-  // Future<Either<Failure, void>> deleteProfile(String userId) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     await profileRemoteDataSource.deleteProfile()
-  //     return right(null);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
-
   @override
   Future<Either<Failure, void>> deleteProfilePicture() async {
     try {
@@ -122,13 +110,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   // @override
-  // Future<Either<Failure, List<Experience>>> getExperiences(String userId) async {
+  // Future<Either<Failure, List<Experience>>> getExperiences() async {
   //   try {
   //     if (!await connectionChecker.isConnected) {
   //       return left(Failure("No internet connection"));
   //     }
-  //     final experiences = await profileRemoteDataSource.getExperiences(userId);
-  //     return right(experiences);
+  //     final experiences = await profileRemoteDataSource.getExperiences();
+  //     return right(experiences.map((e) => e.toEntity()).toList());
   //   } on ServerException catch (e) {
   //     return left(Failure(e.message));
   //   }
@@ -140,7 +128,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.addExperience(experience as ExperienceModel);
+      await profileRemoteDataSource.addExperience(ExperienceModel.fromEntity(experience));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -153,7 +141,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.updateExperience(experience as ExperienceModel);
+      await profileRemoteDataSource.updateExperience(ExperienceModel.fromEntity(experience));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -174,13 +162,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   // @override
-  // Future<Either<Failure, List<Education>>> getEducation(String userId) async {
+  // Future<Either<Failure, List<Education>>> getEducation() async {
   //   try {
   //     if (!await connectionChecker.isConnected) {
   //       return left(Failure("No internet connection"));
   //     }
-  //     final education = await profileRemoteDataSource.getEducation(userId);
-  //     return right(education);
+  //     final education = await profileRemoteDataSource.getEducation();
+  //     return right(education.map((e) => e.toEntity()).toList());
   //   } on ServerException catch (e) {
   //     return left(Failure(e.message));
   //   }
@@ -192,7 +180,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.addEducation(education as EducationModel);
+      await profileRemoteDataSource.addEducation(EducationModel.fromEntity(education));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -205,7 +193,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.updateEducation(education as EducationModel);
+      await profileRemoteDataSource.updateEducation(EducationModel.fromEntity(education));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -226,13 +214,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   // @override
-  // Future<Either<Failure, List<Skill>>> getSkills(String userId) async {
+  // Future<Either<Failure, List<Skill>>> getSkills() async {
   //   try {
   //     if (!await connectionChecker.isConnected) {
   //       return left(Failure("No internet connection"));
   //     }
-  //     final skills = await profileRemoteDataSource.getSkills(userId);
-  //     return right(skills);
+  //     final skills = await profileRemoteDataSource.getSkills();
+  //     return right(skills.map((s) => s.toEntity()).toList());
   //   } on ServerException catch (e) {
   //     return left(Failure(e.message));
   //   }
@@ -244,7 +232,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.addSkill(skill as SkillModel);
+      await profileRemoteDataSource.addSkill(SkillModel.fromEntity(skill));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -257,7 +245,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.updateSkill(skill as SkillModel);
+      await profileRemoteDataSource.updateSkill(SkillModel.fromEntity(skill));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -278,13 +266,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   // @override
-  // Future<Either<Failure, List<Certification>>> getCertifications(String userId) async {
+  // Future<Either<Failure, List<Certification>>> getCertifications() async {
   //   try {
   //     if (!await connectionChecker.isConnected) {
   //       return left(Failure("No internet connection"));
   //     }
-  //     final certifications = await profileRemoteDataSource.getCertifications(userId);
-  //     return right(certifications);
+  //     final certifications = await profileRemoteDataSource.getCertifications();
+  //     return right(certifications.map((c) => c.toEntity()).toList());
   //   } on ServerException catch (e) {
   //     return left(Failure(e.message));
   //   }
@@ -296,7 +284,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.addCertification(certification as CertificationModel);
+      await profileRemoteDataSource.addCertification(CertificationModel.fromEntity(certification));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -309,7 +297,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.updateCertification(certification as CertificationModel);
+      await profileRemoteDataSource.updateCertification(CertificationModel.fromEntity(certification));
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -328,4 +316,30 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return left(Failure(e.message));
     }
   }
+
+  // @override
+  // Future<Either<Failure, void>> endorseSkill(String skillId, String endorserId) async {
+  //   try {
+  //     if (!await connectionChecker.isConnected) {
+  //       return left(Failure("No internet connection"));
+  //     }
+  //     await profileRemoteDataSource.endorseSkill(skillId, endorserId);
+  //     return right(null);
+  //   } on ServerException catch (e) {
+  //     return left(Failure(e.message));
+  //   }
+  // }
+
+  // @override
+  // Future<Either<Failure, void>> removeEndorsement(String skillId, String endorserId) async {
+  //   try {
+  //     if (!await connectionChecker.isConnected) {
+  //       return left(Failure("No internet connection"));
+  //     }
+  //     await profileRemoteDataSource.removeEndorsement(skillId, endorserId);
+  //     return right(null);
+  //   } on ServerException catch (e) {
+  //     return left(Failure(e.message));
+  //   }
+  // }
 }

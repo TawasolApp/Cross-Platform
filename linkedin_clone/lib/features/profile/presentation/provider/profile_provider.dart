@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
@@ -21,29 +22,32 @@ import 'package:linkedin_clone/features/profile/domain/usecases/certifications/a
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/update_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/core/errors/failures.dart'; // Adjust the path as necessary
 import 'package:linkedin_clone/core/errors/failures.dart' show ServerFailure, NetworkFailure, CacheFailure, ValidationFailure;
 
 class ProfileProvider extends ChangeNotifier {
+  final GetProfileUseCase getProfileUseCase;
   final AddExperienceUseCase addExperienceUseCase;
   final UpdateExperienceUseCase updateExperienceUseCase;
   final DeleteExperienceUseCase deleteExperienceUseCase;
-  // final GetExperiencesUseCase getExperiencesUseCase;
+// final GetExperiencesUseCase getExperiencesUseCase;
   
   final AddSkillUseCase addSkillUseCase;
   final UpdateSkillUseCase updateSkillUseCase;
   final DeleteSkillUseCase deleteSkillUseCase;
-  // final GetSkillsUseCase getSkillsUseCase;
+// final GetSkillsUseCase getSkillsUseCase;
+// final GetSkillsUseCase getSkillsUseCase;
   
   final AddEducationUseCase addEducationUseCase;
   final UpdateEducationUseCase updateEducationUseCase;
   final DeleteEducationUseCase deleteEducationUseCase;
-  // final GetEducationUseCase getEducationUseCase;
+// final GetEducationUseCase getEducationUseCase;
   
   final AddCertificationUseCase addCertificationUseCase;
   final UpdateCertificationUseCase updateCertificationUseCase;
   final DeleteCertificationUseCase deleteCertificationUseCase;
-  // final GetCertificationsUseCase getCertificationsUseCase;
+// final GetCertificationsUseCase getCertificationsUseCase;
   
   final UpdateBioUseCase updateBioUseCase;
   
@@ -73,10 +77,12 @@ class ProfileProvider extends ChangeNotifier {
   String? _skillError;
   String? _certificationError;
   String? _bioError;
+  String? _profileError;
   bool _isLoading = false;
   
   // Constructor with dependency injection
   ProfileProvider(
+    this.getProfileUseCase,
     this.addExperienceUseCase,
     this.updateExperienceUseCase,
     this.deleteExperienceUseCase,
@@ -119,6 +125,7 @@ class ProfileProvider extends ChangeNotifier {
   String? get skillError => _skillError; 
   String? get certificationError => _certificationError;
   String? get bioError => _bioError;
+  String? get profileError => _profileError;
   bool get isLoading => _isLoading;
 
   // Setter for bio error
@@ -166,19 +173,33 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(true);
     _experienceError = null;
     
-    final result = await addExperienceUseCase.call(experience);
-    result.fold(
-      (failure) {
-        _experienceError = _mapFailureToMessage(failure);
-        notifyListeners();
-      }, 
-      (_) {
-        _experiences ??= [];
-        _experiences!.add(experience);
-      }
-    );
-    
-    _setLoading(false);
+    try {
+      // First add to local state for immediate UI update
+      _experiences ??= [];
+      _experiences!.add(experience);
+      notifyListeners();
+
+      // Then try to save to backend
+      final result = await addExperienceUseCase.call(experience);
+      
+      result.fold(
+        (failure) {
+          // If backend fails, remove from local state
+          _experiences!.remove(experience);
+          _experienceError = _mapFailureToMessage(failure);
+          notifyListeners();
+        }, 
+        (_) {
+          // Success - no need to do anything as we already updated UI
+        }
+      );
+    } catch (e) {
+      _experiences!.remove(experience);
+      _experienceError = 'Unexpected error: ${e.toString()}';
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
   
   Future<void> removeExperience(int index) async {
@@ -194,6 +215,7 @@ class ProfileProvider extends ChangeNotifier {
         }, 
         (_) {
           _experiences!.removeAt(index);
+          notifyListeners();
         }
       );
       
@@ -217,6 +239,7 @@ class ProfileProvider extends ChangeNotifier {
             (exp) => exp.company == oldExperience.company && exp.title == oldExperience.title);
           if (index != -1) {
             _experiences![index] = newExperience;
+            notifyListeners();
           }
         }
       }
@@ -412,6 +435,50 @@ class ProfileProvider extends ChangeNotifier {
   void toggleSkillsExpansion() {
     _isExpandedSkills = !_isExpandedSkills;
     notifyListeners();
+  }
+
+  Future<void> fetchProfile() async {
+    _setLoading(true);
+    _profileError = null;
+    
+    print("Fetching profile data...");
+    
+    try {
+      final result = await getProfileUseCase.call(NoParams());  // Empty string as userId is not used in the implementation
+      
+      result.fold(
+        (failure) {
+          _profileError = _mapFailureToMessage(failure);
+          print("Profile fetch error: $_profileError");
+          notifyListeners();
+        }, 
+        (profile) {
+          print("Profile fetched successfully");
+          _userId = profile.userId;
+          _name = profile.name;
+          _profilePicture = profile.profilePicture;
+          _coverPhoto = profile.coverPhoto;
+          _resume = profile.resume;
+          _headline = profile.headline;
+          _bio = profile.bio;
+          _location = profile.location;
+          _industry = profile.industry;
+          _skills = profile.skills;
+          _educations = profile.education;
+          _certifications = profile.certifications;
+          _experiences = profile.experience;
+          _visibility = profile.visibility;
+          _connectionCount = profile.connectionCount;
+          notifyListeners();
+        }
+      );
+    } catch (e) {
+      _profileError = "Unexpected error: ${e.toString()}";
+      print("Exception during profile fetch: $_profileError");
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
 
   // Helper method to convert failures to user-friendly messages

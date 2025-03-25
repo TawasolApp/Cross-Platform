@@ -1,159 +1,400 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditEducationPage extends StatefulWidget {
   final Education? education;
-  final ProfileProvider provider;
 
   const EditEducationPage({
-    super.key, 
+    super.key,
     this.education,
-    required this.provider,
   });
 
   @override
-  _EditEducationPageState createState() => _EditEducationPageState();
+  State<EditEducationPage> createState() => _EditEducationPageState();
 }
 
 class _EditEducationPageState extends State<EditEducationPage> {
-  late TextEditingController schoolController;
-  late TextEditingController degreeController;
-  late TextEditingController fieldController;
-  late TextEditingController startDateController;
-  late TextEditingController endDateController;
-  late TextEditingController descriptionController;
-  late TextEditingController gradeController;
-  late TextEditingController schoolPicController;
+  final _formKey = GlobalKey<FormState>();
+  final _schoolController = TextEditingController();
+  final _degreeController = TextEditingController();
+  final _fieldController = TextEditingController();
+  final _startDateController = TextEditingController();
+  final _endDateController = TextEditingController();
+  final _gradeController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
-  bool isCurrentlyStudying = false;
+  // Define possible values for dropdowns
+  static const List<String> degreeTypes = [
+    "High School",
+    "Bachelor's Degree",
+    "Master's Degree",
+    "Doctorate",
+    "Associate Degree",
+    "Professional Certificate"
+  ];
+
+  String _degreeType = "Bachelor's Degree";
+  bool _isCurrentlyStudying = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
 
-    final edu = widget.education;
-    
-    schoolController = TextEditingController(text: edu?.school ?? "");
-    degreeController = TextEditingController(text: edu?.degree ?? "");
-    fieldController = TextEditingController(text: edu?.field ?? "");
-    startDateController = TextEditingController(text: edu?.startDate ?? "");
-    endDateController = TextEditingController(text: edu?.endDate ?? "");
-    descriptionController = TextEditingController(text: edu?.description ?? "");
-    gradeController = TextEditingController(text: edu?.grade ?? "");
-    schoolPicController = TextEditingController(text: edu?.schoolPic ?? "");
-    
-    isCurrentlyStudying = edu?.endDate == null;
+    // Initialize with existing education if editing
+    if (widget.education != null) {
+      final edu = widget.education!;
+      _schoolController.text = edu.school;
+      _degreeController.text = edu.degree;
+      _fieldController.text = edu.field;
+      _startDateController.text = edu.startDate;
+      _endDateController.text = edu.endDate ?? '';
+      _gradeController.text = edu.grade;
+      _descriptionController.text = edu.description;
+
+      // Ensure the values exist in our dropdown options
+      _degreeType = degreeTypes.contains(edu.degree)
+          ? edu.degree
+          : "Bachelor's Degree";
+
+      _isCurrentlyStudying = edu.endDate == null;
+    }
   }
 
   @override
   void dispose() {
-    schoolController.dispose();
-    degreeController.dispose();
-    fieldController.dispose();
-    startDateController.dispose();
-    endDateController.dispose();
-    descriptionController.dispose();
-    gradeController.dispose();
-    schoolPicController.dispose();
+    _schoolController.dispose();
+    _degreeController.dispose();
+    _fieldController.dispose();
+    _startDateController.dispose();
+    _endDateController.dispose();
+    _gradeController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
-  void saveEducation() {
-    final updatedEducation = Education(
-      school: schoolController.text,
-      degree: degreeController.text,
-      field: fieldController.text,
-      startDate: startDateController.text,
-      endDate: isCurrentlyStudying ? null : endDateController.text,
-      description: descriptionController.text,
-      grade: gradeController.text,
-      schoolPic: schoolPicController.text.isNotEmpty ? schoolPicController.text : null,
-    );
+  Future<void> _saveEducation() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    // Use provider to update education
-    if (widget.education != null) {
-      widget.provider.updateEducation(widget.education!, updatedEducation);
-    } else {
-      widget.provider.addEducation(updatedEducation);
+    setState(() => _isSaving = true);
+
+    try {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      final education = Education(
+        school: _schoolController.text,
+        degree: _degreeController.text,
+        field: _fieldController.text,
+        startDate: _startDateController.text,
+        endDate: _isCurrentlyStudying ? null : _endDateController.text,
+        grade: _gradeController.text,
+        description: _descriptionController.text,
+      );
+
+      if (widget.education != null) {
+        await provider.updateEducation(widget.education!, education);
+      } else {
+        await provider.addEducation(education);
+      }
+
+      if (mounted) {
+        Navigator.pop(context, true); // Return success flag
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save education: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
-    
-    Navigator.pop(context, updatedEducation);
+  }
+
+  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogTheme: const DialogTheme(
+              backgroundColor: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      controller.text = "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Edit Education"),
+        title: Text(widget.education != null ? "Edit Education" : "Add Education"),
         actions: [
           TextButton(
-            onPressed: saveEducation,
-            child: const Text("Save", style: TextStyle(fontSize: 16)),
+            onPressed: _isSaving ? null : _saveEducation,
+            child: _isSaving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                  )
+                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Form(
+        key: _formKey,
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(schoolController, "School"),
-              _buildTextField(degreeController, "Degree"),
-              _buildTextField(fieldController, "Field of Study"),
-              _buildTextField(startDateController, "Start Date"),
-              
-              // Toggle for "Currently Studying Here"
-              Row(
-                children: [
-                  Checkbox(
-                    value: isCurrentlyStudying,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isCurrentlyStudying = value ?? false;
-                        if (isCurrentlyStudying) {
-                          endDateController.clear();
-                        }
-                      });
+              // School Logo Placeholder
+              Card(
+                shape: const CircleBorder(),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.school, size: 40, color: Colors.blueGrey),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // School Name
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _schoolController,
+                    decoration: const InputDecoration(
+                      labelText: "School*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Degree Type
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: DropdownButtonFormField<String>(
+                    value: _degreeType,
+                    items: degreeTypes
+                        .map((e) => DropdownMenuItem<String>(
+                              value: e,
+                              child: Text(e),
+                            ))
+                        .toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _degreeType = value;
+                          _degreeController.text = value;
+                        });
+                      }
+                    },
+                    decoration: const InputDecoration(
+                      labelText: "Degree Type*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                    dropdownColor: Colors.white,
+                  ),
+                ),
+              ),
+
+              // Field of Study
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _fieldController,
+                    decoration: const InputDecoration(
+                      labelText: "Field of Study*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Start Date
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _startDateController,
+                    decoration: const InputDecoration(
+                      labelText: "Start Date* (MM/YYYY)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    readOnly: true,
+                    onTap: () => _selectDate(context, _startDateController),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // End Date and Currently Studying
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _endDateController,
+                    decoration: const InputDecoration(
+                      labelText: "End Date (MM/YYYY)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    readOnly: true,
+                    enabled: !_isCurrentlyStudying,
+                    onTap: () => _isCurrentlyStudying ? null : _selectDate(context, _endDateController),
+                    validator: (value) {
+                      if (!_isCurrentlyStudying && (value?.isEmpty ?? true)) {
+                        return "Required unless currently studying";
+                      }
+                      return null;
                     },
                   ),
-                  const Text("Currently Studying Here"),
-                ],
+                ),
               ),
               
-              if (!isCurrentlyStudying) _buildTextField(endDateController, "End Date"),
-              _buildTextField(gradeController, "Grade"),
-              _buildTextField(descriptionController, "Description", maxLines: 3),
-              _buildTextField(schoolPicController, "School Logo URL (Optional)"),
+              Card(
+                color: Colors.white,
+                elevation: 0,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Switch(
+                        value: _isCurrentlyStudying,
+                        onChanged: (value) {
+                          setState(() => _isCurrentlyStudying = value);
+                        },
+                        activeColor: Theme.of(context).primaryColor,
+                      ),
+                      const Text("I currently study here", style: TextStyle(fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ),
+              ),
 
-              const SizedBox(height: 20),
+              // Grade
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _gradeController,
+                    decoration: const InputDecoration(
+                      labelText: "Grade*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Description
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 24),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: "Description*",
+                      border: InputBorder.none,
+                      alignLabelWithHint: true,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    ),
+                    maxLines: 5,
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
 
               // Save Button
-              ElevatedButton(
-                onPressed: saveEducation,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _saveEducation,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                        )
+                      : Text(
+                          widget.education != null ? "Update Education" : "Add Education",
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                 ),
-                child: const Text("Save Education", style: TextStyle(fontSize: 16)),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(),
         ),
       ),
     );

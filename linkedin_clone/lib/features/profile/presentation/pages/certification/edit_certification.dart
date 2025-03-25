@@ -1,193 +1,325 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
 
 class EditCertificationPage extends StatefulWidget {
   final Certification? certification;
-  final ProfileProvider provider;
 
   const EditCertificationPage({
-    super.key, 
+    super.key,
     this.certification,
-    required this.provider,
   });
 
   @override
-  _EditCertificationPageState createState() => _EditCertificationPageState();
+  State<EditCertificationPage> createState() => _EditCertificationPageState();
 }
 
 class _EditCertificationPageState extends State<EditCertificationPage> {
-  late TextEditingController nameController;
-  late TextEditingController issuingOrganizationController;
-  late TextEditingController issuingOrganizationPicController;
-  late TextEditingController issueDateController;
-  late TextEditingController expirationDateController;
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _issuingOrgController = TextEditingController();
+  final _issuingOrgPicController = TextEditingController();
+  final _issueDateController = TextEditingController();
+  final _expirationDateController = TextEditingController();
   
-  bool doesNotExpire = false;
+  bool _doesNotExpire = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-
-    final cert = widget.certification;
     
-    nameController = TextEditingController(text: cert?.name ?? "");
-    issuingOrganizationController = TextEditingController(text: cert?.issuingOrganization ?? "");
-    issuingOrganizationPicController = TextEditingController(text: cert?.issuingOrganizationPic ?? "");
-    issueDateController = TextEditingController(text: cert?.issueDate ?? "");
-    expirationDateController = TextEditingController(text: cert?.expirationDate ?? "");
-    
-    doesNotExpire = cert?.expirationDate == null;
+    // Initialize with existing certification if editing
+    if (widget.certification != null) {
+      final cert = widget.certification!;
+      _nameController.text = cert.name;
+      _issuingOrgController.text = cert.issuingOrganization;
+      _issuingOrgPicController.text = cert.issuingOrganizationPic ?? '';
+      _issueDateController.text = cert.issueDate;
+      _expirationDateController.text = cert.expirationDate ?? '';
+      
+      _doesNotExpire = cert.expirationDate == null;
+    }
   }
 
   @override
   void dispose() {
-    nameController.dispose();
-    issuingOrganizationController.dispose();
-    issuingOrganizationPicController.dispose();
-    issueDateController.dispose();
-    expirationDateController.dispose();
+    _nameController.dispose();
+    _issuingOrgController.dispose();
+    _issuingOrgPicController.dispose();
+    _issueDateController.dispose();
+    _expirationDateController.dispose();
     super.dispose();
   }
 
-  Future<void> selectDate(BuildContext context, TextEditingController controller) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1950),
-      lastDate: DateTime(2100),
-    );
+  Future<void> _saveCertification() async {
+    if (!_formKey.currentState!.validate()) return;
     
-    if (picked != null) {
-      setState(() {
-        controller.text = "${picked.year}-${picked.month.toString().padLeft(2, '0')}";
-      });
+    setState(() => _isSaving = true);
+    
+    try {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      final certification = Certification(
+        name: _nameController.text,
+        issuingOrganization: _issuingOrgController.text,
+        issuingOrganizationPic: _issuingOrgPicController.text.isNotEmpty 
+            ? _issuingOrgPicController.text 
+            : null,
+        issueDate: _issueDateController.text,
+        expirationDate: _doesNotExpire ? null : _expirationDateController.text,
+      );
+
+      if (widget.certification != null) {
+        await provider.updateCertification(widget.certification!, certification);
+      } else {
+        await provider.addCertification(certification);
+      }
+      
+      if (mounted) {
+        Navigator.pop(context, true); // Return success flag
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save certification: ${e.toString()}')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
     }
   }
 
-  void saveCertification() {
-    final updatedCertification = Certification(
-      name: nameController.text,
-      issuingOrganization: issuingOrganizationController.text,
-      issuingOrganizationPic: issuingOrganizationPicController.text.isNotEmpty 
-          ? issuingOrganizationPicController.text 
-          : null,
-      issueDate: issueDateController.text,
-      expirationDate: doesNotExpire ? null : expirationDateController.text,
+  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: ThemeData.light().copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.blue,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+            ),
+            dialogTheme: const DialogTheme(
+              backgroundColor: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
-
-    // Use provider to update certification
-    if (widget.certification != null) {
-      widget.provider.updateCertification(widget.certification!, updatedCertification);
-    } else {
-      widget.provider.addCertification(updatedCertification);
+    if (picked != null) {
+      controller.text = "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
     }
-    
-    Navigator.pop(context, updatedCertification);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Edit Certification"),
+        title: Text(widget.certification != null ? "Edit Certification" : "Add Certification"),
         actions: [
           TextButton(
-            onPressed: saveCertification,
-            child: const Text("Save", style: TextStyle(fontSize: 16)),
+            onPressed: _isSaving ? null : _saveCertification,
+            child: _isSaving 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                  )
+                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Form(
+        key: _formKey,
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildTextField(nameController, "Certification Name"),
-              _buildTextField(issuingOrganizationController, "Issuing Organization"),
-              
-              // Issue Date field with date picker
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextField(
-                  controller: issueDateController,
-                  readOnly: true,
-                  onTap: () => selectDate(context, issueDateController),
-                  decoration: const InputDecoration(
-                    labelText: "Issue Date (YYYY-MM)",
-                    border: OutlineInputBorder(),
-                    suffixIcon: Icon(Icons.calendar_today),
+              // Organization Logo Placeholder
+              Card(
+                shape: const CircleBorder(),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.verified, size: 40, color: Colors.blueGrey),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Certification Name
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: "Certification Name*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Issuing Organization
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _issuingOrgController,
+                    decoration: const InputDecoration(
+                      labelText: "Issuing Organization*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Issue Date
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _issueDateController,
+                    decoration: const InputDecoration(
+                      labelText: "Issue Date* (MM/YYYY)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    readOnly: true,
+                    onTap: () => _selectDate(context, _issueDateController),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Expiration Date
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 8),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _expirationDateController,
+                    decoration: const InputDecoration(
+                      labelText: "Expiration Date (MM/YYYY)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    readOnly: true,
+                    enabled: !_doesNotExpire,
+                    onTap: () => _selectDate(context, _expirationDateController),
+                    validator: (value) {
+                      if (!_doesNotExpire && (value?.isEmpty ?? true)) {
+                        return "Required unless certification doesn't expire";
+                      }
+                      return null;
+                    },
                   ),
                 ),
               ),
               
-              // "Does Not Expire" checkbox
-              Row(
-                children: [
-                  Checkbox(
-                    value: doesNotExpire,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        doesNotExpire = value ?? false;
-                        if (doesNotExpire) {
-                          expirationDateController.clear();
-                        }
-                      });
-                    },
+              Card(
+                color: Colors.white,
+                elevation: 0,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    children: [
+                      Switch(
+                        value: _doesNotExpire,
+                        onChanged: (value) {
+                          setState(() {
+                            _doesNotExpire = value;
+                            if (value) {
+                              _expirationDateController.clear();
+                            }
+                          });
+                        },
+                        activeColor: Theme.of(context).primaryColor,
+                      ),
+                      const Text("Does not expire", style: TextStyle(fontWeight: FontWeight.w500)),
+                    ],
                   ),
-                  const Text("This certification does not expire"),
-                ],
+                ),
               ),
-              
-              // Expiration Date field with date picker (only if not "Does Not Expire")
-              if (!doesNotExpire)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: TextField(
-                    controller: expirationDateController,
-                    readOnly: true,
-                    onTap: () => selectDate(context, expirationDateController),
+
+              // Organization Picture URL
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 24),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _issuingOrgPicController,
                     decoration: const InputDecoration(
-                      labelText: "Expiration Date (YYYY-MM)",
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.calendar_today),
+                      labelText: "Organization Logo URL (Optional)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
                   ),
                 ),
-              
-              _buildTextField(
-                issuingOrganizationPicController, 
-                "Issuing Organization Logo URL (Optional)"
               ),
 
-              const SizedBox(height: 20),
-
               // Save Button
-              ElevatedButton(
-                onPressed: saveCertification,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _saveCertification,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                        )
+                      : const Text(
+                          "Save Certification",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                 ),
-                child: const Text("Save Certification", style: TextStyle(fontSize: 16)),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(TextEditingController controller, String label, {int maxLines = 1}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        decoration: InputDecoration(
-          labelText: label,
-          border: const OutlineInputBorder(),
         ),
       ),
     );

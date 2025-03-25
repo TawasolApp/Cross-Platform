@@ -1,142 +1,258 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/profile/presentation/pages/certification/add_certification.dart';
-import 'edit_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/certification/add_certification.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/certification/edit_certification.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
 
 class CertificationListPage extends StatefulWidget {
-  final List<Certification> certifications;
-  final ProfileProvider provider;
-
-  const CertificationListPage({
-    super.key, 
-    required this.certifications,
-    required this.provider,
-  });
+  const CertificationListPage({super.key});
 
   @override
-  _CertificationListPageState createState() => _CertificationListPageState();
+  State<CertificationListPage> createState() => _CertificationListPageState();
 }
 
 class _CertificationListPageState extends State<CertificationListPage> {
-  late List<Certification> certifications;
+  bool _isLoading = false;
 
   @override
-  void initState() {
-    super.initState();
-    certifications = List.from(widget.certifications); // Copy list to modify locally
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Certifications"),
+        actions: [
+          if (_isLoading)
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(),
+            ),
+        ],
+      ),
+      body: _buildBody(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _addCertification(context),
+        child: const Icon(Icons.add),
+      ),
+    );
   }
 
-  void _editCertification(int index) async {
-    final updatedCertification = await Navigator.push(
+  Widget _buildBody() {
+    return Consumer<ProfileProvider>(
+      builder: (context, provider, child) {
+        if (provider.certifications == null) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (provider.certifications!.isEmpty) {
+          return const Center(
+            child: Text("No certifications added yet"),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => provider.fetchProfile(),
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: provider.certifications!.length,
+            itemBuilder: (context, index) {
+              final certification = provider.certifications![index];
+              return _buildCertificationCard(context, certification, index, provider);
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildCertificationCard(
+    BuildContext context,
+    Certification certification,
+    int index,
+    ProfileProvider provider,
+  ) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _editCertification(context, certification),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  certification.issuingOrganizationPic != null
+                      ? CircleAvatar(
+                          radius: 24,
+                          backgroundImage: NetworkImage(certification.issuingOrganizationPic!),
+                        )
+                      : const CircleAvatar(
+                          radius: 24,
+                          child: Icon(Icons.verified, size: 24),
+                        ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          certification.name,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          certification.issuingOrganization,
+                          style: const TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == "edit") {
+                        await _editCertification(context, certification);
+                      } else if (value == "delete") {
+                        await _deleteCertification(context, index, provider);
+                      }
+                    },
+                    color: Colors.white,
+                    elevation: 3,
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(value: "edit", child: Text("Edit")),
+                      const PopupMenuItem(
+                        value: "delete",
+                        child: Text("Delete", style: TextStyle(color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                certification.expirationDate != null
+                    ? "Issued: ${certification.issueDate} - Expires: ${certification.expirationDate}"
+                    : "Issued: ${certification.issueDate} - No Expiration",
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _addCertification(BuildContext context) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddCertificationPage(),
+      ),
+    );
+
+    if (result == true && mounted) {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      await _refreshCertifications(provider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Certification added successfully")),
+        );
+      }
+    }
+  }
+
+  Future<void> _editCertification(BuildContext context, Certification certification) async {
+    final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
         builder: (context) => EditCertificationPage(
-          certification: certifications[index],
-          provider: widget.provider,
+          certification: certification,
         ),
       ),
     );
 
-    if (updatedCertification != null) {
-      setState(() {
-        certifications[index] = updatedCertification;
-      });
+    if (result == true && mounted) {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      await _refreshCertifications(provider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Certification updated successfully")),
+        );
+      }
     }
   }
 
-  void _deleteCertification(int index) {
-    showDialog(
+  Future<void> _deleteCertification(
+    BuildContext context,
+    int index,
+    ProfileProvider provider,
+  ) async {
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Delete Certification"),
         content: const Text("Are you sure you want to remove this certification?"),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // Cancel
+            onPressed: () => Navigator.pop(context, false),
             child: const Text("Cancel"),
           ),
           TextButton(
-            onPressed: () {
-              widget.provider.removeCertification(index);
-              setState(() {
-                certifications.removeAt(index);
-              });
-              Navigator.pop(context);
-            },
-            child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              "Delete",
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
     );
-  }
 
-  void _addCertification() async {
-    final newCertification = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddCertificationPage(
-          provider: widget.provider,
-        ),
-      ),
-    );
-
-    if (newCertification != null) {
-      setState(() {
-        certifications.add(newCertification);
-      });
+    if (confirmed == true && context.mounted) {
+      setState(() => _isLoading = true);
+      try {
+        await provider.removeCertification(index);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Certification deleted successfully")),
+          );
+        }
+      } catch (e) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Failed to delete: ${e.toString()}")),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Certifications")),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemCount: certifications.length,
-        itemBuilder: (context, index) {
-          final certification = certifications[index];
-
-          return Card(
-            color: Colors.white,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-              leading: certification.issuingOrganizationPic != null && certification.issuingOrganizationPic!.isNotEmpty
-                  ? CircleAvatar(backgroundImage: NetworkImage(certification.issuingOrganizationPic!))
-                  : const CircleAvatar(child: Icon(Icons.verified)),
-              title: Text(certification.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(certification.issuingOrganization),
-                  Text(
-                    certification.expirationDate != null
-                        ? "Issued: ${certification.issueDate} - Expires: ${certification.expirationDate}"
-                        : "Issued: ${certification.issueDate} - No Expiration",
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-              trailing: PopupMenuButton<String>(
-                onSelected: (value) {
-                  if (value == "edit") _editCertification(index);
-                  if (value == "delete") _deleteCertification(index);
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(value: "edit", child: Text("Edit")),
-                  const PopupMenuItem(value: "delete", child: Text("Delete")),
-                ],
-              ),
-              onTap: () => _editCertification(index),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _addCertification,
-        child: const Icon(Icons.add),
-      ),
-    );
+  Future<void> _refreshCertifications(ProfileProvider provider) async {
+    setState(() => _isLoading = true);
+    try {
+      await provider.fetchProfile();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to refresh: ${e.toString()}")),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 }

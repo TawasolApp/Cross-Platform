@@ -1,86 +1,145 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
 
-class AddSkillPage extends StatelessWidget {
-  final ProfileProvider? provider;
+class AddSkillPage extends StatefulWidget {
+  const AddSkillPage({super.key});
 
-  const AddSkillPage({super.key, this.provider});
+  @override
+  State<AddSkillPage> createState() => _AddSkillPageState();
+}
+
+class _AddSkillPageState extends State<AddSkillPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _skillController = TextEditingController();
+  bool _isSaving = false;
+
+  @override
+  void dispose() {
+    _skillController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveSkill() async {
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() => _isSaving = true);
+    
+    try {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      final newSkill = Skill(
+        skill: _skillController.text,
+        endorsements: [],
+      );
+
+      await provider.addSkill(newSkill);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Skill added successfully'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+        Navigator.pop(context, true); // Return success flag
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save skill: ${e.toString()}'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Use formKey for validation
-    final formKey = GlobalKey<FormState>();
-    
-    // Get provider - either passed directly or from context
-    final profileProvider = provider ?? 
-        ModalRoute.of(context)?.settings.arguments as ProfileProvider?;
-    
-    if (profileProvider == null) {
-      // Handle error case if provider is not available
-      return Scaffold(
-        appBar: AppBar(title: const Text("Add Skill")),
-        body: const Center(
-          child: Text("Error: Profile provider not available"),
-        ),
-      );
-    }
-    
-    // Form state variables
-    String skill = "";
-
-    void saveSkill() {
-      if (formKey.currentState!.validate()) {
-        formKey.currentState!.save();
-
-        final newSkill = Skill(
-          skill: skill,
-          endorsements: [],
-        );
-        
-        // Save the skill using the profile provider
-        profileProvider.addSkill(newSkill);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Skill added successfully!")),
-        );
-
-        Navigator.pop(context); // Go back after saving
-      }
-    }
-
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Add Skill"),
         actions: [
           TextButton(
-            onPressed: saveSkill,
-            child: const Text("Save", style: TextStyle(fontSize: 16)),
+            onPressed: _isSaving ? null : _saveSkill,
+            child: _isSaving 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                  )
+                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Skill Name
-              TextFormField(
-                decoration: const InputDecoration(labelText: "Skill Name"),
-                validator: (value) => value == null || value.isEmpty ? "Required" : null,
-                onSaved: (value) => skill = value!,
+              // Skill Icon Placeholder
+              Card(
+                shape: const CircleBorder(),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Colors.white,
+                    child: const Icon(Icons.code, size: 40, color: Colors.blueGrey),
+                  ),
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+
+              // Skill Name
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  child: TextFormField(
+                    controller: _skillController,
+                    decoration: const InputDecoration(
+                      labelText: "Skill Name*",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
 
               // Save Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: saveSkill,
-                  child: const Text("Save Skill"),
+                  onPressed: _isSaving ? null : _saveSkill,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    backgroundColor: Theme.of(context).primaryColor,
+                  ),
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20, 
+                          height: 20, 
+                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
+                        )
+                      : const Text(
+                          "Save Skill", 
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
                 ),
               ),
             ],
