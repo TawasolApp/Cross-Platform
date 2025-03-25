@@ -4,10 +4,10 @@ import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 
-class UpdateExperience implements UseCase<void, Experience> {
+class UpdateExperienceUseCase implements UseCase<void, Experience> {
   final ProfileRepository repository;
 
-  UpdateExperience(this.repository);
+  UpdateExperienceUseCase(this.repository);
 
   @override
   Future<Either<Failure, void>> call(Experience experience) {

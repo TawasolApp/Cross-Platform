@@ -9,19 +9,23 @@ import 'package:fpdart/fpdart.dart';
 
 abstract interface class ProfileRepository {
   /// Profile Management
-  Future<Either<Failure, Profile>> getProfile(String userId);
+  Future<Either<Failure, Profile>> getProfile();
   Future<Either<Failure, void>> createProfile(Profile profile);
-  Future<Either<Failure, void>> updateProfile(Profile profile);
+  Future<Either<Failure, void>> updateProfile({String? name,
+    String? profilePictureUrl,
+    String? coverPhoto,
+    String? resume,
+    String? headline,
+    String? bio,
+    String? location,
+    String? industry,
+});
   // Future<Either<Failure, void>> deleteProfile(String userId);
 
   /// Profile Picture Management
-  // Future<Either<Failure, String>> uploadProfilePicture(String image);
-  // Future<Either<Failure, String>> updateProfilePicture(String imagePath);
   Future<Either<Failure, void>> deleteProfilePicture();
 
   /// Cover Photo Management
-  // Future<Either<Failure, String>> uploadCoverPhoto(String image);
-  // Future<Either<Failure, String>> updateCoverPhoto(String imagePath);
   Future<Either<Failure, void>> deleteCoverPhoto();
 
   /// Experience Management
@@ -47,8 +51,4 @@ abstract interface class ProfileRepository {
   Future<Either<Failure, void>> addCertification(Certification certification);
   Future<Either<Failure, void>> updateCertification(Certification certification);
   Future<Either<Failure, void>> deleteCertification(String certification);
-
-  /// Plan & Subscription Management
-  // Future<Either<Failure, PlanDetails>> getPlanDetails(String userId);
-  // Future<Either<Failure, void>> updatePlan(String userId, PlanDetails planDetails);
 }

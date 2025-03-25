@@ -1,67 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/experience/add_experience.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/experience/experience_list.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/experience.dart';
 
-class ExperienceSection extends StatefulWidget {
-  const ExperienceSection({super.key});
+class ExperienceSection extends StatelessWidget {
+  final ProfileProvider provider;
+  final List<Experience>? experiences;
+  final bool isExpanded;
+  final Function onToggleExpansion;
+  final Function(Experience)? onRemove;
+  final String? errorMessage;
 
-  @override
-  _ExperienceSectionState createState() => _ExperienceSectionState();
-}
-
-class _ExperienceSectionState extends State<ExperienceSection> {
-  bool showAll = false;
-
-  // Example list of experiences (Replace with dynamic data)
-  final List<Map<String, String>> experienceList = [
-    {
-      'companyLogoUrl': 'https://www.mes-demarches.info/wp-content/uploads/sites/7/2021/05/total-energies-logo-vertical-marge-1.png',
-      'title': 'Internship Trainee',
-      'company': 'TotalEnergies',
-      'roleType': 'Internship',
-      'startDate': 'Jul 2023',
-      'endDate': 'Aug 2023',
-      'location': 'Cairo, Egypt',
-      'workType': 'On-site',
-    },
-    {
-      'companyLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Siemens-logo.svg',
-      'title': 'Embedded Systems Intern',
-      'company': 'Siemens Digital Industries',
-      'roleType': 'Internship',
-      'startDate': 'Sep 2023',
-      'endDate': 'Dec 2023',
-      'location': 'Cairo, Egypt',
-      'workType': 'Hybrid',
-    },
-    {
-      'companyLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/5/57/Google_2015_logo.svg',
-      'title': 'Software Engineering Intern',
-      'company': 'Google',
-      'roleType': 'Internship',
-      'startDate': 'Jan 2024',
-      'endDate': 'Present',
-      'location': 'Remote',
-      'workType': 'Remote',
-    },
-    {
-      'companyLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-      'title': 'Cloud Engineer Intern',
-      'company': 'Microsoft',
-      'roleType': 'Internship',
-      'startDate': 'Mar 2024',
-      'endDate': 'Present',
-      'location': 'Remote',
-      'workType': 'Hybrid',
-    },
-  ];
+  const ExperienceSection({
+    super.key,
+    required this.provider,
+    this.experiences,
+    required this.isExpanded,
+    required this.onToggleExpansion,
+    this.onRemove,
+    this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Show only 2 experiences if `showAll` is false
-    final visibleExperiences = showAll ? experienceList : experienceList.take(2).toList();
+    final exps = experiences ?? provider.experiences ?? [];
+    final error = errorMessage ?? provider.experienceError;
+    final visibleExperiences = isExpanded ? exps : exps.take(2).toList();
 
     return Container(
-      color: Colors.white, // Set background color to white
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -80,12 +49,29 @@ class _ExperienceSectionState extends State<ExperienceSection> {
                     IconButton(
                       icon: const Icon(Icons.add),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {}, // Add experience action
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddExperiencePage(provider: provider),
+                          ),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {}, // Edit experience action
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ExperienceListPage(
+                              experiences: exps,
+                              provider: provider,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -93,33 +79,30 @@ class _ExperienceSectionState extends State<ExperienceSection> {
             ),
           ),
 
-          // Display Experience Entries Dynamically
+          // Experience List
           Column(
-            children: visibleExperiences.map((exp) {
-              return Experience(
-                companyLogoUrl: exp['companyLogoUrl']!,
-                title: exp['title']!,
-                company: exp['company']!,
-                roleType: exp['roleType']!,
-                startDate: exp['startDate']!,
-                endDate: exp['endDate']!,
-                location: exp['location']!,
-                workType: exp['workType']!,
-              );
-            }).toList(),
+            children: visibleExperiences.map((exp) => ExperienceWidget(
+              experience: exp,
+            )).toList(),
           ),
 
-          // "Show More / Show Less" Button
-          if (experienceList.length > 2)
+          // Show More/Show Less Button
+          if (exps.length > 2)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    showAll = !showAll;
-                  });
-                },
-                child: Text(showAll ? 'Show less' : 'Show more'),
+                onPressed: () => onToggleExpansion(),
+                child: Text(isExpanded ? 'Show less' : 'Show more'),
+              ),
+            ),
+
+          // Error Message
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                error,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
         ],

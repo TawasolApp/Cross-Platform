@@ -27,12 +27,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
   });
 
   @override
-  Future<Either<Failure, Profile>> getProfile(String userId) async {
+  Future<Either<Failure, Profile>> getProfile() async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      final profile = await profileRemoteDataSource.getProfile(userId);
+      final profile = await profileRemoteDataSource.getProfile();
       return right(profile);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -53,12 +53,29 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateProfile(Profile profile) async {
+  Future<Either<Failure, void>> updateProfile({String? name,
+    String? profilePictureUrl,
+    String? coverPhoto,
+    String? resume,
+    String? headline,
+    String? bio,
+    String? location,
+    String? industry,
+  }) async {
     try {
       if (!await connectionChecker.isConnected) {
         return left(Failure("No internet connection"));
       }
-      await profileRemoteDataSource.updateProfile(profile as ProfileModel);
+      await profileRemoteDataSource.updateProfile(
+        name: name,
+        profilePictureUrl: profilePictureUrl,
+        coverPhoto: coverPhoto,
+        resume: resume,
+        headline: headline,
+        bio: bio,
+        location: location,
+        industry: industry,
+      );
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(e.message));
@@ -78,32 +95,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
   //   }
   // }
 
-  // @override
-  // Future<Either<Failure, String>> uploadProfilePicture(String image) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     final imageUrl = await profileRemoteDataSource.uploadProfilePicture(image);
-  //     return right(imageUrl);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
-
-  // @override
-  // Future<Either<Failure, String>> updateProfilePicture(String userId, String imagePath) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     final imageUrl = await profileRemoteDataSource.updateProfilePicture(userId, imagePath);
-  //     return right(imageUrl);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
-
   @override
   Future<Either<Failure, void>> deleteProfilePicture() async {
     try {
@@ -116,32 +107,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return left(Failure(e.message));
     }
   }
-
-  // @override
-  // Future<Either<Failure, void>> uploadCoverPhoto(String image) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     await profileRemoteDataSource.uploadCoverPhoto(image);
-  //     return right(null);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
-
-  // @override
-  // Future<Either<Failure, String>> updateCoverPhoto(String userId, String imagePath) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     final imageUrl = await profileRemoteDataSource.updateCoverPhoto(userId, imagePath);
-  //     return right(imageUrl);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
 
   @override
   Future<Either<Failure, void>> deleteCoverPhoto() async {
@@ -363,30 +328,4 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return left(Failure(e.message));
     }
   }
-
-  // @override
-  // Future<Either<Failure, PlanDetails>> getPlanDetails(String userId) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     final planDetails = await profileRemoteDataSource.getPlanDetails(userId);
-  //     return right(planDetails);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
-
-  // @override
-  // Future<Either<Failure, void>> updatePlan(String userId, PlanDetails planDetails) async {
-  //   try {
-  //     if (!await connectionChecker.isConnected) {
-  //       return left(Failure("No internet connection"));
-  //     }
-  //     await profileRemoteDataSource.updatePlan(userId, planDetails as PlanDetailsModel);
-  //     return right(null);
-  //   } on ServerException catch (e) {
-  //     return left(Failure(e.message));
-  //   }
-  // }
 }

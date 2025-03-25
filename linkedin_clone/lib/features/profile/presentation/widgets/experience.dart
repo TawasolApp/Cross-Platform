@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 
-class Experience extends StatelessWidget {
-  final String companyLogoUrl;
-  final String title;
-  final String company;
-  final String roleType; // E.g., Internship, Full-time
-  final String startDate;
-  final String endDate;
-  final String location;
-  final String workType; // E.g., On-site, Remote
+class ExperienceWidget extends StatelessWidget {
+  final Experience experience;
 
-  const Experience({
+  const ExperienceWidget({
     super.key,
-    required this.companyLogoUrl,
-    required this.title,
-    required this.company,
-    required this.roleType,
-    required this.startDate,
-    required this.endDate,
-    required this.location,
-    required this.workType,
+    required this.experience,
   });
 
   @override
@@ -39,14 +26,14 @@ class Experience extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.grey[300], // Placeholder color
                   borderRadius: BorderRadius.circular(4), // Square with slight rounding
-                  image: companyLogoUrl.isNotEmpty
+                  image: experience.companyPicUrl != null && experience.companyPicUrl!.isNotEmpty
                       ? DecorationImage(
-                          image: NetworkImage(companyLogoUrl),
+                          image: NetworkImage(experience.companyPicUrl!),
                           fit: BoxFit.cover,
                         )
                       : null,
                 ),
-                child: companyLogoUrl.isEmpty
+                child: experience.companyPicUrl == null || experience.companyPicUrl!.isEmpty
                     ? const Icon(Icons.business, size: 24, color: Colors.white)
                     : null,
               ),
@@ -58,19 +45,19 @@ class Experience extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      experience.title,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     Text(
-                      "$company • $roleType",
+                      "${experience.company} • ${experience.employmentType}",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface),
                     ),
                     Text(
-                      "$startDate - $endDate • $location",
+                      "${experience.startDate} - ${experience.endDate ?? 'Present'} • ${experience.location}",
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                     Text(
-                      workType,
+                      experience.locationType,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
                   ],

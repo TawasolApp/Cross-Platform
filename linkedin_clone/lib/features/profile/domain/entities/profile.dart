@@ -1,6 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'plan_details.dart';
-import 'plan_statistics.dart';
 import 'skill.dart';
 import 'education.dart';
 import 'certification.dart';
@@ -22,8 +20,8 @@ class Profile extends Equatable {
   final List<Experience> experience;
   final String visibility;
   final int? connectionCount;
-  final PlanDetails? planDetails;
-  final PlanStatistics planStatistics;
+  // final PlanDetails? planDetails;
+  // final PlanStatistics planStatistics;
 
   const Profile({
     required this.userId,
@@ -41,8 +39,8 @@ class Profile extends Equatable {
     this.experience = const [],
     this.visibility = "public",
     this.connectionCount,
-    this.planDetails,
-    required this.planStatistics,
+    // this.planDetails,
+    // required this.planStatistics,
   });
 
   @override
@@ -62,7 +60,7 @@ class Profile extends Equatable {
         experience,
         visibility,
         connectionCount,
-        planDetails,
-        planStatistics,
+        // planDetails,
+        // planStatistics,
       ];
 }

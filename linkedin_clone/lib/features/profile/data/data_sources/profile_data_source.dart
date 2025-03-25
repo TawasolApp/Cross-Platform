@@ -7,19 +7,24 @@ import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
 
 abstract class ProfileRemoteDataSource {
   /// Profile Management
-  Future<ProfileModel> getProfile(String userId);
-  Future<void> updateProfile(ProfileModel profile);
+  Future<ProfileModel> getProfile();
+  Future<void> updateProfile({
+    String? name,
+    String? profilePictureUrl,
+    String? coverPhoto,
+    String? resume,
+    String? headline,
+    String? bio,
+    String? location,
+    String? industry,
+  });
   Future<void> createProfile(ProfileModel profile);
   // Future<void> deleteProfile(String userId);
 
   /// Profile Picture Management
-  // Future<String> uploadProfilePicture(String image);
-  // Future<String> updateProfilePicture(String userId, String imagePath);
   Future<void> deleteProfilePicture();
 
   /// Cover Photo Management
-  // Future<String> uploadCoverPhoto(String image);
-  // Future<String> updateCoverPhoto(String userId, String imagePath);
   Future<void> deleteCoverPhoto();
 
   /// Experience Management
@@ -45,8 +50,4 @@ abstract class ProfileRemoteDataSource {
   Future<void> addCertification(CertificationModel certification);
   Future<void> updateCertification(CertificationModel certification);
   Future<void> deleteCertification(String certification);
-
-  /// Plan & Subscription Management
-  // Future<PlanDetailsModel> getPlanDetails(String userId);
-  // Future<void> updatePlan(String userId, PlanDetailsModel planDetails);
 }

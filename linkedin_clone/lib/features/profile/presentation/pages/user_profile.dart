@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/profile_header.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/experience_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/skills_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/about_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/education_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/certifications_section.dart';
-import 'package:linkedin_clone/features/profile/presentation/widgets/plan_details_section.dart';
-import 'package:linkedin_clone/features/profile/presentation/widgets/plan_statistics_section.dart';
+import 'package:provider/provider.dart';
 
 class UserProfile extends StatelessWidget {
-  final String? userBio;
-
-  const UserProfile({super.key, this.userBio});
+  const UserProfile({super.key});
 
   @override
   Widget build(BuildContext context) {
+    ProfileProvider profileProvider = Provider.of<ProfileProvider>(context);
+    
     return Scaffold(
       backgroundColor: const Color(0xFFF4F2EE), // LinkedIn-like Background
       appBar: AppBar(
         title: const Text('User Profile'),
       ),
-      body: SingleChildScrollView(
+      body: profileProvider.isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 5.0),
           child: Column(
@@ -33,32 +35,14 @@ class UserProfile extends StatelessWidget {
               ),
               const SizedBox(height: 10),
 
-              // **Plan Details**
-              Container(
-                color: Colors.white,
-                child: PlanDetails(
-                  planName: "Premium Career",
-                  expirationDate: "April 30, 2025",
-                  autoRenewal: true,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // **Plan Statistics**
-              Container(
-                color: Colors.white,
-                child: PlanStatistics(
-                  messagesSent: 50,
-                  applicationsSubmitted: 15,
-                ),
-              ),
-              const SizedBox(height: 10),
-
               // **About Section**
-              if (userBio != null && userBio!.trim().isNotEmpty) ...[
+              if (profileProvider.bio != null && profileProvider.bio!.trim().isNotEmpty) ...[
                 Container(
                   color: Colors.white,
-                  child: AboutSection(bio: userBio!),
+                  child: AboutSection(
+                    provider: profileProvider,
+                    bio: profileProvider.bio,
+                  ),
                 ),
                 const SizedBox(height: 10),
               ],
@@ -66,28 +50,56 @@ class UserProfile extends StatelessWidget {
               // **Experience Section**
               Container(
                 color: Colors.white, 
-                child: ExperienceSection(),
+                child: ExperienceSection(
+                  provider: profileProvider,
+                  experiences: profileProvider.experiences,
+                  isExpanded: profileProvider.isExpandedExperiences,
+                  onToggleExpansion: profileProvider.toggleExperienceExpansion,
+                  // onRemove: profileProvider.removeExperience(),
+                  errorMessage: profileProvider.experienceError,
+                ),
               ),
               const SizedBox(height: 10),
 
               // **Education Section**
               Container(
                 color: Colors.white, 
-                child: EducationSection(),
+                child: EducationSection(
+                  provider: profileProvider,
+                  educations: profileProvider.educations,
+                  isExpanded: profileProvider.isExpandedEducation,
+                  onToggleExpansion: profileProvider.toggleEducationExpansion,
+                  // onRemove: profileProvider.removeEducation(),
+                  errorMessage: profileProvider.educationError,
+                ),
               ),
               const SizedBox(height: 10),
 
               // **Certifications Section**
               Container(
                 color: Colors.white, 
-                child: CertificationsSection(),
+                child: CertificationsSection(
+                  provider: profileProvider,
+                  certifications: profileProvider.certifications,
+                  isExpanded: profileProvider.isExpandedCertifications,
+                  onToggleExpansion: profileProvider.toggleCertificationExpansion,
+                  // onRemove: profileProvider.removeCertification(),
+                  errorMessage: profileProvider.certificationError,
+                ),
               ),
               const SizedBox(height: 10),
 
               // **Skills Section**
               Container(
                 color: Colors.white, 
-                child: SkillsSection(),
+                child: SkillsSection(
+                  provider: profileProvider,
+                  skills: profileProvider.skills,
+                  isExpanded: profileProvider.isExpandedSkills,
+                  onToggleExpansion: profileProvider.toggleSkillsExpansion,
+                  // onRemove: profileProvider.removeSkill(),
+                  errorMessage: profileProvider.skillError,
+                ),
               ),
               const SizedBox(height: 10),
             ],

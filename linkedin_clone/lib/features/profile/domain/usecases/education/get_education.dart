@@ -4,10 +4,10 @@
 // import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart';
 // import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 
-// class GetEducation implements UseCase<List<Education>, String> {
+// class GetEducationUseCase implements UseCase<List<Education>, String> {
 //   final ProfileRepository repository;
 
-//   GetEducation(this.repository);
+//   GetEducationUseCase(this.repository);
 
 //   @override
 //   Future<Either<Failure, List<Education>>> call(String userId) {

@@ -1,23 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 
-class Education extends StatelessWidget {
-  final String institutionLogoUrl;
-  final String degree;
-  final String field;
-  final String institution;
-  final String startDate;
-  final String endDate;
-  final String grade;
+class EducationWidget extends StatelessWidget {
+  final Education education;
 
-  const Education({
+  const EducationWidget({
     super.key,
-    required this.institutionLogoUrl,
-    required this.degree,
-    required this.field,
-    required this.institution,
-    required this.startDate,
-    required this.endDate,
-    required this.grade,
+    required this.education,
   });
 
   @override
@@ -30,21 +19,21 @@ class Education extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Square Institution Logo with Placeholder
+              // Square School Logo with Placeholder
               Container(
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
                   color: Colors.grey[300], // Placeholder color
-                  borderRadius: BorderRadius.circular(4), // Slight rounding
-                  image: institutionLogoUrl.isNotEmpty
+                  borderRadius: BorderRadius.circular(4), // Square with slight rounding
+                  image: education.schoolPic != null && education.schoolPic!.isNotEmpty
                       ? DecorationImage(
-                          image: NetworkImage(institutionLogoUrl),
+                          image: NetworkImage(education.schoolPic!),
                           fit: BoxFit.cover,
                         )
                       : null,
                 ),
-                child: institutionLogoUrl.isEmpty
+                child: education.schoolPic == null || education.schoolPic!.isEmpty
                     ? const Icon(Icons.school, size: 24, color: Colors.white)
                     : null,
               ),
@@ -55,43 +44,37 @@ class Education extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Institution Name (Bold)
                     Text(
-                      institution,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      education.school,
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                     ),
-
-                    // Degree & Field of Study
                     Text(
-                      "$degree, $field",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
+                      "${education.degree} in ${education.field}",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface),
                     ),
-
-                    // Start and End Dates
                     Text(
-                      "$startDate - $endDate",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                      "${education.startDate} - ${education.endDate ?? 'Present'}",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     ),
-
-                    // Grade (Only if available)
-                    if (grade.isNotEmpty)
+                    if (education.grade.isNotEmpty)
                       Text(
-                        "Grade: $grade",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
+                        "Grade: ${education.grade}",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                   ],
                 ),
               ),
             ],
           ),
+          // Description section if available
+          if (education.description.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8, left: 52),
+              child: Text(
+                education.description,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
         ],
       ),
     );

@@ -17,8 +17,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
   /// Profile Management
   @override
-  Future<ProfileModel> getProfile(String userId) async {
-    final response = await client.get(Uri.parse('$baseUrl/profile/$userId'));
+  Future<ProfileModel> getProfile() async {
+    final response = await client.get(Uri.parse('$baseUrl/profile/'));
     if (response.statusCode == 200) {
       final profileJson = json.decode(response.body);
       return ProfileModel.fromJson(profileJson);
@@ -40,32 +40,44 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   }
 
   @override
-  Future<void> updateProfile(ProfileModel profile) async {
-    final response = await client.put(
+  Future<void> updateProfile({
+    String? name,
+    String? profilePictureUrl,
+    String? coverPhoto,
+    String? resume,
+    String? headline,
+    String? bio,
+    String? location,
+    String? industry,
+  }) async {
+    final Map<String, dynamic> updateData = {};
+
+    if (name != null) updateData['name'] = name;
+    if (profilePictureUrl != null) updateData['profile_picture'] = profilePictureUrl;
+    if (coverPhoto != null) updateData['cover_photo'] = coverPhoto;
+    if (resume != null) updateData['resume'] = resume;
+    if (headline != null) updateData['headline'] = headline;
+    if (bio != null) updateData['bio'] = bio;
+    if (location != null) updateData['location'] = location;
+    if (industry != null) updateData['industry'] = industry;
+
+    if (updateData.isEmpty) {
+      throw ArgumentError('At least one field must be updated.');
+    }
+
+    final response = await client.patch(
       Uri.parse('$baseUrl/profile'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode(profile.toJson()),
+      body: json.encode(updateData),
     );
+
     if (response.statusCode != 200) {
       throw ServerException('Failed to update profile');
     }
   }
 
-  /// Profile Picture Management
-  // @override
-  // Future<String> uploadProfilePicture(String image) async {
-  //   final response = await client.post(
-  //     Uri.parse('$baseUrl/profile/profile-picture'),
-  //     headers: {'Content-Type': 'application/json'},
-  //     body: json.encode({'image': image}),
-  //   );
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-  //     return data['profilePicUrl'];
-  //   } else {
-  //     throw ServerException('Failed to upload profile picture');
-  //   }
-  // }
+
+
   @override
   Future<void> deleteProfilePicture() async {
     final response = await client.delete(Uri.parse('$baseUrl/profile/profile-picture'));
@@ -112,12 +124,12 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
   @override
   Future<void> addExperience(ExperienceModel experience) async {
-    final response = await client.post(
-      Uri.parse('$baseUrl/profile/experience'),
+    final response = await client.patch(
+      Uri.parse('$baseUrl/profile'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode(experience.toJson()),
+      body: json.encode({'experience': experience.toJson()}),
     );
-    if (response.statusCode != 201) {
+    if (response.statusCode != 200) {
       throw ServerException('Failed to add experience');
     }
   }

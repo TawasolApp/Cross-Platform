@@ -1,59 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/profile/presentation/widgets/certification.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/certification/add_certification.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/certification/certification_list.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 
-class CertificationsSection extends StatefulWidget {
-  const CertificationsSection({super.key});
+class CertificationsSection extends StatelessWidget {
+  final ProfileProvider provider;
+  final List<Certification>? certifications;
+  final bool isExpanded;
+  final Function onToggleExpansion;
+  final Function(Certification)? onRemove;
+  final String? errorMessage;
 
-  @override
-  _CertificationsSectionState createState() => _CertificationsSectionState();
-}
-
-class _CertificationsSectionState extends State<CertificationsSection> {
-  bool showAll = false;
-
-  // Example list of certifications (Replace with dynamic data)
-  final List<Map<String, String>> certifications = [
-    {
-      'logoUrl': 'https://upload.wikimedia.org/wikipedia/commons/e/e0/LinkedIn_Logo.svg',
-      'name': 'AWS Certified Solutions Architect',
-      'issuingOrganization': 'Amazon Web Services (AWS)',
-      'issueDate': 'Jan 2024',
-      'expirationDate': 'Jan 2027',
-      'credentialId': 'AWS-12345-XYZ',
-    },
-    {
-      'logoUrl': 'https://upload.wikimedia.org/wikipedia/commons/8/80/Microsoft_logo.png',
-      'name': 'Microsoft Certified: Azure Fundamentals',
-      'issuingOrganization': 'Microsoft',
-      'issueDate': 'Dec 2023',
-      'expirationDate': '',
-      'credentialId': 'AZ-900-45678',
-    },
-    {
-      'logoUrl': 'https://upload.wikimedia.org/wikipedia/commons/3/3a/Google_Cloud_Logo.svg',
-      'name': 'Google Associate Cloud Engineer',
-      'issuingOrganization': 'Google Cloud',
-      'issueDate': 'Feb 2024',
-      'expirationDate': 'Feb 2027',
-      'credentialId': 'GCP-ACE-78910',
-    },
-    {
-      'logoUrl': 'https://upload.wikimedia.org/wikipedia/commons/4/4a/Cisco_logo.svg',
-      'name': 'Cisco Certified Network Associate (CCNA)',
-      'issuingOrganization': 'Cisco',
-      'issueDate': 'Nov 2023',
-      'expirationDate': 'Nov 2026',
-      'credentialId': 'CCNA-56789',
-    },
-  ];
+  const CertificationsSection({
+    super.key,
+    required this.provider,
+    this.certifications,
+    required this.isExpanded,
+    required this.onToggleExpansion,
+    this.onRemove,
+    this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Show only 2 items if `showAll` is false
-    final visibleCertifications = showAll ? certifications : certifications.take(2).toList();
+    final certs = certifications ?? provider.certifications ?? [];
+    final error = errorMessage ?? provider.certificationError;
+    
+    // Determine which certifications to show based on expansion state
+    final visibleCertifications = isExpanded 
+        ? certs 
+        : certs.take(2).toList();
 
     return Container(
-      color: Colors.white, // Set background color to white
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -72,12 +52,29 @@ class _CertificationsSectionState extends State<CertificationsSection> {
                     IconButton(
                       icon: const Icon(Icons.add),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {}, // Add certification action
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddCertificationPage(provider: provider),
+                          ),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {}, // Edit certifications action
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CertificationListPage(
+                              certifications: certs,
+                              provider: provider,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -85,31 +82,95 @@ class _CertificationsSectionState extends State<CertificationsSection> {
             ),
           ),
 
-          // Display Certifications Dynamically
+          // Display Certifications
           Column(
             children: visibleCertifications.map((cert) {
-              return Certification(
-                logoUrl: cert['logoUrl']!,
-                name: cert['name']!,
-                issuingOrganization: cert['issuingOrganization']!,
-                issueDate: cert['issueDate']!,
-                expirationDate: cert['expirationDate']!,
-                credentialId: cert['credentialId']!,
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Organization Logo (Optional)
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4),
+                        image: cert.issuingOrganizationPic != null
+                            ? DecorationImage(
+                                image: NetworkImage(cert.issuingOrganizationPic!),
+                                fit: BoxFit.cover,
+                              )
+                            : null,
+                      ),
+                      child: cert.issuingOrganizationPic == null
+                          ? const Icon(Icons.verified, size: 24, color: Colors.white)
+                          : null,
+                    ),
+                    const SizedBox(width: 12),
+
+                    // Certification Details
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Certification Name (Bold)
+                          Text(
+                            cert.name,
+                            style: const TextStyle(
+                              fontSize: 16, 
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          // Issuing Organization
+                          Text(
+                            cert.issuingOrganization,
+                            style: const TextStyle(
+                              fontSize: 14, 
+                              color: Colors.black87,
+                            ),
+                          ),
+
+                          // Issue and Expiration Dates
+                          Text(
+                            cert.expirationDate != null && cert.expirationDate!.isNotEmpty
+                                ? "Issued: ${cert.issueDate} • Expires: ${cert.expirationDate}"
+                                : "Issued: ${cert.issueDate} • No Expiration",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             }).toList(),
           ),
 
           // "Show More / Show Less" Button
-          if (certifications.length > 2)
+          if (certs.length > 2)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TextButton(
                 onPressed: () {
-                  setState(() {
-                    showAll = !showAll;
-                  });
+                  onToggleExpansion();
                 },
-                child: Text(showAll ? 'Show less' : 'Show more'),
+                child: Text(isExpanded ? 'Show less' : 'Show more'),
+              ),
+            ),
+            
+          // Error Message
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                error,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
         ],

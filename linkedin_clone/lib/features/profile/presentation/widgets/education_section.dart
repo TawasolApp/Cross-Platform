@@ -1,67 +1,40 @@
 import 'package:flutter/material.dart';
-import 'education.dart'; // Import Education widget
+import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/education/add_education.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/education/education_list.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:linkedin_clone/features/profile/presentation/widgets/education.dart';
 
-class EducationSection extends StatefulWidget {
-  const EducationSection({super.key});
+class EducationSection extends StatelessWidget {
+  final ProfileProvider provider;
+  final List<Education>? educations;
+  final bool isExpanded;
+  final Function onToggleExpansion;
+  final Function(Education)? onRemove;
+  final String? errorMessage;
 
-  @override
-  _EducationSectionState createState() => _EducationSectionState();
-}
-
-class _EducationSectionState extends State<EducationSection> {
-  bool showAll = false;
-
-  // Example list of education entries (Replace with dynamic data)
-  final List<Map<String, String>> educationList = [
-    {
-      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/en/e/ed/Cairo_University_Crest.png',
-      'institution': 'Cairo University',
-      'degree': 'Bachelor of Science',
-      'field': 'Computer Engineering',
-      'startDate': '2019',
-      'endDate': '2023',
-      'grade': 'GPA: 3.8/4.0',
-    },
-    {
-      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/a/a1/Siemens-logo.svg',
-      'institution': 'Siemens Digital Industries',
-      'degree': 'Embedded Systems Internship',
-      'field': 'Embedded Systems',
-      'startDate': 'Sep 2023',
-      'endDate': 'Dec 2023',
-      'grade': '',
-    },
-    {
-      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/5/5f/Harvard_University_seal.png',
-      'institution': 'Harvard University (Online Course)',
-      'degree': 'CS50x',
-      'field': 'Computer Science',
-      'startDate': 'Jan 2024',
-      'endDate': 'Ongoing',
-      'grade': '',
-    },
-    {
-      'institutionLogoUrl': 'https://upload.wikimedia.org/wikipedia/commons/4/4f/MIT_Seal.svg',
-      'institution': 'MIT OpenCourseWare',
-      'degree': 'Introduction to Algorithms',
-      'field': 'Computer Science',
-      'startDate': 'Mar 2024',
-      'endDate': 'Ongoing',
-      'grade': '',
-    },
-  ];
+  const EducationSection({
+    super.key,
+    required this.provider,
+    this.educations,
+    required this.isExpanded,
+    required this.onToggleExpansion,
+    this.onRemove,
+    this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Show only 2 items if `showAll` is false
-    final visibleEducation = showAll ? educationList : educationList.take(2).toList();
+    final eduList = educations ?? provider.educations ?? [];
+    final error = errorMessage ?? provider.educationError;
+    final visibleEducations = isExpanded ? eduList : eduList.take(2).toList();
 
     return Container(
-      color: Colors.white, // Matches Experience section background
+      color: Colors.white,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section Header with Edit & Add Buttons
+          // Section Header
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -76,12 +49,29 @@ class _EducationSectionState extends State<EducationSection> {
                     IconButton(
                       icon: const Icon(Icons.add),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {}, // Add education action
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddEducationPage(provider: provider),
+                          ),
+                        );
+                      },
                     ),
                     IconButton(
                       icon: const Icon(Icons.edit),
                       color: Theme.of(context).colorScheme.primary,
-                      onPressed: () {}, // Edit education action
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EducationListPage(
+                              educations: eduList,
+                              provider: provider,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -89,32 +79,30 @@ class _EducationSectionState extends State<EducationSection> {
             ),
           ),
 
-          // Display Education Entries Dynamically
+          // Education List
           Column(
-            children: visibleEducation.map((edu) {
-              return Education(
-                institutionLogoUrl: edu['institutionLogoUrl']!,
-                institution: edu['institution']!,
-                degree: edu['degree']!,
-                field: edu['field']!,
-                startDate: edu['startDate']!,
-                endDate: edu['endDate']!,
-                grade: edu['grade']!,
-              );
-            }).toList(),
+            children: visibleEducations.map((education) => EducationWidget(
+              education: education,
+            )).toList(),
           ),
 
-          // "Show More / Show Less" Button
-          if (educationList.length > 2)
+          // Show More/Less Button
+          if (eduList.length > 2)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    showAll = !showAll;
-                  });
-                },
-                child: Text(showAll ? 'Show less' : 'Show more'),
+                onPressed: () => onToggleExpansion(),
+                child: Text(isExpanded ? 'Show less' : 'Show more'),
+              ),
+            ),
+
+          // Error Message
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                error,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
         ],

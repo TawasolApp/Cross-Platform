@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/profile_header/add_section.dart';
 
 class ProfileHeader extends StatelessWidget {
   const ProfileHeader({super.key});
@@ -20,9 +21,21 @@ class ProfileHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          CircleAvatar(
-            radius: 50,
-            backgroundImage: NetworkImage(profilePictureUrl),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: NetworkImage(profilePictureUrl),
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  // Add your edit action here
+                },
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ],
           ),
           const SizedBox(height: 15),
           Text(
@@ -82,7 +95,12 @@ class ProfileHeader extends StatelessWidget {
               const SizedBox(width: 6),
               Expanded(
                 child: OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(builder: (context) => const AddSectionPage()),
+                    // );
+                  },
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     side: BorderSide(color: Theme.of(context).colorScheme.primary, width: 1.5),

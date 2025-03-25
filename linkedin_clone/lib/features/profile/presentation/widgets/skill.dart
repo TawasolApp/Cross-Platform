@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/skill.dart' as entity;
+import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 
-class Skill extends StatelessWidget {
-  final String skillName;
-  final int endorsements;
-  final List<String> endorsers; // List of profile picture URLs
+class SkillWidget extends StatelessWidget {
+  final entity.Skill skill;
 
-  const Skill({
+  const SkillWidget({
     super.key,
-    required this.skillName,
-    required this.endorsements,
-    required this.endorsers,
+    required this.skill,
   });
 
   @override
@@ -24,26 +22,28 @@ class Skill extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                skillName,
+                skill.skill,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 5),
               Row(
                 children: [
                   // Profile pictures of endorsers
-                  ...endorsers.take(3).map((url) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 4.0),
-                      child: CircleAvatar(
-                        radius: 10,
-                        backgroundImage: NetworkImage(url),
-                      ),
-                    );
-                  }).toList(),
+                  if (skill.endorsements != null && skill.endorsements!.isNotEmpty)
+                    ...skill.endorsements!.take(3).map((Endorsement endorser) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 4.0),
+                        child: CircleAvatar(
+                          radius: 10,
+                          backgroundColor: Colors.grey,
+                          // backgroundImage: NetworkImage(endorser.userId.profilePictureUrl ?? ''),
+                        ),
+                      );
+                    }).toList(),
 
                   // Endorsements count
                   Text(
-                    '$endorsements',
+                    '${skill.endorsements?.length ?? 0}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],

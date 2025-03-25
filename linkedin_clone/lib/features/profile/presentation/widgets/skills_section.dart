@@ -1,95 +1,107 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/profile/presentation/widgets/skill.dart'; // Import Skill widget
+import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:linkedin_clone/features/profile/presentation/widgets/skill.dart' as skill_widget;
+import 'package:linkedin_clone/features/profile/presentation/pages/skill/add_skill.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/skill/skill_list.dart';
 
-class SkillsSection extends StatefulWidget {
-  const SkillsSection({super.key});
+class SkillsSection extends StatelessWidget {
+  final ProfileProvider provider;
+  final List<Skill>? skills;
+  final bool isExpanded;
+  final Function onToggleExpansion;
+  final Function(Skill)? onRemove;
+  final String? errorMessage;
 
-  @override
-  _SkillsSectionState createState() => _SkillsSectionState();
-}
-
-class _SkillsSectionState extends State<SkillsSection> {
-  bool showAll = false; // To toggle showing extra skills
-
-  final List<Map<String, dynamic>> skills = [
-    {'name': 'Flutter', 'endorsements': 120, 'endorsers': [
-      'https://randomuser.me/api/portraits/men/1.jpg',
-      'https://randomuser.me/api/portraits/women/2.jpg',
-      'https://randomuser.me/api/portraits/men/3.jpg'
-    ]},
-    {'name': 'Dart', 'endorsements': 95, 'endorsers': [
-      'https://randomuser.me/api/portraits/women/4.jpg',
-      'https://randomuser.me/api/portraits/men/5.jpg'
-    ]},
-    {'name': 'UI/UX Design', 'endorsements': 80, 'endorsers': [
-      'https://randomuser.me/api/portraits/men/6.jpg',
-      'https://randomuser.me/api/portraits/women/7.jpg'
-    ]},
-    {'name': 'Agile Development', 'endorsements': 60, 'endorsers': [
-      'https://randomuser.me/api/portraits/women/8.jpg'
-    ]},
-    {'name': 'Project Management', 'endorsements': 45, 'endorsers': [
-      'https://randomuser.me/api/portraits/men/9.jpg'
-    ]},
-  ];
+  const SkillsSection({
+    super.key,
+    required this.provider,
+    this.skills,
+    required this.isExpanded,
+    required this.onToggleExpansion,
+    this.onRemove,
+    this.errorMessage,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final skillsList = skills ?? provider.skills ?? [];
+    final error = errorMessage ?? provider.skillError;
+    final visibleSkills = isExpanded ? skillsList : skillsList.take(3).toList();
+
     return Container(
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section Header (Title + Buttons)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Skills & Endorsements',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    color: Theme.of(context).colorScheme.primary,
-                    onPressed: () {}, // Add skill action
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.edit),
-                    color: Theme.of(context).colorScheme.primary,
-                    onPressed: () {}, // Edit skills action
-                  ),
-                ],
-              ),
-            ],
+          // Section Header
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Skills & Endorsements',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.add),
+                      color: Theme.of(context).colorScheme.primary,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => AddSkillPage(provider: provider)),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      color: Theme.of(context).colorScheme.primary,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SkillListPage(
+                              skills: skillsList,
+                              provider: provider,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
 
-          const SizedBox(height: 10),
-
-          // Skills List (Using Skill Widget) - Show top 3 always, others conditionally
+          // Skills List
           Column(
-            children: (showAll ? skills : skills.take(3)).map((skill) {
-              return Skill(
-                skillName: skill['name'],
-                endorsements: skill['endorsements'],
-                endorsers: List<String>.from(skill['endorsers']),
-              );
-            }).toList(),
+            children: visibleSkills
+                .map((skill) => skill_widget.SkillWidget(skill: skill))
+                .toList(),
           ),
 
-          const SizedBox(height: 10),
+          // Show More/Show Less Button
+          if (skillsList.length > 3)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextButton(
+                onPressed: () => onToggleExpansion(),
+                child: Text(isExpanded ? 'Show less' : 'Show more'),
+              ),
+            ),
 
-          // "Show More" Button to Reveal Extra Skills
-          if (skills.length > 3)
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  showAll = !showAll;
-                });
-              },
-              child: Text(showAll ? 'Show less' : 'Show more'),
+          // Error Message
+          if (error != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                error,
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              ),
             ),
         ],
       ),

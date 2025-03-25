@@ -1,21 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
 
-class Certification extends StatelessWidget {
-  final String logoUrl;
-  final String name;
-  final String issuingOrganization;
-  final String issueDate;
-  final String expirationDate;
-  final String credentialId;
+class CertificationWidget extends StatelessWidget {
+  final Certification certification;
 
-  const Certification({
+  const CertificationWidget({
     super.key,
-    required this.logoUrl,
-    required this.name,
-    required this.issuingOrganization,
-    required this.issueDate,
-    required this.expirationDate,
-    required this.credentialId,
+    required this.certification,
   });
 
   @override
@@ -25,21 +16,21 @@ class Certification extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Organization Logo
+          // Organization Logo (Optional)
           Container(
             width: 40,
             height: 40,
             decoration: BoxDecoration(
               color: Colors.grey[300], // Placeholder color
               borderRadius: BorderRadius.circular(4), // Square with slight rounding
-              image: logoUrl.isNotEmpty
+              image: certification.issuingOrganizationPic != null
                   ? DecorationImage(
-                      image: NetworkImage(logoUrl),
+                      image: NetworkImage(certification.issuingOrganizationPic!),
                       fit: BoxFit.cover,
                     )
                   : null,
             ),
-            child: logoUrl.isEmpty
+            child: certification.issuingOrganizationPic == null
                 ? const Icon(Icons.verified, size: 24, color: Colors.white)
                 : null,
           ),
@@ -52,7 +43,7 @@ class Certification extends StatelessWidget {
               children: [
                 // Certification Name (Bold)
                 Text(
-                  name,
+                  certification.name,
                   style: const TextStyle(
                     fontSize: 16, 
                     fontWeight: FontWeight.bold,
@@ -61,7 +52,7 @@ class Certification extends StatelessWidget {
 
                 // Issuing Organization
                 Text(
-                  issuingOrganization,
+                  certification.issuingOrganization,
                   style: const TextStyle(
                     fontSize: 14, 
                     color: Colors.black87,
@@ -70,24 +61,14 @@ class Certification extends StatelessWidget {
 
                 // Issue and Expiration Dates
                 Text(
-                  expirationDate.isNotEmpty
-                      ? "Issued: $issueDate • Expires: $expirationDate"
-                      : "Issued: $issueDate • No Expiration",
+                  certification.expirationDate != null && certification.expirationDate!.isNotEmpty
+                      ? "Issued: ${certification.issueDate} • Expires: ${certification.expirationDate}"
+                      : "Issued: ${certification.issueDate} • No Expiration",
                   style: const TextStyle(
                     fontSize: 14,
                     color: Colors.grey,
                   ),
                 ),
-
-                // Credential ID (Optional)
-                if (credentialId.isNotEmpty)
-                  Text(
-                    "Credential ID: $credentialId",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
               ],
             ),
           ),

@@ -4,8 +4,8 @@ import 'skill_model.dart';
 import 'education_model.dart';
 import 'certification_model.dart';
 import 'experience_model.dart';
-import 'plan_details_model.dart';
-import 'plan_statistics_model.dart';
+// import 'plan_details_model.dart';
+// import 'plan_statistics_model.dart';
 
 class ProfileModel extends Profile with EquatableMixin {
   ProfileModel({
@@ -24,8 +24,8 @@ class ProfileModel extends Profile with EquatableMixin {
     super.experience = const [],
     super.visibility = "public",
     super.connectionCount,
-    super.planDetails,
-    required super.planStatistics,
+    // super.planDetails,
+    // required super.planStatistics,
   });
 
   factory ProfileModel.fromJson(Map<String, dynamic> json) {
@@ -53,10 +53,10 @@ class ProfileModel extends Profile with EquatableMixin {
               .toList() ?? [],
       visibility: json['visibility'] as String? ?? "public",
       connectionCount: json['connection_count'] as int?,
-      planDetails: json['plan_details'] != null
-          ? PlanDetailsModel.fromJson(json['plan_details'] as Map<String, dynamic>)
-          : null,
-      planStatistics: PlanStatisticsModel.fromJson(json['plan_statistics'] as Map<String, dynamic>),
+      // planDetails: json['plan_details'] != null
+      //     ? PlanDetailsModel.fromJson(json['plan_details'] as Map<String, dynamic>)
+      //     : null,
+      // planStatistics: PlanStatisticsModel.fromJson(json['plan_statistics'] as Map<String, dynamic>),
     );
   }
 
@@ -77,8 +77,8 @@ class ProfileModel extends Profile with EquatableMixin {
       'experience': experience.map((exp) => (exp as ExperienceModel).toJson()).toList(),
       'visibility': visibility,
       'connection_count': connectionCount,
-      'plan_details': planDetails != null ? (planDetails as PlanDetailsModel).toJson() : null,
-      'plan_statistics': (planStatistics as PlanStatisticsModel).toJson(),
+      // 'plan_details': planDetails != null ? (planDetails as PlanDetailsModel).toJson() : null,
+      // 'plan_statistics': (planStatistics as PlanStatisticsModel).toJson(),
     };
   }
 
@@ -98,8 +98,8 @@ class ProfileModel extends Profile with EquatableMixin {
     List<ExperienceModel>? experience,
     String? visibility,
     int? connectionCount,
-    PlanDetailsModel? planDetails,
-    PlanStatisticsModel? planStatistics,
+    // PlanDetailsModel? planDetails,
+    // PlanStatisticsModel? planStatistics,
   }) {
     return ProfileModel(
       userId: userId ?? this.userId,
@@ -117,8 +117,8 @@ class ProfileModel extends Profile with EquatableMixin {
       experience: experience ?? this.experience,
       visibility: visibility ?? this.visibility,
       connectionCount: connectionCount ?? this.connectionCount,
-      planDetails: planDetails ?? this.planDetails,
-      planStatistics: planStatistics ?? this.planStatistics,
+      // planDetails: planDetails ?? this.planDetails,
+      // planStatistics: planStatistics ?? this.planStatistics,
     );
   }
 
@@ -139,7 +139,7 @@ class ProfileModel extends Profile with EquatableMixin {
         experience,
         visibility,
         connectionCount,
-        planDetails,
-        planStatistics,
+        // planDetails,
+        // planStatistics,
       ];
 }
