@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import '../../../lib/core/utils/connected_ago_formatter.dart'; // Update path as needed
+import 'package:linkedin_clone/core/utils/connected_ago_formatter.dart'; // Update path as needed
 
 void main() {
   group('getConnectionTime Tests', () {
