@@ -6,9 +6,9 @@ import 'package:linkedin_clone/features/company/data/repositories/company_reposi
 
 class CompanyCreateProvider with ChangeNotifier {
   final CompanyRepositoryImpl _companyRepository;
-  
-  CompanyCreateProvider({required CompanyRepositoryImpl companyRepository}) 
-      : _companyRepository = companyRepository;
+
+  CompanyCreateProvider({required CompanyRepositoryImpl companyRepository})
+    : _companyRepository = companyRepository;
 
   // ✅ Create Company Form Fields
   String? _name;
@@ -16,20 +16,22 @@ class CompanyCreateProvider with ChangeNotifier {
   String? _website;
   String? _selectedIndustry;
   String? _selectedLocation;
+  String? _selectedCompanySize; 
   XFile? _logoImage;
   XFile? _bannerImage;
-
+  bool _isLoading = false;
+  bool _agreedToTerms = false; 
   // ✅ Getters
   String? get name => _name;
   String? get description => _description;
   String? get website => _website;
   String? get selectedIndustry => _selectedIndustry;
   String? get selectedLocation => _selectedLocation;
+  String? get selectedCompanySize => _selectedCompanySize; 
   XFile? get logoImage => _logoImage;
   XFile? get bannerImage => _bannerImage;
-  bool _isLoading = false;
   bool get isLoading => _isLoading;
-
+  bool get agreedToTerms => _agreedToTerms;
   // ✅ Setters
   void setName(String value) {
     _name = value;
@@ -56,6 +58,11 @@ class CompanyCreateProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setCompanySize(String? value) {
+    _selectedCompanySize = value;
+    notifyListeners();
+  }
+
   void setLogoImage(XFile? image) {
     _logoImage = image;
     notifyListeners();
@@ -63,6 +70,10 @@ class CompanyCreateProvider with ChangeNotifier {
 
   void setBannerImage(XFile? image) {
     _bannerImage = image;
+    notifyListeners();
+  }
+  void setAgreedToTerms(bool value) { 
+    _agreedToTerms = value;
     notifyListeners();
   }
 
@@ -86,7 +97,10 @@ class CompanyCreateProvider with ChangeNotifier {
       logoUrl: _logoImage!.path,
       field: _selectedIndustry ?? "",
       followerCount: 0,
-      employeeCount: 0,
+      employeeCount:
+          _selectedCompanySize != null
+              ? int.tryParse(_selectedCompanySize!) ?? 0
+              : 0, 
       location: _selectedLocation ?? "",
       followerIds: [],
     );

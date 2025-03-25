@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class CreateCompanyScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
@@ -43,7 +44,7 @@ class CreateCompanyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(title: Text("Create Tawasol Page")),
       body: Consumer<CompanyCreateProvider>(
         builder: (context, provider, child) {
@@ -60,7 +61,7 @@ class CreateCompanyScreen extends StatelessWidget {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // ✅ Upload Logo Button 
+                          // ✅ Upload Logo Button
                           GestureDetector(
                             onTap: () => _pickImage(context, true),
                             child: Stack(
@@ -81,14 +82,9 @@ class CreateCompanyScreen extends StatelessWidget {
                                       height: 60,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(
-                                          width: 1.5,
-                                        ),
+                                        border: Border.all(width: 1.5),
                                       ),
-                                      child: Icon(
-                                        Icons.photo_camera,
-                                        size: 30,
-                                      ),
+                                      child: Icon(Icons.photo_camera, size: 30),
                                     ),
                               ],
                             ),
@@ -118,57 +114,169 @@ class CreateCompanyScreen extends StatelessWidget {
                       SizedBox(height: 16),
 
                       // ✅ Industry Dropdown
-                      DropdownButtonFormField<String>(
-                        value: provider.selectedIndustry,
+                      DropdownButtonFormField2<String>(
+                        value: provider.selectedCompanySize,
+                        onChanged: provider.setCompanySize,
+                        decoration: InputDecoration(
+                          labelText: "Industry *",
+                          prefixIcon: Icon(Icons.people),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
+                          ),
+                        ),
+                        isDense: true,
+                        isExpanded: true,
+
+                        // ✅ Customizes dropdown appearance
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          offset: Offset(0, 5),
+                          elevation: 2,
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // ✅ Scrollable dropdown menu
                         items:
-                            ["Technology", "Healthcare", "Finance"]
+                            [
+                                  "Health Care",
+                                  "Technology",
+                                  "Finance",
+                                  "Education",
+                                  "Retail",
+                                  "Manufacturing",
+                                  "Consulting",
+                                  "Construction",
+                                  "Transportation",
+                                  "Energy",
+                                  "Entertainment",
+                                  "Food & Beverage",
+                                  "Automotive",
+                                  "Agriculture",
+                                  "Government",
+                                  "Nonprofit",
+                                  "Cybersecurity",
+                                  "E-commerce",
+                                ]
                                 .map(
-                                  (industry) => DropdownMenuItem(
-                                    value: industry,
-                                    child: Text(industry),
+                                  (size) => DropdownMenuItem(
+                                    value: size,
+                                    child: Text(
+                                      size,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 )
                                 .toList(),
-                        onChanged: provider.setIndustry,
+
+                        validator:
+                            (value) =>
+                                value == null
+                                    ? "Please select a company size"
+                                    : null,
+                      ),
+                      SizedBox(height: 16),
+
+                      // ✅ Location Dropdown
+                      TextFormField(
+                        onChanged: provider.setLocation,
                         decoration: InputDecoration(
-                          labelText: "Industry *",
-                          prefixIcon: Icon(Icons.category),
+                          labelText: "Location *",
+                          prefixIcon: Icon(Icons.location_on),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
                         ),
                         validator:
                             (value) =>
-                                value == null
-                                    ? "Please select an industry"
+                                value == null || value.isEmpty
+                                    ? "Please enter a location"
                                     : null,
                       ),
                       SizedBox(height: 16),
-
-                      // ✅ Location Dropdown
-                      DropdownButtonFormField<String>(
-                        value: provider.selectedLocation,
-                        items:
-                            ["Cairo", "Dubai", "San Francisco"]
-                                .map(
-                                  (location) => DropdownMenuItem(
-                                    value: location,
-                                    child: Text(location),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: provider.setLocation,
+                      // ✅ Company Size Dropdown
+                      DropdownButtonFormField2<String>(
+                        value: provider.selectedCompanySize,
+                        onChanged: provider.setCompanySize,
                         decoration: InputDecoration(
-                          labelText: "Location",
-                          prefixIcon: Icon(Icons.location_on),
+                          labelText: "Company Size *",
+                          prefixIcon: Icon(Icons.people),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
+                          ),
                         ),
+                        isDense: true,
+                        isExpanded: true,
+
+                        // ✅ Customizes dropdown appearance
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          offset: Offset(0, 5),
+                          elevation: 2,
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // ✅ Scrollable dropdown menu
+                        items:
+                            [
+                                  "0-1 Employees",
+                                  "2-10 Employees",
+                                  "11-50 Employees",
+                                  "51-200 Employees",
+                                  "201-500 Employees",
+                                  "501-1000 Employees",
+                                  "1001-5000 Employees",
+                                  "5001-10,000 Employees",
+                                  "10,000+ Employees",
+                                ]
+                                .map(
+                                  (size) => DropdownMenuItem(
+                                    value: size,
+                                    child: Text(
+                                      size,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+
+                        validator:
+                            (value) =>
+                                value == null
+                                    ? "Please select a company size"
+                                    : null,
                       ),
                       SizedBox(height: 16),
-
-                      // ✅ Website (Required)
+                      // ✅ Website (Required with Validation)
                       TextFormField(
                         onChanged: provider.setWebsite,
                         decoration: InputDecoration(
@@ -178,11 +286,21 @@ class CreateCompanyScreen extends StatelessWidget {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
                         ),
-                        validator:
-                            (value) =>
-                                value!.isEmpty
-                                    ? "Please enter the company's website"
-                                    : null,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter the company's website";
+                          }
+                          // Validate a proper URL format
+                          final urlPattern =
+                              r'^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\S*)?$';
+                          final regExp = RegExp(urlPattern);
+
+                          if (!regExp.hasMatch(value)) {
+                            return "Please enter a valid website URL (e.g., https://example.com)";
+                          }
+
+                          return null;
+                        },
                       ),
                       SizedBox(height: 16),
 
