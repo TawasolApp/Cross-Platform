@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 class RouteNames {
   static const String onboarding = "/onboarding";

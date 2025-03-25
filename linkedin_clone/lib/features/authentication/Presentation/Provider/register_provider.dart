@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Entities/user_entity.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/register_usecase.dart';
+import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_email_usecase.dart';
 
 class RegisterProvider with ChangeNotifier {
   // Registration fields
   final RegisterUsecase registerUsecase;
-
-  RegisterProvider({required this.registerUsecase});
+  final ResendEmailUsecase resendEmailUsecase;
+  RegisterProvider({required this.registerUsecase, required this.resendEmailUsecase});
   String? _firstName;
   String? _lastName;
   String? _email;
@@ -73,8 +74,8 @@ class RegisterProvider with ChangeNotifier {
   }
 
   // You can call this on the last step to finalize
-  Future<bool> register(String email,String password,String recaptchaToken) async {
-    final result= await registerUsecase.call(email, password, recaptchaToken);
+  Future<bool> register(String firstName,String lastName,String email,String password,String recaptchaToken) async {
+    final result= await registerUsecase.call(firstName,lastName,email, password, recaptchaToken);
     return result.fold(
       (failure) {
         _errorMessage = failure.message;
@@ -90,6 +91,15 @@ class RegisterProvider with ChangeNotifier {
       },
     );
 
+
+  }
+  Future<bool>resendVerificationEmail(String email)async{
+    // Call the usecase to resend verification email
+    final result= await resendEmailUsecase.call(email);
+    return result.fold(
+      (failure)=>false,
+      (_)=>true,
+    );
 
   }
 

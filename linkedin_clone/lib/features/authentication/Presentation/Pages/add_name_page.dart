@@ -1,12 +1,13 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/core/navigation/route_names.dart';
 
 class AddNamePage extends StatelessWidget {
-  const AddNamePage({Key? key}) : super(key: key);
+  const AddNamePage({super.key});
 
   @override
   Widget build(BuildContext context) {

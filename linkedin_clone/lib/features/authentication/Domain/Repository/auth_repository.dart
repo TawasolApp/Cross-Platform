@@ -5,5 +5,9 @@ import 'package:linkedin_clone/features/authentication/Domain/Entities/user_enti
 abstract interface class AuthRepository {
 
   Future<Either<Failure,UserEntity>> login(String email, String password);
-  Future<Either<Failure,UserEntity>> register(String email, String password,String recaptchaToken);
+  Future<Either<Failure,UserEntity>> register(String firstName,String lastName,String email, String password,String recaptchaToken);
+  Future<Either<Failure,void>> forgotPassword(String email);
+  Future<Either<Failure,void>> resendVerificationEmail(String email);
+  Future<Either<Failure, void>> loginWithGoogle(String idToken);
+
 }

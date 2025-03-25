@@ -86,13 +86,15 @@ class AddEmailPasswordPage extends StatelessWidget {
                   } else {
                     final email = provider.email;
                     final password = provider.password;
+                    final firstName= provider.firstName;
+                    final lastName= provider.lastName;
 
-                    if (email != null && password != null) {
+                    if (email != null && password != null && firstName!=null && lastName!=null) {
                       // reCAPTCHA temporarily skipped
                       final success = await Provider.of<RegisterProvider>(
                         context,
                         listen: false,
-                      ).register(email, password, "mock-captcha-token");
+                      ).register(firstName,lastName,email,password, "mock-captcha-token");
 
                       if (!context.mounted) return;
 

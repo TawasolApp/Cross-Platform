@@ -14,4 +14,9 @@ class LoginUseCase {
   Future<Either<Failure, UserEntity>> call(String email, String password) async {
     return await repository.login(email, password);
   }
+
+  Future<Either<Failure, void>> loginWithGoogle(String idToken) {
+  return repository.loginWithGoogle(idToken);
+}
+
 }

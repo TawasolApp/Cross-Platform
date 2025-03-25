@@ -11,7 +11,7 @@ class RegisterUsecase {
 
   RegisterUsecase(this.repository);
 
-  Future<Either<Failure, UserEntity>> call(String email, String password,String recaptchaToken) async {
-    return await repository.register(email, password,recaptchaToken);
+  Future<Either<Failure, UserEntity>> call(String firstName,String lastName,String email, String password,String recaptchaToken) async {
+    return await repository.register(firstName,lastName,email, password,recaptchaToken);
   }
 }

@@ -46,6 +46,7 @@ class EmailVerificationPage extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   // Trigger resend email
+                  registerProvider.resendVerificationEmail(email!);
                 },
                 child: Text(
                   'Resend verification email',

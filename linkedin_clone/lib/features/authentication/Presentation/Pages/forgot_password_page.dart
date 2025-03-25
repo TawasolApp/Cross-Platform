@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
@@ -15,8 +16,8 @@ class ForgotPasswordPage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = theme.textTheme.bodyMedium?.color;
-    final registerProvider = Provider.of<RegisterProvider>(context, listen: false);
-    final email = registerProvider.email;
+    Provider.of<RegisterProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -67,7 +68,7 @@ class ForgotPasswordPage extends StatelessWidget {
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (value) {
                   // Handle change
-                  registerProvider.setEmail(value);
+                  authProvider.setEmail(value);
                 },
               ),
               const SizedBox(height: 16),
@@ -84,7 +85,17 @@ class ForgotPasswordPage extends StatelessWidget {
                 text: "Next",
                 onPressed: () {
                   // Handle forgot password logic
-                  context.go(RouteNames.checkemail);
+                  if (authProvider.email != null) {
+                    
+                    authProvider.forgotPassword(authProvider.email!);
+                    context.go(RouteNames.checkemail);
+                  } else {
+                    // Handle the case where email is null
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Email cannot be null")),
+                    );
+                  }
+                
                 },
               ),
               const SizedBox(height: 12),

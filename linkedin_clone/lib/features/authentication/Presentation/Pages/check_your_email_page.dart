@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -10,8 +11,8 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final registerProvider = Provider.of<RegisterProvider>(context, listen: false);
-    final email = registerProvider.email;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final email = authProvider.email;
 
     return Scaffold(
       appBar: AppBar(
