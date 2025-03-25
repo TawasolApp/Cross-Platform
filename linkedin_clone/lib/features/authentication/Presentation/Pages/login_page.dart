@@ -77,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => context.go(RouteNames.register),
+                    onTap: () => context.go(RouteNames.addName),
                     child: Text(
                       "Join LinkedIn",
                       style: theme.textTheme.bodyMedium?.copyWith(

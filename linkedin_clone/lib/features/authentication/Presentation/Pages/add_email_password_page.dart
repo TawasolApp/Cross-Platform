@@ -33,7 +33,9 @@ class AddEmailPasswordPage extends StatelessWidget {
               const SizedBox(height: 32),
               Text(
                 provider.showPasswordStep ? "Set your password" : "Add your email",
-                style: theme.textTheme.headlineLarge,
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -54,13 +56,14 @@ class AddEmailPasswordPage extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   "Password must be 6+ characters",
-                  style: theme.textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919)),
                 ),
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Checkbox(value: true, onChanged: (_) {}),
-                    Text("Remember me.", style: theme.textTheme.bodyMedium),
+                    Text("Remember me.", style: theme.textTheme.bodyMedium?.copyWith(color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919)),
+                ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
@@ -77,7 +80,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                 ),
               ],
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
               PrimaryButton(
                 text: "Continue",
                 onPressed: () async {

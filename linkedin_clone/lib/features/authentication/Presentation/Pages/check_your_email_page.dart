@@ -56,6 +56,7 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Trigger resend email logic
+                
               },
               child: const Text("Resend email", style: TextStyle(color: Colors.blue)),
             ),
