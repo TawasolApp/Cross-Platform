@@ -18,43 +18,53 @@ class PostCard extends StatelessWidget {
     final updatedPost = Provider.of<FeedProvider>(
       context,
     ).posts.firstWhere((p) => p.id == post.id, orElse: () => post);
+
     return Container(
       width: screenWidth,
       color: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       margin: const EdgeInsets.only(bottom: 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Row(
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: PostHeader(
-                  profileImage: post.authorPicture ?? '',
-                  authorName: post.authorName,
-                  authorTitle: post.authorBio,
-                  postTime: timeago.format(post.timestamp),
-                  postId: post.id,
-                ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: PostHeader(
+                      profileImage: post.authorPicture ?? '',
+                      authorName: post.authorName,
+                      authorTitle: post.authorBio,
+                      postTime: timeago.format(post.timestamp),
+                      postId: post.id,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              PostContent(
+                content: post.content,
+                imageUrl:
+                    (post.media != null && post.media!.isNotEmpty)
+                        ? post.media!.first
+                        : null,
+              ),
+              const SizedBox(height: 8),
+              PostFooter(
+                likes: updatedPost.likes,
+                comments: updatedPost.comments,
+                shares: updatedPost.shares,
+                post: updatedPost,
+                // onReact: (reactionName) {
+                //   Provider.of<FeedProvider>(context, listen: false).reactToPost(
+                //     postId: updatedPost.id,
+                //     reactions: {reactionName: true},
+                //   );
+                // },
               ),
             ],
-          ),
-          const SizedBox(height: 8),
-          PostContent(
-            content: post.content,
-            imageUrl:
-                (post.media != null && post.media!.isNotEmpty)
-                    ? post.media!.first
-                    : null,
-          ),
-          const SizedBox(height: 8),
-
-          PostFooter(
-            likes: updatedPost.likes,
-            comments: updatedPost.comments,
-            shares: updatedPost.shares,
-            post: updatedPost,
           ),
         ],
       ),

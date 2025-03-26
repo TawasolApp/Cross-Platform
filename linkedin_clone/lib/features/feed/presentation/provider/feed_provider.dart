@@ -13,14 +13,14 @@ class FeedProvider extends ChangeNotifier {
   final CreatePostUseCase createPostUseCase;
   final DeletePostUseCase deletePostUseCase;
   final SavePostUseCase savePostUseCase;
-  final ReactToPostUseCase reactToPostUseCase;
+  //final ReactToPostUseCase reactToPostUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
     required this.createPostUseCase,
     required this.deletePostUseCase,
     required this.savePostUseCase,
-    required this.reactToPostUseCase,
+    //required this.reactToPostUseCase,
   });
 
   List<PostEntity> _posts = [];
@@ -201,68 +201,63 @@ class FeedProvider extends ChangeNotifier {
       }
     } else {
       final result = await savePostUseCase(postId);
-      result.fold(
-        (failure) {
-          _errorMessage = failure.message;
-        },
-        (_) {
-          final index = _posts.indexWhere((post) => post.id == postId);
-          if (index != -1) {
-            final post = _posts[index];
-            final updated = post.copyWith(
-              isSaved: true,
-            ); // assume API always saves
-            _posts[index] = updated;
-          }
-        },
-      );
+      result.fold((failure) => _errorMessage = failure.message, (_) {
+        final index = _posts.indexWhere((post) => post.id == postId);
+        if (index != -1) {
+          final post = _posts[index];
+          final updated = post.copyWith(
+            isSaved: true,
+          ); // assume API always saves
+          _posts[index] = updated;
+        }
+      });
     }
 
     notifyListeners();
   }
 
-  Future<void> reactToPost({
-    required String postId,
-    required Map<String, bool> reactions,
-    String postType = 'Post',
-  }) async {
-    _errorMessage = null;
+  // Future<void> reactToPost({
+  //   required String postId,
+  //   required Map<String, bool> reactions,
+  //   String postType = 'Post',
+  // }) async {
+  //   _errorMessage = null;
 
-    if (useMockData) {
-      final index = _posts.indexWhere((post) => post.id == postId);
-      if (index != -1) {
-        final currentPost = _posts[index];
-        final isLiked = reactions["Like"] ?? false;
+  //   if (useMockData) {
+  //     final index = _posts.indexWhere((post) => post.id == postId);
+  //     if (index != -1) {
+  //       final currentPost = _posts[index];
+  //       final isLiked = reactions["Like"] ?? false;
 
-        final updatedPost = currentPost.copyWith(
-          isLiked: isLiked,
-          likes:
-              isLiked
-                  ? currentPost.likes + 1
-                  : (currentPost.likes > 0 ? currentPost.likes - 1 : 0),
-        );
+  //       final updatedPost = currentPost.copyWith(
+  //         isLiked: isLiked,
+  //         likes:
+  //             isLiked
+  //                 ? currentPost.likes + 1
+  //                 : (currentPost.likes > 0 ? currentPost.likes - 1 : 0),
+  //       );
 
-        _posts[index] = updatedPost;
-        notifyListeners();
-      }
-      return;
-    }
+  //       _posts[index] = updatedPost;
+  //       notifyListeners();
+  //     }
+  //     return;
+  //   }
 
-    final result = await reactToPostUseCase(
-      postId: postId,
-      reactions: reactions,
-      postType: postType,
-    );
+  //   final result = await reactToPostUseCase(
+  //     postId: postId,
+  //     reactions: reactions,
+  //     postType: postType,
+  //   );
 
-    result.fold(
-      (failure) {
-        _errorMessage = failure.message;
-      },
-      (_) {
-        // Optional: Update local state/UI if needed after success
-      },
-    );
+  //   result.fold(
+  //     (failure) {
+  //       _errorMessage = failure.message;
+  //     },
+  //     (_) {
+  //       // Optional: Update local state/UI if needed after success
+  //     },
+  //   );
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 }

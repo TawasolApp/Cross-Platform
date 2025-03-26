@@ -22,7 +22,7 @@ void main() {
   final createPostUseCase = CreatePostUseCase(repository);
   final deletePostUseCase = DeletePostUseCase(repository);
   final savePostUseCase = SavePostUseCase(repository);
-  final reactToPostUseCase = ReactToPostUseCase(repository);
+  //final reactToPostUseCase = ReactToPostUseCase(repository);
   runApp(
     MultiProvider(
       providers: [
@@ -33,7 +33,7 @@ void main() {
                 createPostUseCase: createPostUseCase,
                 deletePostUseCase: deletePostUseCase,
                 savePostUseCase: savePostUseCase,
-                reactToPostUseCase: reactToPostUseCase,
+                //reactToPostUseCase: reactToPostUseCase,
               )..fetchPosts(),
         ),
       ],

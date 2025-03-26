@@ -16,28 +16,34 @@ class PostFooter extends StatelessWidget {
     required this.post,
   });
 
+  //const PostFooter({super.key, required this.post});
+
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                const Icon(
-                  FontAwesomeIcons.thumbsUp,
-                  color: Colors.blue,
-                  size: 14,
-                ),
-                const SizedBox(width: 5),
-                Text('$likes'),
-              ],
-            ),
-            Text('$comments comments • $shares shares'),
-          ],
+        // Stats row: Like count, comments, shares
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.thumb_up, color: Colors.blue, size: 14),
+                  const SizedBox(width: 4),
+                  Text('${post.likes}'),
+                ],
+              ),
+              Text('${post.comments} Comments • ${post.shares} Shares'),
+            ],
+          ),
         ),
-        const Divider(),
+
+        const Divider(height: 10),
+
+        // Action buttons row (icon + label)
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
