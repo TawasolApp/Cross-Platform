@@ -115,8 +115,8 @@ class CreateCompanyScreen extends StatelessWidget {
 
                       // ✅ Industry Dropdown
                       DropdownButtonFormField2<String>(
-                        value: provider.selectedCompanySize,
-                        onChanged: provider.setCompanySize,
+                        value: provider.selectedIndustry,
+                        onChanged: provider.setIndustry,
                         decoration: InputDecoration(
                           labelText: "Industry *",
                           prefixIcon: Icon(Icons.people),
@@ -156,21 +156,7 @@ class CreateCompanyScreen extends StatelessWidget {
                                   "Health Care",
                                   "Technology",
                                   "Finance",
-                                  "Education",
-                                  "Retail",
-                                  "Manufacturing",
-                                  "Consulting",
-                                  "Construction",
-                                  "Transportation",
-                                  "Energy",
-                                  "Entertainment",
-                                  "Food & Beverage",
-                                  "Automotive",
-                                  "Agriculture",
-                                  "Government",
-                                  "Nonprofit",
-                                  "Cybersecurity",
-                                  "E-commerce",
+
                                 ]
                                 .map(
                                   (size) => DropdownMenuItem(

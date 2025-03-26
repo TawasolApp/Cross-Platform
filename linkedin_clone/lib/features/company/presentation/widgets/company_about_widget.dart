@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:linkedin_clone/features/company/presentation/providers/user_provider.dart';
 
 class CompanyAboutWidget extends StatelessWidget {
   final String userID;

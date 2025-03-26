@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_about_widget.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_home_widget.dart';
-import 'package:flutter/material.dart';
 
 class CompanyTabsWidget extends StatelessWidget {
   final String userId; // Accepting userId as a parameter
