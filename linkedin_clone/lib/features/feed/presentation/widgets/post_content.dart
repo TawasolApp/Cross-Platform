@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 class PostContent extends StatelessWidget {
   final String content;
   final String? imageUrl;
+  
 
   const PostContent({super.key, required this.content, this.imageUrl});
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           content,
-          style: const TextStyle(fontSize: 15),
+          style: TextStyle(fontSize: 15,
+          color: isDarkMode ? Colors.white : Colors.black
+          ),
           softWrap: true,
           overflow: TextOverflow.visible,
         ),

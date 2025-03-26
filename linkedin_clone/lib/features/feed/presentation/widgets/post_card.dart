@@ -18,10 +18,12 @@ class PostCard extends StatelessWidget {
     final updatedPost = Provider.of<FeedProvider>(
       context,
     ).posts.firstWhere((p) => p.id == post.id, orElse: () => post);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
 
     return Container(
       width: screenWidth,
-      color: Colors.white,
+      color: isDarkMode ? const Color.fromARGB(255,29,34,38) : Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       margin: const EdgeInsets.only(bottom: 6),
       child: Stack(

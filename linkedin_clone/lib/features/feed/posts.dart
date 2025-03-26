@@ -132,7 +132,7 @@ class LinkedInPostWidget extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     post.isSaved ? Icons.bookmark : Icons.bookmark_border,
-                    color: linkedinLightColorScheme.primary, // Updated color
+                    color: Colors.red, // Updated color
                   ),
                   onPressed: () => onToggleSave(post.id),
                 ),

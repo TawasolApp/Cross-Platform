@@ -2,7 +2,6 @@ import 'package:fpdart/fpdart.dart';
 import '../../domain/repositories/feed_repository.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/post_entity.dart';
-import '../models/post_model.dart';
 import '../data_sources/feed_remote_data_source.dart';
 import '../../../../core/errors/exceptions.dart';
 //import 'package:dartz/dartz.dart';

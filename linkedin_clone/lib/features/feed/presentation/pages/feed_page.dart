@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
@@ -34,7 +36,7 @@ class FeedPage extends StatelessWidget {
       //Floating Action Button to Create Post
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/create-post');
+          context.go(RouteNames.createPost);
         },
         backgroundColor: Colors.blue,
         tooltip: 'Create Post',

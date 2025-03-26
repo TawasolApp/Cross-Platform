@@ -13,4 +13,6 @@ class RouteNames {
   static const String verifyEmail = "/verify_email";
   static const String forgotPassword = "/forgot_password";
   static const String checkemail = "/check_email";
+  static const String main = "/main";
+  static const String createPost = "/create_post";
 }

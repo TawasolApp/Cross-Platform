@@ -18,6 +18,8 @@ class PostCreationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Row(
       children: [
         CircleAvatar(backgroundImage: NetworkImage(profileImage), radius: 24),
@@ -28,14 +30,18 @@ class PostCreationHeader extends StatelessWidget {
             children: [
               Text(
                 authorName,
-                style: const TextStyle(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
+                  color: isDarkMode ? Colors.white : Colors.black,
                 ),
               ),
               Text(
                 authorTitle,
-                style: const TextStyle(fontSize: 13, color: Colors.grey),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 13,
+                  color: isDarkMode ? Colors.grey[300] : Colors.grey,
+                ),
               ),
               GestureDetector(
                 onTap: () => _showVisibilityBottomSheet(context),
@@ -43,9 +49,10 @@ class PostCreationHeader extends StatelessWidget {
                   children: [
                     Text(
                       _getVisibilityText(visibility),
-                      style: const TextStyle(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
+                        color: isDarkMode ? Colors.white : Colors.black,
                       ),
                     ),
                     const Icon(Icons.arrow_drop_down, size: 18),
@@ -60,6 +67,8 @@ class PostCreationHeader extends StatelessWidget {
   }
 
   void _showVisibilityBottomSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -78,8 +87,18 @@ class PostCreationHeader extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.public),
-              title: const Text("Anyone"),
-              subtitle: const Text("Anyone on or off LinkedIn"),
+              title: Text(
+                "Anyone",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                "Anyone on or off LinkedIn",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: isDarkMode ? Colors.grey[300] : Colors.grey,
+                ),
+              ),
               trailing:
                   visibility == "Public"
                       ? const Icon(Icons.check, color: Colors.green)
@@ -91,8 +110,18 @@ class PostCreationHeader extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.people),
-              title: const Text("Connections only"),
-              subtitle: const Text("Only your connections"),
+              title: Text(
+                "Connections only",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+              subtitle: Text(
+                "Only your connections",
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: isDarkMode ? Colors.grey[300] : Colors.grey,
+                ),
+              ),
               trailing:
                   visibility == "Connections"
                       ? const Icon(Icons.check, color: Colors.green)

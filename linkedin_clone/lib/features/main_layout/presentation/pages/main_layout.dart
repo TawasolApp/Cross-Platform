@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -11,7 +12,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    Center(child: Text('Home Page')),       // Will be replaced by News Feed module
+    FeedPage(),      // Will be replaced by News Feed module
     Center(child: Text('My Network Page')), // Will be replaced by Connections module
     Center(child: Text('Jobs Placeholder')),
     Center(child: Text('Settings Page')),   // Will be replaced by Settings module
@@ -32,7 +33,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDarkMode = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: null,
@@ -50,26 +51,68 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                     backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Replace with user image
                   ),
                   const SizedBox(height: 12),
-                  Text("Omar Kaddah", style: theme.textTheme.titleMedium), //Hardcoded fro now refactor when API is ready
-                  Text("Ex-SWE Intern @Dell", style: theme.textTheme.bodySmall),
+                  Text(
+                    "Omar Kaddah\nEx-SWE Intern @Dell",
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
                   const SizedBox(height: 8),
-                  Text("Giza, Egypt", style: theme.textTheme.bodySmall),
+                  Text(
+                    "Giza, Egypt",
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black,
+                    ),
+                  ),
                 ],
               ),
             ),
             const Divider(height: 32),
-            ListTile(title: const Text("Puzzle games")),
-            ListTile(title: const Text("Saved posts")),
-            ListTile(title: const Text("Groups")),
+            ListTile(
+              title: Text(
+                "Puzzle games",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "Saved posts",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                "Groups",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
             const Divider(height: 32),
             ListTile(
               leading: const Icon(Icons.workspace_premium_outlined),
-              title: const Text("Try Premium for EGP0"),
+              title: Text(
+                "Try Premium for EGP0",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text("Settings"),
-              onTap: () => _onItemTapped(3),
+              title: Text(
+                "Settings",
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
+              ),
+              onTap: () { 
+                Navigator.pop(context);
+                _onItemTapped(3); },
             ),
           ],
         ),

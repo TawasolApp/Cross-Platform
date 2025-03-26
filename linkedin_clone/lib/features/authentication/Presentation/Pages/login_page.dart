@@ -135,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
                   if (!context.mounted) return;
 
                   if (success) {
-                    context.go(RouteNames.home);
+                    context.go(RouteNames.main);
                   } else {
                     showModalBottomSheet(
                       context: context,

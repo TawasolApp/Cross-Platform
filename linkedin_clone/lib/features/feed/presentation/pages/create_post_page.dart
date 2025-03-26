@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:provider/provider.dart';
 import '../widgets/post_creation_header.dart';
 import '../widgets/post_creation_textfield.dart';
@@ -36,7 +38,8 @@ class PostCreationPageState extends State<PostCreationPage> {
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
-
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text(""),
@@ -49,7 +52,7 @@ class PostCreationPageState extends State<PostCreationPage> {
                         content: _postCreationController.text.trim(),
                         visibility: feedProvider.visibility,
                       );
-                      Navigator.pop(context);
+                        context.go(RouteNames.main);
                     }
                     : null,
             child: Text(

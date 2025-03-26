@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../core/themes/app_theme.dart';
 
 class LikeButton extends StatelessWidget {
   final bool isLiked;

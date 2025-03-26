@@ -19,6 +19,8 @@ class PostHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -31,17 +33,26 @@ class PostHeader extends StatelessWidget {
             children: [
               Text(
                 authorName,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: isDarkMode ? Colors.white : Colors.black,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
                 authorTitle,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
                 postTime,
-                style: const TextStyle(fontSize: 12, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
+                ),
               ),
             ],
           ),

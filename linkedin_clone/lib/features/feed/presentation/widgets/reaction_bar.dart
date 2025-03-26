@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
-import 'reaction_popup.dart';
-import 'package:provider/provider.dart';
-import '../provider/feed_provider.dart';
-import '../../domain/entities/post_entity.dart';
 
 class ReactionBar extends StatefulWidget {
   final PostEntity post;
@@ -16,6 +12,7 @@ class ReactionBar extends StatefulWidget {
 }
 
 class _ReactionBarState extends State<ReactionBar> {
+  // ignore: unused_field
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
 
@@ -33,6 +30,7 @@ class _ReactionBarState extends State<ReactionBar> {
   //   Overlay.of(context).insert(_overlayEntry!);
   // }
 
+  // ignore: unused_element
   void _hidePopup() {
     _overlayEntry?.remove();
     _overlayEntry = null;

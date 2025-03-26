@@ -1,6 +1,5 @@
 import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/authentication/Data/Data_Sources/auth_remote_data_source_interface.dart';
-import 'package:linkedin_clone/features/authentication/Data/Data_Sources/mock_auth_remote_data_source.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Entities/user_entity.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';

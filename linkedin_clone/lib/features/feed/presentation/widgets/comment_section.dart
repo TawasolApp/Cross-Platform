@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../core/themes/app_theme.dart';
 
 class CommentSection extends StatelessWidget {
   final List<String> comments;

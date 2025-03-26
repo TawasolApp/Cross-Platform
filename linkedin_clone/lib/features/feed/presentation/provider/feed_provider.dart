@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../domain/usecases/create_post_usecase.dart';
 import '../../domain/usecases/get_posts_usecase.dart';
 import '../../domain/entities/post_entity.dart';
-import '../../../../core/errors/failures.dart';
 import '../../domain/usecases/delete_post_usecase.dart';
 import '../../domain/usecases/save_post_usecase.dart';
-import '../../domain/usecases/react_to_post_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
