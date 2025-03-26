@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
-import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:provider/provider.dart';
 
 class ForgotPasswordCheckEmailPage extends StatelessWidget {
@@ -56,7 +55,20 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Trigger resend email logic
-                
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Resend email"),
+                    content: const Text("Email has been resent."),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  ),
+                );
+
               },
               child: const Text("Resend email", style: TextStyle(color: Colors.blue)),
             ),

@@ -5,7 +5,7 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_em
 
 class RegisterProvider with ChangeNotifier {
   // Registration fields
-  final RegisterUsecase registerUsecase;
+  final RegisterUseCase registerUsecase;
   final ResendEmailUsecase resendEmailUsecase;
   RegisterProvider({required this.registerUsecase, required this.resendEmailUsecase});
   String? _firstName;
@@ -16,9 +16,12 @@ class RegisterProvider with ChangeNotifier {
   String? _jobTitle;
   bool _isStudent = false;
   bool _showPasswordStep = false;
-  late UserEntity _userEntity;
+  UserEntity? _userEntity;
   String? _errorMessage;
   bool _isLoading = false;
+  String? _emailError; 
+  String? _passwordError;
+
 
   // Getters
   String? get firstName => _firstName;
@@ -29,11 +32,33 @@ class RegisterProvider with ChangeNotifier {
   String? get jobTitle => _jobTitle;
   bool get isStudent => _isStudent;
   bool get showPasswordStep => _showPasswordStep;
-  UserEntity get userEntity => _userEntity;
+ UserEntity? get userEntity => _userEntity;  
   String? get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
+  String? get emailError => _emailError;
+  String? get passwordError => _passwordError;
+
+  //VALIDATION
+   bool isValidName(String name) => name.trim().isNotEmpty;
+
+   bool get canContinueFromName =>
+      isValidName(firstName ?? "") && isValidName(lastName ?? "");
+
+   bool get isValidEmail =>
+      email != null &&
+      RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email!);
+
+   bool get isValidPassword =>
+      password != null && password!.trim().length >= 6;
+
+
 
   // Setters
+
+  void setUserEntity(UserEntity? userEntity) {
+  _userEntity = userEntity;
+  notifyListeners();
+}
   void setFirstName(String value) {
     _firstName = value;
     notifyListeners();
@@ -84,7 +109,7 @@ class RegisterProvider with ChangeNotifier {
         return false;
       },
       (userEntity) {
-        _userEntity=userEntity;
+        setUserEntity(userEntity);
         _isLoading = false;
         notifyListeners();
         return true;

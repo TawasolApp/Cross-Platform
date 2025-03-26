@@ -31,7 +31,7 @@ class ForgotPasswordPage extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => context.go(RouteNames.login),
                   child: Text(
                     "Done",
                     style: theme.textTheme.bodyMedium?.copyWith(

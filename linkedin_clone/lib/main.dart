@@ -18,11 +18,12 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 void main() {
 
   final useMock = true;
+  // ignore: dead_code
   final AuthRemoteDataSource dataSource =useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
   final AuthRepository authRepository = AuthRepositoryImpl(dataSource);
   final loginUseCase = LoginUseCase(authRepository);
-  final registerUseCase = RegisterUsecase(authRepository);
+  final registerUseCase = RegisterUseCase(authRepository);
   final forgotPassUseCase = ForgotPassUseCase(authRepository);
   final resendEmailUsecase = ResendEmailUsecase(authRepository);
   WebViewPlatform.instance = AndroidWebViewPlatform();

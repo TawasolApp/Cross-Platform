@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
-// import 'package:linkedin_clone/features/authentication/Presentation/Pages/recaptcha_webview.dart'; // Uncomment when captcha is ready
 
 class AddEmailPasswordPage extends StatelessWidget {
   const AddEmailPasswordPage({super.key});
@@ -39,35 +38,48 @@ class AddEmailPasswordPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
 
+              // === EMAIL TEXT FIELD ===
               CustomTextField(
                 keyboardType: TextInputType.emailAddress,
                 hintText: "Email",
                 onChanged: provider.setEmail,
+                errorText: provider.emailError,
               ),
 
               if (provider.showPasswordStep) ...[
                 const SizedBox(height: 16),
+
+                // === PASSWORD TEXT FIELD ===
                 CustomTextField(
                   keyboardType: TextInputType.visiblePassword,
                   hintText: "Password",
                   isPassword: true,
                   onChanged: provider.setPassword,
+                  errorText: provider.passwordError,
                 ),
+
                 const SizedBox(height: 8),
                 Text(
                   "Password must be 6+ characters",
-                  style: theme.textTheme.bodySmall?.copyWith(color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919)),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                  ),
                 ),
+
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     Checkbox(value: true, onChanged: (_) {}),
-                    Text("Remember me.", style: theme.textTheme.bodyMedium?.copyWith(color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919)),
-                ),
+                    Text(
+                      "Remember me.",
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                      ),
+                    ),
                     const SizedBox(width: 4),
                     GestureDetector(
                       onTap: () {
-                        // Learn more
+                        // Learn more action
                       },
                       child: Text(
                         "Learn more",
@@ -81,37 +93,43 @@ class AddEmailPasswordPage extends StatelessWidget {
               ],
 
               const SizedBox(height: 8),
-              PrimaryButton(
-                text: "Continue",
-                onPressed: () async {
-                  if (!provider.showPasswordStep) {
-                    provider.showPasswordInput();
+
+              // === CONTINUE BUTTON ===
+          PrimaryButton(
+            text: "Continue",
+            onPressed: () async {
+              if (!provider.showPasswordStep) {
+                if (provider.isValidEmail) {
+                  provider.showPasswordInput();
+                }
+              } else {
+                if (provider.isValidPassword) {
+                  final email = provider.email;
+                  final password = provider.password;
+                  final firstName = provider.firstName;
+                  final lastName = provider.lastName;
+
+                  final success = await Provider.of<RegisterProvider>(
+                    context,
+                    listen: false,
+                  ).register(firstName!, lastName!, email!, password!, "mock-captcha-token");
+
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    context.go(RouteNames.verifyEmail);
                   } else {
-                    final email = provider.email;
-                    final password = provider.password;
-                    final firstName= provider.firstName;
-                    final lastName= provider.lastName;
-
-                    if (email != null && password != null && firstName!=null && lastName!=null) {
-                      // reCAPTCHA temporarily skipped
-                      final success = await Provider.of<RegisterProvider>(
-                        context,
-                        listen: false,
-                      ).register(firstName,lastName,email,password, "mock-captcha-token");
-
-                      if (!context.mounted) return;
-
-                      if (success) {
-                        context.go(RouteNames.verifyEmail);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Registration failed.")),
-                        );
-                      }
-                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Registration failed.")),
+                    );
                   }
-                },
-              ),
+                }
+              }
+            },
+          ),
+
+              const SizedBox(height: 12),
+
             ],
           ),
         ),

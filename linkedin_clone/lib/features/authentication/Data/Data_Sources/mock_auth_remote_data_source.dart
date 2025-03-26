@@ -4,6 +4,7 @@ import 'package:linkedin_clone/features/authentication/Data/Data_Sources/auth_re
 import 'package:linkedin_clone/features/authentication/Data/Models/user_model.dart';
 
 class MockAuthRemoteDataSource implements AuthRemoteDataSource {
+  @override
   Future<UserModel> login(String email, String password) async {
     await Future.delayed(Duration(seconds: 1)); // Simulate delay
 
@@ -17,6 +18,7 @@ class MockAuthRemoteDataSource implements AuthRemoteDataSource {
     }
   }
 
+  @override
   Future<UserModel> register(String firstName,String lastName,String email, String password, String recaptchaToken) async {
     await Future.delayed(Duration(seconds: 1)); // Simulate delay
 
@@ -32,6 +34,7 @@ class MockAuthRemoteDataSource implements AuthRemoteDataSource {
     }
   }
 
+  @override
   Future<void> forgotPassword(String email) async {
     await Future.delayed(Duration(seconds: 1)); // Simulate delay
 
@@ -44,7 +47,8 @@ class MockAuthRemoteDataSource implements AuthRemoteDataSource {
     }
   }
 
-    Future<void> resendVerificationEmail(String email) async {
+    @override
+      Future<void> resendVerificationEmail(String email) async {
     await Future.delayed(Duration(seconds: 1)); // Simulate delay
 
     // You can add fake password reset logic here

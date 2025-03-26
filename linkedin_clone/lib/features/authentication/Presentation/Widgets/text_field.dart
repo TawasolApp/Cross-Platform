@@ -6,15 +6,17 @@ class CustomTextField extends StatelessWidget {
   final bool isPassword;
   final Function(String) onChanged;
   final EdgeInsetsGeometry? contentPadding;
+  final String? errorText;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.keyboardType,
     required this.hintText,
     this.isPassword = false,
     required this.onChanged,
     this.contentPadding,
-  }) : super(key: key);
+    this.errorText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,7 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       style: TextStyle(color: theme.textTheme.bodyLarge?.color),
       decoration: InputDecoration(
+        errorText: errorText,
         hintText: hintText,
         hintStyle: TextStyle(color: theme.hintColor),
         border: OutlineInputBorder(

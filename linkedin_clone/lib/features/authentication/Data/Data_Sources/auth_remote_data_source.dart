@@ -7,6 +7,7 @@ import 'dart:convert';
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   
+  @override
   Future<UserModel> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('https://example.com/api/login'),
@@ -23,6 +24,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
 
+  @override
   Future<void> forgotPassword(String email) async {
     final response = await http.post(
       Uri.parse('https://example.com/api/forgot-password'),
@@ -37,6 +39,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  @override
   Future<void> resendVerificationEmail(String email) async {
     final response = await http.post(
       Uri.parse('https://example.com/api/forgot-password'),
@@ -51,6 +54,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
+  @override
   Future<void> loginWithGoogle(String idToken) async {
   final response = await http.post(
     Uri.parse('/auth/social-login/google'),
@@ -61,6 +65,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   if (response.statusCode == 200) {
     final json = jsonDecode(response.body);
     final accessToken = json['token'];
+    // ignore: unused_local_variable
     final refreshToken = json['refreshToken'];
 
     await TokenService.saveToken(accessToken);

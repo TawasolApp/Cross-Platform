@@ -4,10 +4,8 @@ import 'package:linkedin_clone/features/authentication/Domain/Entities/user_enti
 
 class UserModel extends UserEntity {
   UserModel({
-    required String token,
-  }) : super(
-          token: token,
-        );
+    required super.token,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(

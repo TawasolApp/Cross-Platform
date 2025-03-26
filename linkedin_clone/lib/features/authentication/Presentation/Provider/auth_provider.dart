@@ -4,20 +4,28 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/forgot_pa
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/login_usecase.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-//import '../../domain/usecases/login_usecase.dart';
+
 
 class AuthProvider with ChangeNotifier {
 //Login use case instance
 
 final LoginUseCase loginUseCase;
 final ForgotPassUseCase forgotPassUseCase;
+UserEntity? _userEntity;
 
-late UserEntity _userEntity;
+void setUserEntity(UserEntity? userEntity) {
+  _userEntity = userEntity;
+  notifyListeners();
+}
+
+
+String? _token;
 
 String? _errorMessage;
 String? _email;
 bool _isLoading = false;
 
+String? get token => _token;
 UserEntity? get userEntity => _userEntity;  
 String? get errorMessage => _errorMessage;
 bool get isLoading => _isLoading;
@@ -40,7 +48,7 @@ Future<bool> login(String email, String password) async {
       return false;
     },
     (userEntity) {
-      _userEntity=userEntity;
+      setUserEntity(userEntity);
       _isLoading = false;
       notifyListeners();
       return true;
@@ -51,10 +59,21 @@ Future<bool> login(String email, String password) async {
 Future<bool> forgotPassword(String email)async {
   
   final result = await forgotPassUseCase.call(email);
+
   return result.fold(
-    (failure)=>false,
-    (_)=>true,
-  );  
+    (failure) {
+      _errorMessage = failure.message;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    },
+    (_) {
+      _userEntity=userEntity;
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    },
+  );
 }
 
 

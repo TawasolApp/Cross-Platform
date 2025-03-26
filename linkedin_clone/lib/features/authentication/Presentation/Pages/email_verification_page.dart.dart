@@ -47,6 +47,15 @@ class EmailVerificationPage extends StatelessWidget {
                 onPressed: () {
                   // Trigger resend email
                   registerProvider.resendVerificationEmail(email!);
+
+                  // Show a SnackBar to indicate the email has been resent
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text('Verification email has been resent.'),
+                      duration: const Duration(seconds: 3),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
                 },
                 child: Text(
                   'Resend verification email',

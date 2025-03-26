@@ -59,7 +59,9 @@ class AddNamePage extends StatelessWidget {
               PrimaryButton(
                 text: "Continue",
                 onPressed: () {
-                  context.go(RouteNames.addEmail);
+                  if (provider.canContinueFromName) {
+                    context.go(RouteNames.addEmail);
+                  }
                 },
               ),
             ],
