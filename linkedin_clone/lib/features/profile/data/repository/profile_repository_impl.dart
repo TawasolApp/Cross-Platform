@@ -8,13 +8,13 @@ import 'package:linkedin_clone/features/profile/data/models/experience_model.dar
 import 'package:linkedin_clone/features/profile/data/models/education_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/certification_model.dart';
-import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
+// import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/profile.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
-import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
+// import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {

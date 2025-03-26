@@ -48,6 +48,9 @@ dev_dependencies:
     sdk: flutter
   hive_generator: ^2.0.1
   build_runner: ^2.1.7
+  mocktail: ^1.0.0 # For mocking classes
+  test: ^1.24.0 # Core testing package
+  dartz: ^0.10.1 # For Either type handling
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

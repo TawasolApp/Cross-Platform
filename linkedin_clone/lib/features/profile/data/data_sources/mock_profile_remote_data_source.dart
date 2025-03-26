@@ -313,7 +313,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> updateExperience(ExperienceModel experience) async {
     await _delay();
     final updatedExperiences = _profile.experience.map((e) {
-      final exp = e as ExperienceModel;
+      final exp = e;
       return (exp.title == experience.title && exp.company == experience.company) 
           ? experience 
           : exp;
@@ -325,8 +325,8 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> deleteExperience(String experienceId) async {
     await _delay();
     final filteredExperiences = _profile.experience
-        .where((exp) => (exp as ExperienceModel).title != experienceId)
-        .map((e) => e as ExperienceModel)
+        .where((exp) => (exp).title != experienceId)
+        .map((e) => e)
         .toList();
     _profile = _profile.copyWith(experience: filteredExperiences);
   }
@@ -342,7 +342,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> updateEducation(EducationModel education) async {
     await _delay();
     final updatedEducation = _profile.education.map((e) {
-      final edu = e as EducationModel;
+      final edu = e;
       return (edu.school == education.school && edu.degree == education.degree) 
           ? education 
           : edu;
@@ -354,8 +354,8 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> deleteEducation(String educationId) async {
     await _delay();
     final filteredEducation = _profile.education
-        .where((edu) => (edu as EducationModel).school != educationId)
-        .map((e) => e as EducationModel)
+        .where((edu) => (edu).school != educationId)
+        .map((e) => e)
         .toList();
     _profile = _profile.copyWith(education: filteredEducation);
   }
@@ -371,7 +371,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> updateSkill(SkillModel skill) async {
     await _delay();
     final updatedSkills = _profile.skills.map((s) {
-      final skillModel = s as SkillModel;
+      final skillModel = s;
       return skillModel.skill == skill.skill ? skill : skillModel;
     }).toList();
     _profile = _profile.copyWith(skills: updatedSkills);
@@ -381,8 +381,8 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> deleteSkill(String skillId) async {
     await _delay();
     final filteredSkills = _profile.skills
-        .where((skill) => (skill as SkillModel).skill != skillId)
-        .map((s) => s as SkillModel)
+        .where((skill) => (skill).skill != skillId)
+        .map((s) => s)
         .toList();
     _profile = _profile.copyWith(skills: filteredSkills);
   }
@@ -398,7 +398,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> updateCertification(CertificationModel certification) async {
     await _delay();
     final updatedCertifications = _profile.certifications.map((c) {
-      final cert = c as CertificationModel;
+      final cert = c;
       return (cert.name == certification.name && 
               cert.issuingOrganization == certification.issuingOrganization) 
           ? certification 
@@ -411,8 +411,8 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<void> deleteCertification(String certificationId) async {
     await _delay();
     final filteredCertifications = _profile.certifications
-        .where((cert) => (cert as CertificationModel).name != certificationId)
-        .map((c) => c as CertificationModel)
+        .where((cert) => (cert).name != certificationId)
+        .map((c) => c)
         .toList();
     _profile = _profile.copyWith(certifications: filteredCertifications);
   }

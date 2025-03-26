@@ -43,6 +43,42 @@ class Profile extends Equatable {
     // required this.planStatistics,
   });
 
+  Profile copyWith({
+    String? userId,
+    String? name,
+    String? profilePicture,
+    String? coverPhoto,
+    String? resume,
+    String? headline,
+    String? bio,
+    String? location,
+    String? industry,
+    List<Skill>? skills,
+    List<Education>? education,
+    List<Certification>? certifications,
+    List<Experience>? experience,
+    String? visibility,
+    int? connectionCount,
+  }) {
+    return Profile(
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      profilePicture: profilePicture ?? this.profilePicture,
+      coverPhoto: coverPhoto ?? this.coverPhoto,
+      resume: resume ?? this.resume,
+      headline: headline ?? this.headline,
+      bio: bio ?? this.bio,
+      location: location ?? this.location,
+      industry: industry ?? this.industry,
+      skills: skills ?? this.skills,
+      education: education ?? this.education,
+      certifications: certifications ?? this.certifications,
+      experience: experience ?? this.experience,
+      visibility: visibility ?? this.visibility,
+      connectionCount: connectionCount ?? this.connectionCount,
+    );
+  }
+
   @override
   List<Object?> get props => [
         userId,

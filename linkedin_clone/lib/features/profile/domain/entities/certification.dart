@@ -15,6 +15,22 @@ class Certification extends Equatable {
     this.expirationDate,
   });
 
+  Certification copyWith({
+    String? name,
+    String? issuingOrganization,
+    String? issuingOrganizationPic,
+    String? issueDate,
+    String? expirationDate,
+  }) {
+    return Certification(
+      name: name ?? this.name,
+      issuingOrganization: issuingOrganization ?? this.issuingOrganization,
+      issuingOrganizationPic: issuingOrganizationPic ?? this.issuingOrganizationPic,
+      issueDate: issueDate ?? this.issueDate,
+      expirationDate: expirationDate ?? this.expirationDate,
+    );
+  }
+
   @override
   List<Object?> get props => [
         name,

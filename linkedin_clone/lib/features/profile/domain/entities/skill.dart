@@ -10,6 +10,16 @@ class Skill extends Equatable {
     this.endorsements, // Nullable
   });
 
+  Skill copyWith({
+    String? skill,
+    List<Endorsement>? endorsements,
+  }) {
+    return Skill(
+      skill: skill ?? this.skill,
+      endorsements: endorsements ?? this.endorsements,
+    );
+  }
+
   @override
   List<Object?> get props => [skill, endorsements];
 }

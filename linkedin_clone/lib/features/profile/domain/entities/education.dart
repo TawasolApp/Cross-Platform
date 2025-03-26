@@ -21,6 +21,28 @@ class Education extends Equatable {
     required this.grade,
   });
 
+  Education copyWith({
+    String? school,
+    String? schoolPic,
+    String? degree,
+    String? field,
+    String? startDate,
+    String? endDate,
+    String? description,
+    String? grade,
+  }) {
+    return Education(
+      school: school ?? this.school,
+      schoolPic: schoolPic ?? this.schoolPic,
+      degree: degree ?? this.degree,
+      field: field ?? this.field,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      description: description ?? this.description,
+      grade: grade ?? this.grade,
+    );
+  }
+
   @override
   List<Object?> get props => [
         school,

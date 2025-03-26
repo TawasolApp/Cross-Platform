@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
-import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
+// import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/experience/get_experiences.dart';
+// import 'package:linkedin_clone/features/profile/domain/usecases/experience/get_experiences.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/add_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/update_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/delete_experience.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/skills/get_skills.dart';
+// import 'package:linkedin_clone/features/profile/domain/usecases/skills/get_skills.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/add_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/education/get_education.dart';
+// import 'package:linkedin_clone/features/profile/domain/usecases/education/get_education.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/add_education.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/update_education.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/delete_education.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/certifications/get_certifications.dart';
+// import 'package:linkedin_clone/features/profile/domain/usecases/certifications/get_certifications.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/update_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
@@ -127,6 +127,37 @@ class ProfileProvider extends ChangeNotifier {
   String? get bioError => _bioError;
   String? get profileError => _profileError;
   bool get isLoading => _isLoading;
+  
+  // Setters
+  set userId(String? value) { _userId = value; notifyListeners(); }
+  set name(String? value) { _name = value; notifyListeners(); }
+  set profilePicture(String? value) { _profilePicture = value; notifyListeners(); }
+  set coverPhoto(String? value) { _coverPhoto = value; notifyListeners(); }
+  set resume(String? value) { _resume = value; notifyListeners(); }
+  set headline(String? value) { _headline = value; notifyListeners(); }
+  set bio(String? value) { _bio = value; notifyListeners(); }
+  set location(String? value) { _location = value; notifyListeners(); }
+  set industry(String? value) { _industry = value; notifyListeners(); }
+  set skills(List<Skill>? value) { _skills = value; notifyListeners(); }
+  set educations(List<Education>? value) { _educations = value; notifyListeners(); }
+  set certifications(List<Certification>? value) { _certifications = value; notifyListeners(); }
+  set experiences(List<Experience>? value) { _experiences = value; notifyListeners(); }
+  set visibility(String? value) { _visibility = value; notifyListeners(); }
+  set connectionCount(int? value) { _connectionCount = value; notifyListeners(); }
+  set isExpandedExperiences(bool value) { _isExpandedExperiences = value; notifyListeners(); }
+  set isExpandedEducation(bool value) { _isExpandedEducation = value; notifyListeners(); }
+  set isExpandedCertifications(bool value) { _isExpandedCertifications = value; notifyListeners(); }
+  set isExpandedSkills(bool value) { _isExpandedSkills = value; notifyListeners(); }
+  
+  // Error state setters
+  set experienceError(String? value) { _experienceError = value; notifyListeners(); }
+  set educationError(String? value) { _educationError = value; notifyListeners(); }
+  set skillError(String? value) { _skillError = value; notifyListeners(); }
+  set certificationError(String? value) { _certificationError = value; notifyListeners(); }
+  set profileError(String? value) { _profileError = value; notifyListeners(); }
+  set isLoading(bool value) { _isLoading = value; notifyListeners(); }
+
+
 
   // Setter for bio error
   set bioError(String? value) {

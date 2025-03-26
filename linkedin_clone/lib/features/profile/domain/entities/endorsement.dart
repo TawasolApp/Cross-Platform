@@ -9,6 +9,16 @@ class Endorsement extends Equatable {
     this.profilePicUrl, // Now nullable
   });
 
+  Endorsement copyWith({
+    String? userId,
+    String? profilePicUrl,
+  }) {
+    return Endorsement(
+      userId: userId ?? this.userId,
+      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+    );
+  }
+
   @override
   List<Object?> get props => [userId, profilePicUrl]; // Nullable in props
 }
