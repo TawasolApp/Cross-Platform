@@ -9,38 +9,18 @@ class AppTheme {
     useMaterial3: true,
     fontFamily: 'SourceSans',
     scaffoldBackgroundColor: linkedinLightColorScheme.surface,
-
     appBarTheme: AppBarTheme(
       backgroundColor: linkedinLightColorScheme.primary,
       elevation: 0,
       titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(color: Colors.white),
       iconTheme: const IconThemeData(color: Colors.white),
     ),
-
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: linkedinLightColorScheme.surface,
-      selectedItemColor: linkedinLightColorScheme.primary,
-      unselectedItemColor: linkedinLightColorScheme.onSurfaceVariant,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-    ),
-
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: linkedinLightColorScheme.primary,
         foregroundColor: Colors.white,
-        textStyle: linkedinTextTheme.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-        elevation: 0,
-        disabledBackgroundColor: linkedinLightColorScheme.primary.withValues(alpha: 0.5), //no with opacity with values(alpha channel) does the same thing
-      ),
-    ),
-
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: linkedinLightColorScheme.primary,
-        textStyle: linkedinTextTheme.labelLarge,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
     ),
   );
@@ -51,38 +31,12 @@ class AppTheme {
     useMaterial3: true,
     fontFamily: 'SourceSans',
     scaffoldBackgroundColor: linkedinDarkColorScheme.surface,
-
-    appBarTheme: AppBarTheme(
-      backgroundColor: linkedinDarkColorScheme.primary,
-      elevation: 0,
-      titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(color: Colors.white),
-      iconTheme: const IconThemeData(color: Colors.white),
-    ),
-
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: linkedinDarkColorScheme.surface,
-      selectedItemColor: linkedinDarkColorScheme.primary,
-      unselectedItemColor: linkedinDarkColorScheme.onSurfaceVariant,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-    ),
-
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: linkedinDarkColorScheme.primary,
         foregroundColor: Colors.white,
-        textStyle: linkedinTextTheme.labelLarge,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-        elevation: 0,
-        disabledBackgroundColor: linkedinDarkColorScheme.primary.withValues(alpha: 0.5), 
-      ),
-    ),
-
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: linkedinDarkColorScheme.primary,
-        textStyle: linkedinTextTheme.labelLarge,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
       ),
     ),
   );
