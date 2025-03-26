@@ -4,29 +4,34 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final TextInputType keyboardType; 
   final bool isPassword;
+  final Color? textColor;
+  // Removed isDarkMode field as it is not needed
+
   final Function(String) onChanged;
   final EdgeInsetsGeometry? contentPadding;
   final String? errorText;
 
   const CustomTextField({
     super.key,
+
     required this.keyboardType,
     required this.hintText,
     this.isPassword = false,
     required this.onChanged,
     this.contentPadding,
     this.errorText,
+    this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final bool isDarkMode = theme.brightness == Brightness.dark;
     return TextField(
       keyboardType: keyboardType,
       obscureText: isPassword,
       onChanged: onChanged,
-      style: TextStyle(color: theme.textTheme.bodyLarge?.color),
+      style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
       decoration: InputDecoration(
         errorText: errorText,
         hintText: hintText,

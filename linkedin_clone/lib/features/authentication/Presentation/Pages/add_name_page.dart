@@ -61,6 +61,13 @@ class AddNamePage extends StatelessWidget {
                 onPressed: () {
                   if (provider.canContinueFromName) {
                     context.go(RouteNames.addEmail);
+                  }else{
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Please enter both first and last name."),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
                   }
                 },
               ),

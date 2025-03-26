@@ -40,7 +40,9 @@ class EmailVerificationPage extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 'We sent a verification link to $email.\nClick the link to verify your email and continue.',
-                style: theme.textTheme.bodyMedium,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                ),
               ),
               const SizedBox(height: 32),
               TextButton(

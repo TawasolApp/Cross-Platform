@@ -7,7 +7,7 @@ import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Repository/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final MockAuthRemoteDataSource remoteDataSource;
+  final AuthRemoteDataSource remoteDataSource;
 
   AuthRepositoryImpl(this.remoteDataSource);
 

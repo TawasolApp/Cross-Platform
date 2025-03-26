@@ -26,7 +26,7 @@ class SocialLoginButtons extends StatelessWidget {
         _buildSocialButton(
           context,
           text: "Continue with Google",
-          icon: Icons.g_mobiledata, // You can replace this with Google logo asset
+          icon: Icons.g_mobiledata, 
           buttonColor: Colors.white,
           textColor: Colors.black,
           onPressed: () async {

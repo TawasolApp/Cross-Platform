@@ -101,6 +101,13 @@ class AddEmailPasswordPage extends StatelessWidget {
               if (!provider.showPasswordStep) {
                 if (provider.isValidEmail) {
                   provider.showPasswordInput();
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Please enter a valid email."),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 }
               } else {
                 if (provider.isValidPassword) {
@@ -123,6 +130,13 @@ class AddEmailPasswordPage extends StatelessWidget {
                       const SnackBar(content: Text("Registration failed.")),
                     );
                   }
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Password must be 6+ characters."),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
                 }
               }
             },

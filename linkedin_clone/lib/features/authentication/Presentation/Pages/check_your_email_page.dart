@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +11,7 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final bool isDark = theme.brightness == Brightness.dark;
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final email = authProvider.email;
 
@@ -18,7 +20,13 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text("Done", style: TextStyle(color: Colors.blue)),
+        title: TextButton(
+          onPressed: () => context.go(RouteNames.login),
+          child: const Text(
+            "Done",
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -77,7 +85,9 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
 
             Text(
               "If you don’t see the email in your inbox, check your spam folder. If it’s not there, the email address may not be confirmed or may not match an existing LinkedIn account.",
-              style: theme.textTheme.bodySmall,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isDark ? const Color(0xFFE5E5E5) : Colors.black,
+            ),
             ),
             const SizedBox(height: 16),
 

@@ -29,7 +29,7 @@ class CustomAuthErrorDialog extends StatelessWidget {
             Divider(color: isDark ? Colors.white24 : Colors.black12),
             TextButton(
               onPressed: () {
-                context.go(RouteNames.register); // Navigate to register
+                context.go(RouteNames.addName);// Navigate to register
               },
               child: const Text("Create an account"),
             ),
