@@ -9,8 +9,6 @@ import 'package:linkedin_clone/features/company/domain/usecases/get_related_comp
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
 
-//TODO: Import the posts from the posts module instead of the dummy data
-// import 'package:linkedin_clone/features/posts/data/models/post.dart';
 class Post {
   final String username;
   final String profileImage;
@@ -33,14 +31,26 @@ class Post {
   });
 }
 
-/// ✅ Provider for company details
 class CompanyProvider with ChangeNotifier {
   Company? _company;
   List<User> _friendsFollowing = [];
   List<Company> _relatedCompanies = [];
   bool _isLoading = false;
-  Map<String, bool> _followStatus = {}; // Track follow status per company
+  Map<String, bool> _followStatus = {};
   List<Post> _posts = [];
+
+  bool _disposed = false;
+
+  // Safe disposal
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  void safeNotify() {
+    if (!_disposed) notifyListeners();
+  }
 
   bool isFollowing(String companyId) => _followStatus[companyId] ?? false;
   Company? get company => _company;
@@ -77,39 +87,33 @@ class CompanyProvider with ChangeNotifier {
 
   final UserRemoteDataSource _userRemoteDataSource = UserRemoteDataSource();
 
-  /// ✅ Fetches all company details (including follow status)
   Future<void> fetchCompanyDetails(String companyId, String userId) async {
     _isLoading = true;
-    notifyListeners();
+    safeNotify();
 
     _company = await _getCompanyDetails.execute(companyId);
-    await fetchFollowStatus(userId, companyId); // Fetch follow status
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      userId,
-      companyId,
-    );
+    await fetchFollowStatus(userId, companyId);
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(userId, companyId);
     _relatedCompanies = await _getRelatedCompanies.execute(companyId);
-    _isLoading = false;
     _posts = await fetchPosts();
-    notifyListeners();
+
+    _isLoading = false;
+    safeNotify();
   }
 
-  /// ✅ Checks if the user follows the company
   Future<void> fetchFollowStatus(String userId, String companyId) async {
     bool status = await _userRemoteDataSource.checkIfUserFollowsCompany(
       userId,
       companyId,
     );
-    _followStatus[companyId] = status; // Store follow status per company
-    notifyListeners();
+    _followStatus[companyId] = status;
+    safeNotify();
   }
 
-  /// ✅ Toggles follow/unfollow status
   Future<void> toggleFollowStatus(String userId, String companyId) async {
     bool currentStatus = _followStatus[companyId] ?? false;
-
     _followStatus[companyId] = !currentStatus;
-    notifyListeners();
+    safeNotify();
 
     try {
       bool newStatus = await _userRemoteDataSource.toggleFollowCompany(
@@ -117,46 +121,41 @@ class CompanyProvider with ChangeNotifier {
         companyId,
         currentStatus,
       );
-      _followStatus[companyId] = newStatus; // Update with API response
+      _followStatus[companyId] = newStatus;
     } catch (e) {
       print("Error toggling follow status: $e");
-      _followStatus[companyId] = currentStatus; // Revert on failure
+      _followStatus[companyId] = currentStatus;
     }
 
-    notifyListeners();
+    safeNotify();
   }
 
-  /// ✅ Fetches friends following the company
   Future<List<User>> fetchFriendsFollowingCompany(
     String userId,
     String companyId,
   ) async {
     _isLoading = true;
-    notifyListeners();
+    safeNotify();
 
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      userId,
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(userId, companyId);
+
     _isLoading = false;
-    notifyListeners();
+    safeNotify();
     return _friendsFollowing;
   }
 
-  /// ✅ Fetches related companies
   Future<void> fetchRelatedCompanies(String companyId) async {
     _isLoading = true;
-    notifyListeners();
+    safeNotify();
 
     _relatedCompanies = await _getRelatedCompanies.execute(companyId);
+
     _isLoading = false;
-    notifyListeners();
+    safeNotify();
   }
 
   Future<List<Post>> fetchPosts() async {
-    // Simulating a delay (API Call)
     await Future.delayed(Duration(seconds: 2));
-    notifyListeners();
     return [
       Post(
         username: "Tech Corp",
@@ -181,6 +180,4 @@ class CompanyProvider with ChangeNotifier {
       ),
     ];
   }
-
- 
 }
