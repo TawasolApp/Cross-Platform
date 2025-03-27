@@ -1,5 +1,11 @@
 String getConnectionTime(String connectionDate) {
+  if (DateTime.tryParse(connectionDate) == null) {
+    return 'Unknown';
+  }
   DateTime date = DateTime.parse(connectionDate);
+  if (date.isAfter(DateTime.now())) {
+    return connectionDate;
+  }
   Duration difference = DateTime.now().difference(date);
   if (difference.inSeconds < 60) {
     return '${difference.inSeconds} seconds ago';
