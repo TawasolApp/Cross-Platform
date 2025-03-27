@@ -183,3 +183,10 @@ Examples:
 feat/user-profile
 fix/job-listing-ui
 ```
+
+## 🧪 Test Credentials (Temporary)
+
+Use the following test credentials for login and registration (until the API is fully ready):
+
+- **Email:** `test@example.com`
+- **Password:** `123456`
