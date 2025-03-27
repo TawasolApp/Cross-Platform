@@ -76,7 +76,7 @@ To ensure compatibility, change the NDK version in Android Studio:
 
 - Open **Android Studio > SDK Manager > SDK Tools**
 - Check **NDK (Side by side)** and click **Apply**
-- Click the **Edit** icon and install version **27.0.12077973**
+- Click the **Show Package Details** and check version **27.0.12077973**
 - Confirm `ndkVersion = "27.0.12077973"` exists in your `android/build.gradle` file
 
    ```sh
