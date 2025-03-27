@@ -70,6 +70,15 @@ Before setting up the project, ensure you have the following installed and confi
    ```
 
 4. **Run the application:**
+5. **Set NDK Version in Android Studio:**
+
+To ensure compatibility, change the NDK version in Android Studio:
+
+- Open **Android Studio > SDK Manager > SDK Tools**
+- Check **NDK (Side by side)** and click **Apply**
+- Click the **Edit** icon and install version **27.0.12077973**
+- Confirm `ndkVersion = "27.0.12077973"` exists in your `android/build.gradle` file
+
    ```sh
    flutter run
    ```
