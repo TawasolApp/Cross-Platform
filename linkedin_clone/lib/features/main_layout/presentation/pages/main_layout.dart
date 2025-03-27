@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
@@ -30,8 +32,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   void _goToProfile() {
     // Navigate to user profile
-    Navigator.pop(context); // Close drawer
-    Navigator.pushNamed(context, '/profile'); // Define this route in GoRouter or Navigator
+    
+    context.go(RouteNames.profile); // Define this route in GoRouter or Navigator
   }
 
   @override

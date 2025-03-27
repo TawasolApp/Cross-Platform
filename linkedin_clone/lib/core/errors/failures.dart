@@ -17,3 +17,7 @@ class NetworkFailure extends Failure {
 class ValidationFailure extends Failure {
   ValidationFailure([String message = "Validation failed", int errorCode = 0]) : super(message: message, errorCode: errorCode);
 }
+
+class CacheFailure extends Failure {
+  CacheFailure([String message = 'Cache error occurred', int errorCode = 0]) : super(message: message, errorCode: errorCode);
+}

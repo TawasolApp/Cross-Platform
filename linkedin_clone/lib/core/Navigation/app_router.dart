@@ -13,6 +13,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_pro
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/main_layout.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
 
 class AppRouter {
@@ -41,6 +42,7 @@ class AppRouter {
       GoRoute(path: RouteNames.createPost,builder: (context, state) => PostCreationPage() ),
       GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
       GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "Company", title: "Test") ),
+      GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
 
     ],
   );
