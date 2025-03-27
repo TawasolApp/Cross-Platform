@@ -28,6 +28,8 @@ import '../features/feed/presentation/pages/create_post_page.dart';
 import '../features/feed/presentation/provider/feed_provider.dart';
 import '../features/feed/domain/usecases/delete_post_usecase.dart';
 import '../features/feed/domain/usecases/react_to_post_usecase.dart';
+import 'package:linkedin_clone/core/themes/app_theme.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 
 void main() {
 
