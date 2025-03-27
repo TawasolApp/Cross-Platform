@@ -14,7 +14,7 @@ class CreateCompanyScreen extends StatelessWidget {
     if (image != null) {
       final provider = Provider.of<CompanyCreateProvider>(
         context,
-        listen: false,
+        listen: true,
       );
       isLogo ? provider.setLogoImage(image) : provider.setBannerImage(image);
     }

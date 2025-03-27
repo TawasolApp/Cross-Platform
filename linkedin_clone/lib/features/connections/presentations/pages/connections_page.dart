@@ -7,7 +7,7 @@ import '../provider/connections_provider.dart';
 
 class ConnectionsPage extends StatelessWidget {
   final String token;
-  const ConnectionsPage({super.key, required this.token});
+  const ConnectionsPage({Key? key, required this.token}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

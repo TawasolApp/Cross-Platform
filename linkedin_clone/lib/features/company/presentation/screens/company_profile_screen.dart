@@ -268,7 +268,6 @@ class CompanyProfileScreen extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 16),
                                   if (provider.friendsFollowing.isNotEmpty)
                                     Row(
                                       children: [
@@ -282,15 +281,20 @@ class CompanyProfileScreen extends StatelessWidget {
                                           radius: 20,
                                         ),
                                         SizedBox(width: 8),
-                                        Text(
-                                          "${provider.friendsFollowing.first.name} & ${provider.friendsFollowing.length - 1} other connections follow this page",
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium,
+                                        Expanded(
+                                          child: Text(
+                                            "${provider.friendsFollowing.first.name} & ${provider.friendsFollowing.length - 1} other connections follow this page",
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
                                       ],
                                     ),
+
                                   SizedBox(height: 20),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -395,15 +399,11 @@ class CompanyProfileScreen extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(
-                                        width: 8,
-                                      ),
+                                      SizedBox(width: 8),
                                       // More Button (⋯)
                                       SizedBox(
-                                        width:
-                                            40, 
-                                        height:
-                                            40, 
+                                        width: 40,
+                                        height: 40,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             border: Border.all(
@@ -412,16 +412,14 @@ class CompanyProfileScreen extends StatelessWidget {
                                             ),
                                             borderRadius: BorderRadius.circular(
                                               25,
-                                            ), 
+                                            ),
                                           ),
                                           child: IconButton(
-                                            iconSize:
-                                                20, 
+                                            iconSize: 20,
                                             padding:
                                                 EdgeInsets
                                                     .zero, // Remove extra padding
-                                            constraints:
-                                                BoxConstraints(), 
+                                            constraints: BoxConstraints(),
                                             icon: Icon(
                                               Icons.more_horiz,
                                               color: Colors.black54,

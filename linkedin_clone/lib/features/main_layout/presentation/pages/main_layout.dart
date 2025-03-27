@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
+
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -14,7 +16,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   final List<Widget> _pages = [
     FeedPage(),      // Will be replaced by News Feed module
-    Center(child: Text('My Network Page')), // Will be replaced by Connections module
+    ConnectionsPage(token: "Mock token"), // Will be replaced by Connections module
      // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompanyProfileScreen(companyId: "Company", title: "Test Company"),
     Center(child: Text('Settings Page')),   // Will be replaced by Settings module
