@@ -15,4 +15,5 @@ class RouteNames {
   static const String checkemail = "/check_email";
   static const String main = "/main";
   static const String createPost = "/create_post";
+  static const String companyPage = "/company_page";
 }
