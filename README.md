@@ -58,11 +58,18 @@ Before setting up the project, ensure you have the following installed and confi
    git clone https://github.com/TawasolApp/Cross-Platform.git
    cd Cross-Platform
    ```
-2. **Install dependencies:**
+
+2. **Checkout the `develop` branch:**
+   ```sh
+   git checkout develop
+   ```
+
+3. **Install dependencies:**
    ```sh
    flutter pub get
    ```
-3. **Run the application:**
+
+4. **Run the application:**
    ```sh
    flutter run
    ```
