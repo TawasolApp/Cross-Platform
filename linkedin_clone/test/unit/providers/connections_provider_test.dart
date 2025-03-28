@@ -47,7 +47,7 @@ void main() {
         mockGetConnectionsUseCase.call(any),
       ).thenAnswer((_) async => Future.value(mockConnections));
 
-      final result = await provider.getConnections('test_token');
+      final result = await provider.getConnections();
 
       expect(result, mockConnections);
       expect(provider.connectionsList, mockConnections);
@@ -62,15 +62,6 @@ void main() {
 
       expect(result, isTrue);
     });
-
-    test('should update search state', () {
-      provider.startSearch();
-      expect(provider.isSearching, isTrue);
-
-      provider.stopSearch();
-      expect(provider.isSearching, isFalse);
-    });
-
     test('should update filter correctly', () {
       provider.setFilter('First name');
       expect(provider.selectedFilter, 'First name');

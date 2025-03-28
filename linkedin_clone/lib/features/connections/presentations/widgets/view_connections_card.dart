@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/pop_up_menu_user.dart';
-import 'view_connections_user_data.dart';
 import '../provider/connections_provider.dart';
+import '../../../../core/utils/connected_ago_formatter.dart';
 
 /// **Connection Card** includes user data and action buttons
 /// - User Data includes user image, name, headline, connection time, and online status
@@ -10,7 +10,7 @@ class ConnectionCard extends StatelessWidget {
   final String userName;
   final String headLine;
   final String connectionTime;
-  final String image;
+  final String profilePicture;
   final bool isOnline;
   final ConnectionsProvider connectionsProvider;
 
@@ -21,7 +21,7 @@ class ConnectionCard extends StatelessWidget {
     required this.headLine,
     required this.connectionTime,
     required this.isOnline,
-    required this.image,
+    required this.profilePicture,
     required this.connectionsProvider,
   });
 
@@ -33,12 +33,108 @@ class ConnectionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            child: ViewConnectionsUserData(
-              isOnline: isOnline,
-              image: image,
-              name: userName,
-              headLine: headLine,
-              connectionTime: connectionTime,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 1),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  /// **Profile Image with Online Indicator**
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Stack(
+                      children: [
+                        /// **Profile Picture**
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundImage:
+                              profilePicture != 'not available'
+                                  ? NetworkImage(profilePicture)
+                                  : null,
+                          backgroundColor:
+                              Colors.grey[300], // Optional background color
+                          child:
+                              profilePicture == 'not available'
+                                  ? Icon(
+                                    Icons.person,
+                                    size: 40,
+                                    color: Colors.grey[700],
+                                  )
+                                  : null,
+                        ),
+
+                        /// **Online Indicator**
+                        if (isOnline)
+                          Positioned(
+                            bottom: 2,
+                            right: 2,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                /// **Larger Green Dot**
+                                Container(
+                                  width: 14,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(
+                                      255,
+                                      43,
+                                      109,
+                                      46,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+
+                                /// **Smaller White Dot on Top**
+                                Container(
+                                  width: 7,
+                                  height: 7,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  /// **User Details**
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// **Name**
+                        Text(
+                          userName,
+                          style: Theme.of(context).textTheme.titleMedium,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+
+                        /// **Headline**
+                        Text(
+                          headLine,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          softWrap: true,
+                        ),
+
+                        const SizedBox(height: 5),
+
+                        /// **Connection Time**
+                        Text(
+                          getConnectionTime(connectionTime),
+                          style: Theme.of(context).textTheme.bodySmall,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 

@@ -55,8 +55,8 @@ class RemoveConnectionDialog extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: () {
-                    connectionsProvider.removeConnection(
+                  onPressed: () async {
+                    await connectionsProvider.removeConnection(
                       userId,
                     ); //TODO: Implement  Lw failed hy3mel eh
                     Navigator.pop(context); // Close dialog

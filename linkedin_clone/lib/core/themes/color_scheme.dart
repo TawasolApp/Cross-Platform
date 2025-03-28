@@ -3,15 +3,16 @@ import 'package:flutter/material.dart';
 // Light Mode Colors
 final ColorScheme linkedinLightColorScheme = ColorScheme(
   brightness: Brightness.light,
-  primary: Color(0xFF0077B5),
+  primary: Color.fromARGB(255, 10, 102, 194),
   onPrimary: Colors.white,
-  secondary: Color(0xFF004B7C),
+  secondary: Color.fromARGB(255, 0, 65, 130),
   onSecondary: Colors.white,
-  surface: Color(0xFFF3F2EF),
+  surface: Color.fromARGB(255, 233, 229, 223),
   onSurface: Color(0xFF191919),
   onSurfaceVariant: Color(0xFF6E6E6E),
   error: Colors.red,
   onError: Colors.white,
+  outline: Color.fromARGB(255, 201, 201, 201),
 );
 
 // Dark Mode Colors

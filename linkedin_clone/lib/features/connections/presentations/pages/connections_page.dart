@@ -1,4 +1,7 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
 import 'package:provider/provider.dart';
 import '../widgets/view_connections_card.dart';
@@ -11,14 +14,11 @@ class ConnectionsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final connectionsListProvider = Provider.of<ConnectionsProvider>(
+    final connectionsProvider = Provider.of<ConnectionsProvider>(
       context,
       listen: false,
     );
-    connectionsListProvider.setToken(token);
-    Future<List<ConnectionsListUserEntity>> connectionsList =
-        connectionsListProvider.getConnections(token);
-
+    connectionsProvider.setToken(token);
     return Scaffold(
       backgroundColor: Colors.white, // Directly setting background color
 
@@ -42,85 +42,57 @@ class ConnectionsPage extends StatelessWidget {
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(42),
-          child: Column(
-            children: [
-              const Divider(
-                height: 1,
-                thickness: 1,
-                color: Color.fromARGB(255, 201, 201, 201),
-              ),
-              FutureBuilder<List<ConnectionsListUserEntity>>(
-                future: connectionsList, // Fetching connections
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  } else {
-                    return ViewConnectionsAppBar(
-                      connectionsCount:
-                          !snapshot.hasData || snapshot.data!.isEmpty
-                              ? snapshot.data!.length
-                              : 0,
-                      connectionsProvider: connectionsListProvider,
-                    );
-                  }
-                },
-              ),
-            ],
+          child: Consumer<ConnectionsProvider>(
+            builder: (context, connectionsProvider, child) {
+              if (connectionsProvider.connectionsList == null) {
+                return SizedBox();
+              } else {
+                return ViewConnectionsAppBar(
+                  connectionsProvider: connectionsProvider,
+                  connectionsCount: connectionsProvider.connectionsList!.length,
+                );
+              }
+            },
           ),
         ),
       ),
-
-      body: FutureBuilder<List<ConnectionsListUserEntity>>(
-        future: connectionsList, // Fetching connections
+      body: FutureBuilder(
+        future: connectionsProvider.getConnections(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No connections available'));
+          if (snapshot.connectionState != ConnectionState.done) {
+            return SizedBox();
           }
-
-          final connections = snapshot.data!;
-
+          if (snapshot.hasError) {
+            return NoInternetConnection(
+              onRetry: () => connectionsProvider.getConnections(),
+            );
+          }
           return Consumer<ConnectionsProvider>(
-            builder: (context, provider, child) {
-              return ListView.builder(
-                itemCount: connections.length,
-                itemBuilder: (context, index) {
-                  final connection = connections[index];
-                  return ConstrainedBox(
-                    constraints: BoxConstraints(),
-                    child: GestureDetector(
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: ConnectionCard(
+            builder: (context, connectionsProvider, _) {
+              return RefreshIndicator(
+                onRefresh: () => connectionsProvider.getConnections(),
+                child: Consumer<ConnectionsProvider>(
+                  builder: (context, provider, _) {
+                    if (provider.connectionsList!.isEmpty) {
+                      return const SizedBox();
+                    }
+                    return ListView.builder(
+                      itemCount: provider.connectionsList!.length,
+                      itemBuilder: (context, index) {
+                        final connection = provider.connectionsList![index];
+                        return ConnectionCard(
                           userId: connection.userId,
                           userName: connection.userName,
                           headLine: connection.headLine,
                           connectionTime: connection.connectionTime,
-                          isOnline: false, //connection.isOnline,
-                          image: connection.profilePicture,
-                          connectionsProvider: connectionsListProvider,
-                        ),
-                      ),
-                      onTap: () {
-                        // Navigate to user profile
-                        print(
-                          'Navigate to user profile',
-                        ); // Placeholder for navigation //TODO: Implement navigation
+                          isOnline: false,
+                          profilePicture: connection.profilePicture,
+                          connectionsProvider: provider,
+                        );
                       },
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             },
           );

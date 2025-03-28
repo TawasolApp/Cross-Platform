@@ -10,10 +10,13 @@ class AppTheme {
     fontFamily: 'SourceSans',
     scaffoldBackgroundColor: linkedinLightColorScheme.surface,
 
+    //dividerColor: ,
     appBarTheme: AppBarTheme(
       backgroundColor: linkedinLightColorScheme.primary,
       elevation: 0,
-      titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(color: Colors.white),
+      titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(
+        color: Colors.white,
+      ),
       iconTheme: const IconThemeData(color: Colors.white),
     ),
 
@@ -33,7 +36,9 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         elevation: 0,
-        disabledBackgroundColor: linkedinLightColorScheme.primary.withValues(alpha: 0.5), //no with opacity with values(alpha channel) does the same thing
+        disabledBackgroundColor: linkedinLightColorScheme.primary.withValues(
+          alpha: 0.5,
+        ), //no with opacity with values(alpha channel) does the same thing
       ),
     ),
 
@@ -55,7 +60,9 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: linkedinDarkColorScheme.primary,
       elevation: 0,
-      titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(color: Colors.white),
+      titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(
+        color: Colors.white,
+      ),
       iconTheme: const IconThemeData(color: Colors.white),
     ),
 
@@ -75,7 +82,9 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         elevation: 0,
-        disabledBackgroundColor: linkedinDarkColorScheme.primary.withValues(alpha: 0.5), 
+        disabledBackgroundColor: linkedinDarkColorScheme.primary.withValues(
+          alpha: 0.5,
+        ),
       ),
     ),
 
