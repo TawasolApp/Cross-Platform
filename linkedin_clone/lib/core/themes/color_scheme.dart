@@ -7,11 +7,12 @@ final ColorScheme linkedinLightColorScheme = ColorScheme(
   onPrimary: Colors.grey,
   secondary: Color(0xFF004B7C),
   onSecondary: Colors.white,
-  surface: Color(0xFFF3F2EF),
+  surface: Color.fromARGB(255, 233, 229, 223),
   onSurface: Color(0xFF191919),
   onSurfaceVariant: Color(0xFF6E6E6E),
   error: Colors.red,
   onError: Colors.white,
+  outline: Color.fromARGB(255, 201, 201, 201),
 );
 
 // Dark Mode Colors

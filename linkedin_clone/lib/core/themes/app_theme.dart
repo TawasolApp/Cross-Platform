@@ -64,6 +64,7 @@ class AppTheme {
       titleTextStyle: linkedinTextTheme.titleLarge?.copyWith(
         color: Colors.white,
       ),
+
       iconTheme: const IconThemeData(color: Colors.white),
     ),
 

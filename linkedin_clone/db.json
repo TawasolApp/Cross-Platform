@@ -1,41 +1,7 @@
 {
   "connections": [
     {
-      "userId": "1",
-      "username": "JohnDoe",
-      "profilePicture": "https://randomuser.me/api/portraits/men/1.jpg",
-      "headline": "Software Engineer at Google",
-      "createdAt": "2025-01-10T12:30:00Z"
-    },
-    {
-      "userId": "2",
-      "username": "JaneSmith",
-      "profilePicture": "https://randomuser.me/api/portraits/women/2.jpg",
-      "headline": "Product Manager at Microsoft",
-      "createdAt": "2025-03-05T08:15:00Z"
-    },
-    {
-      "userId": "3",
-      "username": "DavidBrown",
-      "profilePicture": "https://randomuser.me/api/portraits/men/3.jpg",
-      "headline": "Data Scientist at Meta",
-      "createdAt": "2025-03-24T14:45:00Z"
-    },
-    {
-      "userId": "4",
-      "username": "SarahMiller",
-      "profilePicture": "https://randomuser.me/api/portraits/women/4.jpg",
-      "headline": "UX Designer at Apple",
-      "createdAt": "2022-09-12T09:30:00Z"
-    },
-    {
-      "userId": "5",
-      "username": "MichaelWilson",
-      "profilePicture": "https://randomuser.me/api/portraits/men/5.jpg",
-      "headline": "Cybersecurity Analyst at IBM",
-      "createdAt": "2023-03-27T16:00:00Z"
-    },
-    {
+      "id": "3",
       "userId": "6",
       "username": "EmilyClark",
       "profilePicture": "https://randomuser.me/api/portraits/women/6.jpg",
@@ -43,13 +9,7 @@
       "createdAt": "2022-07-15T10:20:00Z"
     },
     {
-      "userId": "7",
-      "username": "ChrisEvans",
-      "profilePicture": "https://randomuser.me/api/portraits/men/7.jpg",
-      "headline": "Blockchain Developer at Binance",
-      "createdAt": "2023-12-01T18:45:00Z"
-    },
-    {
+      "id": "5",
       "userId": "8",
       "username": "OliviaMartinez",
       "profilePicture": "https://randomuser.me/api/portraits/women/8.jpg",
@@ -57,18 +17,20 @@
       "createdAt": "2021-10-08T14:30:00Z"
     },
     {
-      "userId": "9",
-      "username": "DanielLee",
-      "profilePicture": "https://randomuser.me/api/portraits/men/9.jpg",
-      "headline": "Game Developer at Ubisoft",
-      "createdAt": "2023-05-19T11:10:00Z"
+      "id": "8",
+      "userId": "11",
+      "username": "LiamBrown",
+      "profilePicture": "https://randomuser.me/api/portraits/men/11.jpg",
+      "headline": "Data Scientist at Facebook",
+      "createdAt": "2023-08-14T15:25:00Z"
     },
     {
-      "userId": "10",
-      "username": "SophiaTurner",
-      "profilePicture": "https://randomuser.me/api/portraits/women/10.jpg",
-      "headline": "HR Specialist at Amazon",
-      "createdAt": "2024-02-22T09:50:00Z"
+      "id": "9",
+      "userId": "12",
+      "username": "AvaSmith",
+      "profilePicture": "https://randomuser.me/api/portraits/women/12.jpg",
+      "headline": "Product Manager at Apple",
+      "createdAt": "2022-11-30T13:40:00Z"
     }
   ]
 }
