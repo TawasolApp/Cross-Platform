@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../models/post_model.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import '../../../../core/services/token_service.dart';
 
 abstract class FeedRemoteDataSource {
   Future<List<PostModel>> getPosts({int? page, int limit});
@@ -16,6 +19,19 @@ abstract class FeedRemoteDataSource {
     required String postId,
     required Map<String, bool> reactions,
     required String postType,
+  });
+  Future<void> editPost({
+    required String postId,
+    required String content,
+    required List<String> media,
+    required List<String> taggedUsers,
+    required String visibility,
+  });
+  Future<void> addComment(String postId, String content);
+  Future<List<dynamic>> fetchComments(
+    String postId, {
+    int page = 1,
+    int limit = 10,
   });
 }
 
@@ -125,6 +141,77 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
     if (response.statusCode != 200) {
       throw ServerException("Failed to update reaction");
+    }
+  }
+
+  @override
+  Future<void> editPost({
+    required String postId,
+    required String content,
+    required List<String> media,
+    required List<String> taggedUsers,
+    required String visibility,
+  }) async {
+    final response = await dio.patch(
+      '/posts/$postId',
+      data: {
+        "content": content,
+        "media": media,
+        "taggedUsers": taggedUsers,
+        "visibility": visibility,
+      },
+    );
+    if (response.statusCode != 200) {
+      throw Exception("Edit post failed");
+    }
+  }
+
+  @override
+  Future<void> addComment(String postId, String content) async {
+    try {
+      final url = Uri.parse('http:example/posts/comment/$postId');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await TokenService.getToken()}',
+        },
+        body: json.encode({'content': content, 'tagged': []}),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to add comment');
+      }
+    } catch (e) {
+      throw Exception('Error while adding comment: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<List<dynamic>> fetchComments(
+    String postId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final url = Uri.parse(
+        'http:example/posts/comments/$postId?page=$page&limit=$limit',
+      );
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${await TokenService.getToken()}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        throw Exception('Failed to fetch comments');
+      }
+    } catch (e) {
+      throw Exception('Error while fetching comments: ${e.toString()}');
     }
   }
 }

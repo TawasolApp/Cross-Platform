@@ -7,7 +7,7 @@ class PostHeader extends StatelessWidget {
   final String authorTitle;
   final String postTime;
   final String postId;
-
+  final String postContent;
   const PostHeader({
     super.key,
     required this.profileImage,
@@ -15,6 +15,7 @@ class PostHeader extends StatelessWidget {
     required this.authorTitle,
     required this.postTime,
     required this.postId,
+    required this.postContent,
   });
 
   @override
@@ -63,7 +64,14 @@ class PostHeader extends StatelessWidget {
           onPressed: () {
             showModalBottomSheet(
               context: context,
-              builder: (_) => PostActionsBottomSheet(postId: postId),
+              builder:
+                  (_) => PostActionsBottomSheet(
+                    postId: postId,
+                    postContent: postContent,
+                    authorImage: profileImage,
+                    authorName: authorName,
+                    authorTitle: authorTitle,
+                  ),
             );
           },
         ),

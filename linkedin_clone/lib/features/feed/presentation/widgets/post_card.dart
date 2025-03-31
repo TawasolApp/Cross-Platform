@@ -20,10 +20,9 @@ class PostCard extends StatelessWidget {
     ).posts.firstWhere((p) => p.id == post.id, orElse: () => post);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-
     return Container(
       width: screenWidth,
-      color: isDarkMode ? const Color.fromARGB(255,29,34,38) : Colors.white,
+      color: isDarkMode ? const Color.fromARGB(255, 29, 34, 38) : Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
       margin: const EdgeInsets.only(bottom: 6),
       child: Stack(
@@ -36,20 +35,21 @@ class PostCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: PostHeader(
-                      profileImage: post.authorPicture ?? '',
-                      authorName: post.authorName,
-                      authorTitle: post.authorBio,
-                      postTime: timeago.format(post.timestamp),
-                      postId: post.id,
+                      profileImage: updatedPost.authorPicture ?? '',
+                      authorName: updatedPost.authorName,
+                      authorTitle: updatedPost.authorBio,
+                      postTime: timeago.format(updatedPost.timestamp),
+                      postId: updatedPost.id,
+                      postContent: updatedPost.content,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               PostContent(
-                content: post.content,
+                content: updatedPost.content,
                 imageUrl:
-                    (post.media != null && post.media!.isNotEmpty)
+                    (updatedPost.media != null && updatedPost.media!.isNotEmpty)
                         ? post.media!.first
                         : null,
               ),

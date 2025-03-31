@@ -4,6 +4,7 @@ import '../../../../core/errors/failures.dart';
 import '../../domain/entities/post_entity.dart';
 import '../data_sources/feed_remote_data_source.dart';
 import '../../../../core/errors/exceptions.dart';
+import '../../domain/entities/comment_entity.dart';
 //import 'package:dartz/dartz.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
@@ -87,6 +88,67 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(NetworkFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> editPost({
+    required String postId,
+    required String content,
+    required List<String> media,
+    required List<String> taggedUsers,
+    required String visibility,
+  }) async {
+    try {
+      await remoteDataSource.editPost(
+        postId: postId,
+        content: content,
+        media: media,
+        taggedUsers: taggedUsers,
+        visibility: visibility,
+      );
+      return right(unit);
+    } on ServerException catch (e) {
+      return left(
+        ServerFailure(e.message, 500),
+      ); // Or extract status if you have it
+    } on ValidationException catch (e) {
+      return left(ValidationFailure(e.message, 400));
+    } on NetworkException catch (e) {
+      return left(NetworkFailure(e.message, 0));
+    } catch (e) {
+      return left(ServerFailure("Unexpected error occurred", 500));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> addComment(
+    String postId,
+    String content,
+  ) async {
+    try {
+      await remoteDataSource.addComment(postId, content);
+      return const Right(unit);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<dynamic>>> fetchComments(
+    String postId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final comments = await remoteDataSource.fetchComments(
+        postId,
+        page: page,
+        limit: limit,
+      );
+      return Right(comments);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
     }
   }
 }

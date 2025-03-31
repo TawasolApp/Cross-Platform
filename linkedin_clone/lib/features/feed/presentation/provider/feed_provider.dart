@@ -4,12 +4,20 @@ import '../../domain/usecases/get_posts_usecase.dart';
 import '../../domain/entities/post_entity.dart';
 import '../../domain/usecases/delete_post_usecase.dart';
 import '../../domain/usecases/save_post_usecase.dart';
+import '../../domain/usecases/edit_post_usecase.dart';
+import '../../domain/usecases/comment_post_usecase.dart';
+import '../../domain/usecases/fetch_comments_usecase.dart';
+import '../../data/models/comment_model.dart';
+import '../../domain/entities/comment_entity.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
   final CreatePostUseCase createPostUseCase;
   final DeletePostUseCase deletePostUseCase;
   final SavePostUseCase savePostUseCase;
+  final EditPostUseCase editPostUseCase;
+  final CommentPostUseCase commentPostUseCase;
+  final FetchCommentsUseCase fetchCommentsUseCase;
   //final ReactToPostUseCase reactToPostUseCase;
 
   FeedProvider({
@@ -17,11 +25,17 @@ class FeedProvider extends ChangeNotifier {
     required this.createPostUseCase,
     required this.deletePostUseCase,
     required this.savePostUseCase,
+    required this.editPostUseCase,
+    required this.commentPostUseCase,
+    required this.fetchCommentsUseCase,
     //required this.reactToPostUseCase,
   });
 
   List<PostEntity> _posts = [];
   List<PostEntity> get posts => _posts;
+
+  List<CommentModel> _comments = [];
+  List<CommentModel> get comments => _comments;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -213,6 +227,72 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> editPost({
+    required String postId,
+    required String content,
+  }) async {
+    _errorMessage = null;
+
+    if (useMockData) {
+      final index = _posts.indexWhere((post) => post.id == postId);
+      if (index != -1) {
+        _posts[index] = _posts[index].copyWith(content: content);
+      }
+    } else {
+      final result = await editPostUseCase(
+        postId: postId,
+        content: content,
+        media: [],
+        taggedUsers: [],
+        visibility: visibility,
+      );
+
+      result.fold((failure) => _errorMessage = failure.message, (_) {
+        // success! but no updated post returned, so update manually
+        final index = _posts.indexWhere((post) => post.id == postId);
+        if (index != -1) {
+          final oldPost = _posts[index];
+          _posts[index] = oldPost.copyWith(content: content);
+        }
+      });
+    }
+    notifyListeners();
+  }
+
+  Future<void> addComment(String postId, String content) async {
+    _errorMessage = null;
+    notifyListeners();
+
+    final result = await commentPostUseCase(postId, content);
+
+    result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+      },
+      (_) {
+        fetchComments(postId); // Refresh comments
+      },
+    );
+
+    notifyListeners();
+  }
+
+  // Fetch method for comments
+  Future<void> fetchComments(String postId) async {
+    _errorMessage = null;
+    try {
+      final result = await fetchCommentsUseCase(postId);
+      result.fold((failure) => _errorMessage = failure.message, (comments) {
+        _comments =
+            comments.map((comment) => CommentModel.fromJson(comment)).toList();
+        notifyListeners();
+      });
+    } catch (e) {
+      _errorMessage = "Failed to load comments";
+      notifyListeners();
+    }
+  }
+}
   // Future<void> reactToPost({
   //   required String postId,
   //   required Map<String, bool> reactions,
@@ -257,4 +337,4 @@ class FeedProvider extends ChangeNotifier {
 
   //   notifyListeners();
   // }
-}
+
