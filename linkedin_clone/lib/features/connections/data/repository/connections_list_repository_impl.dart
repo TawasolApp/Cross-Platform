@@ -15,7 +15,7 @@ class ConnectionsListRepositoryImpl implements ConnectionsListRepository {
       final connectionsList = await remoteDataSource.getConnectionsList(token);
       return connectionsList;
     } catch (e) {
-      throw Exception('Failed to load connections list');
+      throw Exception('no connection');
     }
   }
 

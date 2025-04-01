@@ -23,6 +23,7 @@ class ConnectionsProvider with ChangeNotifier {
   List<ConnectionsListUserEntity>? connectionsList;
 
   Future<void> getConnections() async {
+    print("get connections called\n");
     connectionsList = await getConnectionsUseCase.call(_token);
     print("gowa el provider");
     for (var connection in connectionsList!) {

@@ -56,45 +56,36 @@ class ConnectionsPage extends StatelessWidget {
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: connectionsProvider.getConnections(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return SizedBox();
-          }
-          if (snapshot.hasError) {
-            return NoInternetConnection(
-              onRetry: () => connectionsProvider.getConnections(),
-            );
-          }
-          return Consumer<ConnectionsProvider>(
-            builder: (context, connectionsProvider, _) {
-              return RefreshIndicator(
-                onRefresh: () => connectionsProvider.getConnections(),
-                child: Consumer<ConnectionsProvider>(
-                  builder: (context, provider, _) {
-                    if (provider.connectionsList!.isEmpty) {
-                      return const SizedBox();
-                    }
-                    return ListView.builder(
-                      itemCount: provider.connectionsList!.length,
-                      itemBuilder: (context, index) {
-                        final connection = provider.connectionsList![index];
-                        return ConnectionCard(
-                          userId: connection.userId,
-                          userName: connection.userName,
-                          headLine: connection.headLine,
-                          connectionTime: connection.connectionTime,
-                          isOnline: false,
-                          profilePicture: connection.profilePicture,
-                          connectionsProvider: provider,
-                        );
-                      },
+      body: Consumer<ConnectionsProvider>(
+        builder: (context, connectionsProvider, _) {
+          return RefreshIndicator(
+            onRefresh: () => connectionsProvider.getConnections(),
+            child: Consumer<ConnectionsProvider>(
+              builder: (context, provider, _) {
+                if (provider.connectionsList == null) {
+                  return NoInternetConnection(
+                    onRetry: () => connectionsProvider.getConnections(),
+                  );
+                } else if (provider.connectionsList!.isEmpty) {
+                  return const SizedBox();
+                }
+                return ListView.builder(
+                  itemCount: provider.connectionsList!.length,
+                  itemBuilder: (context, index) {
+                    final connection = provider.connectionsList![index];
+                    return ConnectionCard(
+                      userId: connection.userId,
+                      userName: connection.userName,
+                      headLine: connection.headLine,
+                      connectionTime: connection.connectionTime,
+                      isOnline: false,
+                      profilePicture: connection.profilePicture,
+                      connectionsProvider: provider,
                     );
                   },
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),

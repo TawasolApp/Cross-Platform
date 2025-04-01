@@ -35,7 +35,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_b
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
-import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart'; 
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
@@ -54,26 +54,29 @@ import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_sk
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
+import "../../../features/connections/presentations/pages/connections_page.dart";
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
   final internetConnection = InternetConnection();
-  
+
   // Initialize data source and repository
   // final ProfileRemoteDataSourceImpl dataSource = ProfileRemoteDataSourceImpl(
   //   client: http.Client(),
   //   baseUrl: 'https://your-api-url.com',
   // );
 
-  final MockProfileRemoteDataSource dataSourceProfile = MockProfileRemoteDataSource();
-  
+  final MockProfileRemoteDataSource dataSourceProfile =
+      MockProfileRemoteDataSource();
+
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
     connectionChecker: ConnectionCheckerImpl(internetConnection),
   );
   final useMock = true;
   // ignore: dead_code
-  final AuthRemoteDataSource dataSource =useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
+  final AuthRemoteDataSource dataSource =
+      useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
   final AuthRepository authRepository = AuthRepositoryImpl(dataSource);
   final loginUseCase = LoginUseCase(authRepository);
@@ -93,9 +96,15 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(loginUseCase,forgotPassUseCase),
+          create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
-        ChangeNotifierProvider(create:(_) => RegisterProvider(registerUsecase: registerUseCase,resendEmailUsecase: resendEmailUsecase)),
+        ChangeNotifierProvider(
+          create:
+              (_) => RegisterProvider(
+                registerUsecase: registerUseCase,
+                resendEmailUsecase: resendEmailUsecase,
+              ),
+        ),
         ChangeNotifierProvider(
           create:
               (_) => FeedProvider(
@@ -126,47 +135,63 @@ void main() {
               ),
         ),
         ChangeNotifierProvider(
-          create: (_) => ProfileProvider(
-            GetProfileUseCase(profileRepository),
-            AddExperienceUseCase(profileRepository),
-            UpdateExperienceUseCase(profileRepository),
-            DeleteExperienceUseCase(profileRepository),
-            AddEducationUseCase(profileRepository),
-            UpdateEducationUseCase(profileRepository),
-            DeleteEducationUseCase(profileRepository),
-            AddCertificationUseCase(profileRepository),
-            UpdateCertificationUseCase(profileRepository),
-            DeleteCertificationUseCase(profileRepository),
-            AddSkillUseCase(profileRepository),
-            UpdateSkillUseCase(profileRepository),
-            DeleteSkillUseCase(profileRepository),
-            UpdateBioUseCase(profileRepository),
-          ),
+          create:
+              (_) => ProfileProvider(
+                GetProfileUseCase(profileRepository),
+                AddExperienceUseCase(profileRepository),
+                UpdateExperienceUseCase(profileRepository),
+                DeleteExperienceUseCase(profileRepository),
+                AddEducationUseCase(profileRepository),
+                UpdateEducationUseCase(profileRepository),
+                DeleteEducationUseCase(profileRepository),
+                AddCertificationUseCase(profileRepository),
+                UpdateCertificationUseCase(profileRepository),
+                DeleteCertificationUseCase(profileRepository),
+                AddSkillUseCase(profileRepository),
+                UpdateSkillUseCase(profileRepository),
+                DeleteSkillUseCase(profileRepository),
+                UpdateBioUseCase(profileRepository),
+              ),
         ),
-
       ],
       child: const MyApp(),
     ),
   );
 }
 
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp.router(
+//       title: 'Flutter Demo',
+//       theme: AppTheme.lightTheme,
+//       darkTheme: AppTheme.darkTheme,
+//       //theme: ThemeData(primarySwatch: Colors.blue),
+//       themeMode: ThemeMode.system,
+//       debugShowCheckedModeBanner: false,
+
+//       //routes: {'/create-post': (_) => const PostCreationPage()},
+//       routerConfig: AppRouter.router,
+//     );
+//   }
+//}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      //theme: ThemeData(primarySwatch: Colors.blue),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      //routes: {'/create-post': (_) => const PostCreationPage()},
-
-      routerConfig: AppRouter.router,
+      home: ConnectionsPage(
+        token: "token",
+      ), // Set the initial page to connectionPage()
     );
   }
 }
