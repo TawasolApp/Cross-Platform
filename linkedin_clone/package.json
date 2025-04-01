@@ -1,0 +1,22 @@
+{
+  "name": "linkedin_clone",
+  "version": "1.0.0",
+  "description": "A new Flutter project.",
+  "type": "module",
+  "main": "lib/mocks/server.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "start": "node lib/mocks/server.js",
+    "mock-api": "npx json-server --watch lib/mocks/db.json",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json-server": "^1.0.0-beta.3"
+  }
+}

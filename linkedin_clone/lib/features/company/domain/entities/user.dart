@@ -1,11 +1,13 @@
 class User {
-  final String id;
-  final String name;
-  final String profileImageUrl;
+  final String userId;
+  final String username;
+  final String profilePicture;
+  final String headline;
 
   User({
-    required this.id,
-    required this.name,
-    required this.profileImageUrl,
+    required this.userId,
+    required this.username,
+    required this.profilePicture,
+    required this.headline,
   });
 }

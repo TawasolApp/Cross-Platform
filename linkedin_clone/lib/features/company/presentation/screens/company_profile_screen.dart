@@ -169,14 +169,14 @@ class CompanyProfileScreen extends StatelessWidget {
                             Stack(
                               alignment: Alignment.topCenter,
                               children: [
-                                if (provider.company!.bannerUrl != null)
+                                if (provider.company!.banner != null)
                                   Image.network(
-                                    provider.company!.bannerUrl!,
+                                    provider.company!.banner!,
                                     fit: BoxFit.cover,
                                     width: double.infinity,
                                     height: 70,
                                   ),
-                                if (provider.company!.logoUrl != null)
+                                if (provider.company!.logo != null)
                                   Container(
                                     margin: EdgeInsets.only(
                                       top: 30,
@@ -198,7 +198,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                       ],
                                       image: DecorationImage(
                                         image: NetworkImage(
-                                          provider.company!.logoUrl!,
+                                          provider.company!.logo!,
                                         ),
                                         fit: BoxFit.cover,
                                       ),
@@ -226,9 +226,10 @@ class CompanyProfileScreen extends StatelessWidget {
                                           spacing: 8,
                                           runSpacing: 4,
                                           children: [
-                                            if (provider.company?.field != null)
+                                            if (provider.company?.industry !=
+                                                null)
                                               Text(
-                                                "${provider.company!.field} •",
+                                                "${provider.company!.industry} •",
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium
@@ -236,10 +237,10 @@ class CompanyProfileScreen extends StatelessWidget {
                                                       color: Colors.grey,
                                                     ),
                                               ),
-                                            if (provider.company?.location !=
+                                            if (provider.company?.address !=
                                                 null)
                                               Text(
-                                                "${provider.company!.location} •",
+                                                "${provider.company!.address} •",
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium
@@ -248,7 +249,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                                     ),
                                               ),
                                             Text(
-                                              "${formatNumber(provider.company?.employeeCount ?? 0)} employees •",
+                                              "${formatNumber(int.tryParse(provider.company?.companySize ?? '') ?? 0)} employees •",
                                               style: Theme.of(
                                                 context,
                                               ).textTheme.bodyMedium?.copyWith(
@@ -256,7 +257,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                               ),
                                             ),
                                             Text(
-                                              "${formatNumber(provider.company?.followerCount ?? 0)} followers",
+                                              "${formatNumber(provider.company?.followers ?? 0)} followers",
                                               style: Theme.of(
                                                 context,
                                               ).textTheme.bodyMedium?.copyWith(
@@ -266,6 +267,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                           ],
                                         ),
                                       ),
+                                      SizedBox(height: 8),
                                     ],
                                   ),
                                   if (provider.friendsFollowing.isNotEmpty)
@@ -276,14 +278,14 @@ class CompanyProfileScreen extends StatelessWidget {
                                             provider
                                                 .friendsFollowing
                                                 .first
-                                                .profileImageUrl,
+                                                .profilePicture,
                                           ),
                                           radius: 20,
                                         ),
                                         SizedBox(width: 8),
                                         Expanded(
                                           child: Text(
-                                            "${provider.friendsFollowing.first.name} & ${provider.friendsFollowing.length - 1} other connections follow this page",
+                                            "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
                                             style:
                                                 Theme.of(
                                                   context,
@@ -294,8 +296,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-
-                                  SizedBox(height: 20),
+                                  SizedBox(height: 10),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
@@ -448,7 +449,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
-                            CompanyTabsWidget(userId: userId),
+                            CompanyTabsWidget(userId: userId,companyId: companyId,),
                             Divider(thickness: 3, color: Colors.black54),
                           ],
                         ),

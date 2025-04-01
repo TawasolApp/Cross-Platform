@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_about_widget.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_home_widget.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_jobs_widget.dart';
 
 class CompanyTabsWidget extends StatelessWidget {
   final String userId; // Accepting userId as a parameter
-
-  CompanyTabsWidget({required this.userId});
+  final String companyId;
+  CompanyTabsWidget({required this.userId, required this.companyId});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,7 @@ class CompanyTabsWidget extends StatelessWidget {
                 CompanyHomeTab(),
                 CompanyAboutWidget(userId),
                 Center(child: Text("Posts Content")),
-                Center(child: Text("Jobs Content")),
+                CompanyJobsWidget(userId: userId,companyId: companyId,),
               ],
             ),
           ),

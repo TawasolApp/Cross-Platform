@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/recent_jobs_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 class CompanyHomeTab extends StatefulWidget {
   @override
   _CompanyHomeTabState createState() => _CompanyHomeTabState();
@@ -14,6 +16,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
   Widget build(BuildContext context) {
     final provider = Provider.of<CompanyProvider>(context);
     print("Posts length: ${provider.posts.length}");
+    print('Jobs length: ${provider.jobs.length}');
     String fullText =
         provider.company?.description ?? "No description available.";
 
@@ -121,7 +124,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                   onPressed: () {
                     DefaultTabController.of(
                       context,
-                    )?.animateTo(1); // Index 1 for "About" tab
+                    ).animateTo(1); // Index 1 for "About" tab
                   },
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey[700], // Text color
@@ -149,146 +152,164 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Text(
-                "Page Posts",
+                "Page posts",
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
             SizedBox(
               height: 300,
-              child:provider.isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  :
-                  provider.posts.isEmpty
-                      ? Center(
-                          child: Text("No posts available"),
-                        )
-                      : 
-                      
-              ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount:
-                    provider.posts.length < 4 ? provider.posts.length : 4,
-                itemBuilder: (context, index) {
-                  final post = provider.posts[index];
-                                      print("Posts length: ${provider.posts.length}");
+              child:
+                  provider.isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : provider.posts.isEmpty
+                      ? Center(child: Text("No posts available"))
+                      : ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount:
+                            provider.posts.length < 4
+                                ? provider.posts.length
+                                : 4,
+                        itemBuilder: (context, index) {
+                          final post = provider.posts[index];
+                          print("Posts length: ${provider.posts.length}");
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 6,
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        print("Clicked on post by ${post.username}");
-                      },
-                      child: Container(
-                        width: 300,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black12,
-                              blurRadius: 6,
-                              spreadRadius: 1,
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 6,
                             ),
-                          ],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  post.profileImage,
+                            child: GestureDetector(
+                              onTap: () {
+                                print("Clicked on post by ${post.username}");
+                              },
+                              child: Container(
+                                width: 300,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: Colors.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 6,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          post.profileImage,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        post.username,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      subtitle: Text(
+                                        "${post.followers} followers",
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                        post.text,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    if (post.imageUrl != null)
+                                      Flexible(
+                                        fit: FlexFit.loose,
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                          child: Image.network(
+                                            post.imageUrl!,
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: 120,
+                                          ),
+                                        ),
+                                      ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Icon(
+                                                Icons.favorite_border,
+                                                size: 18,
+                                              ),
+                                              SizedBox(width: 4),
+                                              Text("${post.likes}"),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.comment, size: 18),
+                                              SizedBox(width: 4),
+                                              Text("${post.comments}"),
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Icon(Icons.share, size: 18),
+                                              SizedBox(width: 4),
+                                              Text("${post.shares}"),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              title: Text(
-                                post.username,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                              subtitle: Text("${post.followers} followers"),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                post.text,
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            if (post.imageUrl != null)
-                              Flexible(
-                                fit: FlexFit.loose,
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: Image.network(
-                                    post.imageUrl!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: 120,
-                                  ),
-                                ),
-                              ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(Icons.favorite_border, size: 18),
-                                      SizedBox(width: 4),
-                                      Text("${post.likes}"),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.comment, size: 18),
-                                      SizedBox(width: 4),
-                                      Text("${post.comments}"),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.share, size: 18),
-                                      SizedBox(width: 4),
-                                      Text("${post.shares}"),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    ),
-                  );
-                },
-              ),
             ),
 
-            Center(
-              child: SizedBox(
-                width: double.infinity, // Take full width
-                child: TextButton(
-                  onPressed: () {
-                    // TODO: Navigate to  posts tab
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Show all posts",
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      SizedBox(width: 5),
-                      Icon(Icons.arrow_forward, color: Colors.grey[700]),
-                    ],
+              Center(
+                child: SizedBox(
+                  width: double.infinity, // Take full width
+                  child: TextButton(
+                    onPressed: () {
+                      // TODO: Navigate to  posts tab
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Show all posts",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        SizedBox(width: 5),
+                        Icon(Icons.arrow_forward, color: Colors.grey[700]),
+                      ],
+                    ),
                   ),
                 ),
               ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Recent job openings",
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                SizedBox(height: 10),
+                RecentJobsWidget(),
+              ],
             ),
           ],
         ),

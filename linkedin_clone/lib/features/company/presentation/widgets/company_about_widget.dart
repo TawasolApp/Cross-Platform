@@ -22,7 +22,7 @@ class CompanyAboutWidget extends StatelessWidget {
           Text("Overview", style: Theme.of(context).textTheme.titleLarge),
           SizedBox(height: 8),
           Text(
-            context.read<CompanyProvider>().company!.description,
+            context.read<CompanyProvider>().company!.overview ?? 'No overview available',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           SizedBox(height: 16),
@@ -48,19 +48,19 @@ class CompanyAboutWidget extends StatelessWidget {
           SizedBox(height: 4),
           Text('Industry', style: Theme.of(context).textTheme.bodyLarge),
           Text(
-            context.read<CompanyProvider>().company!.field,
+            context.read<CompanyProvider>().company!.industry,
             style: Theme.of(context).textTheme.bodySmall,
           ),
           SizedBox(height: 4),
           Text('Headquarters', style: Theme.of(context).textTheme.bodyLarge),
           Text(
-            context.read<CompanyProvider>().company!.location,
+            context.read<CompanyProvider>().company!.address ?? 'No address available',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           SizedBox(height: 4),
           Text('Company Size', style: Theme.of(context).textTheme.bodyLarge),
           Text(
-            '${context.read<CompanyProvider>().company!.employeeCount} employees',
+            '${context.read<CompanyProvider>().company!.companySize} employees',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           SizedBox(height: 8),
@@ -88,7 +88,7 @@ class CompanyAboutWidget extends StatelessWidget {
                               // Company Logo
                               CircleAvatar(
                                 backgroundImage: NetworkImage(
-                                  relatedCompany.logoUrl ?? '',
+                                  relatedCompany.logo ?? '',
                                 ),
                                 radius: 24,
                                 onBackgroundImageError:
@@ -110,7 +110,7 @@ class CompanyAboutWidget extends StatelessWidget {
                                     ),
                                     SizedBox(height: 2),
                                     Text(
-                                      relatedCompany.field ??
+                                      relatedCompany.industry ??
                                           'No industry info',
                                       style:
                                           Theme.of(
@@ -119,7 +119,7 @@ class CompanyAboutWidget extends StatelessWidget {
                                     ),
                                     SizedBox(height: 2),
                                     Text(
-                                      '${relatedCompany.followerCount} followers',
+                                      '${relatedCompany.followers} followers',
                                       style:
                                           Theme.of(
                                             context,
@@ -130,11 +130,11 @@ class CompanyAboutWidget extends StatelessWidget {
                               ),
                               IconButton(
                                 icon: Icon(
-                                  isFollowing(relatedCompany.id)
+                                  isFollowing(relatedCompany.companyId)
                                       ? Icons.check_circle
                                       : Icons.add_circle_outline,
                                   color:
-                                      isFollowing(relatedCompany.id)
+                                      isFollowing(relatedCompany.companyId)
                                           ? Theme.of(
                                             context,
                                           ).colorScheme.primary
@@ -144,7 +144,7 @@ class CompanyAboutWidget extends StatelessWidget {
                                 onPressed: () {
                                   companyProvider.toggleFollowStatus(
                                     userID,
-                                    relatedCompany.id,
+                                    relatedCompany.companyId,
                                   );
                                 },
                               ),
