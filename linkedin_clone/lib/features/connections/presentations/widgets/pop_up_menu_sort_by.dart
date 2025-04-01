@@ -10,7 +10,7 @@ class PopUpMenuSortBy extends StatelessWidget {
   Widget build(BuildContext context) {
     return IconButton(
       icon: Icon(Icons.tune, size: 25),
-      color: const Color.fromARGB(255, 30, 30, 30),
+      color: Theme.of(context).textTheme.titleLarge?.color,
 
       onPressed: () {
         _popUpMenuSortBy(context);
@@ -23,7 +23,7 @@ class PopUpMenuSortBy extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -44,7 +44,7 @@ class PopUpMenuSortBy extends StatelessWidget {
                         width: 40,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 30, 30, 30),
+                          color: Theme.of(context).textTheme.titleLarge?.color,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         margin: EdgeInsets.only(bottom: 10),
@@ -58,7 +58,7 @@ class PopUpMenuSortBy extends StatelessWidget {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: Color.fromARGB(255, 201, 201, 201),
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
                     SizedBox(height: 10),
                     Padding(
@@ -82,7 +82,10 @@ class PopUpMenuSortBy extends StatelessWidget {
                                           130,
                                           60,
                                         ),
-                                        backgroundColor: Colors.white,
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).scaffoldBackgroundColor,
                                         labelPadding: EdgeInsets.symmetric(
                                           horizontal: 4,
                                           vertical: 0,
@@ -94,14 +97,18 @@ class PopUpMenuSortBy extends StatelessWidget {
                                               connectionsListProvider
                                                           .selectedFilter ==
                                                       filter
-                                                  ? Colors.white
+                                                  ? Colors
+                                                      .white //TODO: fix for dark mode
                                                   : Colors.black,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             20,
                                           ),
-                                          side: BorderSide(color: Colors.grey),
+                                          side: BorderSide(
+                                            color:
+                                                Theme.of(context).dividerColor,
+                                          ),
                                         ),
                                         onSelected: (bool selected) {
                                           selectedFilter = filter;
@@ -147,7 +154,7 @@ class PopUpMenuSortBy extends StatelessWidget {
                               "Show results",
                               style: TextStyle(
                                 fontSize: 22,
-                                color: Colors.white,
+                                color: Colors.white, //TODO: fix for dark mode
                               ),
                             ),
                           ),

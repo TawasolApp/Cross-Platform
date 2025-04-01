@@ -20,10 +20,13 @@ class ConnectionsPage extends StatelessWidget {
     );
     connectionsProvider.setToken(token);
     return Scaffold(
-      backgroundColor: Colors.white, // Directly setting background color
+      backgroundColor:
+          Theme.of(
+            context,
+          ).scaffoldBackgroundColor, // Directly setting background color
 
       appBar: AppBar(
-        surfaceTintColor: Colors.white,
+        surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         toolbarHeight: 65.0,
         leading: IconButton(
@@ -35,7 +38,7 @@ class ConnectionsPage extends StatelessWidget {
             Navigator.pop(context);
           },
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
           'Connections',
           style: Theme.of(context).textTheme.titleLarge,

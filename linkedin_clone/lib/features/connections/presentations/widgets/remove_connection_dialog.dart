@@ -49,9 +49,7 @@ class RemoveConnectionDialog extends StatelessWidget {
                   },
                   child: Text(
                     "Cancel",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color.fromARGB(255, 113, 113, 113),
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 TextButton(
@@ -64,9 +62,7 @@ class RemoveConnectionDialog extends StatelessWidget {
                   },
                   child: Text(
                     "Remove",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: const Color.fromARGB(255, 113, 113, 113),
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
               ],

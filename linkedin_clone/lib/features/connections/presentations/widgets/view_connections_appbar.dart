@@ -45,11 +45,7 @@ class ViewConnectionsAppBar extends StatelessWidget {
             PopUpMenuSortBy(connectionsProvider: connectionsProvider),
           ],
         ),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: Color.fromARGB(255, 201, 201, 201),
-        ),
+        Divider(height: 1, thickness: 1, color: Theme.of(context).dividerColor),
       ],
     );
   }
