@@ -19,7 +19,7 @@ class MockProfileRemoteDataSource implements ProfileRemoteDataSource {
     industry: 'Software Development',
     profilePicture: 'https://randomuser.me/api/portraits/men/42.jpg',
     coverPhoto: 'https://picsum.photos/1600/400',
-    resume: 'https://example.com/johndoe-resume-2023.pdf',
+    resume: 'https://drive.google.com/file/d/1qqh0yXoTne-9VtHyedWDIgt2onJkrVm8/view',
     connectionCount: 872,
     visibility: 'public',
 

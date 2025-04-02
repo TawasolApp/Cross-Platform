@@ -8,6 +8,7 @@ import 'package:linkedin_clone/features/profile/presentation/widgets/skills_sect
 import 'package:linkedin_clone/features/profile/presentation/widgets/about_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/education_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/certifications_section.dart';
+import 'package:linkedin_clone/features/profile/presentation/widgets/resume_section.dart';
 import 'package:provider/provider.dart';
 
 class UserProfile extends StatefulWidget {
@@ -55,10 +56,10 @@ class _UserProfileState extends State<UserProfile> {
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              context.go(RouteNames.main); // Return to previous screen
-            },
-          ),
+          onPressed: () {
+            context.go(RouteNames.main); // Return to previous screen
+          },
+        ),
         title: const Text('User Profile'),
         actions: [
           IconButton(
@@ -68,86 +69,108 @@ class _UserProfileState extends State<UserProfile> {
           ),
         ],
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
               ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 60, color: Colors.red),
-                      const SizedBox(height: 16),
-                      Text('Error loading profile: $_error', textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _loadProfileData,
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(color: Colors.white, child: ProfileHeader()),
-                      const SizedBox(height: 10),
-                      if (profileProvider.bio != null && profileProvider.bio!.trim().isNotEmpty)
-                        ...[
-                          Container(
-                            color: Colors.white,
-                            child: AboutSection(bio: profileProvider.bio),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                      Container(
-                        color: Colors.white,
-                        child: ExperienceSection(
-                          experiences: profileProvider.experiences,
-                          isExpanded: profileProvider.isExpandedExperiences,
-                          onToggleExpansion: profileProvider.toggleExperienceExpansion,
-                          errorMessage: profileProvider.experienceError,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        color: Colors.white,
-                        child: EducationSection(
-                          educations: profileProvider.educations,
-                          isExpanded: profileProvider.isExpandedEducation,
-                          onToggleExpansion: profileProvider.toggleEducationExpansion,
-                          errorMessage: profileProvider.educationError,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        color: Colors.white,
-                        child: Expanded(
-                          child: CertificationsSection(
-                            certifications: profileProvider.certifications,
-                            isExpanded: profileProvider.isExpandedCertifications,
-                            onToggleExpansion: profileProvider.toggleCertificationExpansion,
-                            errorMessage: profileProvider.certificationError,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        color: Colors.white,
-                        child: Expanded(
-                          child: SkillsSection(
-                            skills: profileProvider.skills,
-                            isExpanded: profileProvider.isExpandedSkills,
-                            onToggleExpansion: profileProvider.toggleSkillsExpansion,
-                            errorMessage: profileProvider.skillError,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 60,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error loading profile: $_error',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loadProfileData,
+                      child: const Text('Retry'),
+                    ),
+                  ],
                 ),
+              )
+              : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(color: Colors.white, child: ProfileHeader()),
+                    const SizedBox(height: 10),
+                    if (profileProvider.bio != null &&
+                        profileProvider.bio!.trim().isNotEmpty)
+                      Container(
+                        color: Colors.white,
+                        child: AboutSection(
+                          bio: profileProvider.bio,
+                          isExpanded: profileProvider.isExpandedBio,
+                          onToggleExpansion: profileProvider.toggleBioExpansion,
+                          errorMessage: profileProvider.bioError,
+                        ),
+                      ),
+                    const SizedBox(height: 10),
+                    // Add Resume Section here
+                    Container(
+                      color: Colors.white,
+                      child: ResumeSection(
+                        resumeUrl: profileProvider.resume,
+                        isCurrentUser: true,
+                        errorMessage: profileProvider.resumeError,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      color: Colors.white,
+                      child: ExperienceSection(
+                        experiences: profileProvider.experiences,
+                        isExpanded: profileProvider.isExpandedExperiences,
+                        onToggleExpansion:
+                            profileProvider.toggleExperienceExpansion,
+                        errorMessage: profileProvider.experienceError,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      color: Colors.white,
+                      child: EducationSection(
+                        educations: profileProvider.educations,
+                        isExpanded: profileProvider.isExpandedEducation,
+                        onToggleExpansion:
+                            profileProvider.toggleEducationExpansion,
+                        errorMessage: profileProvider.educationError,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      color: Colors.white,
+                      child: CertificationsSection(
+                        certifications: profileProvider.certifications,
+                        isExpanded: profileProvider.isExpandedCertifications,
+                        onToggleExpansion:
+                            profileProvider.toggleCertificationExpansion,
+                        errorMessage: profileProvider.certificationError,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      color: Colors.white,
+                      child: SkillsSection(
+                        skills: profileProvider.skills,
+                        isExpanded: profileProvider.isExpandedSkills,
+                        onToggleExpansion:
+                            profileProvider.toggleSkillsExpansion,
+                        errorMessage: profileProvider.skillError,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                ),
+              ),
     );
   }
 }

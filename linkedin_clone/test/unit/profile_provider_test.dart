@@ -21,6 +21,16 @@ import 'package:linkedin_clone/features/profile/domain/usecases/certifications/a
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/update_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
+// import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_cover_photo.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_profile_picture.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_cover_picture.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_headline.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_industry.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_location.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile_picture.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_resume.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 
@@ -40,6 +50,15 @@ class MockUpdateCertificationUseCase extends Mock implements UpdateCertification
 class MockDeleteCertificationUseCase extends Mock implements DeleteCertificationUseCase {}
 class MockUpdateBioUseCase extends Mock implements UpdateBioUseCase {}
 class MockNoParams extends Mock implements NoParams {}
+class MockUpdateProfilePictureUseCase extends Mock implements UpdateProfilePictureUseCase {}
+class MockDeleteProfilePictureUseCase extends Mock implements DeleteProfilePictureUseCase {}
+class MockUpdateCoverPictureUseCase extends Mock implements UpdateCoverPictureUseCase {}
+class MockDeleteCoverPhotoUseCase extends Mock implements DeleteCoverPhotoUseCase {}
+class MockUpdateHeadlineUseCase extends Mock implements UpdateHeadlineUseCase {}
+class MockUpdateIndustryUseCase extends Mock implements UpdateIndustryUseCase {}
+class MockUpdateLocationUseCase extends Mock implements UpdateLocationUseCase {}
+class MockUpdateNameUseCase extends Mock implements UpdateNameUseCase {}
+class MockUpdateResumeUseCase extends Mock implements UpdateResumeUseCase {}
 
 // Test data
 const testExperience = Experience(
@@ -109,6 +128,15 @@ void main() {
   late MockUpdateCertificationUseCase mockUpdateCertification;
   late MockDeleteCertificationUseCase mockDeleteCertification;
   late MockUpdateBioUseCase mockUpdateBio;
+  late MockUpdateProfilePictureUseCase mockUpdateProfilePicture;
+  late MockDeleteProfilePictureUseCase mockDeleteProfilePicture;
+  late MockUpdateCoverPictureUseCase mockUpdateCoverPicture;
+  late MockDeleteCoverPhotoUseCase mockDeleteCoverPhoto;
+  late MockUpdateHeadlineUseCase mockUpdateHeadline;
+  late MockUpdateIndustryUseCase mockUpdateIndustry;
+  late MockUpdateLocationUseCase mockUpdateLocation;
+  late MockUpdateNameUseCase mockUpdateName;
+  late MockUpdateResumeUseCase mockUpdateResume;
 
   setUpAll(() {
     registerFallbackValue(MockNoParams());
@@ -129,22 +157,40 @@ void main() {
     mockUpdateCertification = MockUpdateCertificationUseCase();
     mockDeleteCertification = MockDeleteCertificationUseCase();
     mockUpdateBio = MockUpdateBioUseCase();
+    mockUpdateProfilePicture = MockUpdateProfilePictureUseCase();
+    mockDeleteProfilePicture = MockDeleteProfilePictureUseCase();
+    mockUpdateCoverPicture = MockUpdateCoverPictureUseCase();
+    mockDeleteCoverPhoto = MockDeleteCoverPhotoUseCase();
+    mockUpdateHeadline = MockUpdateHeadlineUseCase();
+    mockUpdateIndustry = MockUpdateIndustryUseCase();
+    mockUpdateLocation = MockUpdateLocationUseCase();
+    mockUpdateName = MockUpdateNameUseCase();
+    mockUpdateResume = MockUpdateResumeUseCase();
 
     provider = ProfileProvider(
-      mockGetProfile,
-      mockAddExperience,
-      mockUpdateExperience,
-      mockDeleteExperience,
-      mockAddEducation,
-      mockUpdateEducation,
-      mockDeleteEducation,
-      mockAddCertification,
-      mockUpdateCertification,
-      mockDeleteCertification,
-      mockAddSkill,
-      mockUpdateSkill,
-      mockDeleteSkill,
-      mockUpdateBio,
+      getProfileUseCase: mockGetProfile,
+      updateProfilePictureUseCase: mockUpdateProfilePicture,
+      deleteProfilePictureUseCase: mockDeleteProfilePicture,
+      updateCoverPictureUseCase: mockUpdateCoverPicture,
+      deleteCoverPhotoUseCase: mockDeleteCoverPhoto,
+      updateHeadlineUseCase: mockUpdateHeadline,
+      updateIndustryUseCase: mockUpdateIndustry,
+      updateLocationUseCase: mockUpdateLocation,
+      updateNameUseCase: mockUpdateName,
+      updateResumeUseCase: mockUpdateResume,
+      updateBioUseCase: mockUpdateBio,
+      addExperienceUseCase: mockAddExperience,
+      updateExperienceUseCase: mockUpdateExperience,
+      deleteExperienceUseCase: mockDeleteExperience,
+      addEducationUseCase: mockAddEducation,
+      updateEducationUseCase: mockUpdateEducation,
+      deleteEducationUseCase: mockDeleteEducation,
+      addCertificationUseCase: mockAddCertification,
+      updateCertificationUseCase: mockUpdateCertification,
+      deleteCertificationUseCase: mockDeleteCertification,
+      addSkillUseCase: mockAddSkill,
+      updateSkillUseCase: mockUpdateSkill,
+      deleteSkillUseCase: mockDeleteSkill,
     );
   });
 
