@@ -20,55 +20,63 @@ class PostCard extends StatelessWidget {
     ).posts.firstWhere((p) => p.id == post.id, orElse: () => post);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      width: screenWidth,
-      color: isDarkMode ? const Color.fromARGB(255, 29, 34, 38) : Colors.white,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-      margin: const EdgeInsets.only(bottom: 6),
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: PostHeader(
-                      profileImage: updatedPost.authorPicture ?? '',
-                      authorName: updatedPost.authorName,
-                      authorTitle: updatedPost.authorBio,
-                      postTime: timeago.format(updatedPost.timestamp),
-                      postId: updatedPost.id,
-                      postContent: updatedPost.content,
+    return GestureDetector(
+      onTap: () {
+        // Navigate to post details page
+        Navigator.pushNamed(context, '/postDetails', arguments: updatedPost.id);
+      },
+      child: Container(
+        width: screenWidth,
+        color:
+            isDarkMode ? const Color.fromARGB(255, 29, 34, 38) : Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+        margin: const EdgeInsets.only(bottom: 6),
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: PostHeader(
+                        profileImage: updatedPost.authorPicture ?? '',
+                        authorName: updatedPost.authorName,
+                        authorTitle: updatedPost.authorBio,
+                        postTime: timeago.format(updatedPost.timestamp),
+                        postId: updatedPost.id,
+                        postContent: updatedPost.content,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              PostContent(
-                content: updatedPost.content,
-                imageUrl:
-                    (updatedPost.media != null && updatedPost.media!.isNotEmpty)
-                        ? post.media!.first
-                        : null,
-              ),
-              const SizedBox(height: 8),
-              PostFooter(
-                likes: updatedPost.likes,
-                comments: updatedPost.comments,
-                shares: updatedPost.shares,
-                post: updatedPost,
-                // onReact: (reactionName) {
-                //   Provider.of<FeedProvider>(context, listen: false).reactToPost(
-                //     postId: updatedPost.id,
-                //     reactions: {reactionName: true},
-                //   );
-                // },
-              ),
-            ],
-          ),
-        ],
+                  ],
+                ),
+                const SizedBox(height: 8),
+                PostContent(
+                  content: updatedPost.content,
+                  imageUrl:
+                      (updatedPost.media != null &&
+                              updatedPost.media!.isNotEmpty)
+                          ? post.media!.first
+                          : null,
+                ),
+                const SizedBox(height: 8),
+                PostFooter(
+                  likes: updatedPost.likes,
+                  comments: updatedPost.comments,
+                  shares: updatedPost.shares,
+                  post: updatedPost,
+                  // onReact: (reactionName) {
+                  //   Provider.of<FeedProvider>(context, listen: false).reactToPost(
+                  //     postId: updatedPost.id,
+                  //     reactions: {reactionName: true},
+                  //   );
+                  // },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

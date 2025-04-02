@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
+import 'add_comment_field.dart';
+import 'comment_list.dart';
 
 class CommentSection extends StatelessWidget {
-  final List<String> comments;
+  final String postId;
 
-  const CommentSection({super.key, required this.comments});
+  const CommentSection({super.key, required this.postId});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children:
-          comments
-              .map(
-                (comment) => Text(
-                  comment,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              )
-              .toList(),
+      children: [
+        AddCommentField(postId: postId),
+        const Divider(),
+        CommentList(postId: postId),
+      ],
     );
   }
 }

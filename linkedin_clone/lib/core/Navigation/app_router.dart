@@ -25,25 +25,47 @@ class AppRouter {
         path: RouteNames.onboarding,
         builder: (context, state) => OnboardingPage(),
       ),
+      GoRoute(path: RouteNames.login, builder: (context, state) => LoginPage()),
+      GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
-        path: RouteNames.login,
-        builder: (context, state) => LoginPage(),
+        path: RouteNames.addName,
+        builder: (context, state) => AddNamePage(),
       ),
       GoRoute(
-        path: RouteNames.home,
-         builder: (context, state) => HomePage(),
-      ), 
-      GoRoute(path: RouteNames.addName, builder: (context, state) => AddNamePage()),
-      GoRoute(path: RouteNames.addEmail, builder: (context, state) => AddEmailPasswordPage()),
-      GoRoute(path: RouteNames.verifyEmail, builder: (context, state) => EmailVerificationPage()),
-      GoRoute(path: RouteNames.forgotPassword, builder: (context, state) => ForgotPasswordPage()),
-      GoRoute(path: RouteNames.checkemail, builder: (context, state) => ForgotPasswordCheckEmailPage()),
-      GoRoute(path: RouteNames.main, builder: (context, state) => MainNavigationPage()),
-      GoRoute(path: RouteNames.createPost,builder: (context, state) => PostCreationPage() ),
-      GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
-      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "Company", title: "Test") ),
-      GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
-
+        path: RouteNames.addEmail,
+        builder: (context, state) => AddEmailPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.verifyEmail,
+        builder: (context, state) => EmailVerificationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        builder: (context, state) => ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.checkemail,
+        builder: (context, state) => ForgotPasswordCheckEmailPage(),
+      ),
+      GoRoute(
+        path: RouteNames.main,
+        builder: (context, state) => MainNavigationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.createPost,
+        builder: (context, state) => PostCreationPage(),
+      ),
+      GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
+      GoRoute(
+        path: RouteNames.companyPage,
+        builder:
+            (context, state) =>
+                CompanyProfileScreen(companyId: "Company", title: "Test"),
+      ),
+      GoRoute(
+        path: RouteNames.profile,
+        builder: (context, state) => UserProfile(),
+      ),
     ],
   );
 }
