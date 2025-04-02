@@ -33,6 +33,12 @@ abstract class FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
+  Future<void> editComment({
+    required String commentId,
+    required String content,
+    required List<String> taggedUsers,
+    required bool isReply,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -56,7 +62,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       final token = await _getToken();
 
       final response = await dio.get(
-        '/posts',
+        'https://tawasolapp.me/api/posts',
         queryParameters: queryParams,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
@@ -79,7 +85,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.post(
-        '/posts',
+        'https://tawasolapp.me/api/posts',
         data: {
           "content": content,
           "media": media ?? [],
@@ -109,7 +115,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.delete(
-        'https://your-api.com/posts/$postId',
+        'https://tawasolapp.me/api/posts/$postId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -128,7 +134,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.post(
-        'https://your-api.com/posts/save/$postId',
+        'https://tawasolapp.me/api/posts/save/$postId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -149,7 +155,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.post(
-        'https://your-api.com/posts/react/$postId',
+        'https://tawasolapp.me/api/posts/react/$postId',
         data: {"reactions": reactions, "postType": postType},
         options: Options(
           headers: {
@@ -178,7 +184,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.patch(
-        '/posts/$postId',
+        'https://tawasolapp.me/api/posts/$postId',
         data: {
           "content": content,
           "media": media,
@@ -200,7 +206,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.post(
-        '/posts/comment/$postId',
+        'https://tawasolapp.me/api/posts/comment/$postId',
         data: {"content": content},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
@@ -221,7 +227,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.get(
-        '/posts/comments/$postId',
+        'https://tawasolapp.me/api/posts/comments/$postId',
         queryParameters: {'page': page, 'limit': limit},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
@@ -233,6 +239,27 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
     } catch (e) {
       throw ServerException("Failed to fetch comments");
+    }
+  }
+
+  @override
+  Future<void> editComment({
+    required String commentId,
+    required String content,
+    required List<String> taggedUsers,
+    required bool isReply,
+  }) async {
+    try {
+      final response = await dio.patch(
+        'https://tawasolapp.me/api/posts/comments/$commentId',
+        data: {'content': content, 'tagged': taggedUsers, 'isReply': isReply},
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update comment');
+      }
+    } catch (e) {
+      throw Exception('Failed to update comment: ${e.toString()}');
     }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'post_header.dart';
@@ -6,6 +7,7 @@ import 'post_content.dart';
 import 'post_footer.dart';
 import '../../domain/entities/post_entity.dart';
 import '../provider/feed_provider.dart';
+import '../../../../core/Navigation/route_names.dart';
 
 class PostCard extends StatelessWidget {
   final PostEntity post;
@@ -22,8 +24,7 @@ class PostCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Navigate to post details page
-        Navigator.pushNamed(context, '/postDetails', arguments: updatedPost.id);
+        context.push('/post_details', extra: updatedPost.id);
       },
       child: Container(
         width: screenWidth,

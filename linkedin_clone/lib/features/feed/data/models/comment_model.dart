@@ -10,7 +10,7 @@ class CommentModel extends CommentEntity {
     required String authorBio,
     required String content,
     required List<String> taggedUsers,
-    required List<CommentModel> replies,
+    required List<CommentEntity> replies,
     required int reactCount,
     required DateTime timestamp,
   }) : super(
@@ -60,5 +60,33 @@ class CommentModel extends CommentEntity {
       'reactCount': reactCount,
       'timestamp': timestamp.toIso8601String(),
     };
+  }
+
+  CommentModel copyWith({
+    String? id,
+    String? postId,
+    String? authorId,
+    String? authorName,
+    String? authorPicture,
+    String? authorBio,
+    String? content,
+    int? reactCount,
+    DateTime? timestamp,
+    List<String>? taggedUsers,
+    List<CommentModel>? replies,
+  }) {
+    return CommentModel(
+      id: id ?? this.id,
+      postId: postId ?? this.postId,
+      authorId: authorId ?? this.authorId,
+      authorName: authorName ?? this.authorName,
+      authorPicture: authorPicture ?? this.authorPicture,
+      authorBio: authorBio ?? this.authorBio,
+      content: content ?? this.content,
+      reactCount: reactCount ?? this.reactCount,
+      timestamp: timestamp ?? this.timestamp,
+      taggedUsers: taggedUsers ?? this.taggedUsers,
+      replies: replies ?? this.replies,
+    );
   }
 }

@@ -15,6 +15,7 @@ import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/main_layout.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -65,6 +66,13 @@ class AppRouter {
       GoRoute(
         path: RouteNames.profile,
         builder: (context, state) => UserProfile(),
+      ),
+      GoRoute(
+        path: RouteNames.postDetails,
+        builder: (context, state) {
+          final postId = state.extra as String;
+          return PostDetailsPage(postId: postId);
+        },
       ),
     ],
   );

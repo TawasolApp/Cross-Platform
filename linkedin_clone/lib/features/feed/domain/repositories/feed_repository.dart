@@ -35,6 +35,12 @@ abstract class FeedRepository {
     int page = 1,
     int limit = 10,
   });
+  Future<Either<Failure, void>> editComment({
+    required String commentId,
+    required String content,
+    List<String>? taggedUsers,
+    bool isReply,
+  });
 }
 //   Future<Either<Failure, void>> likePost(String postId);
 

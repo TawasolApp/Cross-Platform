@@ -9,6 +9,7 @@ import '../../domain/usecases/comment_post_usecase.dart';
 import '../../domain/usecases/fetch_comments_usecase.dart';
 import '../../data/models/comment_model.dart';
 import '../../domain/entities/comment_entity.dart';
+import '../../domain/usecases/edit_comment_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -18,6 +19,7 @@ class FeedProvider extends ChangeNotifier {
   final EditPostUseCase editPostUseCase;
   final CommentPostUseCase commentPostUseCase;
   final FetchCommentsUseCase fetchCommentsUseCase;
+  //final EditCommentUseCase editCommentUseCase;
   //final ReactToPostUseCase reactToPostUseCase;
 
   FeedProvider({
@@ -28,6 +30,7 @@ class FeedProvider extends ChangeNotifier {
     required this.editPostUseCase,
     required this.commentPostUseCase,
     required this.fetchCommentsUseCase,
+    //required this.editCommentUseCase,
     //required this.reactToPostUseCase,
   });
 
@@ -261,80 +264,130 @@ class FeedProvider extends ChangeNotifier {
 
   Future<void> addComment(String postId, String content) async {
     _errorMessage = null;
-    notifyListeners();
 
-    final result = await commentPostUseCase(postId, content);
-
-    result.fold(
-      (failure) {
-        _errorMessage = failure.message;
-      },
-      (_) {
-        fetchComments(postId); // Refresh comments
-      },
+    final newComment = CommentModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      postId: postId,
+      authorId: "789",
+      authorName: "Mock User",
+      authorPicture: "https://via.placeholder.com/50",
+      authorBio: "Tester",
+      content: content,
+      taggedUsers: [],
+      replies: [],
+      reactCount: 0,
+      timestamp: DateTime.now(),
     );
 
-    notifyListeners();
+    if (useMockData) {
+      _comments.insert(0, newComment);
+      notifyListeners();
+    } else {
+      try {
+        final result = await commentPostUseCase(postId, content);
+        result.fold(
+          (failure) {
+            _errorMessage = failure.message;
+          },
+          (_) {
+            _comments.insert(0, newComment);
+            notifyListeners();
+          },
+        );
+      } catch (e) {
+        _errorMessage = "Failed to add comment";
+      }
+    }
   }
 
   // Fetch method for comments
   Future<void> fetchComments(String postId) async {
+    _isLoading = true;
     _errorMessage = null;
-    try {
-      final result = await fetchCommentsUseCase(postId);
-      result.fold((failure) => _errorMessage = failure.message, (comments) {
-        _comments =
-            comments.map((comment) => CommentModel.fromJson(comment)).toList();
-        notifyListeners();
-      });
-    } catch (e) {
-      _errorMessage = "Failed to load comments";
+    notifyListeners();
+
+    if (useMockData) {
+      //await Future.delayed(const Duration(milliseconds: 500)); // simulate delay
+      _comments = [
+        CommentModel(
+          id: "c1",
+          postId: postId,
+          authorId: "123",
+          authorName: "John Doe",
+          authorPicture: "https://via.placeholder.com/50",
+          authorBio: "Software Developer",
+          content: "Great post! Really insightful.",
+          taggedUsers: [],
+          replies: [],
+          reactCount: 5,
+          timestamp: DateTime.now().subtract(const Duration(minutes: 30)),
+        ),
+        CommentModel(
+          id: "c2",
+          postId: postId,
+          authorId: "456",
+          authorName: "Jane Smith",
+          authorPicture: "https://via.placeholder.com/50",
+          authorBio: "Product Manager",
+          content: "Thanks for sharing!",
+          taggedUsers: [],
+          replies: [],
+          reactCount: 3,
+          timestamp: DateTime.now().subtract(const Duration(hours: 1)),
+        ),
+      ];
+      _isLoading = false;
       notifyListeners();
+    } else {
+      try {
+        final result = await fetchCommentsUseCase(postId);
+        result.fold(
+          (failure) {
+            _errorMessage = failure.message;
+          },
+          (comments) {
+            _comments =
+                comments
+                    .map((comment) => CommentModel.fromJson(comment))
+                    .toList();
+          },
+        );
+      } catch (e) {
+        _errorMessage = "Failed to load comments";
+      } finally {
+        _isLoading = false;
+        notifyListeners();
+      }
     }
   }
-}
-  // Future<void> reactToPost({
-  //   required String postId,
-  //   required Map<String, bool> reactions,
-  //   String postType = 'Post',
+
+  // Future<void> editComment({
+  //   required String commentId,
+  //   required String content,
+  //   List<String>? taggedUsers,
+  //   bool isReply = false,
   // }) async {
   //   _errorMessage = null;
+  //   notifyListeners();
 
-  //   if (useMockData) {
-  //     final index = _posts.indexWhere((post) => post.id == postId);
-  //     if (index != -1) {
-  //       final currentPost = _posts[index];
-  //       final isLiked = reactions["Like"] ?? false;
-
-  //       final updatedPost = currentPost.copyWith(
-  //         isLiked: isLiked,
-  //         likes:
-  //             isLiked
-  //                 ? currentPost.likes + 1
-  //                 : (currentPost.likes > 0 ? currentPost.likes - 1 : 0),
-  //       );
-
-  //       _posts[index] = updatedPost;
-  //       notifyListeners();
-  //     }
-  //     return;
-  //   }
-
-  //   final result = await reactToPostUseCase(
-  //     postId: postId,
-  //     reactions: reactions,
-  //     postType: postType,
+  //   final result = await editCommentUseCase(
+  //     commentId: commentId,
+  //     content: content,
+  //     taggedUsers: taggedUsers,
+  //     isReply: isReply,
   //   );
-
   //   result.fold(
   //     (failure) {
   //       _errorMessage = failure.message;
+  //       notifyListeners();
   //     },
   //     (_) {
-  //       // Optional: Update local state/UI if needed after success
+  //       final index = _comments.indexWhere((c) => c.id == commentId);
+  //       if (index != -1) {
+  //         _comments[index] = _comments[index].copyWith(content: content);
+  //         notifyListeners();
+  //       }
   //     },
   //   );
-
-  //   notifyListeners();
   // }
-
+}

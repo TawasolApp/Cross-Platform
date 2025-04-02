@@ -28,6 +28,7 @@ dependencies:
   webview_flutter_plus: ^0.4.7
   flutter_svg: ^0.22.0
   font_awesome_flutter: ^10.8.0
+  lucide_icons: ^0.257.0
 
 dev_dependencies:
   flutter_test:

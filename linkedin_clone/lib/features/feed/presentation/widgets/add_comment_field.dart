@@ -1,8 +1,5 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../domain/entities/comment_entity.dart';
 import '../provider/feed_provider.dart';
 
 class AddCommentField extends StatefulWidget {
@@ -16,48 +13,88 @@ class AddCommentField extends StatefulWidget {
 
 class _AddCommentFieldState extends State<AddCommentField> {
   final TextEditingController _controller = TextEditingController();
-  bool _isFocused = false;
+  bool _isTyping = false;
+
+  void _addComment(BuildContext context) {
+    final content = _controller.text.trim();
+    if (content.isNotEmpty) {
+      context.read<FeedProvider>().addComment(widget.postId, content);
+      _controller.clear();
+      setState(() {
+        _isTyping = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundImage: NetworkImage(feedProvider.profileImage),
-            radius: 20,
-          ),
-          const SizedBox(width: 8),
-          Expanded(
-            child: TextField(
-              controller: _controller,
-              onChanged:
-                  (value) => setState(() {
-                    _isFocused = value.isNotEmpty;
-                  }),
-              decoration: InputDecoration(
-                hintText: "Leave your thoughts here...",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+          // Profile Picture
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: CircleAvatar(
+              radius: 18,
+              backgroundImage: NetworkImage(
+                "https://example.com/profile-picture.jpg", // Replace with actual profile image URL
               ),
             ),
           ),
-          if (_isFocused)
-            TextButton(
-              onPressed: () {
-                feedProvider.addComment(widget.postId, _controller.text);
-                _controller.clear();
+          // Comment Input Field
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              textInputAction: TextInputAction.send,
+              onChanged: (value) {
                 setState(() {
-                  _isFocused = false;
+                  _isTyping = value.isNotEmpty;
                 });
               },
-              child: const Text("Comment"),
+              onSubmitted: (_) => _addComment(context),
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                hintText: "Leave your thoughts here...",
+                hintStyle: TextStyle(color: Colors.grey[600]),
+                filled: true,
+                fillColor: Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
+          ),
+          // Dynamic Send Button
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: GestureDetector(
+              onTap: _isTyping ? () => _addComment(context) : null,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: _isTyping ? Colors.blue[600] : Colors.grey[400],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  _isTyping ? "Comment" : "",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

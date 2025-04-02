@@ -15,5 +15,5 @@ class RouteNames {
   static const String main = "/main";
   static const String createPost = "/create_post";
   static const String companyPage = "/company_page";
-  //static const String postDetails = "/post_details";
+  static const String postDetails = "/post_details";
 }

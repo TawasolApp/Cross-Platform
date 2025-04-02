@@ -10,11 +10,8 @@ class CommentList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final feedProvider = Provider.of<FeedProvider>(context);
-
-    return FutureBuilder(
-      future: feedProvider.fetchComments(postId),
-      builder: (context, snapshot) {
+    return Consumer<FeedProvider>(
+      builder: (context, feedProvider, child) {
         if (feedProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -23,13 +20,16 @@ class CommentList extends StatelessWidget {
           return const Center(child: Text("No comments yet."));
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(8.0),
-          itemCount: feedProvider.comments.length,
-          itemBuilder: (context, index) {
-            final comment = feedProvider.comments[index];
-            return CommentItem(comment: comment);
-          },
+        return Container(
+          color: Colors.white, // Set the background color to white
+          child: ListView.builder(
+            padding: const EdgeInsets.all(8.0),
+            itemCount: feedProvider.comments.length,
+            itemBuilder: (context, index) {
+              final comment = feedProvider.comments[index];
+              return CommentItem(comment: comment);
+            },
+          ),
         );
       },
     );

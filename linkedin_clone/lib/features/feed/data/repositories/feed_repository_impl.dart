@@ -151,6 +151,26 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, void>> editComment({
+    required String commentId,
+    required String content,
+    List<String>? taggedUsers,
+    bool isReply = false,
+  }) async {
+    try {
+      await remoteDataSource.editComment(
+        commentId: commentId,
+        content: content,
+        taggedUsers: taggedUsers ?? [],
+        isReply: isReply,
+      );
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
 
 //   // Like a Post
