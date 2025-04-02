@@ -176,7 +176,7 @@ class ConnectionsRemoteDataSource {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({'userId': userId, "isAccept": true}),
+        body: jsonEncode({"isAccept": true}),
       );
 
       if (response.statusCode == 200) {
@@ -201,7 +201,7 @@ class ConnectionsRemoteDataSource {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({'userId': userId, "isAccept": false}),
+        body: jsonEncode({"isAccept": false}),
       );
 
       if (response.statusCode == 200) {
@@ -213,6 +213,31 @@ class ConnectionsRemoteDataSource {
       }
     } catch (e) {
       print('Error accepting connection request: $e');
+      return false;
+    }
+  }
+
+  ///////////////////Send connection Request
+  Future<bool> sendConnectionRequest(String userId, String? token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"userId": userId}),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception(
+          'Failed to send connection request, Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error sending connection request: $e');
       return false;
     }
   }

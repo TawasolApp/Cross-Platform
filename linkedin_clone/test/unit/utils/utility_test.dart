@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:linkedin_clone/core/utils/time_formatter.dart'; // Update path as needed
 
 void main() {
-  group('getConnectionTime Tests', () {
+  group('formatTime Tests', () {
     test('should return "seconds ago" for recent connections', () {
       String result = formatTime(
         DateTime.now().subtract(Duration(seconds: 30)).toIso8601String(),

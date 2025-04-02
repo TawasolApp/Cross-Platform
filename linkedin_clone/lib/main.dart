@@ -21,6 +21,7 @@ import 'package:linkedin_clone/features/connections/domain/usecases/get_received
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/accept_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/ignore_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:provider/provider.dart';
@@ -159,6 +160,13 @@ void main() {
                   ),
                 ),
                 IgnoreConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                SendConnectionRequestUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),

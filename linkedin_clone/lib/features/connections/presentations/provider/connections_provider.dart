@@ -8,6 +8,7 @@ import '../../domain/usecases/get_sent_connection_requests_usecase.dart';
 import '../../domain/usecases/accept_connection_request_usecase.dart';
 import '../../domain/usecases/accept_connection_request_usecase.dart';
 import '../../domain/usecases/ignore_connection_request_usecase.dart';
+import '../../domain/usecases/send_connection_request_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';
 
 class ConnectionsProvider with ChangeNotifier {
@@ -18,6 +19,7 @@ class ConnectionsProvider with ChangeNotifier {
     this.getSentConnectionRequestsUseCase,
     this.acceptConnectionRequestUseCase,
     this.ignoreConnectionRequestUseCase,
+    this.sendConnectionRequestUseCase,
   );
 
   List<ConnectionsUserEntity>? connectionsList;
@@ -51,7 +53,9 @@ class ConnectionsProvider with ChangeNotifier {
   ///
   final IgnoreConnectionRequestUseCase ignoreConnectionRequestUseCase;
 
-  /////////////////////////////////////////////////
+  ////////////////////send connection request
+  final SendConnectionRequestUseCase sendConnectionRequestUseCase;
+
   ///
   ////filter
   ///
@@ -151,7 +155,6 @@ class ConnectionsProvider with ChangeNotifier {
   }
 
   Future<bool> ignoreConnectionRequest(String userId) async {
-
     bool ignored = await ignoreConnectionRequestUseCase.call(_token!, userId);
     print(ignored);
     if (ignored == false) {
@@ -159,5 +162,15 @@ class ConnectionsProvider with ChangeNotifier {
     }
     await getReceivedConnectionRequests();
     return ignored;
+  }
+
+  Future<bool> sendConnectionRequest(String userId) async {
+    bool sent = await sendConnectionRequestUseCase.call(_token!, userId);
+    print(sent);
+    if (sent == false) {
+      return sent;
+    }
+    await getReceivedConnectionRequests();
+    return sent;
   }
 }

@@ -85,4 +85,14 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       throw Exception('Failed to ignore connection request');
     }
   }
+
+  @override
+  Future<bool> sendConnectionRequest(String userId, String? token) async {
+    try {
+      final sent = await remoteDataSource.sendConnectionRequest(userId, token);
+      return sent;
+    } catch (e) {
+      throw Exception('Failed to send connection request');
+    }
+  }
 }

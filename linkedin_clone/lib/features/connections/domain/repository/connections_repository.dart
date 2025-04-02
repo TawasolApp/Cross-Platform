@@ -11,4 +11,5 @@ abstract class ConnectionsRepository {
   );
   Future<bool> acceptConnectionRequest(String userId, String? token);
   Future<bool> ignoreConnectionRequest(String userId, String? token);
+  Future<bool> sendConnectionRequest(String userId, String? token);
 }
