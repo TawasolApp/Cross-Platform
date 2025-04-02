@@ -4,11 +4,15 @@ import 'package:linkedin_clone/features/profile/presentation/provider/profile_pr
 
 class AboutSection extends StatelessWidget {
   final String? bio;
+  final bool isExpanded;
+  final VoidCallback onToggleExpansion;
   final String? errorMessage;
 
   const AboutSection({
     super.key, 
     this.bio,
+    required this.isExpanded,
+    required this.onToggleExpansion,
     this.errorMessage,
   });
 
@@ -17,62 +21,71 @@ class AboutSection extends StatelessWidget {
     return Consumer<ProfileProvider>(
       builder: (context, provider, _) {
         final displayBio = bio ?? provider.bio ?? '';
-        final isLoading = provider.isLoading;
         final error = errorMessage ?? provider.bioError;
+        final visibleBio = isExpanded || displayBio.length <= 200 
+            ? displayBio 
+            : '${displayBio.substring(0, 200)}...';
 
         return Container(
-          width: double.infinity,
           color: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Section Header with Edit Button
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'About',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+              // Section Header
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 0.0, 12.0, 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'About',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                    onPressed: () => _showEditBioDialog(context, provider),
-                  ),
-                ],
+                    IconButton(
+                      icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
+                      onPressed: () => _showEditBioDialog(context, provider),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 12),
 
-              // Error Message (if any)
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    error,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 14,
+              // Bio Content
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      displayBio.isNotEmpty ? visibleBio : "No bio available",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.black87,
+                        height: 1.4,
+                      ),
                     ),
+                    if (displayBio.length <= 200) 
+                      const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+
+              // Show More/Show Less Button
+              if (displayBio.length > 200)
+                Padding(
+                  padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 0.0),
+                  child: TextButton(
+                    onPressed: onToggleExpansion,
+                    child: Text(isExpanded ? 'Show less' : 'Show more'),
                   ),
                 ),
 
-              // Bio Content or Loading Indicator
-              if (isLoading)
-                const Center(child: CircularProgressIndicator())
-              else
+              // Error Message
+              if (error != null)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
                   child: Text(
-                    displayBio.isNotEmpty ? displayBio : "No bio available",
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.black87,
-                      height: 1.4,
-                    ),
+                    error,
+                    style: TextStyle(color: Theme.of(context).colorScheme.error),
                   ),
                 ),
             ],
@@ -84,18 +97,21 @@ class AboutSection extends StatelessWidget {
 
   void _showEditBioDialog(BuildContext context, ProfileProvider provider) {
     final bioController = TextEditingController(text: provider.bio);
-    final maxBioLength = 2000; // LinkedIn's actual character limit
+    final maxBioLength = 2000;
     final formKey = GlobalKey<FormState>();
     
     showDialog(
       context: context,
       builder: (context) {
-        bool isSubmitting = false;
-        int charCount = bioController.text.length;
-        
         return StatefulBuilder(
-          builder: (context, setState) {
+          builder: (context, setDialogState) {
+            bool isSubmitting = false;
+            
             return AlertDialog(
+              contentPadding: const EdgeInsets.all(16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               title: const Text(
                 'Edit About',
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -107,10 +123,25 @@ class AboutSection extends StatelessWidget {
                   children: [
                     TextFormField(
                       controller: bioController,
-                      maxLines: 8,
-                      maxLength: maxBioLength,
+                      maxLines: 5,
+                      maxLength: maxBioLength, 
+                      buildCounter: (
+                        BuildContext context, {
+                        required int currentLength,
+                        required bool isFocused,
+                        required int? maxLength,
+                      }) {
+                        return Text(
+                          '$currentLength / $maxLength',
+                          style: TextStyle(
+                            color: currentLength == maxLength
+                                ? Colors.red 
+                                : Colors.grey,
+                            fontSize: 12,
+                          ),
+                        );
+                      },
                       enabled: !isSubmitting,
-                      onChanged: (text) => setState(() => charCount = text.length),
                       decoration: InputDecoration(
                         hintText: 'Tell us about yourself...',
                         border: OutlineInputBorder(
@@ -118,28 +149,17 @@ class AboutSection extends StatelessWidget {
                           borderSide: const BorderSide(color: Colors.grey),
                         ),
                         contentPadding: const EdgeInsets.all(12),
+                        errorMaxLines: 2,
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter your bio';
                         }
+                        if (value.length > maxBioLength) {
+                          return 'Bio exceeds maximum length of $maxBioLength characters';
+                        }
                         return null;
                       },
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text(
-                          '$charCount / $maxBioLength',
-                          style: TextStyle(
-                            color: charCount == maxBioLength 
-                                ? Colors.red 
-                                : Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
                     ),
                     if (provider.bioError != null)
                       Padding(
@@ -169,14 +189,14 @@ class AboutSection extends StatelessWidget {
                     : () async {
                         if (!formKey.currentState!.validate()) return;
                         
-                        setState(() => isSubmitting = true);
+                        setDialogState(() => isSubmitting = true);
                         await provider.setUserBio(bioController.text);
                         
                         if (context.mounted) {
                           if (provider.bioError == null) {
                             Navigator.pop(context);
                           } else {
-                            setState(() => isSubmitting = false);
+                            setDialogState(() => isSubmitting = false);
                           }
                         }
                       },
@@ -192,10 +212,6 @@ class AboutSection extends StatelessWidget {
                       ),
                 ),
               ],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              backgroundColor: Colors.white,
             );
           }
         );

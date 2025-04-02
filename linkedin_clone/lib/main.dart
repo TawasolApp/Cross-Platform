@@ -56,6 +56,15 @@ import 'package:linkedin_clone/features/profile/domain/usecases/experience/updat
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/add_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_cover_photo.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_profile_picture.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_cover_picture.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_headline.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_industry.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_location.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile_picture.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_resume.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
@@ -175,25 +184,34 @@ void main() {
                 ),
               ),
         ),
-        ChangeNotifierProvider(
-          create:
-              (_) => ProfileProvider(
-                GetProfileUseCase(profileRepository),
-                AddExperienceUseCase(profileRepository),
-                UpdateExperienceUseCase(profileRepository),
-                DeleteExperienceUseCase(profileRepository),
-                AddEducationUseCase(profileRepository),
-                UpdateEducationUseCase(profileRepository),
-                DeleteEducationUseCase(profileRepository),
-                AddCertificationUseCase(profileRepository),
-                UpdateCertificationUseCase(profileRepository),
-                DeleteCertificationUseCase(profileRepository),
-                AddSkillUseCase(profileRepository),
-                UpdateSkillUseCase(profileRepository),
-                DeleteSkillUseCase(profileRepository),
-                UpdateBioUseCase(profileRepository),
-              ),
-        ),
+       ChangeNotifierProvider(
+  create: (_) => ProfileProvider(
+    getProfileUseCase: GetProfileUseCase(profileRepository),
+    updateProfilePictureUseCase: UpdateProfilePictureUseCase(profileRepository),
+    deleteProfilePictureUseCase: DeleteProfilePictureUseCase(profileRepository),
+    updateCoverPictureUseCase: UpdateCoverPictureUseCase(profileRepository),
+    deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(profileRepository),
+    updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
+    updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
+    updateLocationUseCase: UpdateLocationUseCase(profileRepository),
+    updateNameUseCase: UpdateNameUseCase(profileRepository),
+    updateResumeUseCase: UpdateResumeUseCase(profileRepository),
+    updateBioUseCase: UpdateBioUseCase(profileRepository),
+    addExperienceUseCase: AddExperienceUseCase(profileRepository),
+    updateExperienceUseCase: UpdateExperienceUseCase(profileRepository),
+    deleteExperienceUseCase: DeleteExperienceUseCase(profileRepository),
+    addEducationUseCase: AddEducationUseCase(profileRepository),
+    updateEducationUseCase: UpdateEducationUseCase(profileRepository),
+    deleteEducationUseCase: DeleteEducationUseCase(profileRepository),
+    addCertificationUseCase: AddCertificationUseCase(profileRepository),
+    updateCertificationUseCase: UpdateCertificationUseCase(profileRepository),
+    deleteCertificationUseCase: DeleteCertificationUseCase(profileRepository),
+    addSkillUseCase: AddSkillUseCase(profileRepository),
+    updateSkillUseCase: UpdateSkillUseCase(profileRepository),
+    deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
+  ),
+),
+
       ],
       child: const MyApp(),
     ),
