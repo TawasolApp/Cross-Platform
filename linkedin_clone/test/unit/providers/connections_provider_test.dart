@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/entities/connections_list_user_entity.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 
 import 'connections_provider_test.mocks.dart';
 

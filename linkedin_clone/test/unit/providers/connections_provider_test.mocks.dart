@@ -5,9 +5,9 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
-import 'package:linkedin_clone/features/connections/domain/entities/connections_list_user_entity.dart'
+import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart'
     as _i5;
-import 'package:linkedin_clone/features/connections/domain/repository/connections_list_repository.dart'
+import 'package:linkedin_clone/features/connections/domain/repository/connections_repository.dart'
     as _i2;
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart'
     as _i3;

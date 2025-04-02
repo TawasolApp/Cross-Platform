@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/pop_up_menu_user.dart';
 import '../provider/connections_provider.dart';
-import '../../../../core/utils/connected_ago_formatter.dart';
+import '../../../../core/utils/time_formatter.dart';
 
 /// **Connection Card** includes user data and action buttons
 /// - User Data includes user image, name, headline, connection time, and online status
@@ -66,10 +66,7 @@ class ConnectionCard extends StatelessWidget {
                                     ? Icon(
                                       Icons.person,
                                       size: 40,
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.bodySmall?.color,
+                                      color: Theme.of(context).primaryColor,
                                     )
                                     : null,
                           ),
@@ -138,7 +135,7 @@ class ConnectionCard extends StatelessWidget {
 
                           /// **Connection Time**
                           Text(
-                            getConnectionTime(connectionTime),
+                            formatTime(connectionTime),
                             style: Theme.of(context).textTheme.bodySmall,
                             overflow: TextOverflow.ellipsis,
                           ),

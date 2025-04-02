@@ -33,7 +33,7 @@ class ViewConnectionsAppBar extends StatelessWidget {
             Spacer(),
             IconButton(
               icon: Icon(Icons.search, size: 25),
-              color: const Color.fromARGB(255, 30, 30, 30),
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               onPressed: () {
                 //placeholder for now
                 ScaffoldMessenger.of(context).showSnackBar(

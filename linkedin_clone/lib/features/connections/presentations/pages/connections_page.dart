@@ -5,7 +5,7 @@ import 'package:linkedin_clone/features/connections/presentations/widgets/no_int
 import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
 import 'package:provider/provider.dart';
 import '../widgets/view_connections_card.dart';
-import '../../domain/entities/connections_list_user_entity.dart';
+import '../../domain/entities/connections_user_entity.dart';
 import '../provider/connections_provider.dart';
 
 class ConnectionsPage extends StatelessWidget {
@@ -19,6 +19,7 @@ class ConnectionsPage extends StatelessWidget {
       listen: false,
     );
     connectionsProvider.setToken(token);
+    connectionsProvider.getConnections();
     return Scaffold(
       backgroundColor:
           Theme.of(
@@ -62,6 +63,7 @@ class ConnectionsPage extends StatelessWidget {
       body: Consumer<ConnectionsProvider>(
         builder: (context, connectionsProvider, _) {
           return RefreshIndicator(
+            color: Theme.of(context).primaryColor,
             onRefresh: () => connectionsProvider.getConnections(),
             child: Consumer<ConnectionsProvider>(
               builder: (context, provider, _) {
@@ -80,7 +82,7 @@ class ConnectionsPage extends StatelessWidget {
                       userId: connection.userId,
                       userName: connection.userName,
                       headLine: connection.headLine,
-                      connectionTime: connection.connectionTime,
+                      connectionTime: connection.time,
                       isOnline: false,
                       profilePicture: connection.profilePicture,
                       connectionsProvider: provider,

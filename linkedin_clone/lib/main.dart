@@ -14,9 +14,11 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_em
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
-import 'package:linkedin_clone/features/connections/data/repository/connections_list_repository_impl.dart';
+import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:provider/provider.dart';
@@ -54,6 +56,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_sk
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import "../../../features/connections/presentations/pages/connections_page.dart";
 
 void main() {
@@ -119,14 +122,28 @@ void main() {
           create:
               (_) => ConnectionsProvider(
                 GetConnectionsUseCase(
-                  ConnectionsListRepositoryImpl(
+                  ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
                     ),
                   ),
                 ),
                 RemoveConnectionUseCase(
-                  ConnectionsListRepositoryImpl(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetReceivedConnectionRequestsUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetSentConnectionRequestsUseCase(
+                  ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
                     ),
@@ -189,9 +206,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: ConnectionsPage(
-        token: "token",
-      ), // Set the initial page to connectionPage()
+      home: InvitationsPage(), // Change this to your desired initial page
     );
   }
 }

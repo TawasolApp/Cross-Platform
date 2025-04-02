@@ -1,7 +1,7 @@
-import '../../domain/repository/connections_list_repository.dart';
+import '../repository/connections_repository.dart';
 
 class RemoveConnectionUseCase {
-  final ConnectionsListRepository repository;
+  final ConnectionsRepository repository;
 
   RemoveConnectionUseCase(this.repository);
 
