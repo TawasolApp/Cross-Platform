@@ -130,7 +130,29 @@ class InvitationCard extends StatelessWidget {
                                     size: 40,
                                     color: Theme.of(context).primaryColor,
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    bool result = await connectionsProvider
+                                        .ignoreConnectionRequest(userId);
+                                    if (result) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Connection removed!'),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Failed to remove connection.',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 ),
                                 IconButton(
                                   icon: Icon(
@@ -141,12 +163,52 @@ class InvitationCard extends StatelessWidget {
                                           context,
                                         ).textTheme.titleLarge?.color,
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    bool result = await connectionsProvider
+                                        .acceptConnectionRequest(userId);
+                                    if (result) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text('Connection accepted!'),
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Failed to accept connection.',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                 ),
                               ],
                             )
                             : TextButton(
-                              onPressed: () {},
+                              onPressed: () async {
+                                bool result = await connectionsProvider
+                                    .removeConnection(userId);
+                                if (result) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Connection removed!'),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Failed to remove connection.',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
                               child: Text(
                                 "Withdraw",
                                 style: Theme.of(context).textTheme.bodyMedium

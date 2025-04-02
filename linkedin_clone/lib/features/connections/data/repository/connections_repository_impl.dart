@@ -37,7 +37,6 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       if (pendingList.isEmpty) {
         throw Exception('No pending connection requests found');
       }
-      print(pendingList);
       return pendingList;
     } catch (e) {
       throw Exception('no connection');
@@ -58,6 +57,32 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       return sentList;
     } catch (e) {
       throw Exception('no connection');
+    }
+  }
+
+  @override
+  Future<bool> acceptConnectionRequest(String userId, String? token) async {
+    try {
+      final accepted = await remoteDataSource.acceptConnectionRequest(
+        userId,
+        token,
+      );
+      return accepted;
+    } catch (e) {
+      throw Exception('Failed to accept connection request');
+    }
+  }
+
+  @override
+  Future<bool> ignoreConnectionRequest(String userId, String? token) async {
+    try {
+      final ignored = await remoteDataSource.ignoreConnectionRequest(
+        userId,
+        token,
+      );
+      return ignored;
+    } catch (e) {
+      throw Exception('Failed to ignore connection request');
     }
   }
 }

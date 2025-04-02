@@ -5,6 +5,9 @@ import '../../domain/usecases/get_connections_usecase.dart';
 import '../../domain/usecases/remove_connection_usecase.dart';
 import '../../domain/usecases/get_received_connection_requests_usecase.dart';
 import '../../domain/usecases/get_sent_connection_requests_usecase.dart';
+import '../../domain/usecases/accept_connection_request_usecase.dart';
+import '../../domain/usecases/accept_connection_request_usecase.dart';
+import '../../domain/usecases/ignore_connection_request_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';
 
 class ConnectionsProvider with ChangeNotifier {
@@ -13,6 +16,8 @@ class ConnectionsProvider with ChangeNotifier {
     this.removeConnectionUseCase,
     this.getReceivedConnectionRequestsUseCase,
     this.getSentConnectionRequestsUseCase,
+    this.acceptConnectionRequestUseCase,
+    this.ignoreConnectionRequestUseCase,
   );
 
   List<ConnectionsUserEntity>? connectionsList;
@@ -37,6 +42,14 @@ class ConnectionsProvider with ChangeNotifier {
   ///
   ////Remove connection
   final RemoveConnectionUseCase removeConnectionUseCase;
+
+  ////accept connection request
+
+  final AcceptConnectionRequestUseCase acceptConnectionRequestUseCase;
+
+  ////ignore connection request
+  ///
+  final IgnoreConnectionRequestUseCase ignoreConnectionRequestUseCase;
 
   /////////////////////////////////////////////////
   ///
@@ -108,7 +121,6 @@ class ConnectionsProvider with ChangeNotifier {
   Future<void> getReceivedConnectionRequests() async {
     receivedConnectionRequestsList = await getReceivedConnectionRequestsUseCase
         .call(_token);
-    print(receivedConnectionRequestsList);
     receivedConnectionRequestsList = sortList(
       "Recently added",
       receivedConnectionRequestsList,
@@ -119,11 +131,33 @@ class ConnectionsProvider with ChangeNotifier {
   Future<void> getSentConnectionRequests() async {
     receivedConnectionRequestsList = await getReceivedConnectionRequestsUseCase
         .call(_token);
-    print(receivedConnectionRequestsList);
     receivedConnectionRequestsList = sortList(
       "Recently added",
       receivedConnectionRequestsList,
     );
     notifyListeners();
+  }
+
+  Future<bool> acceptConnectionRequest(String userId) async {
+    if (_token == null) {
+      throw Exception("Token cannot be null");
+    }
+    bool accepted = await acceptConnectionRequestUseCase.call(_token!, userId);
+    if (accepted == false) {
+      return accepted;
+    }
+    await getReceivedConnectionRequests();
+    return accepted;
+  }
+
+  Future<bool> ignoreConnectionRequest(String userId) async {
+
+    bool ignored = await ignoreConnectionRequestUseCase.call(_token!, userId);
+    print(ignored);
+    if (ignored == false) {
+      return ignored;
+    }
+    await getReceivedConnectionRequests();
+    return ignored;
   }
 }

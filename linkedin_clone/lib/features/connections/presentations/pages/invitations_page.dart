@@ -5,7 +5,8 @@ import 'package:linkedin_clone/features/connections/presentations/widgets/receiv
 import 'package:linkedin_clone/features/connections/presentations/widgets/sent_invitations_body.dart';
 
 class InvitationsPage extends StatelessWidget {
-  const InvitationsPage({super.key});
+  final String token;
+  const InvitationsPage({super.key, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -13,6 +14,7 @@ class InvitationsPage extends StatelessWidget {
       context,
       listen: false,
     );
+    connectionsProvider.setToken(token);
     connectionsProvider.getReceivedConnectionRequests();
     connectionsProvider.getSentConnectionRequests();
     return DefaultTabController(

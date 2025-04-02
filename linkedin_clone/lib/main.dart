@@ -19,6 +19,8 @@ import 'package:linkedin_clone/features/connections/domain/usecases/get_connecti
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/accept_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/ignore_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:provider/provider.dart';
@@ -149,6 +151,20 @@ void main() {
                     ),
                   ),
                 ),
+                AcceptConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                IgnoreConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
               ),
         ),
         ChangeNotifierProvider(
@@ -206,7 +222,9 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: InvitationsPage(), // Change this to your desired initial page
+      home: InvitationsPage(
+        token: "wewa",
+      ), // Change this to your desired initial page
     );
   }
 }

@@ -130,6 +130,7 @@ class ConnectionsRemoteDataSource {
     }
   }
 
+  ///////////////////Get sent connections list
   Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
     String? token,
   ) async {
@@ -163,6 +164,56 @@ class ConnectionsRemoteDataSource {
       throw Exception(
         'Failed to load connections, Status Code: ${response.statusCode}',
       );
+    }
+  }
+
+  ///////////////////Accept connection Request
+  Future<bool> acceptConnectionRequest(String userId, String? token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'userId': userId, "isAccept": true}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Failed to accept connection request, Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error accepting connection request: $e');
+      return false;
+    }
+  }
+
+  ///////////////////Reject connection Request
+  Future<bool> ignoreConnectionRequest(String userId, String? token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'userId': userId, "isAccept": false}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Failed to accept connection request, Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error accepting connection request: $e');
+      return false;
     }
   }
 }

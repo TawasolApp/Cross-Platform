@@ -9,4 +9,6 @@ abstract class ConnectionsRepository {
   Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
     String? token,
   );
+  Future<bool> acceptConnectionRequest(String userId, String? token);
+  Future<bool> ignoreConnectionRequest(String userId, String? token);
 }
