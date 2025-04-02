@@ -12,9 +12,15 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/pages/change_password.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/pages/delete_account.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/main_layout.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/pages/signin_security.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/pages/update_email.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/pages/update_info.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
+import '../../features/main_layout/presentation/pages/settings.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -43,6 +49,17 @@ class AppRouter {
       GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
       GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "Company", title: "Test") ),
       GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
+      GoRoute(path: RouteNames.settings, builder: (context, state) => SettingsPage()),
+      GoRoute(path: RouteNames.deleteAccount, builder: (context, state) => DeleteAccountPage(
+        userName: "Omar Kaddah",
+        connectionName: "Shikabala",
+        connectionRole: "Greatest of all time",
+        connectionCount: 100,
+      )),
+      GoRoute(path: RouteNames.signInAndSecurity, builder: (context, state) => SignInSecurityPage()),
+      GoRoute(path: RouteNames.changePassword, builder: (context, state) => ChangePasswordPage()),
+      GoRoute(path: RouteNames.updateEmail, builder: (context, state) => UpdateEmailPage()),
+      GoRoute(path: RouteNames.updateInfo, builder: (context, state) => UpdateInfoPage()),
 
     ],
   );
