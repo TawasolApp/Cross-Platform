@@ -4,7 +4,6 @@ class Company {
   final String industry;
   final String companySize;
   final String companyType;
-  
   final bool? isFollowing;
   final bool? isVerified;
   final String? logo;
@@ -19,7 +18,7 @@ class Company {
   final String? contactNumber;
   final String? banner;
   final String? specialities;
-
+  final bool? isAdmin;
   const Company({
     required this.companyId,
     required this.name,
@@ -40,5 +39,6 @@ class Company {
     this.contactNumber,
     this.banner,
     this.specialities,
+    this.isAdmin,
   });
 }

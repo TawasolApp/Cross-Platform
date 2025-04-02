@@ -7,13 +7,9 @@ import 'package:linkedin_clone/core/utils/time_ago.dart';
 
 class JobCard extends StatefulWidget {
   final Job job;
-final String userId;
+  final String userId;
   final String companyId;
-  JobCard({
-    required this.job,
-    required this.userId,
-    required this.companyId,
-  });
+  JobCard({required this.job, required this.userId, required this.companyId});
 
   @override
   _JobCardState createState() => _JobCardState();
@@ -42,7 +38,7 @@ class _JobCardState extends State<JobCard> {
                     job: widget.job,
                     companyProvider: companyProvider,
                     userId: widget.userId,
-                    companyId:widget.companyId,
+                    companyId: widget.companyId,
                   ),
             ),
           );

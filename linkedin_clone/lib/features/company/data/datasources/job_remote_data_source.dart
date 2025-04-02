@@ -1,7 +1,10 @@
+import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
+
 import '../models/job_model.dart';
 
 class JobRemoteDataSource {
   Future<List<JobModel>> getRecentJobs() async {
+    //TODO:Call api to retrive the jobs
     await Future.delayed(Duration(seconds: 1)); // Simulate network delay
     return [
       JobModel(
@@ -146,4 +149,11 @@ class JobRemoteDataSource {
       ),
     ];
   }
+
+ Future<void> addJob(CreateJobEntity job) async {
+  //TODO: Post request to add a job
+    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+    print("Job added: ${job.position}");
+  }
+   
 }

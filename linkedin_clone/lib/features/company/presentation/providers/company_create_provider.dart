@@ -147,6 +147,7 @@ class CompanyCreateProvider with ChangeNotifier {
       name: _companyName!,
       isFollowing: false,
       isVerified: false,
+      isAdmin: true,
       logo: _companyLogo?.path ?? "",
       description: _companyDescription ?? "",
       companySize: _companySize ?? "",

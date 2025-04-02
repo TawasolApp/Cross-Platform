@@ -171,7 +171,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ApplyForJobWidget(companyName:widget.companyProvider.company!.name),
+                            builder: (context) => ApplyForJobWidget(companyName: widget.companyProvider.company?.name ?? 'Unknown Company'),
                           ),
                         );
                       },

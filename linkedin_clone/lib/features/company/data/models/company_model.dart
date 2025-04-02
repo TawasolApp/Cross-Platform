@@ -9,6 +9,7 @@ class CompanyModel extends Company {
     required String companyType,
     bool? isFollowing,
     bool? isVerified,
+    bool? isAdmin,
     String? logo,
     String? description,
     int? followers,
@@ -29,6 +30,7 @@ class CompanyModel extends Company {
          companyType: companyType,
          isFollowing: isFollowing,
          isVerified: isVerified,
+         isAdmin: isAdmin,
          logo: logo,
          description: description,
          followers: followers,
@@ -46,32 +48,37 @@ class CompanyModel extends Company {
   // ✅ Convert JSON to CompanyModel
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(
-      companyId: json['id'],
-      name: json['name'],
-      industry: json['industry'],
-      companySize: json['companySize'],
-      companyType: json['companyType'],
-      isFollowing: json['isFollowing'],
-      isVerified: json['isVerified'],
-      logo: json['logo'],
-      description: json['description'],
-      followers: json['followers'],
-      overview: json['overview'],
-      founded: json['founded'],
-      website: json['website'],
-      address: json['address'],
-      location: json['location'],
-      email: json['email'],
-      contactNumber: json['contactNumber']?.toString(), // Ensure it's a String
-      banner: json['banner'],
-      specialities: json['specialities'],
+      companyId: json['companyId'] ?? '', // Use an empty string if null
+      name: json['name'] ?? '', // Use an empty string if null
+      industry: json['industry'] ?? '', // Use an empty string if null
+      companySize: json['companySize'] ?? '', // Use an empty string if null
+      companyType: json['companyType'] ?? '', // Use an empty string if null
+      isFollowing: json['isFollowing'] ?? false, // Default to false if null
+      isVerified: json['isVerified'] ?? false, // Default to false if null
+      logo: json['logo'] ?? '', // Default to an empty string if null
+      description:
+          json['description'] ?? '', // Default to an empty string if null
+      followers: json['followers'] ?? 0, // Default to 0 if null
+      overview: json['overview'] ?? '', // Default to an empty string if null
+      founded: json['founded'] ?? '', // Default to an empty string if null
+      website: json['website'] ?? '', // Default to an empty string if null
+      address: json['address'] ?? '', // Default to an empty string if null
+      location: json['location'] ?? '', // Default to an empty string if null
+      email: json['email'] ?? '', // Default to an empty string if null
+      contactNumber:
+          json['contactNumber']?.toString() ??
+          '', // Ensure it's a String, default to empty if null
+      banner: json['banner'] ?? '', // Default to an empty string if null
+      specialities:
+          json['specialities'] ?? '', // Default to an empty string if null
+      isAdmin: json['isAdmin'] ?? false,
     );
   }
 
   // ✅ Convert CompanyModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      'id': companyId,
+      'companyId': companyId,
       'name': name,
       'industry': industry,
       'companySize': companySize,
@@ -90,6 +97,7 @@ class CompanyModel extends Company {
       'contactNumber': contactNumber,
       'banner': banner,
       'specialities': specialities,
+      'isAdmin': isAdmin,
     };
   }
 }

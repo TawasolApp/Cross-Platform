@@ -5,6 +5,9 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:url_launcher/url_launcher.dart';
 
 class CompanyHomeTab extends StatefulWidget {
+  final String userId; // Accept userId as a parameter
+
+  const CompanyHomeTab({Key? key, required this.userId}) : super(key: key);
   @override
   _CompanyHomeTabState createState() => _CompanyHomeTabState();
 }
@@ -308,7 +311,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 SizedBox(height: 10),
-                RecentJobsWidget(),
+                RecentJobsWidget(userId: widget.userId),
               ],
             ),
           ],

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/models/job_model.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/create_job_posting_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_company_details_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_friends_following_company_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
@@ -44,7 +47,7 @@ class CompanyProvider with ChangeNotifier {
   List<Post> _posts = [];
   List<Job> _jobs = [];
   bool _isLoadingJobs = false;
-
+  bool isAdmin = false;
   bool _disposed = false;
 
   // Safe disposal
@@ -91,7 +94,9 @@ class CompanyProvider with ChangeNotifier {
   final GetRecentJobs _getRecentJobs = GetRecentJobs(
     repository: JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
   );
-
+  final CreateJob _createJob = CreateJob(
+    repository: JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
+  );
   final CompanyRepositoryImpl _companyRepository = CompanyRepositoryImpl(
     remoteDataSource: CompanyRemoteDataSource(),
   );
@@ -111,6 +116,7 @@ class CompanyProvider with ChangeNotifier {
     _relatedCompanies = await _getRelatedCompanies.execute(companyId);
     _posts = await fetchPosts();
     _jobs = await fetchRecentJobs();
+    isAdmin = _company?.isAdmin ?? false;
     _isLoading = false;
     safeNotify();
   }
@@ -218,5 +224,21 @@ class CompanyProvider with ChangeNotifier {
     _isLoadingJobs = false;
     safeNotify();
     return [];
+  }
+
+  // Updated addJob method
+  Future<void> addJob(CreateJobEntity job) async {
+    try {
+      _isLoadingJobs = true;
+      safeNotify();
+      await _createJob.execute(job); 
+      await fetchRecentJobs(); 
+      _isLoadingJobs = false;
+      safeNotify();
+    } catch (e) {
+      print("Error adding job: $e");
+      _isLoadingJobs = false;
+      safeNotify();
+    }
   }
 }

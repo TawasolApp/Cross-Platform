@@ -1,0 +1,24 @@
+{
+  "companies": {
+    "companyId": "elsewedy-electric",
+    "name": "Elsewedy Electric",
+    "isFollowing": true,
+    "isVerified": true,
+    "logo": "https://media.licdn.com/dms/image/v2/C560BAQF2a3ilv6hXXw/company-logo_200_200/company-logo_200_200/0/1631303609923?e=1747872000&v=beta&t=M9wVeJt_Zk6nNOEnz5X6PQVoUzb8wzaSFYK9JeRNA60",
+    "description": "Manufacturer of Cables & Electrical Products and Integrated Infrastructure Provider",
+    "companySize": "401-1000 Employees",
+    "followers": 1000,
+    "companyType": "Public Company",
+    "industry": "Appliances, Electrical and Electronics",
+    "overview": "A global leader that has evolved from a local manufacturer of electrical products into an integrated infrastructure solutions provider",
+    "founded": "1955",
+    "website": "https://elsewedyelectric.com/en/default",
+    "address": "New Cairo, Cairo",
+    "location": "mombb",
+    "email": "user@example.com",
+    "contactNumber": "19159",
+    "banner": "https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png",
+    "specialities": "Cables & Accessories",
+    "isAdmin": true
+  }
+}

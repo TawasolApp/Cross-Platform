@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/job_details.dart';
 import 'package:provider/provider.dart';
 import '../providers/company_provider.dart';
 
 class RecentJobsWidget extends StatelessWidget {
+  final String userId;
+
+  const RecentJobsWidget({Key? key, required this.userId}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Consumer<CompanyProvider>(
@@ -46,7 +50,7 @@ class RecentJobsWidget extends StatelessWidget {
                         CircleAvatar(
                           radius: 28,
                           backgroundImage: NetworkImage(
-                            companyProvider.company!.logo ??
+                            companyProvider.company?.logo ??
                                 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png',
                           ),
                         ),
@@ -76,7 +80,20 @@ class RecentJobsWidget extends StatelessWidget {
                         // Apply Button
                         ElevatedButton(
                           onPressed: () {
-                            // TODO: Navigate to job details page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => JobDetailsScreen(
+                                      job: job, 
+                                      companyProvider: companyProvider,
+                                      userId: userId, 
+                                      companyId:
+                                          companyProvider.company?.companyId ??
+                                          '',
+                                    ),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(

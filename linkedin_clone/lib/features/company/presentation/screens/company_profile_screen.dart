@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/company_edit_details_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_page_tabs.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_create_screen.dart';
 import 'package:provider/provider.dart';
@@ -151,322 +153,439 @@ class CompanyProfileScreen extends StatelessWidget {
             },
           ),
         ),
-        body: Container(
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Consumer<CompanyProvider>(
-              builder: (context, provider, child) {
-                if (provider.isLoading) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (provider.company != null) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        color: Colors.white,
-                        child: Column(
-                          children: [
-                            Stack(
-                              alignment: Alignment.topCenter,
-                              children: [
-                                if (provider.company!.banner != null)
-                                  Image.network(
-                                    provider.company!.banner!,
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: 70,
-                                  ),
-                                if (provider.company!.logo != null)
-                                  Container(
-                                    margin: EdgeInsets.only(
-                                      top: 30,
-                                      right: 270,
-                                    ),
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.grey.withAlpha(
-                                            (0.2 * 255).toInt(),
-                                          ),
-                                          spreadRadius: 2,
-                                          blurRadius: 3,
-                                          offset: Offset(0, 1),
-                                        ),
-                                      ],
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          provider.company!.logo!,
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+        body: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Consumer<CompanyProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (provider.company != null) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          color: Colors.white,
+                          child: Column(
+                            children: [
+                              Stack(
+                                alignment: Alignment.topCenter,
                                 children: [
-                                  Text(
-                                    provider.company!.name,
-                                    style:
-                                        Theme.of(
-                                          context,
-                                        ).textTheme.headlineSmall,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Wrap(
-                                          spacing: 8,
-                                          runSpacing: 4,
-                                          children: [
-                                            if (provider.company?.industry !=
-                                                null)
-                                              Text(
-                                                "${provider.company!.industry} •",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      color: Colors.grey,
-                                                    ),
-                                              ),
-                                            if (provider.company?.address !=
-                                                null)
-                                              Text(
-                                                "${provider.company!.address} •",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      color: Colors.grey,
-                                                    ),
-                                              ),
-                                            Text(
-                                              "${formatNumber(int.tryParse(provider.company?.companySize ?? '') ?? 0)} employees •",
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium?.copyWith(
-                                                color: Colors.grey,
-                                              ),
+                                  // Banner image
+                                  if (provider.company!.banner != null)
+                                    Image.network(
+                                      provider.company!.banner!,
+                                      fit: BoxFit.cover,
+                                      width: double.infinity,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          0.08,
+                                    ),
+
+                                  // Company logo
+                                  if (provider.company!.logo != null)
+                                    Container(
+                                      margin: EdgeInsets.only(
+                                        top: 30,
+                                        right: 270,
+                                      ),
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withAlpha(
+                                              (0.2 * 255).toInt(),
                                             ),
-                                            Text(
-                                              "${formatNumber(provider.company?.followers ?? 0)} followers",
-                                              style: Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium?.copyWith(
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                          ],
+                                            spreadRadius: 2,
+                                            blurRadius: 3,
+                                            offset: Offset(0, 1),
+                                          ),
+                                        ],
+                                        image: DecorationImage(
+                                          image: NetworkImage(
+                                            provider.company!.logo!,
+                                          ),
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
-                                      SizedBox(height: 8),
-                                    ],
-                                  ),
-                                  if (provider.friendsFollowing.isNotEmpty)
+                                    ),
+                                ],
+                              ),
+
+                              Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      provider.company!.name,
+                                      style:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.headlineSmall,
+                                    ),
+                                    SizedBox(height: 8),
                                     Row(
                                       children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            provider
-                                                .friendsFollowing
-                                                .first
-                                                .profilePicture,
-                                          ),
-                                          radius: 20,
-                                        ),
-                                        SizedBox(width: 8),
                                         Expanded(
-                                          child: Text(
-                                            "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Flexible(
-                                        flex: 3,
-                                        child: Consumer<CompanyProvider>(
-                                          builder: (context, provider, child) {
-                                            return ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor:
-                                                    provider.isFollowing(
-                                                          companyId,
-                                                        )
-                                                        ? Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary
-                                                        : Theme.of(
-                                                          context,
-                                                        ).colorScheme.primary,
-                                                foregroundColor: Colors.white,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(24),
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                  vertical: 10,
-                                                ),
-                                              ),
-                                              onPressed: () {
-                                                provider.toggleFollowStatus(
-                                                  userId,
-                                                  companyId,
-                                                );
-                                              },
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    provider.isFollowing(
-                                                          companyId,
-                                                        )
-                                                        ? Icons.check
-                                                        : Icons.add,
-                                                    size: 20,
-                                                    color: Colors.white,
-                                                  ),
-                                                  SizedBox(width: 6),
-                                                  Text(
-                                                    provider.isFollowing(
-                                                          companyId,
-                                                        )
-                                                        ? "Following"
-                                                        : "Follow",
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      Flexible(
-                                        flex: 3,
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.primary,
-                                            side: BorderSide(
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.primary,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(24),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 10,
-                                            ),
-                                          ),
-                                          onPressed: () async {
-                                            final Uri url = Uri.parse(
-                                              provider.company!.website ??
-                                                  "https://www.google.com",
-                                            );
-
-                                            await launchUrl(url);
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                          child: Wrap(
+                                            spacing: 8,
+                                            runSpacing: 4,
                                             children: [
-                                              Text("Visit website"),
-                                              SizedBox(width: 6),
-                                              Icon(Icons.open_in_new, size: 18),
+                                              if (provider.company?.industry !=
+                                                  null)
+                                                Text(
+                                                  "${provider.company!.industry} •",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        color: Colors.grey,
+                                                      ),
+                                                ),
+                                              if (provider.company?.address !=
+                                                  null)
+                                                Text(
+                                                  "${provider.company!.address} •",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        color: Colors.grey,
+                                                      ),
+                                                ),
+                                              Text(
+                                                "${formatNumber(int.tryParse(provider.company?.companySize ?? '') ?? 0)} employees •",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      color: Colors.grey,
+                                                    ),
+                                              ),
+                                              Text(
+                                                "${formatNumber(provider.company?.followers ?? 0)} followers",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.copyWith(
+                                                      color: Colors.grey,
+                                                    ),
+                                              ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                      SizedBox(width: 8),
-                                      // More Button (⋯)
-                                      SizedBox(
-                                        width: 40,
-                                        height: 40,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                              color: Colors.black,
-                                              width: 1,
+                                        SizedBox(height: 8),
+                                      ],
+                                    ),
+                                    if (provider.friendsFollowing.isNotEmpty)
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              provider
+                                                  .friendsFollowing
+                                                  .first
+                                                  .profilePicture,
                                             ),
-                                            borderRadius: BorderRadius.circular(
-                                              25,
+                                            radius: 20,
+                                          ),
+                                          SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyMedium,
+                                              softWrap: true,
+                                              overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
-                                          child: IconButton(
-                                            iconSize: 20,
-                                            padding:
-                                                EdgeInsets
-                                                    .zero, // Remove extra padding
-                                            constraints: BoxConstraints(),
-                                            icon: Icon(
-                                              Icons.more_horiz,
-                                              color: Colors.black54,
-                                            ),
-                                            onPressed: () {
-                                              showPageOptionsSheet(
-                                                context,
-                                              ); // Trigger bottom sheet
+                                        ],
+                                      ),
+                                    SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Flexible(
+                                          flex: 3,
+                                          child: Consumer<CompanyProvider>(
+                                            builder: (
+                                              context,
+                                              provider,
+                                              child,
+                                            ) {
+                                              return ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      provider.isFollowing(
+                                                            companyId,
+                                                          )
+                                                          ? Theme.of(
+                                                            context,
+                                                          ).colorScheme.primary
+                                                          : Theme.of(
+                                                            context,
+                                                          ).colorScheme.primary,
+                                                  foregroundColor: Colors.white,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          24,
+                                                        ),
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: 10,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  provider.toggleFollowStatus(
+                                                    userId,
+                                                    companyId,
+                                                  );
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      provider.isFollowing(
+                                                            companyId,
+                                                          )
+                                                          ? Icons.check
+                                                          : Icons.add,
+                                                      size: 20,
+                                                      color: Colors.white,
+                                                    ),
+                                                    SizedBox(width: 6),
+                                                    Text(
+                                                      provider.isFollowing(
+                                                            companyId,
+                                                          )
+                                                          ? "Following"
+                                                          : "Follow",
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
                                             },
                                           ),
                                         ),
+                                        SizedBox(width: 8),
+                                        Flexible(
+                                          flex: 3,
+                                          child: OutlinedButton(
+                                            style: OutlinedButton.styleFrom(
+                                              foregroundColor:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                              side: BorderSide(
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                              ),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(24),
+                                              ),
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 10,
+                                              ),
+                                            ),
+                                            onPressed: () async {
+                                              final Uri url = Uri.parse(
+                                                provider.company!.website ??
+                                                    "https://www.google.com",
+                                              );
+
+                                              await launchUrl(url);
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text("Visit website"),
+                                                SizedBox(width: 6),
+                                                Icon(
+                                                  Icons.open_in_new,
+                                                  size: 18,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        // More Button (⋯)
+                                        SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                color: Colors.black,
+                                                width: 1,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(25),
+                                            ),
+                                            child: IconButton(
+                                              iconSize: 20,
+                                              padding:
+                                                  EdgeInsets
+                                                      .zero, // Remove extra padding
+                                              constraints: BoxConstraints(),
+                                              icon: Icon(
+                                                Icons.more_horiz,
+                                                color: Colors.black54,
+                                              ),
+                                              onPressed: () {
+                                                showPageOptionsSheet(
+                                                  context,
+                                                ); // Trigger bottom sheet
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width:
+                                          MediaQuery.of(context)
+                                              .size
+                                              .width, // Takes full screen width
+                                      child: Divider(
+                                        thickness: 1,
+                                        height: 16,
+                                        color: Colors.grey[300],
                                       ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(
-                                          context,
-                                        ).size.width, // Takes full screen width
-                                    child: Divider(
-                                      thickness: 1,
-                                      height: 16,
-                                      color: Colors.grey[300],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              CompanyTabsWidget(
+                                userId: userId,
+                                companyId: companyId,
+                              ),
+                              Divider(thickness: 3, color: Colors.black54),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return Center(
+                      child: Text(
+                        'No company data found.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+            Consumer<CompanyProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (provider.company?.isAdmin == true) {
+                  // Only show for admins
+                  return Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0), // Space from bottom
+                      child: GestureDetector(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => EditCompanyScreen(
+                                    companyId: provider.company!.companyId,
+                                    company: UpdateCompanyEntity(
+                                      name: provider.company!.name,
+                                      description:
+                                          provider.company!.description ?? '',
+                                      companySize:
+                                          provider.company!.companySize,
+                                      location:
+                                          provider.company!.location ?? '',
+                                      email: provider.company!.email ?? '',
+                                      companyType:
+                                          provider.company!.companyType,
+                                      industry: provider.company!.industry,
+                                      overview:
+                                          provider.company!.overview ?? '',
+                                      founded: provider.company!.founded ?? '',
+                                      website: provider.company!.website ?? '',
+                                      address: provider.company!.address ?? '',
+                                      contactNumber:
+                                          provider.company!.contactNumber ?? '',
+                                      isVerified:
+                                          provider.company!.isVerified ?? false,
+                                      logo: provider.company!.logo ?? '',
+                                      banner: provider.company!.banner ?? '',
                                     ),
                                   ),
-                                ],
-                              ),
                             ),
-                            CompanyTabsWidget(userId: userId,companyId: companyId,),
-                            Divider(thickness: 3, color: Colors.black54),
-                          ],
+                          );
+
+                          if (result == true) {
+                            provider.fetchCompanyDetails(
+                              provider.company!.companyId,
+                              userId,
+                            ); // Refresh company details
+                          }
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.primary, // Background color
+                            borderRadius: BorderRadius.circular(
+                              16,
+                            ), // Rounded corners
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min, // Wrap content
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                color: Colors.white, // Icon color
+                                size: 24, // Adjust icon size
+                              ),
+                              SizedBox(width: 6), // Space between icon and text
+                              Text(
+                                "Edit Details",
+                                style: TextStyle(
+                                  color: Colors.white, // Text color
+                                  fontSize: 16, // Adjust text size
+                                  fontWeight: FontWeight.w500, // Medium weight
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ],
-                  );
-                } else {
-                  return Center(
-                    child: Text(
-                      'No company data found.',
-                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   );
                 }
+                return SizedBox.shrink(); // Return an empty widget if not admin
               },
             ),
-          ),
+          ],
         ),
       ),
     );

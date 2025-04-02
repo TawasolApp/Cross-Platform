@@ -13,6 +13,10 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/register_
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_email_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
+import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_list_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
@@ -35,7 +39,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_b
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
-import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart'; 
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
@@ -54,26 +58,30 @@ import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_sk
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
   final internetConnection = InternetConnection();
-  
+
   // Initialize data source and repository
   // final ProfileRemoteDataSourceImpl dataSource = ProfileRemoteDataSourceImpl(
   //   client: http.Client(),
   //   baseUrl: 'https://your-api-url.com',
   // );
+final companyRemoteDataSource = CompanyRemoteDataSource(); // Make sure this is initialized
+final companyrepos = CompanyRepositoryImpl(remoteDataSource: companyRemoteDataSource);
+  final MockProfileRemoteDataSource dataSourceProfile =
+      MockProfileRemoteDataSource();
 
-  final MockProfileRemoteDataSource dataSourceProfile = MockProfileRemoteDataSource();
-  
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
     connectionChecker: ConnectionCheckerImpl(internetConnection),
   );
   final useMock = true;
   // ignore: dead_code
-  final AuthRemoteDataSource dataSource =useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
+  final AuthRemoteDataSource dataSource =
+      useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
   final AuthRepository authRepository = AuthRepositoryImpl(dataSource);
   final loginUseCase = LoginUseCase(authRepository);
@@ -93,9 +101,15 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthProvider(loginUseCase,forgotPassUseCase),
+          create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
-        ChangeNotifierProvider(create:(_) => RegisterProvider(registerUsecase: registerUseCase,resendEmailUsecase: resendEmailUsecase)),
+        ChangeNotifierProvider(
+          create:
+              (_) => RegisterProvider(
+                registerUsecase: registerUseCase,
+                resendEmailUsecase: resendEmailUsecase,
+              ),
+        ),
         ChangeNotifierProvider(
           create:
               (_) => FeedProvider(
@@ -126,34 +140,37 @@ void main() {
               ),
         ),
         ChangeNotifierProvider(
-          create: (_) => ProfileProvider(
-            GetProfileUseCase(profileRepository),
-            AddExperienceUseCase(profileRepository),
-            UpdateExperienceUseCase(profileRepository),
-            DeleteExperienceUseCase(profileRepository),
-            AddEducationUseCase(profileRepository),
-            UpdateEducationUseCase(profileRepository),
-            DeleteEducationUseCase(profileRepository),
-            AddCertificationUseCase(profileRepository),
-            UpdateCertificationUseCase(profileRepository),
-            DeleteCertificationUseCase(profileRepository),
-            AddSkillUseCase(profileRepository),
-            UpdateSkillUseCase(profileRepository),
-            DeleteSkillUseCase(profileRepository),
-            UpdateBioUseCase(profileRepository),
-          ),
+          create:
+              (_) => ProfileProvider(
+                GetProfileUseCase(profileRepository),
+                AddExperienceUseCase(profileRepository),
+                UpdateExperienceUseCase(profileRepository),
+                DeleteExperienceUseCase(profileRepository),
+                AddEducationUseCase(profileRepository),
+                UpdateEducationUseCase(profileRepository),
+                DeleteEducationUseCase(profileRepository),
+                AddCertificationUseCase(profileRepository),
+                UpdateCertificationUseCase(profileRepository),
+                DeleteCertificationUseCase(profileRepository),
+                AddSkillUseCase(profileRepository),
+                UpdateSkillUseCase(profileRepository),
+                DeleteSkillUseCase(profileRepository),
+                UpdateBioUseCase(profileRepository),
+              ),
         ),
-
+        ChangeNotifierProvider(create: (_) => CompanyProvider()),
+        // Add the EditCompanyDetailsProvider
+        ChangeNotifierProvider(
+          create: (_) => EditCompanyDetailsProvider(updateCompanyDetails: UpdateCompanyDetails(companyRepository: companyrepos)),
+        ),
       ],
       child: const MyApp(),
     ),
   );
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +181,8 @@ class MyApp extends StatelessWidget {
       //theme: ThemeData(primarySwatch: Colors.blue),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      //routes: {'/create-post': (_) => const PostCreationPage()},
 
+      //routes: {'/create-post': (_) => const PostCreationPage()},
       routerConfig: AppRouter.router,
     );
   }
