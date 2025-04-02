@@ -33,7 +33,7 @@ class ViewConnectionsAppBar extends StatelessWidget {
             Spacer(),
             IconButton(
               icon: Icon(Icons.search, size: 25),
-              color: const Color.fromARGB(255, 30, 30, 30),
+              color: Theme.of(context).textTheme.bodyMedium?.color,
               onPressed: () {
                 //placeholder for now
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -45,11 +45,7 @@ class ViewConnectionsAppBar extends StatelessWidget {
             PopUpMenuSortBy(connectionsProvider: connectionsProvider),
           ],
         ),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: Color.fromARGB(255, 201, 201, 201),
-        ),
+        Divider(height: 1, thickness: 1, color: Theme.of(context).dividerColor),
       ],
     );
   }

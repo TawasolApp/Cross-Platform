@@ -1,27 +1,27 @@
-class ConnectionsListUserEntity {
+class ConnectionsUserEntity {
   final String userId;
   final String userName;
   final String headLine;
-  final String connectionTime;
+  final String time;
   final String profilePicture;
   //final bool isOnline;
 
-  ConnectionsListUserEntity({
+  ConnectionsUserEntity({
     required this.userId,
     required this.userName,
     required this.headLine,
-    required this.connectionTime,
+    required this.time,
     required this.profilePicture,
     // required this.isOnline,
   });
 
-  factory ConnectionsListUserEntity.fromJson(Map<String, dynamic> json) {
-    return ConnectionsListUserEntity(
+  factory ConnectionsUserEntity.fromJson(Map<String, dynamic> json) {
+    return ConnectionsUserEntity(
       userId: json['userId'],
       userName: json['username'],
       headLine: json['headline'],
       profilePicture: json['profilePicture'],
-      connectionTime: json['createdAt'],
+      time: json['createdAt'],
 
       // isOnline: json['connectionStatus'],
     );

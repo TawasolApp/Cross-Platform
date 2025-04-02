@@ -1,4 +1,4 @@
-String getConnectionTime(String connectionDate) {
+String formatTime(String connectionDate) {
   if (DateTime.tryParse(connectionDate) == null) {
     return 'Unknown';
   }

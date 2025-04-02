@@ -19,7 +19,7 @@ class PopUpMenuUser extends StatelessWidget {
       icon: Icon(
         Icons.more_vert,
         size: 20,
-        color: const Color.fromARGB(255, 30, 30, 30),
+        color: Theme.of(context).textTheme.titleLarge?.color,
       ),
       onPressed: () {
         _popUpMenuUser(context);
@@ -30,7 +30,7 @@ class PopUpMenuUser extends StatelessWidget {
   void _popUpMenuUser(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -48,7 +48,7 @@ class PopUpMenuUser extends StatelessWidget {
                   width: 40,
                   height: 6,
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 30, 30, 30),
+                    color: Theme.of(context).textTheme.titleLarge?.color,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   margin: EdgeInsets.only(bottom: 10),
@@ -58,10 +58,13 @@ class PopUpMenuUser extends StatelessWidget {
               ListTile(
                 leading: IconButton(
                   icon: Icon(Icons.person_remove_alt_1),
-                  color: const Color.fromARGB(255, 30, 30, 30),
+                  color: Theme.of(context).iconTheme.color,
                   onPressed: () {},
                 ),
-                title: Text('Remove connection'),
+                title: Text(
+                  'Remove connection',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
                 onTap: () {
                   showDialog(
                     context: context,

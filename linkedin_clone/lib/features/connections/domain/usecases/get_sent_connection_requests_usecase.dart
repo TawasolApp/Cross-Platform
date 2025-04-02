@@ -1,12 +1,12 @@
 import '../repository/connections_repository.dart';
 import '../entities/connections_user_entity.dart';
 
-class GetConnectionsUseCase {
+class GetSentConnectionRequestsUseCase {
   final ConnectionsRepository repository;
 
-  GetConnectionsUseCase(this.repository);
+  GetSentConnectionRequestsUseCase(this.repository);
 
   Future<List<ConnectionsUserEntity>> call(String? token) async {
-    return await repository.getConnectionsList(token);
+    return await repository.getReceivedConnectionRequestsList(token);
   }
 }

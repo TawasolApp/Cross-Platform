@@ -1,21 +1,19 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:linkedin_clone/features/connections/data/models/connections_list_user_model.dart';
-import 'package:linkedin_clone/features/connections/domain/entities/connections_list_user_entity.dart';
+import 'package:linkedin_clone/features/connections/data/models/connections_user_model.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 
 class ConnectionsRemoteDataSource {
   final http.Client client;
-  final baseUrl = 'http://192.168.1.9:3000/';
+  final baseUrl = 'http://192.168.1.9:3000/'; //TODO: ADJUST BASE URL
 
   ConnectionsRemoteDataSource({required this.client});
 
   ///////////////////Get connections list
-  Future<List<ConnectionsListUserEntity>> getConnectionsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getConnectionsList(String? token) async {
     final response = await client
         .get(
-          Uri.parse('${baseUrl}connections'),
+          Uri.parse('${baseUrl}list'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -32,7 +30,7 @@ class ConnectionsRemoteDataSource {
       final jsonResponse = jsonDecode(response.body);
       if (jsonResponse is List<dynamic>) {
         return jsonResponse
-            .map((json) => ConnectionsListUserModel.fromJson(json))
+            .map((json) => ConnectionsUserModel.fromJson(json))
             .toList();
       } else {
         throw Exception(
@@ -52,7 +50,7 @@ class ConnectionsRemoteDataSource {
       // Fetch all connections for the given userId
       final checkResponse = await client
           .get(
-            Uri.parse('${baseUrl}connections?userId=$userId'),
+            Uri.parse('${baseUrl}list?userId=$userId'),
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $token',
@@ -74,7 +72,7 @@ class ConnectionsRemoteDataSource {
       for (var connection in connections) {
         final connectionId = connection['id']; // Ensure the key is correct
         final response = await client.delete(
-          Uri.parse('${baseUrl}connections/$connectionId'),
+          Uri.parse('${baseUrl}list/$connectionId'),
           headers: {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer $token',
@@ -91,6 +89,155 @@ class ConnectionsRemoteDataSource {
       return true;
     } catch (e) {
       print('Error removing connection: $e');
+      return false;
+    }
+  }
+  ///////////////////Get received connections list
+
+  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
+    String? token,
+  ) async {
+    final response = await client
+        .get(
+          Uri.parse('${baseUrl}pending'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(
+          Duration(seconds: 15),
+          onTimeout: () {
+            return http.Response('Request Timeout', 408);
+          },
+        );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse is List<dynamic>) {
+        return jsonResponse
+            .map((json) => ConnectionsUserModel.fromJson(json))
+            .toList();
+      } else {
+        throw Exception(
+          'Invalid JSON structure: Expected a list or an object with "connections" key.',
+        );
+      }
+    } else {
+      throw Exception(
+        'Failed to load connections, Status Code: ${response.statusCode}',
+      );
+    }
+  }
+
+  ///////////////////Get sent connections list
+  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
+    String? token,
+  ) async {
+    final response = await client
+        .get(
+          Uri.parse('${baseUrl}sent'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(
+          Duration(seconds: 15),
+          onTimeout: () {
+            return http.Response('Request Timeout', 408);
+          },
+        );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      if (jsonResponse is List<dynamic>) {
+        return jsonResponse
+            .map((json) => ConnectionsUserModel.fromJson(json))
+            .toList();
+      } else {
+        throw Exception(
+          'Invalid JSON structure: Expected a list or an object with "connections" key.',
+        );
+      }
+    } else {
+      throw Exception(
+        'Failed to load connections, Status Code: ${response.statusCode}',
+      );
+    }
+  }
+
+  ///////////////////Accept connection Request
+  Future<bool> acceptConnectionRequest(String userId, String? token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"isAccept": true}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Failed to accept connection request, Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error accepting connection request: $e');
+      return false;
+    }
+  }
+
+  ///////////////////Reject connection Request
+  Future<bool> ignoreConnectionRequest(String userId, String? token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"isAccept": false}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+          'Failed to accept connection request, Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error accepting connection request: $e');
+      return false;
+    }
+  }
+
+  ///////////////////Send connection Request
+  Future<bool> sendConnectionRequest(String userId, String? token) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({"userId": userId}),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        throw Exception(
+          'Failed to send connection request, Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error sending connection request: $e');
       return false;
     }
   }
