@@ -49,7 +49,9 @@ class CompanyProvider with ChangeNotifier {
   bool _isLoadingJobs = false;
   bool isAdmin = false;
   bool _disposed = false;
+  bool isViewingAsUser = false;
 
+ 
   // Safe disposal
   @override
   void dispose() {
@@ -149,7 +151,10 @@ class CompanyProvider with ChangeNotifier {
 
     safeNotify();
   }
-
+ void toggleViewMode() {
+    isViewingAsUser = !isViewingAsUser;
+    notifyListeners();
+  }
   Future<List<User>> fetchFriendsFollowingCompany(
     String userId,
     String companyId,

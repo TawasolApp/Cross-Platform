@@ -47,7 +47,7 @@ class CompanyJobsWidget extends StatelessWidget {
                 "Jobs Posted",
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              if (companyProvider.isAdmin) // Show button only if user is admin
+              if (companyProvider.isAdmin && companyProvider.isViewingAsUser==false ) // Show button only if user is admin and admin view
                 TextButton.icon(
                   onPressed: onEditPressed ??
                       () {

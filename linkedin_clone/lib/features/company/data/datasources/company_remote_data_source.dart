@@ -4,52 +4,65 @@ import 'package:http/http.dart' as http;
 import 'package:linkedin_clone/features/company/data/models/company_edit_model.dart';
 import 'package:linkedin_clone/features/company/data/models/user_model.dart';
 import '../models/company_model.dart';
+import 'package:linkedin_clone/core/services/token_service.dart'; // Import the TokenService class
 
 class CompanyRemoteDataSource {
+  final String baseUrl =
+      "https://tawasolapp.me/api"; // Updated to use the provided base URL
   Future<CompanyModel> getCompanyDetails(String companyId) async {
     // TODO: Replace this mock api call with an API request once the backend is ready
-    // API Endpoint Example: GET /companies/{companyId}/details
+    // API Endpoint Example: GET /companies/{companyId}/
+
+    final token = await TokenService.getToken();
+    print("Token: $token");
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
     final response = await http.get(
-      Uri.parse(
-        'http://192.168.1.6:3000/companies?companyId=elsewedy-electric',
-      ),
+      Uri.parse('$baseUrl/companies/$companyId/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Use actual access token if needed
+      },
     );
     print(response.body);
     if (response.statusCode == 200) {
       return CompanyModel.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw Exception('Company details not found');
     } else {
       throw Exception('Failed to load company details');
     }
-    // await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-
-    // return CompanyModel(
-    //   companyId: companyId,
-    //   name: "Elsewedy Electric",
-    //   isFollowing: true,
-    //   isVerified: true,
-    //   logo:
-    //       "https://media.licdn.com/dms/image/v2/C560BAQF2a3ilv6hXXw/company-logo_200_200/company-logo_200_200/0/1631303609923?e=1747872000&v=beta&t=M9wVeJt_Zk6nNOEnz5X6PQVoUzb8wzaSFYK9JeRNA60",
-    //   description:
-    //       "Manufacturer of Cables & Electrical Products and Integrated Infrastructure Provider",
-    //   companySize: "201-500 Employees",
-    //   followers: 1000,
-    //   companyType: "Public Company",
-    //   industry: "Appliances, Electrical and Electronics",
-    //   overview:
-    //       "A global leader that has evolved from a local manufacturer of electrical products into an integrated infrastructure solutions provider" *
-    //       10,
-    //   founded: '1955',
-    //   website: "https://elsewedyelectric.com/en/default",
-    //   address: "New Cairo, Cairo",
-    //   location: "https://maps.app.goo.gl/fEh4pBYt6LvTFxQE8",
-    //   email: "user@example.com",
-    //   contactNumber: "19159",
-    //   banner:
-    //       'https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png',
-    //   specialities: "Cables & Accessories",
-    //   isAdmin: true,
-    // );
   }
+  // await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+
+  // return CompanyModel(
+  //   companyId: companyId,
+  //   name: "Elsewedy Electric",
+  //   isFollowing: true,
+  //   isVerified: true,
+  //   logo:
+  //       "https://media.licdn.com/dms/image/v2/C560BAQF2a3ilv6hXXw/company-logo_200_200/company-logo_200_200/0/1631303609923?e=1747872000&v=beta&t=M9wVeJt_Zk6nNOEnz5X6PQVoUzb8wzaSFYK9JeRNA60",
+  //   description:
+  //       "Manufacturer of Cables & Electrical Products and Integrated Infrastructure Provider",
+  //   companySize: "201-500 Employees",
+  //   followers: 1000,
+  //   companyType: "Public Company",
+  //   industry: "Appliances, Electrical and Electronics",
+  //   overview:
+  //       "A global leader that has evolved from a local manufacturer of electrical products into an integrated infrastructure solutions provider" *
+  //       10,
+  //   founded: '1955',
+  //   website: "https://elsewedyelectric.com/en/default",
+  //   address: "New Cairo, Cairo",
+  //   location: "https://maps.app.goo.gl/fEh4pBYt6LvTFxQE8",
+  //   email: "user@example.com",
+  //   contactNumber: "19159",
+  //   banner:
+  //       'https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png',
+  //   specialities: "Cables & Accessories",
+  //   isAdmin: true,
+  // );
 
   Future<List<UserModel>> fetchCompanyFollowers(String companyId) async {
     // TODO: Replace this mock api call with an API request once the backend is ready
@@ -181,13 +194,15 @@ class CompanyRemoteDataSource {
     // Base URL for your JSON Server
 
     // Corrected URL to directly access the company entry
-    final url = Uri.parse('http://192.168.1.6:3000/companies?companyId=${companyId}');
+    final url = Uri.parse(
+      'http://192.168.1.6:3000/companies?companyId=${companyId}',
+    );
 
     // Fetch the existing company details
     final response = await http.get(url);
 
     print("Existing Company Data: ${response.body}");
- 
+
     if (response.statusCode == 200) {
       // Parse the existing company data
       Map<String, dynamic> existingCompany = jsonDecode(response.body);

@@ -190,8 +190,12 @@ class CompanyProfileScreen extends StatelessWidget {
                                         top: 30,
                                         right: 270,
                                       ),
-                                      width: 100,
-                                      height: 100,
+                                      width:
+                                          MediaQuery.of(context).size.height *
+                                          0.12,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          0.12,
                                       decoration: BoxDecoration(
                                         color: Colors.white,
                                         boxShadow: [
@@ -220,12 +224,58 @@ class CompanyProfileScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      provider.company!.name,
-                                      style:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.headlineSmall,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          provider.company!.name,
+                                          style:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.headlineSmall,
+                                        ),
+                                        Spacer(), // Pushes everything after it to the end
+                                        Material(
+                                          color:
+                                              Colors
+                                                  .transparent, // Keeps background unchanged
+                                          child: InkWell(
+                                            onTap: () {
+                                              provider.toggleViewMode();
+                                            },
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ), // Optional: Adds rounded corners
+                                            child: Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 8,
+                                                vertical: 4,
+                                              ), // Increase touch area
+                                              child: Row(
+                                                mainAxisSize:
+                                                    MainAxisSize
+                                                        .min, // Only takes needed space
+                                                children: [
+                                                  Text(
+                                                    provider.isViewingAsUser
+                                                        ? 'User View'
+                                                        : 'Admin View',
+                                                    style:
+                                                        Theme.of(
+                                                          context,
+                                                        ).textTheme.bodyMedium,
+                                                  ),
+                                                  SizedBox(width: 8),
+                                                  Icon(
+                                                    provider.isViewingAsUser
+                                                        ? Icons.visibility
+                                                        : Icons.visibility_off,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(height: 8),
                                     Row(
@@ -278,35 +328,35 @@ class CompanyProfileScreen extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                        SizedBox(height: 8),
                                       ],
                                     ),
                                     if (provider.friendsFollowing.isNotEmpty)
-                                      Row(
-                                        children: [
-                                          CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                              provider
-                                                  .friendsFollowing
-                                                  .first
-                                                  .profilePicture,
-                                            ),
-                                            radius: 20,
+                                      SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                            provider
+                                                .friendsFollowing
+                                                .first
+                                                .profilePicture,
                                           ),
-                                          SizedBox(width: 8),
-                                          Expanded(
-                                            child: Text(
-                                              "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
-                                              style:
-                                                  Theme.of(
-                                                    context,
-                                                  ).textTheme.bodyMedium,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
+                                          radius: 20,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodyMedium,
+                                            softWrap: true,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                        ],
-                                      ),
+                                        ),
+                                      ],
+                                    ),
                                     SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
@@ -495,7 +545,7 @@ class CompanyProfileScreen extends StatelessWidget {
                 if (provider.isLoading) {
                   return Center(child: CircularProgressIndicator());
                 }
-                if (provider.company?.isAdmin == true) {
+                if (provider.company?.isAdmin == true && provider.isViewingAsUser==false) {
                   // Only show for admins
                   return Align(
                     alignment: Alignment.bottomRight,

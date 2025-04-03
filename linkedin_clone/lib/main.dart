@@ -14,7 +14,9 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_em
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
@@ -59,6 +61,7 @@ import 'package:internet_connection_checker_plus/internet_connection_checker_plu
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart'; // Ensure this is the correct path
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -70,7 +73,9 @@ void main() {
   //   baseUrl: 'https://your-api-url.com',
   // );
 final companyRemoteDataSource = CompanyRemoteDataSource(); // Make sure this is initialized
+final userRemoteDataSource =UserRemoteDataSource();
 final companyrepos = CompanyRepositoryImpl(remoteDataSource: companyRemoteDataSource);
+final userRepos=UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
   final MockProfileRemoteDataSource dataSourceProfile =
       MockProfileRemoteDataSource();
 
@@ -161,7 +166,10 @@ final companyrepos = CompanyRepositoryImpl(remoteDataSource: companyRemoteDataSo
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         // Add the EditCompanyDetailsProvider
         ChangeNotifierProvider(
-          create: (_) => EditCompanyDetailsProvider(updateCompanyDetails: UpdateCompanyDetails(companyRepository: companyrepos)),
+          create: (_) => EditCompanyDetailsProvider(
+            updateCompanyDetails: UpdateCompanyDetails(companyRepository: companyrepos),
+            addAdminUseCase: AddAdminUseCase(repository: userRepos),
+          ),
         ),
       ],
       child: const MyApp(),

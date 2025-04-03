@@ -3,6 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/company_add_admins_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
@@ -23,6 +24,7 @@ class EditCompanyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController addAdminController = TextEditingController();
     final TextEditingController nameController = TextEditingController(
       text: company.name,
     );
@@ -80,7 +82,7 @@ class EditCompanyScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Edit Company Details')),
       backgroundColor: Colors.white,
-      body: Padding(  
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Consumer<EditCompanyDetailsProvider>(
           builder: (context, provider, child) {
@@ -90,6 +92,22 @@ class EditCompanyScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(children: [
+                      Spacer(),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddAdminScreen(),
+                          ),
+                        );
+                      },
+                        icon: Icon(Icons.person_add, color: Colors.white), // User+ Icon
+                      label: Text('Add Page Admin'),
+                    ),
+                    ]
+                    ),
                     // Company Name Field
                     buildField(
                       'Company Name',
@@ -113,7 +131,7 @@ class EditCompanyScreen extends StatelessWidget {
                     buildField(
                       'Location',
                       locationController,
-                      validator: requiredValidator,
+                      validator: urlValidator,
                     ),
                     // Email Field
                     buildField(
@@ -359,6 +377,7 @@ class EditCompanyScreen extends StatelessWidget {
   Widget buildField(
     String label,
     TextEditingController controller, {
+    String? hintText,
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
@@ -381,6 +400,7 @@ class EditCompanyScreen extends StatelessWidget {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
+              hintText: hintText,
             ),
             maxLines: maxLines,
             keyboardType: keyboardType,
