@@ -16,49 +16,53 @@ void main() {
   });
 
   test("Initial values should be null", () {
-    expect(provider.name, null);
-    expect(provider.description, null);
-    expect(provider.website, null);
+    expect(provider.companyName, null);
+    expect(provider.companyDescription, null);
+    expect(provider.companyWebsite, null);
   });
 
   test("setName updates provider", () {
-    provider.setName("TechCorp");
-    expect(provider.name, "TechCorp");
+    provider.setCompanyName("TechCorp");
+    expect(provider.setCompanyName, "TechCorp");
   });
 
   test("Fails to create company if required fields are missing", () async {
-    // Without setting required fields, createCompany should return null
     final result = await provider.createCompany();
     expect(result, null);
   });
 
   test("Successfully creates company", () async {
-    // Setup required fields
-    provider.setName("TechCorp");
-    provider.setDescription("A technology company");
-    provider.setWebsite("https://techcorp.com");
-    provider.setIndustry("Technology");
-    provider.setLocation("New York");
+    provider.setCompanyName("TechCorp");
+    provider.setCompanyDescription("A technology company");
+    provider.setCompanyWebsite("https://techcorp.com");
+    provider.setCompanyIndustry("Technology");
+    provider.setCompanyLocation("New York");
     provider.setCompanySize("2-10 Employees");
-    // For testing, simulate image uploads with dummy paths.
-    provider.setLogoImage(XFile("dummy_logo_path"));
-    provider.setBannerImage(XFile("dummy_banner_path"));
+    provider.setCompanyLogo(XFile("dummy_logo_path"));
+    provider.setCompanyBanner(XFile("dummy_banner_path"));
     provider.setAgreedToTerms(true);
 
-    // Setup the mock behavior for the repository's createCompany method.
     when(mockRepository.createCompany(any)).thenAnswer(
       (_) async => Company(
-        id: "1",
-        name: provider.name!,
-        description: provider.description!,
-        website: provider.website!,
-        bannerUrl: provider.bannerImage?.path ?? "",
-        logoUrl: provider.logoImage!.path,
-        field: provider.selectedIndustry ?? "",
-        followerCount: 0,
-        employeeCount: int.tryParse(provider.selectedCompanySize ?? "0") ?? 0,
-        location: provider.selectedLocation!,
-        followerIds: [],
+        companyId: "1",
+        name: provider.companyName!,
+        isFollowing: false,
+        isVerified: false,
+        logo: provider.companyLogo!.path,
+        description: provider.companyDescription!,
+        companySize: provider.companySize ?? "",
+        followers: 0,
+        companyType: "Tech",
+        industry: provider.companyIndustry ?? "",
+        overview: "Overview of TechCorp",
+        founded: "2020",
+        website: provider.companyWebsite!,
+        address: "123 Tech Street",
+        location: provider.companyLocation!,
+        email: "contact@techcorp.com",
+        contactNumber: "123-456-7890",
+        banner: provider.companyBanner?.path ?? "",
+        specialities: "Software, AI, Cloud",
       ),
     );
 

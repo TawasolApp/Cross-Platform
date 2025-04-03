@@ -1,28 +1,44 @@
 class Company {
-  final String id;
+  final String companyId;
   final String name;
-  final String description;
-  final String website; // Website URL of the company
-  final String? bannerUrl; // URL of the banner image
-  final String? logoUrl; // URL of the logo image
-  final String field; // Field of the company
-  final int? followerCount; // Number of followers of the company
-  final int? employeeCount; // Number of employees of the company
-  final String location; // Location of the company
-  final List<String> followerIds; // Store only IDs for efficiency
-
-
-  Company({
-    required this.id,
+  final String industry;
+  final String companySize;
+  final String companyType;
+  final bool? isFollowing;
+  final bool? isVerified;
+  final String? logo;
+  final String? description;
+  final int? followers;
+  final String? overview;
+  final String? founded;
+  final String? website;
+  final String? address;
+  final String? location;
+  final String? email;
+  final String? contactNumber;
+  final String? banner;
+  final String? specialities;
+  final bool? isAdmin;
+  const Company({
+    required this.companyId,
     required this.name,
-    required this.description,
-    required this.website,
-    this.bannerUrl,
-    this.logoUrl,
-    required this.field,
-    this.followerCount,
-    this.employeeCount,
-    required this.location,
-    required this.followerIds,
+    required this.industry,
+    required this.companySize,
+    required this.companyType,
+    this.isFollowing,
+    this.isVerified,
+    this.logo,
+    this.description,
+    this.followers,
+    this.overview,
+    this.founded,
+    this.website,
+    this.address,
+    this.location,
+    this.email,
+    this.contactNumber,
+    this.banner,
+    this.specialities,
+    this.isAdmin,
   });
 }

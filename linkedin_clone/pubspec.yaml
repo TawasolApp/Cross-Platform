@@ -29,7 +29,8 @@ dependencies:
   webview_flutter_plus: ^0.4.7
   flutter_svg: ^2.0.17
   font_awesome_flutter: ^10.8.0
-
+  intl_phone_number_input: ^0.7.0+2
+  fl_chart: ^0.40.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

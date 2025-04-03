@@ -21,7 +21,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     FeedPage(),      // Will be replaced by News Feed module
     ConnectionsPage(token: "Mock token"), // Will be replaced by Connections module
      // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
-    CompanyProfileScreen(companyId: "Company", title: "Test Company"),
+    CompanyProfileScreen(companyId: "elsewedy-electric", title: "Test Company"),
     SettingsPage(),   // Will be replaced by Settings module
   ];
 

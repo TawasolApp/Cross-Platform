@@ -14,18 +14,18 @@ class GetFriendsFollowingCompany {
   Future<List<User>> execute(String userId, String companyId) async {
     // Fetch the user's friends
     final userFriends = await userRepository.getUserFriends(userId);
-    print("User Friends: ${userFriends.map((user) => user.id).toList()}");
+    print("User Friends: ${userFriends.map((user) => user.userId).toList()}");
 
     // Fetch the company's followers
     final companyFollowers = await companyRepository.getCompanyFollowers(companyId);
-    print("Company Followers: ${companyFollowers.map((user) => user.id).toList()}");
+    print("Company Followers: ${companyFollowers.map((user) => user.userId).toList()}");
 
     // Find common users (friends who follow the company)
     final commonUsers = userFriends.where(
-      (friend) => companyFollowers.any((f) => f.id == friend.id),
+      (friend) => companyFollowers.any((f) => f.userId == friend.userId),
     ).toList();
 
-    print("Friends Following Company: ${commonUsers.map((user) => user.id).toList()}");
+    print("Friends Following Company: ${commonUsers.map((user) => user.userId).toList()}");
 
     return commonUsers;
   }

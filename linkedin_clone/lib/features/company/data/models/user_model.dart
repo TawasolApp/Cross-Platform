@@ -2,24 +2,27 @@ import 'package:linkedin_clone/features/company/domain/entities/user.dart';
 
 class UserModel extends User {
   UserModel({
-    required super.id,
-    required super.name,
-    required super.profileImageUrl,
+    required super.userId,
+    required super.username,
+    required super.profilePicture,
+    required super.headline
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      name: json['name'],
-      profileImageUrl: json['profile_image_url'] ?? "", 
+      userId: json['userId'],
+      username: json['username'],
+      profilePicture: json['profilePicture'] ?? "", 
+      headline: json['headline']
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
-      'profile_image_url': profileImageUrl,
+      'id': userId,
+      'name': username,
+      'profile_image_url': profilePicture,
+      'headline':headline
     };
   }
 }

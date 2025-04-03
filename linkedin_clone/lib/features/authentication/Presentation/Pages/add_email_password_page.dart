@@ -119,7 +119,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                   final success = await Provider.of<RegisterProvider>(
                     context,
                     listen: false,
-                  ).register(firstName!, lastName!, email!, password!, "test-token");
+                  ).register(firstName!, lastName!, email!, password!, "mock-captcha-token");
 
                   if (!context.mounted) return;
 

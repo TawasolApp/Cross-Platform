@@ -10,75 +10,130 @@ class CompanyCreateProvider with ChangeNotifier {
     : _companyRepository = companyRepository;
 
   // ✅ Create Company Form Fields
-  String? _name;
-  String? _description;
-  String? _website;
-  String? _selectedIndustry;
-  String? _selectedLocation;
-  String? _selectedCompanySize; 
-  XFile? _logoImage;
-  XFile? _bannerImage;
+  String? _companyName;
+  String? _companyDescription;
+  String? _companyWebsite;
+  String? _companyType;
+  String? _companyIndustry;
+  String? _companyOverview;
+  String? _companyFounded;
+  String? _companyAddress;
+  String? _companyLocation;
+  String? _companyEmail;
+  String? _companyContactNumber;
+  String? _companySize;
+  String? _companySpecialities;
+  XFile? _companyLogo;
+  XFile? _companyBanner;
   bool _isLoading = false;
-  bool _agreedToTerms = false; 
+  bool _agreedToTerms = false;
+
   // ✅ Getters
-  String? get name => _name;
-  String? get description => _description;
-  String? get website => _website;
-  String? get selectedIndustry => _selectedIndustry;
-  String? get selectedLocation => _selectedLocation;
-  String? get selectedCompanySize => _selectedCompanySize; 
-  XFile? get logoImage => _logoImage;
-  XFile? get bannerImage => _bannerImage;
+  String? get companyName => _companyName;
+  String? get companyDescription => _companyDescription;
+  String? get companyWebsite => _companyWebsite;
+  String? get companyType => _companyType;
+  String? get companyIndustry => _companyIndustry;
+  String? get companyOverview => _companyOverview;
+  String? get companyFounded => _companyFounded;
+  String? get companyAddress => _companyAddress;
+  String? get companyLocation => _companyLocation;
+  String? get companyEmail => _companyEmail;
+  String? get companyContactNumber => _companyContactNumber;
+  String? get companySize => _companySize;
+  String? get companySpecialities => _companySpecialities;
+  XFile? get companyLogo => _companyLogo;
+  XFile? get companyBanner => _companyBanner;
   bool get isLoading => _isLoading;
   bool get agreedToTerms => _agreedToTerms;
+
   // ✅ Setters
-  void setName(String value) {
-    _name = value;
+  void setCompanyName(String value) {
+    _companyName = value;
     notifyListeners();
   }
 
-  void setDescription(String value) {
-    _description = value;
+  void setCompanyDescription(String value) {
+    _companyDescription = value;
     notifyListeners();
   }
 
-  void setWebsite(String value) {
-    _website = value;
+  void setCompanyWebsite(String value) {
+    _companyWebsite = value;
     notifyListeners();
   }
 
-  void setIndustry(String? value) {
-    _selectedIndustry = value;
+  void setCompanyType(String value) {
+    _companyType = value;
     notifyListeners();
   }
 
-  void setLocation(String? value) {
-    _selectedLocation = value;
+  void setCompanyIndustry(String value) {
+    _companyIndustry = value;
     notifyListeners();
   }
 
-  void setCompanySize(String? value) {
-    _selectedCompanySize = value;
+  void setCompanyOverview(String value) {
+    _companyOverview = value;
     notifyListeners();
   }
 
-  void setLogoImage(XFile? image) {
-    _logoImage = image;
+  void setCompanyFounded(String value) {
+    _companyFounded = value;
     notifyListeners();
   }
 
-  void setBannerImage(XFile? image) {
-    _bannerImage = image;
+  void setCompanyAddress(String value) {
+    _companyAddress = value;
     notifyListeners();
   }
-  void setAgreedToTerms(bool value) { 
+
+  void setCompanyLocation(String value) {
+    _companyLocation = value;
+    notifyListeners();
+  }
+
+  void setCompanyEmail(String value) {
+    _companyEmail = value;
+    notifyListeners();
+  }
+
+  void setCompanyContactNumber(String value) {
+    _companyContactNumber = value;
+    notifyListeners();
+  }
+
+  void setCompanySize(String value) {
+    _companySize = value;
+    notifyListeners();
+  }
+
+  void setCompanySpecialities(String value) {
+    _companySpecialities = value;
+    notifyListeners();
+  }
+
+  void setCompanyLogo(XFile? image) {
+    _companyLogo = image;
+    notifyListeners();
+  }
+
+  void setCompanyBanner(XFile? image) {
+    _companyBanner = image;
+    notifyListeners();
+  }
+
+  void setAgreedToTerms(bool value) {
     _agreedToTerms = value;
     notifyListeners();
   }
 
   /// ✅ Creates a new company
   Future<Company?> createCompany() async {
-    if (_name == null || _description == null || _logoImage == null) {
+    if (_companyName == null ||
+        _companySize == null ||
+        _companyType == null ||
+        _companyIndustry == null) {
       print("❌ Missing required fields");
       return null;
     }
@@ -88,25 +143,31 @@ class CompanyCreateProvider with ChangeNotifier {
 
     // ✅ Create Company instance
     final newCompany = Company(
-      id: "", // The backend should generate an ID
-      name: _name!,
-      description: _description!,
-      website: _website ?? "",
-      bannerUrl: _bannerImage?.path ?? "",
-      logoUrl: _logoImage!.path,
-      field: _selectedIndustry ?? "",
-      followerCount: 0,
-      employeeCount:
-          _selectedCompanySize != null
-              ? int.tryParse(_selectedCompanySize!) ?? 0
-              : 0, 
-      location: _selectedLocation ?? "",
-      followerIds: [],
+      companyId: "", // The backend should generate an ID
+      name: _companyName!,
+      isFollowing: false,
+      isVerified: false,
+      isAdmin: true,
+      logo: _companyLogo?.path ?? "",
+      description: _companyDescription ?? "",
+      companySize: _companySize ?? "",
+      followers: 0,
+      companyType: _companyType ?? "",
+      industry: _companyIndustry ?? "",
+      overview: _companyOverview ?? "",
+      founded: _companyFounded ?? "",
+      website: _companyWebsite ?? "",
+      address: _companyAddress ?? "",
+      location: _companyLocation ?? "",
+      email: _companyEmail ?? "",
+      contactNumber: _companyContactNumber ?? "",
+      banner: _companyBanner?.path ?? "",
+      specialities: _companySpecialities ?? "",
     );
 
     try {
       await _companyRepository.createCompany(newCompany);
-      print("✅ Company created successfully");
+      print("✅ Company created successfully:\n");
       notifyListeners();
       return newCompany;
     } catch (e) {

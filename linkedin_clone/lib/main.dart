@@ -11,8 +11,15 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/forgot_pa
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/login_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/register_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_email_usecase.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
+import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
@@ -41,6 +48,7 @@ import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
@@ -68,6 +76,8 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_r
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart'; // Ensure this is the correct path
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import "../../../features/connections/presentations/pages/connections_page.dart";
 
@@ -80,7 +90,13 @@ void main() {
   //   client: http.Client(),
   //   baseUrl: 'https://your-api-url.com',
   // );
-
+  final companyRemoteDataSource =
+      CompanyRemoteDataSource(); // Make sure this is initialized
+  final userRemoteDataSource = UserRemoteDataSource();
+  final companyrepos = CompanyRepositoryImpl(
+    remoteDataSource: companyRemoteDataSource,
+  );
+  final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
   final MockProfileRemoteDataSource dataSourceProfile =
       MockProfileRemoteDataSource();
 
@@ -90,6 +106,7 @@ void main() {
   );
   final useMock = true;
   // ignore: dead_code
+
   final AuthRemoteDataSource dataSource =
       useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
@@ -120,6 +137,7 @@ void main() {
                 resendEmailUsecase: resendEmailUsecase,
               ),
         ),
+
         ChangeNotifierProvider(
           create:
               (_) => FeedProvider(
@@ -218,27 +236,10 @@ void main() {
   );
 }
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp.router(
-//       title: 'Flutter Demo',
-//       theme: AppTheme.lightTheme,
-//       darkTheme: AppTheme.darkTheme,
-//       //theme: ThemeData(primarySwatch: Colors.blue),
-//       themeMode: ThemeMode.system,
-//       debugShowCheckedModeBanner: false,
-
-//       //routes: {'/create-post': (_) => const PostCreationPage()},
-//       routerConfig: AppRouter.router,
-//     );
-//   }
-//}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -248,9 +249,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: InvitationsPage(
-        token: "wewa",
-      ), // Change this to your desired initial page
-    );
+      home: OnboardingPage(),
+    ); // Change this to your desired initial page
   }
 }

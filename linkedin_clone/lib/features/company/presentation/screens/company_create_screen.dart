@@ -11,12 +11,18 @@ class CreateCompanyScreen extends StatelessWidget {
   void _pickImage(BuildContext context, bool isLogo) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
     if (image != null) {
       final provider = Provider.of<CompanyCreateProvider>(
         context,
-        listen: true,
+        listen: false,
       );
-      isLogo ? provider.setLogoImage(image) : provider.setBannerImage(image);
+
+      if (isLogo) {
+        provider.setCompanyLogo(image);
+      } else {
+        provider.setCompanyBanner(image);
+      }
     }
   }
 
@@ -24,20 +30,19 @@ class CreateCompanyScreen extends StatelessWidget {
     final provider = Provider.of<CompanyCreateProvider>(context, listen: false);
 
     if (_formKey.currentState!.validate()) {
-      if (provider.logoImage == null || provider.bannerImage == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Please upload both company logo and banner."),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
+      print("Form validated! Submitting...");
 
       final newCompany = await provider.createCompany();
+      print("New Company: $newCompany");
+
       if (newCompany != null && !provider.isLoading) {
+        print("Company created successfully. Navigating back...");
         Navigator.pop(context);
+      } else {
+        print("Company creation failed or is still loading.");
       }
+    } else {
+      print("Form validation failed. Fix errors before submitting.");
     }
   }
 
@@ -67,11 +72,11 @@ class CreateCompanyScreen extends StatelessWidget {
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
-                                provider.logoImage != null
+                                provider.companyLogo != null
                                     ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.file(
-                                        File(provider.logoImage!.path),
+                                        File(provider.companyLogo!.path),
                                         width: 60,
                                         height: 60,
                                         fit: BoxFit.cover,
@@ -94,7 +99,7 @@ class CreateCompanyScreen extends StatelessWidget {
                           // ✅ Company Name Field
                           Expanded(
                             child: TextFormField(
-                              onChanged: provider.setName,
+                              onChanged: provider.setCompanyName,
                               decoration: InputDecoration(
                                 labelText: "Company Name *",
                                 prefixIcon: Icon(Icons.business),
@@ -112,77 +117,41 @@ class CreateCompanyScreen extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 16),
-
-                      // ✅ Industry Dropdown
-                      DropdownButtonFormField2<String>(
-                        value: provider.selectedIndustry,
-                        onChanged: provider.setIndustry,
-                        decoration: InputDecoration(
-                          labelText: "Industry *",
-                          prefixIcon: Icon(Icons.people),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 12,
+                      // ✅ Overview Field
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            onChanged: provider.setCompanyOverview,
+                            decoration: InputDecoration(
+                              labelText: "Overview",
+                              prefixIcon: Icon(Icons.description),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            maxLines: 2,
+                            maxLength: 300,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null; // No error if the field is empty
+                              }
+                            },
                           ),
-                        ),
-                        isDense: true,
-                        isExpanded: true,
-
-                        // ✅ Customizes dropdown appearance
-                        dropdownStyleData: DropdownStyleData(
-                          maxHeight: 200,
-                          offset: Offset(0, 5),
-                          elevation: 2,
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 4,
-                                offset: Offset(0, 2),
-                              ),
-                            ],
+                          Text(
+                            "Provide a short summary of your company, including its mission and services.",
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
                           ),
-                        ),
-
-                        // ✅ Scrollable dropdown menu
-                        items:
-                            [
-                                  "Health Care",
-                                  "Technology",
-                                  "Finance",
-
-                                ]
-                                .map(
-                                  (size) => DropdownMenuItem(
-                                    value: size,
-                                    child: Text(
-                                      size,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-
-                        validator:
-                            (value) =>
-                                value == null
-                                    ? "Please select a company size"
-                                    : null,
+                        ],
                       ),
                       SizedBox(height: 16),
 
-                      // ✅ Location Dropdown
+                      // ✅ Industry Field
                       TextFormField(
-                        onChanged: provider.setLocation,
+                        onChanged: provider.setCompanyIndustry,
                         decoration: InputDecoration(
-                          labelText: "Location *",
-                          prefixIcon: Icon(Icons.location_on),
+                          labelText: "Industry *",
+                          prefixIcon: Icon(Icons.factory),
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(),
@@ -190,14 +159,63 @@ class CreateCompanyScreen extends StatelessWidget {
                         validator:
                             (value) =>
                                 value == null || value.isEmpty
-                                    ? "Please enter a location"
+                                    ? "Please enter an industry"
                                     : null,
                       ),
                       SizedBox(height: 16),
-                      // ✅ Company Size Dropdown
+
+                      // ✅ Location Field
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            onChanged: provider.setCompanyLocation,
+                            decoration: InputDecoration(
+                              labelText: "Location",
+                              prefixIcon: Icon(Icons.location_on),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.url,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null; // No error if the field is empty
+                              }
+
+                              final urlPattern =
+                                  r'^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\S*)?$';
+                              final regExp = RegExp(urlPattern);
+
+                              if (!regExp.hasMatch(value)) {
+                                return "Please enter a valid website URL (e.g., https://example.com)";
+                              }
+
+                              return null; // No error if valid
+                            },
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              "Paste your Google Maps location link here (e.g., https://maps.google.com/...).",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 16),
+                      // ✅ Company Size Field
                       DropdownButtonFormField2<String>(
-                        value: provider.selectedCompanySize,
-                        onChanged: provider.setCompanySize,
+                        value: provider.companySize,
+                        onChanged: (value) {
+                          if (value != null) {
+                            provider.setCompanySize(value);
+                          }
+                        },
                         decoration: InputDecoration(
                           labelText: "Company Size *",
                           prefixIcon: Icon(Icons.people),
@@ -234,15 +252,11 @@ class CreateCompanyScreen extends StatelessWidget {
                         // ✅ Scrollable dropdown menu
                         items:
                             [
-                                  "0-1 Employees",
-                                  "2-10 Employees",
-                                  "11-50 Employees",
-                                  "51-200 Employees",
-                                  "201-500 Employees",
-                                  "501-1000 Employees",
-                                  "1001-5000 Employees",
-                                  "5001-10,000 Employees",
-                                  "10,000+ Employees",
+                                  "1-50 Employees",
+                                  "51-400 Employees",
+                                  "401-1000 Employees",
+                                  "1001-10000 Employees",
+                                  "10000+ Employees",
                                 ]
                                 .map(
                                   (size) => DropdownMenuItem(
@@ -262,11 +276,11 @@ class CreateCompanyScreen extends StatelessWidget {
                                     : null,
                       ),
                       SizedBox(height: 16),
-                      // ✅ Website (Required with Validation)
+                      // ✅ Website Field
                       TextFormField(
-                        onChanged: provider.setWebsite,
+                        onChanged: provider.setCompanyWebsite,
                         decoration: InputDecoration(
-                          labelText: "Website *",
+                          labelText: "Website",
                           prefixIcon: Icon(Icons.link),
                           filled: true,
                           fillColor: Colors.white,
@@ -274,8 +288,9 @@ class CreateCompanyScreen extends StatelessWidget {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Please enter the company's website";
+                            return null; // No error if the field is empty
                           }
+
                           // Validate a proper URL format
                           final urlPattern =
                               r'^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\S*)?$';
@@ -290,12 +305,132 @@ class CreateCompanyScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 16),
 
+                      // ✅ Company Type Dropdown
+                      DropdownButtonFormField2<String>(
+                        value: provider.companyType,
+                        onChanged: (value) {
+                          if (value != null) {
+                            provider.setCompanyType(value);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Company Type *",
+                          prefixIcon: Icon(Icons.business_center),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 12,
+                          ),
+                        ),
+                        isDense: true,
+                        isExpanded: true,
+
+                        // ✅ Customizes dropdown appearance
+                        dropdownStyleData: DropdownStyleData(
+                          maxHeight: 200,
+                          offset: Offset(0, 5),
+                          elevation: 2,
+                          padding: EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black26,
+                                blurRadius: 4,
+                                offset: Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // ✅ Scrollable dropdown menu
+                        items:
+                            [
+                                  "Public Company",
+                                  "Self Employed",
+                                  "Government Agency",
+                                  "Non Profit",
+                                  "Sole Proprietorship",
+                                  "Privately Held",
+                                  "Partnership",
+                                ]
+                                .map(
+                                  (size) => DropdownMenuItem(
+                                    value: size,
+                                    child: Text(
+                                      size,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+
+                        validator:
+                            (value) =>
+                                value == null
+                                    ? "Please select a company type"
+                                    : null,
+                      ),
+                      SizedBox(height: 16),
+                      // ✅ Email Field
+                      TextFormField(
+                        onChanged: provider.setCompanyEmail,
+                        decoration: InputDecoration(
+                          labelText: "Email ",
+                          prefixIcon: Icon(Icons.email),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return null; 
+                          }
+
+                          // ✅ Email validation regex pattern
+                          final emailRegex = RegExp(
+                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                          );
+
+                          if (!emailRegex.hasMatch(value)) {
+                            return "Please enter a valid email address";
+                          }
+
+                          return null; // Valid email
+                        },
+                      ),
+
+                      SizedBox(height: 16),
+
+                      // ✅ Contact Number Field
+                      TextFormField(
+                        onChanged: provider.setCompanyContactNumber,
+                        decoration: InputDecoration(
+                          labelText: "Contact Number ",
+                          prefixIcon: Icon(Icons.call),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return null; // No error if the field is empty
+                          }
+                        },
+                      ),
+                      SizedBox(height: 16),
+
                       // ✅ Company Banner Picker
                       Row(
                         children: [
-                          provider.bannerImage != null
+                          provider.companyBanner != null
                               ? Image.file(
-                                File(provider.bannerImage!.path),
+                                File(provider.companyBanner!.path),
                                 width: 120,
                                 height: 60,
                                 fit: BoxFit.cover,
@@ -312,22 +447,31 @@ class CreateCompanyScreen extends StatelessWidget {
                       SizedBox(height: 16),
 
                       // ✅ Description Field
-                      TextFormField(
-                        onChanged: provider.setDescription,
-                        decoration: InputDecoration(
-                          labelText: "Description *",
-                          prefixIcon: Icon(Icons.description),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(),
-                        ),
-                        maxLines: 4,
-                        validator:
-                            (value) =>
-                                value!.isEmpty
-                                    ? "Please enter a description"
-                                    : null,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            onChanged: provider.setCompanyDescription,
+                            decoration: InputDecoration(
+                              labelText: "Description",
+                              prefixIcon: Icon(Icons.article),
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(),
+                            ),
+                            maxLines: 4,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return null; // Field is optional, so no validation error
+                              }
+                            },
+                          ),
+                          SizedBox(height: 4),
+                        ],
                       ),
+
+                      SizedBox(height: 16),
+
                       SizedBox(height: 20),
 
                       // ✅ Submit Button

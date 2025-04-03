@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
-import 'package:linkedin_clone/features/company/domain/usecases/get_company_details.dart';
-import 'package:linkedin_clone/features/company/domain/usecases/get_friends_following_company.dart';
-import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies.dart';
+import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/create_job_posting_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_company_details_usecase.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_friends_following_company_usecase.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
+import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/entities/job.dart';
 
 class Post {
   final String username;
@@ -38,9 +44,13 @@ class CompanyProvider with ChangeNotifier {
   bool _isLoading = false;
   Map<String, bool> _followStatus = {};
   List<Post> _posts = [];
-
+  List<Job> _jobs = [];
+  bool _isLoadingJobs = false;
+  bool isAdmin = false;
   bool _disposed = false;
+  bool isViewingAsUser = false;
 
+ 
   // Safe disposal
   @override
   void dispose() {
@@ -58,6 +68,8 @@ class CompanyProvider with ChangeNotifier {
   List<Company> get relatedCompanies => _relatedCompanies;
   bool get isLoading => _isLoading;
   List<Post> get posts => _posts;
+  List<Job> get jobs => _jobs;
+  bool get isLoadingJobs => _isLoadingJobs;
 
   final GetCompanyDetails _getCompanyDetails = GetCompanyDetails(
     repository: CompanyRepositoryImpl(
@@ -80,7 +92,12 @@ class CompanyProvider with ChangeNotifier {
       remoteDataSource: CompanyRemoteDataSource(),
     ),
   );
-
+  final GetRecentJobs _getRecentJobs = GetRecentJobs(
+    repository: JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
+  );
+  final CreateJob _createJob = CreateJob(
+    repository: JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
+  );
   final CompanyRepositoryImpl _companyRepository = CompanyRepositoryImpl(
     remoteDataSource: CompanyRemoteDataSource(),
   );
@@ -90,13 +107,17 @@ class CompanyProvider with ChangeNotifier {
   Future<void> fetchCompanyDetails(String companyId, String userId) async {
     _isLoading = true;
     safeNotify();
-
+    print('CompanyID is:$companyId');
     _company = await _getCompanyDetails.execute(companyId);
     await fetchFollowStatus(userId, companyId);
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(userId, companyId);
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(
+      userId,
+      companyId,
+    );
     _relatedCompanies = await _getRelatedCompanies.execute(companyId);
     _posts = await fetchPosts();
-
+    _jobs = await fetchRecentJobs();
+    isAdmin = _company?.isAdmin ?? false;
     _isLoading = false;
     safeNotify();
   }
@@ -129,7 +150,10 @@ class CompanyProvider with ChangeNotifier {
 
     safeNotify();
   }
-
+ void toggleViewMode() {
+    isViewingAsUser = !isViewingAsUser;
+    notifyListeners();
+  }
   Future<List<User>> fetchFriendsFollowingCompany(
     String userId,
     String companyId,
@@ -137,7 +161,10 @@ class CompanyProvider with ChangeNotifier {
     _isLoading = true;
     safeNotify();
 
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(userId, companyId);
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(
+      userId,
+      companyId,
+    );
 
     _isLoading = false;
     safeNotify();
@@ -159,7 +186,7 @@ class CompanyProvider with ChangeNotifier {
     return [
       Post(
         username: "Tech Corp",
-        profileImage: company?.logoUrl ?? 'default_logo_url',
+        profileImage: company?.logo ?? 'default_logo_url',
         text: "Exciting news! We just launched a new AI-powered tool.",
         imageUrl:
             "https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png",
@@ -170,7 +197,7 @@ class CompanyProvider with ChangeNotifier {
       ),
       Post(
         username: "DevHub",
-        profileImage: company?.logoUrl ?? 'default_logo_url',
+        profileImage: company?.logo ?? 'default_logo_url',
         text: "Join us for our next developer conference!",
         imageUrl: null,
         likes: 85,
@@ -179,5 +206,43 @@ class CompanyProvider with ChangeNotifier {
         followers: 3200,
       ),
     ];
+  }
+
+  Future<List<Job>> fetchRecentJobs() async {
+    _isLoadingJobs = true;
+    safeNotify();
+    try {
+      final jobList = await _getRecentJobs.execute();
+      print("Fetched Jobs: $jobList"); // Debugging print statement
+
+      if (jobList.isNotEmpty) {
+        _isLoadingJobs = false;
+        safeNotify();
+        return jobList;
+      } else {
+        print("No jobs found from API.");
+      }
+    } catch (e) {
+      print("Error fetching jobs: $e");
+    }
+    _isLoadingJobs = false;
+    safeNotify();
+    return [];
+  }
+
+  // Updated addJob method
+  Future<void> addJob(CreateJobEntity job) async {
+    try {
+      _isLoadingJobs = true;
+      safeNotify();
+      await _createJob.execute(job); 
+      await fetchRecentJobs(); 
+      _isLoadingJobs = false;
+      safeNotify();
+    } catch (e) {
+      print("Error adding job: $e");
+      _isLoadingJobs = false;
+      safeNotify();
+    }
   }
 }

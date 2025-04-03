@@ -47,7 +47,7 @@ class AppRouter {
       GoRoute(path: RouteNames.main, builder: (context, state) => MainNavigationPage()),
       GoRoute(path: RouteNames.createPost,builder: (context, state) => PostCreationPage() ),
       GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
-      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "Company", title: "Test") ),
+      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "elsewedy-electric", title: "Test") ),
       GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
       GoRoute(path: RouteNames.settings, builder: (context, state) => SettingsPage()),
       GoRoute(path: RouteNames.deleteAccount, builder: (context, state) => DeleteAccountPage(
