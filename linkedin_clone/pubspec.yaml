@@ -30,6 +30,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   intl_phone_number_input: ^0.7.0+2
   file_picker: 8.1.4
+  fl_chart: ^0.40.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
