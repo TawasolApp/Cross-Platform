@@ -72,10 +72,13 @@ void main() {
   //   client: http.Client(),
   //   baseUrl: 'https://your-api-url.com',
   // );
-final companyRemoteDataSource = CompanyRemoteDataSource(); // Make sure this is initialized
-final userRemoteDataSource =UserRemoteDataSource();
-final companyrepos = CompanyRepositoryImpl(remoteDataSource: companyRemoteDataSource);
-final userRepos=UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
+  final companyRemoteDataSource =
+      CompanyRemoteDataSource(); // Make sure this is initialized
+  final userRemoteDataSource = UserRemoteDataSource();
+  final companyrepos = CompanyRepositoryImpl(
+    remoteDataSource: companyRemoteDataSource,
+  );
+  final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
   final MockProfileRemoteDataSource dataSourceProfile =
       MockProfileRemoteDataSource();
 
@@ -166,10 +169,13 @@ final userRepos=UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         // Add the EditCompanyDetailsProvider
         ChangeNotifierProvider(
-          create: (_) => EditCompanyDetailsProvider(
-            updateCompanyDetails: UpdateCompanyDetails(companyRepository: companyrepos),
-            addAdminUseCase: AddAdminUseCase(repository: userRepos),
-          ),
+          create:
+              (_) => EditCompanyDetailsProvider(
+                updateCompanyDetails: UpdateCompanyDetails(
+                  companyRepository: companyrepos,
+                ),
+                addAdminUseCase: AddAdminUseCase(repository: userRepos),
+              ),
         ),
       ],
       child: const MyApp(),
