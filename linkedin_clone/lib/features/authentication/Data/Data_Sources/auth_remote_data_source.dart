@@ -5,91 +5,155 @@ import 'package:linkedin_clone/features/authentication/Data/Models/user_model.da
 import 'dart:convert';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+  // Helper function to get headers with authorization
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await TokenService.getToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
 
-  
   @override
   Future<UserModel> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('https://example.com/api/login'),
-      body: {
-        "email": email, 
-        "password": password},
+      Uri.parse('https://tawasolapp.me/api/auth/login'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "email": email,
+        "password": password,
+      }),
     );
 
     if (response.statusCode == 200) {
       return UserModel.fromJson(json.decode(response.body));
     } else {
-      throw Exception("Invalid credentials");
+      throw Exception("Invalid credentials: ${response.body}");
     }
   }
-
 
   @override
   Future<void> forgotPassword(String email) async {
     final response = await http.post(
-      Uri.parse('https://example.com/api/forgot-password'),
-      body: {
-        "email": email},
+      Uri.parse('https://tawasolapp.me/api/auth/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": email}),
     );
 
     if (response.statusCode == 200) {
-     print("Password reset link sent to your email");
+      print("Password reset link sent to your email");
     } else {
-      throw Exception("Failed to reset password");
+      throw Exception("Failed to reset password: ${response.body}");
     }
   }
 
   @override
   Future<void> resendVerificationEmail(String email) async {
     final response = await http.post(
-      Uri.parse('https://example.com/api/forgot-password'),
-      body: {
-        "email": email},
+      Uri.parse('https://tawasolapp.me/api/auth/resend-confirmation'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"email": email}),
     );
 
     if (response.statusCode == 200) {
-     print("Email resent succesfully");
+      print("Email resent successfully");
     } else {
-      throw Exception("Failed to reset password");
+      throw Exception("Failed to resend verification email: ${response.body}");
     }
   }
 
   @override
   Future<void> loginWithGoogle(String idToken) async {
-  final response = await http.post(
-    Uri.parse('/auth/social-login/google'),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonEncode({"idToken": idToken}),
-  );
-
-  if (response.statusCode == 200) {
-    final json = jsonDecode(response.body);
-    final accessToken = json['token'];
-    // ignore: unused_local_variable
-    final refreshToken = json['refreshToken'];
-
-    await TokenService.saveToken(accessToken);
-    //await TokenService.saveRefreshToken(refreshToken);
-  } else {
-    throw Exception('Google login failed');
-  }
-}
-
-  @override
-    @override
-  Future<UserModel> register(String firstName,String lastName,String email, String password, String recaptchaToken) async {
     final response = await http.post(
-      Uri.parse('https://example.com/api/register'),
-      body: {
-        "email": email, "password": password, "recaptchaToken": recaptchaToken},
+      Uri.parse('https://tawasolapp.me/api/auth/social-login/google'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({"idToken": idToken}),
     );
 
     if (response.statusCode == 200) {
-      return UserModel.fromJson(json.decode(response.body));
+      final json = jsonDecode(response.body);
+      final accessToken = json['token'];
+      final refreshToken = json['refreshToken'];
+
+      await TokenService.saveToken(accessToken);
+      await TokenService.saveRefreshToken(refreshToken);
     } else {
-      throw Exception("Failed to register");
+      throw Exception('Google login failed: ${response.body}');
     }
   }
 
+  @override
+  Future<UserModel> register(String firstName, String lastName, String email, String password, String recaptchaToken) async {
+    final response = await http.post(
+      Uri.parse('https://tawasolapp.me/api/auth/register'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "firstName": firstName,
+        "lastName": lastName,
+        "email": email,
+        "password": password,
+        "recaptchaToken": recaptchaToken,
+      }),
+    );
 
+    if (response.statusCode == 201) {
+      return UserModel.fromJson(json.decode(response.body));
+    } else {
+      throw Exception("Failed to register: ${response.body}");
+    }
+  }
+
+  @override
+  Future<void> changePassword(String currentPassword, String newPassword) async {
+    final response = await http.patch(
+      Uri.parse('https://tawasolapp.me/api/users/update-password'),
+      headers: await _getHeaders(),
+      body: jsonEncode({
+        "currentpassword": currentPassword,
+        "newpassword": newPassword,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print("Password changed successfully");
+    } else {
+      throw Exception("Failed to change password: ${response.body}");
+    }
+  }
+
+  @override
+  Future<void> updateEmail(String newEmail, String password) async {
+    final response = await http.patch(
+      Uri.parse('https://tawasolapp.me/api/users/request-email-update'),
+      headers: await _getHeaders(),
+      body: jsonEncode({
+        "newemail": newEmail,
+        "password": password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print("Email changed successfully");
+    } else {
+      throw Exception("Failed to update email: ${response.body}");
+    }
+  }
+
+  @override
+  Future<void> deleteAccount(String email, String password) async {
+    final response = await http.delete(
+      Uri.parse('https://tawasolapp.me/api/users/delete-account'),
+      headers: await _getHeaders(),
+      body: jsonEncode({
+        "email": email,
+        "password": password,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      print("Account deleted successfully");
+    } else {
+      throw Exception("Failed to delete account: ${response.body}");
+    }
+  }
 }

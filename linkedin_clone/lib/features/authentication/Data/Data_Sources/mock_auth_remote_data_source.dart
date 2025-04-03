@@ -71,5 +71,23 @@ class MockAuthRemoteDataSource implements AuthRemoteDataSource {
   return;
 }
 
+  @override
+  Future<void> changePassword(String currentPassword, String newPassword) {
+    // TODO: implement changePassword
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteAccount(String email, String password) {
+    // TODO: implement deleteAccount
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> updateEmail(String newEmail, String password) {
+    // TODO: implement updateEmail
+    throw UnimplementedError();
+  }
+
 
 }

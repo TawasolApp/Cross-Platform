@@ -16,4 +16,10 @@ class RouteNames {
   static const String main = "/main";
   static const String createPost = "/create_post";
   static const String companyPage = "/company_page";
+  static const String settings = "/settings";
+  static const String deleteAccount = "/delete_account";
+  static const String changePassword = "/change_password";
+  static const String updateEmail = "/update_email";
+  static const String updateInfo = "/update_info";
+  static const String signInAndSecurity = "/sign_in_and_security";
 }

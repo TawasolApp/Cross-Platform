@@ -4,6 +4,7 @@ import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
 
 
 class MainNavigationPage extends StatefulWidget {
@@ -21,7 +22,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     ConnectionsPage(token: "Mock token"), // Will be replaced by Connections module
      // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompanyProfileScreen(companyId: "Company", title: "Test Company"),
-    Center(child: Text('Settings Page')),   // Will be replaced by Settings module
+    SettingsPage(),   // Will be replaced by Settings module
   ];
 
   void _onItemTapped(int index) {
