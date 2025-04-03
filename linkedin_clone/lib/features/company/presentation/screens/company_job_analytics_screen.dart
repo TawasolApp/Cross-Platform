@@ -1,80 +1,193 @@
-// import 'package:flutter/material.dart';
-// import 'package:fl_chart/fl_chart.dart';
-// import 'package:linkedin_clone/features/company/domain/entities/job.dart';
-// import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 
-// class JobAnalyticsScreen extends StatelessWidget {
-//   final CompanyProvider companyProvider;
+class JobAnalyticsScreen extends StatefulWidget {
+  final CompanyProvider companyProvider;
 
-//   JobAnalyticsScreen({required this.companyProvider});
+  JobAnalyticsScreen({required this.companyProvider});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     if (companyProvider.isLoadingJobs) {
-//       return Scaffold(
-//         appBar: AppBar(title: Text("Job Analytics")),
-//         body: Center(child: CircularProgressIndicator()),
-//       );
-//     }
+  @override
+  _JobAnalyticsScreenState createState() => _JobAnalyticsScreenState();
+}
 
-//     final List<Job> jobs = companyProvider.jobs;
+class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
+  late List<Job> jobs;
+  String _selectedSort = "Top Progress"; // Default sorting
 
-//     if (jobs.isEmpty) {
-//       return Scaffold(
-//         appBar: AppBar(title: Text("Job Analytics")),
-//         body: Center(child: Text("No jobs available")),
-//       );
-//     }
+  @override
+  void initState() {
+    super.initState();
+    jobs = List.from(widget.companyProvider.jobs);
+    _sortJobs();
+  }
 
-//     print("Jobs in Analytics: ${jobs.length}");
+  void _sortJobs() {
+    setState(() {
+      if (_selectedSort == "Date Posted") {
+        jobs.sort((a, b) => b.postedDate.compareTo(a.postedDate));
+      } else if (_selectedSort == "Alphabetical (A-Z)") {
+        jobs.sort((a, b) => a.position.compareTo(b.position));
+      } else if (_selectedSort == "Top Progress") {
+        jobs.sort((a, b) => b.applicantCount.compareTo(a.applicantCount));
+      }
+    });
+  }
 
-//     // Sort jobs by highest number of applicants and limit to top 5
-//     jobs.sort((a, b) => b.applicantCount.compareTo(a.applicantCount));
-//     final List<Job> topJobs = jobs.take(5).toList(); // Show only top 5
+  int getMaxApplicantCount() {
+    return jobs.isNotEmpty
+        ? jobs.map((job) => job.applicantCount).reduce((a, b) => a > b ? a : b)
+        : 1;
+  }
 
-//     return Scaffold(
-//       appBar: AppBar(title: Text("Job Analytics")),
-//       body: Padding(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text(
-//               "Top 5 Jobs with Most Applicants",
-//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//             ),
-//             SizedBox(height: 20),
-//             Expanded(child: _buildHorizontalBarChart(topJobs)),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+  Color getProgressBarColor(int applicantCount, int maxApplicantCount) {
+    double percentage = applicantCount / maxApplicantCount;
+    if (percentage > 0.75) {
+      return Colors.green;
+    } else if (percentage > 0.5) {
+      return Colors.amber;
+    } else {
+      return Colors.red;
+    }
+  }
 
-//   Widget _buildHorizontalBarChart(List<Job> jobs) {
-//     return BarChart(
-//       BarChartData(
-//         alignment: BarChartAlignment.spaceAround,
-//         maxY: jobs.first.applicantCount.toDouble() + 5,
-//         barGroups:
-//             jobs.take(5).map((job) {
-//               return BarChartGroupData(
-//                 x: jobs.indexOf(job),
-//                 barRods: [
-//                   BarChartRodData(
-//                     y: job.applicantCount.toDouble(),
-//                     width: 25,
-//                   ),
-//                 ],
-//               );
-//             }).toList(),
-//         titlesData: FlTitlesData(
-//           leftTitles: SideTitles(showTitles: true),
-//           bottomTitles: SideTitles(showTitles: false),
-//         ),
-//         gridData: FlGridData(show: false),
-//         borderData: FlBorderData(show: false),
-//       ),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    int maxApplicantCount = getMaxApplicantCount();
+
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [Text("Job Analytics")],
+        ),
+      ),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  "All Jobs with Applicant Counts",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Spacer(),
+                PopupMenuTheme(
+                  data: PopupMenuThemeData(
+                    color: Colors.white, 
+                    textStyle: TextStyle(
+                      color: Colors.black,
+                    ), 
+                  ),
+                  child: PopupMenuButton<String>(
+                    onSelected: (value) {
+                      setState(() {
+                        _selectedSort = value;
+                        _sortJobs();
+                      });
+                    },
+                    offset: Offset(
+                      0,
+                      screenHeight * 0.04,
+                    ), 
+                    itemBuilder:
+                        (context) => [
+                          PopupMenuItem(
+                            value: "Top Progress",
+                            child: Text("Top Progress"),
+                          ),
+                          PopupMenuItem(
+                            value: "Date Posted",
+                            child: Text("Date Posted"),
+                          ),
+                          PopupMenuItem(
+                            value: "Alphabetical (A-Z)",
+                            child: Text("Alphabetical (A-Z)"),
+                          ),
+                        ],
+                    icon: Icon(Icons.sort),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Expanded(
+              child: ListView.builder(
+                itemCount: jobs.length,
+                itemBuilder: (context, index) {
+                  final job = jobs[index];
+                  double progress = job.applicantCount / maxApplicantCount;
+
+                  return Card(
+                    margin: EdgeInsets.symmetric(vertical: 8.0),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 5, 
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white, 
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 2),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.work_outline,
+                                  color: Colors.blueAccent,
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    job.position,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Text("${job.applicantCount} Applicants"),
+                            SizedBox(height: 8),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: LinearProgressIndicator(
+                                value: progress,
+                                backgroundColor: Colors.grey[300],
+                                color: getProgressBarColor(
+                                  job.applicantCount,
+                                  maxApplicantCount,
+                                ),
+                                minHeight: 8,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
