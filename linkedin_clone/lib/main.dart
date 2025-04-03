@@ -31,6 +31,10 @@ import 'package:linkedin_clone/features/connections/domain/usecases/ignore_conne
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
+import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
+import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
+import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -104,7 +108,7 @@ void main() {
     profileRemoteDataSource: dataSourceProfile,
     connectionChecker: ConnectionCheckerImpl(internetConnection),
   );
-  final useMock = true;
+  final useMock = false;
   // ignore: dead_code
 
   final AuthRemoteDataSource dataSource =
@@ -115,6 +119,9 @@ void main() {
   final registerUseCase = RegisterUseCase(authRepository);
   final forgotPassUseCase = ForgotPassUseCase(authRepository);
   final resendEmailUsecase = ResendEmailUsecase(authRepository);
+  final updateEmailUsecase = UpdateEmailUsecase(authRepository);
+  final deleteAccountUsecase = DeleteAccountUsecase(authRepository);
+  final changePasswordUseCase = ChangePasswordUseCase(authRepository);
   final dio = Dio();
   final remoteDataSource = FeedRemoteDataSourceImpl(dio);
   final repository = FeedRepositoryImpl(remoteDataSource: remoteDataSource);
@@ -129,6 +136,9 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
         ),
         ChangeNotifierProvider(
           create:
@@ -243,13 +253,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
+      //theme: ThemeData(primarySwatch: Colors.blue),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: OnboardingPage(),
-    ); // Change this to your desired initial page
+      //routes: {'/create-post': (_) => const PostCreationPage()},
+
+      routerConfig: AppRouter.router,
+    );
   }
 }

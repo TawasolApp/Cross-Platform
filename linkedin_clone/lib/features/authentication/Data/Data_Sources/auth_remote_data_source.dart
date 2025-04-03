@@ -25,7 +25,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }),
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       return UserModel.fromJson(json.decode(response.body));
     } else {
       throw Exception("Invalid credentials: ${response.body}");
@@ -83,7 +83,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String firstName, String lastName, String email, String password, String recaptchaToken) async {
+  Future<UserModel> register(String firstName, String lastName, String email, String password, String captchaToken) async {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
@@ -92,7 +92,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "lastName": lastName,
         "email": email,
         "password": password,
-        "recaptchaToken": recaptchaToken,
+        "captchaToken": captchaToken,
       }),
     );
 
