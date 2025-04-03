@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
+import 'package:provider/provider.dart';
 
 class DeleteAccountPage extends StatelessWidget {
   final String userName;
@@ -20,7 +23,9 @@ class DeleteAccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-
+    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
+    String email = '';
+    String password = '';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Close account'),
@@ -91,18 +96,26 @@ class DeleteAccountPage extends StatelessWidget {
 
             // Continue Button
             Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  // Handle account deletion logic here
+              child: PrimaryButton(
+                text: "Save Changes",
+                onPressed: () async {
+                  final success = await settingsProvider.deleteAccount(email, password);
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Email updated successfully')),
+                    );
+                    // Navigate to the onboarding page after account deletion 
+                    //check if deleted by trying to login again
+                    context.go(RouteNames.onboarding); 
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to update email')),
+                    );
+                  } 
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                child: const Text('Continue'),
               ),
             ),
             const SizedBox(height: 20),

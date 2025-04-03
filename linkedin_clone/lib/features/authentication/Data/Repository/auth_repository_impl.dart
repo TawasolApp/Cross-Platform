@@ -74,6 +74,43 @@ Future<Either<Failure, void>> loginWithGoogle(String idToken) async {
   }
 }
 
+  @override
+  Future<Either<Failure, void>> deleteAccount(String email, String password) async {
+    try {
+      await remoteDataSource.deleteAccount(email,password);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  
+  }
+
+  @override
+  Future<Either<Failure, void>> updateEmail(String newEmail, String password) async {
+    try {
+      await remoteDataSource.updateEmail(newEmail,password);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> changePassword(String currentPassword, String newPassword) async{
+    try {
+      await remoteDataSource.changePassword(currentPassword,newPassword);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> verifyEmail(String email, String verificationCode) {
+    // TODO: implement verifyEmail
+    throw UnimplementedError();
+  }
+
 
 
  

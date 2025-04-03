@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
+import 'package:provider/provider.dart';
 
 class UpdateEmailPage extends StatelessWidget {
   const UpdateEmailPage({super.key});
@@ -8,6 +12,11 @@ class UpdateEmailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    String currentEmail = '';
+    String newEmail = '';
+    String password = '';
+    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,39 +38,49 @@ class UpdateEmailPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Update your email address'),
-            const SizedBox(height: 16),
-            _buildTextField('Current Email', false),
-            const SizedBox(height: 10),
-            _buildTextField('New Email', false),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0073B1), // LinkedIn blue
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Save Changes'),
+            CustomTextField(
+              keyboardType: TextInputType.emailAddress,
+              hintText: 'Current Email',
+              onChanged: (value) => currentEmail = value,
             ),
+            CustomTextField(
+              keyboardType: TextInputType.emailAddress,
+              hintText: 'New Email',
+              onChanged: (value) => newEmail = value,
+            ),
+            const SizedBox(height: 10),
+            CustomTextField(
+              keyboardType: TextInputType.visiblePassword,
+              hintText: 'Password',
+              isPassword: true,
+              onChanged: (value) => password = value,
+            ),
+            const SizedBox(height: 20),
+              PrimaryButton(
+                text: "Save Changes",
+                onPressed: () async {
+                  final success = await settingsProvider.updateEmail(newEmail, password);
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Email updated successfully')),
+                    );
+                    //context.go(RouteNames.signInAndSecurity);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to update email')),
+                    );
+                  } 
+                },
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String hint, bool obscure) {
-    return TextField(
-      obscureText: obscure,
-      decoration: InputDecoration(
-        labelText: hint,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Color(0xFF0073B1)), // LinkedIn blue
-        ),
-      ),
-    );
-  }
+
+  
 }

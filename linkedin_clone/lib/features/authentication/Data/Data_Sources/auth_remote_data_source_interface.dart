@@ -6,4 +6,8 @@ abstract class AuthRemoteDataSource {
   Future<void> forgotPassword(String email);
   Future<void> resendVerificationEmail(String email);
   Future<void> loginWithGoogle(String idToken);
+  Future<void> changePassword(String currentPassword,String newPassword);
+  Future<void> updateEmail(String newEmail,String password);
+  Future<void> deleteAccount(String email,String password);
+  
 }

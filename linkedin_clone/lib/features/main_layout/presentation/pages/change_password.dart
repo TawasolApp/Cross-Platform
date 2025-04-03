@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
+import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
+import 'package:provider/provider.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -64,6 +68,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    String currentPassword = '';
+    String newPassword = '';
+    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -132,18 +139,25 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               },
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: _requireSignIn ? const Color(0xFF0073B1) : Colors.grey,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
+            PrimaryButton(
+                text: "Save Changes",
+                onPressed: () async {
+                  final success = await settingsProvider.changePassword(currentPassword, newPassword);
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Password updated successfully')),
+                    );
+                    //context.go(RouteNames.signInAndSecurity);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to update Password')),
+                    );
+                  } 
+                },
               ),
-              child: const Text('Save Password'),
-            ),
             const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
