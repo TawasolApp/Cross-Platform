@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/login_error_modal.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/core/navigation/route_names.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
+import 'package:linkedin_clone/features/authentication/presentation/widgets/primary_button.dart';
 
 class EmailVerificationPage extends StatelessWidget {
   const EmailVerificationPage({super.key});
@@ -13,10 +16,10 @@ class EmailVerificationPage extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = theme.textTheme.bodyMedium?.color;
-
+    final authProvider = Provider.of<AuthProvider>(context);
     final registerProvider = Provider.of<RegisterProvider>(context, listen: false);
     final email = registerProvider.email;
-
+    final password = registerProvider.password;
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -70,20 +73,26 @@ class EmailVerificationPage extends StatelessWidget {
               const Spacer(),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Check email verification status from backend if needed
-                    context.go(RouteNames.login);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child: const Text("Continue", style: TextStyle(fontSize: 16)),
-                ),
+                child: PrimaryButton(
+                text: "Sign in",
+                onPressed: () async {
+                  final success = await authProvider.login(email!, password!);
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    context.go(RouteNames.main);
+                  } else {
+                    showModalBottomSheet(
+                      context: context,
+                      backgroundColor: Colors.transparent,
+                      isScrollControlled: true,
+                      builder: (context) => const CustomAuthErrorDialog(
+                        message: "Please verify your email before continuing",
+                      ),
+                    );
+                  }
+                },
+              ),
               ),
             ],
           ),
