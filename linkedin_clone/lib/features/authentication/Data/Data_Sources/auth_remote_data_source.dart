@@ -95,10 +95,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "captchaToken": captchaToken,
       }),
     );
-
+    UserModel userModel = new UserModel(token: "test-token");
     if (response.statusCode == 201) {
-      return UserModel.fromJson(json.decode(response.body));
+      print("[SUCCESS] Registration successful: ${response.body}");
+      return userModel;
     } else {
+      print("[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}");
       throw Exception("Failed to register: ${response.body}");
     }
   }

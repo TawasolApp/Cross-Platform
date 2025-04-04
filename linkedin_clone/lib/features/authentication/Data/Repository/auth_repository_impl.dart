@@ -17,7 +17,6 @@ class AuthRepositoryImpl implements AuthRepository {
 
       //Save token after API success
       await TokenService.saveToken(userModel.token);
-      
       return Right(userModel as UserEntity); 
     } catch (e) {
       
@@ -35,6 +34,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Right(userModel as UserEntity);
     } catch (e) {
+      print(firstName);
       return Left(ServerFailure());
     }
   }

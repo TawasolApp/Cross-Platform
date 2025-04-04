@@ -116,10 +116,7 @@ class AddEmailPasswordPage extends StatelessWidget {
                   final firstName = provider.firstName;
                   final lastName = provider.lastName;
 
-                  final success = await Provider.of<RegisterProvider>(
-                    context,
-                    listen: false,
-                  ).register(firstName!, lastName!, email!, password!, "test-token");
+                  final success = await provider.register(firstName!, lastName!, email!, password!, "test-token");
 
                   if (!context.mounted) return;
 
