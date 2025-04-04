@@ -14,7 +14,7 @@ class CompanyModel extends Company {
     String? description,
     int? followers,
     String? overview,
-    String? founded,
+    int? founded,
     String? website,
     String? address,
     String? location,

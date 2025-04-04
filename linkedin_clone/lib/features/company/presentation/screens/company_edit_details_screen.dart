@@ -50,7 +50,7 @@ class EditCompanyScreen extends StatelessWidget {
       text: company.overview,
     );
     final TextEditingController foundedController = TextEditingController(
-      text: company.founded,
+      text: company.founded.toString(),
     );
     final TextEditingController websiteController = TextEditingController(
       text: company.website,
@@ -343,7 +343,7 @@ class EditCompanyScreen extends StatelessWidget {
                                     companyType: companyTypeController.text,
                                     industry: industryController.text,
                                     overview: overviewController.text,
-                                    founded: foundedController.text,
+                                    founded: int.tryParse(foundedController.text) ?? 0,
                                     website: websiteController.text,
                                     address: addressController.text,
                                     contactNumber: contactNumberController.text,

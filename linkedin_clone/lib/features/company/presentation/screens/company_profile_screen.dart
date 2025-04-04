@@ -573,7 +573,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                       industry: provider.company!.industry,
                                       overview:
                                           provider.company!.overview ?? '',
-                                      founded: provider.company!.founded ?? '',
+                                      founded: provider.company!.founded ?? 0,
                                       website: provider.company!.website ?? '',
                                       address: provider.company!.address ?? '',
                                       contactNumber:

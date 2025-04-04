@@ -10,7 +10,7 @@ class UpdateCompanyEntity {
   final String companyType;
   final String industry;
   final String overview;
-  final String founded;
+  final int founded;
   final String website;
   final String address;
   final String location;

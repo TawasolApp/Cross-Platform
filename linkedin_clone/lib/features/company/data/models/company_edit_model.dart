@@ -13,7 +13,7 @@ class UpdateCompanyModel extends UpdateCompanyEntity {
     required String companyType,
     required String industry,
     required String overview,
-    required String founded,
+    required int founded,
     required String website,
     required String address,
     required String location,

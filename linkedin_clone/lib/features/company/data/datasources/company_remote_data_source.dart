@@ -13,40 +13,37 @@ class CompanyRemoteDataSource {
     // TODO: Replace this mock api call with an API request once the backend is ready
   //   // API Endpoint Example: GET /companies/{companyId}/
 
-  //   final token = await TokenService.getToken();
-  //   print("Token: $token");
-  //   if (token == null) {
-  //     throw Exception('Token is missing');
-  //   }
-  //   final response = await http.get(
-  //     Uri.parse('$baseUrl/companies/$companyId/'),
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': 'Bearer $token', // Use actual access token if needed
-  //     },
-  //   );
-  //   print(response.body);
-  //   if (response.statusCode == 200) {
-  //     return CompanyModel.fromJson(jsonDecode(response.body));
-  //   } else if (response.statusCode == 404) {
-  //     throw Exception('Company details not found');
-  //   } else {
-  //     throw Exception('Failed to load company details');
-  //   }
-  // }
-
-
-final response = await http.get(
-      Uri.parse(
-        'http://192.168.1.6:3000/companies?companyId=elsewedy-electric',
-      ),
+    final token = await TokenService.getToken();
+    print("Token: $token");
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
+    final response = await http.get(
+      Uri.parse('$baseUrl/companies/$companyId/'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token', // Use actual access token if needed
+      },
     );
     print(response.body);
     if (response.statusCode == 200) {
       return CompanyModel.fromJson(jsonDecode(response.body));
+    } else if (response.statusCode == 404) {
+      throw Exception('Company details not found');
     } else {
       throw Exception('Failed to load company details');
     }
+// final response = await http.get(
+//       Uri.parse(
+//         'http://192.168.1.6:3000/companies?companyId=elsewedy-electric',
+//       ),
+//     );
+//     print(response.body);
+//     if (response.statusCode == 200) {
+//       return CompanyModel.fromJson(jsonDecode(response.body));
+//     } else {
+//       throw Exception('Failed to load company details');
+//     }
 
 
 
@@ -148,7 +145,7 @@ final response = await http.get(
         industry: "Energy, Electrical and Electronics",
         overview:
             "Schneider Electric provides digital energy and automation solutions...",
-        founded: '1836',
+        founded: 1836,
         website: "https://www.se.com",
         address: "Rueil-Malmaison, France",
         location: "https://maps.app.goo.gl/schneider",
@@ -173,7 +170,7 @@ final response = await http.get(
         overview:
             "Siemens AG is a German multinational company focusing on electrification" *
             10,
-        founded: '1847',
+        founded: 1847,
         website: "https://www.siemens.com",
         address: "Munich, Germany",
         location: "https://maps.app.goo.gl/siemens",

@@ -10,7 +10,7 @@ class Company {
   final String? description;
   final int? followers;
   final String? overview;
-  final String? founded;
+  final int? founded;
   final String? website;
   final String? address;
   final String? location;

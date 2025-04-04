@@ -16,7 +16,7 @@ class CompanyCreateProvider with ChangeNotifier {
   String? _companyType;
   String? _companyIndustry;
   String? _companyOverview;
-  String? _companyFounded;
+  int? _companyFounded;
   String? _companyAddress;
   String? _companyLocation;
   String? _companyEmail;
@@ -35,7 +35,7 @@ class CompanyCreateProvider with ChangeNotifier {
   String? get companyType => _companyType;
   String? get companyIndustry => _companyIndustry;
   String? get companyOverview => _companyOverview;
-  String? get companyFounded => _companyFounded;
+  int? get companyFounded => _companyFounded;
   String? get companyAddress => _companyAddress;
   String? get companyLocation => _companyLocation;
   String? get companyEmail => _companyEmail;
@@ -78,7 +78,7 @@ class CompanyCreateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setCompanyFounded(String value) {
+  void setCompanyFounded(int value) {
     _companyFounded = value;
     notifyListeners();
   }
@@ -155,7 +155,7 @@ class CompanyCreateProvider with ChangeNotifier {
       companyType: _companyType ?? "",
       industry: _companyIndustry ?? "",
       overview: _companyOverview ?? "",
-      founded: _companyFounded ?? "",
+      founded: _companyFounded ?? 0,
       website: _companyWebsite ?? "",
       address: _companyAddress ?? "",
       location: _companyLocation ?? "",
