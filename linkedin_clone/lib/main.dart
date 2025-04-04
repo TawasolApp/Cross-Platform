@@ -44,6 +44,7 @@ import '../features/feed/data/repositories/feed_repository_impl.dart';
 import '../features/feed/domain/usecases/create_post_usecase.dart';
 import '../features/feed/domain/usecases/delete_post_usecase.dart';
 import '../features/feed/domain/usecases/get_posts_usecase.dart';
+import '../features/feed/domain/usecases/edit_post_usecase.dart';
 import '../features/feed/presentation/provider/feed_provider.dart';
 import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
@@ -84,6 +85,8 @@ import 'package:linkedin_clone/features/company/domain/usecases/update_company_d
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart'; // Ensure this is the correct path
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import "../../../features/connections/presentations/pages/connections_page.dart";
+import 'package:linkedin_clone/features/feed/domain/usecases/comment_post_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usecase.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -130,6 +133,9 @@ void main() {
   final createPostUseCase = CreatePostUseCase(repository);
   final deletePostUseCase = DeletePostUseCase(repository);
   final savePostUseCase = SavePostUseCase(repository);
+  final editPostUseCase = EditPostUseCase(repository);
+  final commentPostUseCase = CommentPostUseCase(repository);
+  final fetchCommentsUseCase = FetchCommentsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
   runApp(
     MultiProvider(
@@ -155,6 +161,9 @@ void main() {
                 createPostUseCase: createPostUseCase,
                 deletePostUseCase: deletePostUseCase,
                 savePostUseCase: savePostUseCase,
+                editPostUseCase: editPostUseCase,
+                commentPostUseCase: commentPostUseCase,
+                fetchCommentsUseCase: fetchCommentsUseCase,
                 //reactToPostUseCase: reactToPostUseCase,
               )..fetchPosts(),
         ),
@@ -246,10 +255,8 @@ void main() {
   );
 }
 
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
 
   @override
   Widget build(BuildContext context) {
@@ -260,8 +267,8 @@ class MyApp extends StatelessWidget {
       //theme: ThemeData(primarySwatch: Colors.blue),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      //routes: {'/create-post': (_) => const PostCreationPage()},
 
+      //routes: {'/create-post': (_) => const PostCreationPage()},
       routerConfig: AppRouter.router,
     );
   }

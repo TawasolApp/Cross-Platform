@@ -83,11 +83,23 @@ import 'package:flutter/material.dart';
 import 'delete_post_dialog.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
+import '../pages/create_post_page.dart';
 
 class PostActionsBottomSheet extends StatelessWidget {
   final String postId;
 
-  const PostActionsBottomSheet({super.key, required this.postId});
+  final String postContent;
+  final String authorImage;
+  final String authorName;
+  final String authorTitle;
+  const PostActionsBottomSheet({
+    super.key,
+    required this.postId,
+    required this.postContent,
+    required this.authorImage,
+    required this.authorName,
+    required this.authorTitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +136,27 @@ class PostActionsBottomSheet extends StatelessWidget {
                         ? "Post unsaved successfully"
                         : "Post saved successfully",
                   ),
+                ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Edit'),
+            onTap: () {
+              Navigator.pop(context);
+              // Navigate to the edit screen
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (_) => PostCreationPage(
+                        postId: postId,
+                        initialContent: postContent,
+                        authorImage: authorImage,
+                        authorName: authorName,
+                        authorTitle: authorTitle,
+                      ),
                 ),
               );
             },

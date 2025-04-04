@@ -22,6 +22,25 @@ abstract class FeedRepository {
     required Map<String, bool> reactions,
     required String postType,
   });
+  Future<Either<Failure, Unit>> editPost({
+    required String postId,
+    required String content,
+    required List<String> media,
+    required List<String> taggedUsers,
+    required String visibility,
+  });
+  Future<Either<Failure, Unit>> addComment(String postId, String content);
+  Future<Either<Failure, List<dynamic>>> fetchComments(
+    String postId, {
+    int page = 1,
+    int limit = 10,
+  });
+  Future<Either<Failure, void>> editComment({
+    required String commentId,
+    required String content,
+    List<String>? taggedUsers,
+    bool isReply,
+  });
 }
 //   Future<Either<Failure, void>> likePost(String postId);
 

@@ -1,4 +1,3 @@
-
 class RouteNames {
   static const String onboarding = "/onboarding";
   static const String login = "/login";
@@ -22,4 +21,5 @@ class RouteNames {
   static const String updateEmail = "/update_email";
   static const String updateInfo = "/update_info";
   static const String signInAndSecurity = "/sign_in_and_security";
+  static const String postDetails = "/post_details";
 }

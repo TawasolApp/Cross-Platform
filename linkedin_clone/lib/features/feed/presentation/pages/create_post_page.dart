@@ -8,19 +8,39 @@ import '../widgets/post_creation_footer.dart';
 import '../provider/feed_provider.dart';
 
 class PostCreationPage extends StatefulWidget {
-  const PostCreationPage({super.key});
+  final String? initialContent;
+  final String? postId; // If null → creating, if not null → editing
+  final String? authorName;
+  final String? authorTitle;
+  final String? authorImage;
+  final String? visibility;
+  const PostCreationPage({
+    super.key,
+    this.initialContent,
+    this.postId,
+    this.authorName,
+    this.authorTitle,
+    this.authorImage,
+    this.visibility,
+  });
 
   @override
   PostCreationPageState createState() => PostCreationPageState();
 }
 
 class PostCreationPageState extends State<PostCreationPage> {
-  final TextEditingController _postCreationController = TextEditingController();
+  late final TextEditingController _postCreationController;
   bool _isPostCreationButtonActive = false;
 
   @override
   void initState() {
     super.initState();
+    _postCreationController = TextEditingController(
+      text: widget.initialContent ?? '',
+    );
+    _isPostCreationButtonActive =
+        widget.initialContent?.trim().isNotEmpty ?? false;
+
     _postCreationController.addListener(() {
       setState(() {
         _isPostCreationButtonActive =
@@ -47,16 +67,36 @@ class PostCreationPageState extends State<PostCreationPage> {
           TextButton(
             onPressed:
                 _isPostCreationButtonActive
-                    ? () {
-                      feedProvider.createPost(
-                        content: _postCreationController.text.trim(),
-                        visibility: feedProvider.visibility,
-                      );
-                        context.go(RouteNames.main);
+                    ? () async {
+                      final content = _postCreationController.text.trim();
+                      if (widget.postId != null) {
+                        await feedProvider.editPost(
+                          postId: widget.postId!,
+                          content: content,
+                        );
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Post updated successfully'),
+                          ),
+                        );
+                        //context.go(RouteNames.main);
+                      } else {
+                        feedProvider.createPost(
+                          content: content,
+                          visibility: feedProvider.visibility,
+                        );
+                      }
+                      // feedProvider.createPost(
+                      //   content: _postCreationController.text.trim(),
+                      //   visibility: feedProvider.visibility,
+                      // );
+                      // ignore: use_build_context_synchronously
+                      context.go(RouteNames.main);
                     }
                     : null,
             child: Text(
-              "Post",
+              widget.postId != null ? "Save" : "Post",
               style: TextStyle(
                 color: _isPostCreationButtonActive ? Colors.blue : Colors.grey,
                 fontWeight: FontWeight.bold,
@@ -71,10 +111,10 @@ class PostCreationPageState extends State<PostCreationPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             PostCreationHeader(
-              profileImage: feedProvider.profileImage,
-              authorName: feedProvider.authorName,
-              authorTitle: feedProvider.authorTitle,
-              visibility: feedProvider.visibility,
+              profileImage: widget.authorImage ?? feedProvider.profileImage,
+              authorName: widget.authorName ?? feedProvider.authorName,
+              authorTitle: widget.authorTitle ?? feedProvider.authorTitle,
+              visibility: widget.visibility ?? feedProvider.visibility,
               onVisibilityChanged: (newVisibility) {
                 feedProvider.setVisibility(newVisibility);
               },

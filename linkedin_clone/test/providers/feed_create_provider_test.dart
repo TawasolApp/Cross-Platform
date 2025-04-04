@@ -4,6 +4,9 @@ import 'package:linkedin_clone/features/feed/domain/usecases/create_post_usecase
 import 'package:linkedin_clone/features/feed/domain/usecases/get_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/edit_post_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/comment_post_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usecase.dart';
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/entities/post_entity.dart';
 import 'package:fpdart/fpdart.dart';
@@ -16,24 +19,39 @@ class MockDeletePostUseCase extends Mock implements DeletePostUseCase {}
 
 class MockSavePostUseCase extends Mock implements SavePostUseCase {}
 
+class MockEditPostUseCase extends Mock implements EditPostUseCase {}
+
+class MockCommentPostUseCase extends Mock implements CommentPostUseCase {}
+
+class MockFetchCommentsUseCase extends Mock implements FetchCommentsUseCase {}
+
 void main() {
   late FeedProvider provider;
   late MockGetPostsUseCase mockGetPosts;
   late MockCreatePostUseCase mockCreatePost;
   late MockDeletePostUseCase mockDeletePost;
   late MockSavePostUseCase mockSavePost;
+  late MockEditPostUseCase mockEditPost;
+  late MockCommentPostUseCase mockCommentPost;
+  late MockFetchCommentsUseCase mockFetchComments;
 
   setUp(() {
     mockGetPosts = MockGetPostsUseCase();
     mockCreatePost = MockCreatePostUseCase();
     mockDeletePost = MockDeletePostUseCase();
     mockSavePost = MockSavePostUseCase();
+    mockEditPost = MockEditPostUseCase();
+    mockCommentPost = MockCommentPostUseCase();
+    mockFetchComments = MockFetchCommentsUseCase();
 
     provider = FeedProvider(
       getPostsUseCase: mockGetPosts,
       createPostUseCase: mockCreatePost,
       deletePostUseCase: mockDeletePost,
       savePostUseCase: mockSavePost,
+      editPostUseCase: mockEditPost,
+      commentPostUseCase: mockCommentPost,
+      fetchCommentsUseCase: mockFetchComments,
     );
   });
 
