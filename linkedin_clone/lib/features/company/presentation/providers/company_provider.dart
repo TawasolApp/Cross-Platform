@@ -4,7 +4,7 @@ import 'package:linkedin_clone/features/company/data/datasources/user_remote_dat
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
-import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
+import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/create_job_posting_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_company_details_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_friends_following_company_usecase.dart';
@@ -46,11 +46,10 @@ class CompanyProvider with ChangeNotifier {
   List<Post> _posts = [];
   List<Job> _jobs = [];
   bool _isLoadingJobs = false;
-  bool isAdmin = false;
+  bool isManager = false;
   bool _disposed = false;
   bool isViewingAsUser = false;
 
- 
   // Safe disposal
   @override
   void dispose() {
@@ -70,7 +69,10 @@ class CompanyProvider with ChangeNotifier {
   List<Post> get posts => _posts;
   List<Job> get jobs => _jobs;
   bool get isLoadingJobs => _isLoadingJobs;
-
+  bool get hasValidLogo =>
+      _company?.logo != null && _company!.logo!.trim().isNotEmpty;
+  bool get hasValidBanner =>
+      _company?.banner != null && _company!.banner!.trim().isNotEmpty;
   final GetCompanyDetails _getCompanyDetails = GetCompanyDetails(
     repository: CompanyRepositoryImpl(
       remoteDataSource: CompanyRemoteDataSource(),
@@ -109,6 +111,7 @@ class CompanyProvider with ChangeNotifier {
     safeNotify();
     print('CompanyID is:$companyId');
     _company = await _getCompanyDetails.execute(companyId);
+
     await fetchFollowStatus(userId, companyId);
     _friendsFollowing = await _getFriendsFollowingCompany.execute(
       userId,
@@ -116,26 +119,21 @@ class CompanyProvider with ChangeNotifier {
     );
     _relatedCompanies = await _getRelatedCompanies.execute(companyId);
     _posts = await fetchPosts();
-    _jobs = await fetchRecentJobs();
-    isAdmin = _company?.isAdmin ?? false;
+    _jobs = await fetchRecentJobs(companyId);
+    isManager = _company?.isManager ?? false;
     _isLoading = false;
     safeNotify();
   }
 
   Future<void> fetchFollowStatus(String userId, String companyId) async {
-    bool status = await _userRemoteDataSource.checkIfUserFollowsCompany(
-      userId,
-      companyId,
-    );
+    bool status = _company?.isFollowing ?? false;
     _followStatus[companyId] = status;
     safeNotify();
   }
 
   Future<void> toggleFollowStatus(String userId, String companyId) async {
     bool currentStatus = _followStatus[companyId] ?? false;
-    _followStatus[companyId] = !currentStatus;
     safeNotify();
-
     try {
       bool newStatus = await _userRemoteDataSource.toggleFollowCompany(
         userId,
@@ -147,13 +145,22 @@ class CompanyProvider with ChangeNotifier {
       print("Error toggling follow status: $e");
       _followStatus[companyId] = currentStatus;
     }
+    _isLoading = true;
+    _company = await _getCompanyDetails.execute(companyId);
+    _isLoading = false;
+    await fetchFollowStatus(userId, companyId);
+    _followStatus[companyId] = !currentStatus;
+    print('STATUS IS: ${_company?.isFollowing}');
+    print('STATUS ISSS: ${_followStatus[companyId]}');
 
     safeNotify();
   }
- void toggleViewMode() {
+
+  void toggleViewMode() {
     isViewingAsUser = !isViewingAsUser;
     notifyListeners();
   }
+
   Future<List<User>> fetchFriendsFollowingCompany(
     String userId,
     String companyId,
@@ -208,11 +215,11 @@ class CompanyProvider with ChangeNotifier {
     ];
   }
 
-  Future<List<Job>> fetchRecentJobs() async {
+  Future<List<Job>> fetchRecentJobs(String companyId) async {
     _isLoadingJobs = true;
     safeNotify();
     try {
-      final jobList = await _getRecentJobs.execute();
+      List<Job> jobList = await _getRecentJobs.execute(companyId);
       print("Fetched Jobs: $jobList"); // Debugging print statement
 
       if (jobList.isNotEmpty) {
@@ -223,7 +230,7 @@ class CompanyProvider with ChangeNotifier {
         print("No jobs found from API.");
       }
     } catch (e) {
-      print("Error fetching jobs: $e");
+      print("Error fetching jobsss: $e");
     }
     _isLoadingJobs = false;
     safeNotify();
@@ -231,18 +238,27 @@ class CompanyProvider with ChangeNotifier {
   }
 
   // Updated addJob method
-  Future<void> addJob(CreateJobEntity job) async {
+  Future<bool> addJob(CreateJobEntity job,String companyId) async {
     try {
       _isLoadingJobs = true;
       safeNotify();
-      await _createJob.execute(job); 
-      await fetchRecentJobs(); 
+
+      // Attempt to add the job
+      final response = await _createJob.execute(job,companyId);
+      await fetchRecentJobs(companyId);
+
       _isLoadingJobs = false;
       safeNotify();
+
+      // Return true if job was added successfully
+      return true;
     } catch (e) {
       print("Error adding job: $e");
       _isLoadingJobs = false;
       safeNotify();
+
+      // Return false if there was an error
+      return false;
     }
   }
 }

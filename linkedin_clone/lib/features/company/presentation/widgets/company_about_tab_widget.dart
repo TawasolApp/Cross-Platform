@@ -60,7 +60,7 @@ class CompanyAboutWidget extends StatelessWidget {
           SizedBox(height: 4),
           Text('Company Size', style: Theme.of(context).textTheme.bodyLarge),
           Text(
-            '${context.read<CompanyProvider>().company!.companySize} employees',
+            '${context.read<CompanyProvider>().company!.companySize} ',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           SizedBox(height: 8),
@@ -130,11 +130,11 @@ class CompanyAboutWidget extends StatelessWidget {
                               ),
                               IconButton(
                                 icon: Icon(
-                                  isFollowing(relatedCompany.companyId)
+                                  isFollowing(relatedCompany.companyId!)
                                       ? Icons.check_circle
                                       : Icons.add_circle_outline,
                                   color:
-                                      isFollowing(relatedCompany.companyId)
+                                      isFollowing(relatedCompany.companyId!)
                                           ? Theme.of(
                                             context,
                                           ).colorScheme.primary
@@ -144,7 +144,7 @@ class CompanyAboutWidget extends StatelessWidget {
                                 onPressed: () {
                                   companyProvider.toggleFollowStatus(
                                     userID,
-                                    relatedCompany.companyId,
+                                    relatedCompany.companyId!,
                                   );
                                 },
                               ),

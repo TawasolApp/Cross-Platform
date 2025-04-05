@@ -1,5 +1,7 @@
+import 'package:linkedin_clone/features/company/data/models/company_create_model.dart';
 import 'package:linkedin_clone/features/company/data/models/company_edit_model.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/repositories/company_repository.dart';
 import 'package:linkedin_clone/features/company/data/models/company_model.dart';
@@ -28,7 +30,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
       location: companyModel.location,
       isFollowing: companyModel.isFollowing,
       isVerified: companyModel.isVerified,
-      isAdmin: companyModel.isAdmin,
+      isManager: companyModel.isManager,
       companyType: companyModel.companyType,
       overview: companyModel.overview,
       founded: companyModel.founded,
@@ -79,33 +81,11 @@ class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   @override
-  Future<void> createCompany(Company company) async {
-    await remoteDataSource.createCompany(
-      CompanyModel(
-        companyId: company.companyId,
-        name: company.name,
-        description: company.description,
-        website: company.website,
-        banner: company.banner,
-        logo: company.logo,
-        industry: company.industry,
-        followers: company.followers,
-        companySize: company.companySize,
-        location: company.location,
-        isFollowing: company.isFollowing,
-        isVerified: company.isVerified,
-        companyType: company.companyType,
-        overview: company.overview,
-        founded: company.founded,
-        address: company.address,
-        email: company.email,
-        contactNumber: company.contactNumber,
-        specialities: company.specialities,
-      ),
-    );
+  Future<void> createCompany(CompanyCreateEntity company) async {
+    await remoteDataSource.createCompany(company as CompanyCreateModel );
   }
   @override
-  Future<void> updateCompanyDetails(UpdateCompanyEntity updatedCompany) async {
+  Future<void> updateCompanyDetails(UpdateCompanyEntity updatedCompany,String companyId) async {
     await remoteDataSource.updateCompanyDetails(
       UpdateCompanyModel(
         name: updatedCompany.name,
@@ -123,7 +103,13 @@ class CompanyRepositoryImpl implements CompanyRepository {
         contactNumber: updatedCompany.contactNumber,
         isVerified: updatedCompany.isVerified,
         companyType: updatedCompany.companyType,
-      ),
+      ),companyId,
     );
   }
+ @override
+  Future<List<Company>> getAllCompanies() {
+    print('helllooo');
+    return remoteDataSource.getAllCompanies();
+  }
+
 }

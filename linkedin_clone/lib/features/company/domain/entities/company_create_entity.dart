@@ -1,14 +1,12 @@
-class Company {
-  final String? companyId;
+class CompanyCreateEntity {
   final String name;
   final String industry;
   final String companySize;
   final String companyType;
-  final bool? isFollowing;
-  final bool? isVerified;
+
   final String? logo;
+  final String? banner;
   final String? description;
-  final int? followers;
   final String? overview;
   final int? founded;
   final String? website;
@@ -16,21 +14,15 @@ class Company {
   final String? location;
   final String? email;
   final String? contactNumber;
-  final String? banner;
-  final String? specialities;
-  final bool? isManager;
 
-  const Company({
-    this.companyId,
+  CompanyCreateEntity({
     required this.name,
     required this.industry,
     required this.companySize,
     required this.companyType,
-    this.isFollowing,
-    this.isVerified,
     this.logo,
+    this.banner,
     this.description,
-    this.followers,
     this.overview,
     this.founded,
     this.website,
@@ -38,8 +30,5 @@ class Company {
     this.location,
     this.email,
     this.contactNumber,
-    this.banner,
-    this.specialities,
-    this.isManager,
   });
 }

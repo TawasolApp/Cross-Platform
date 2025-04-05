@@ -9,7 +9,7 @@ class CompanyModel extends Company {
     required String companyType,
     bool? isFollowing,
     bool? isVerified,
-    bool? isAdmin,
+    bool? isManager,
     String? logo,
     String? description,
     int? followers,
@@ -30,7 +30,7 @@ class CompanyModel extends Company {
          companyType: companyType,
          isFollowing: isFollowing,
          isVerified: isVerified,
-         isAdmin: isAdmin,
+         isManager: isManager,
          logo: logo,
          description: description,
          followers: followers,
@@ -60,7 +60,10 @@ class CompanyModel extends Company {
           json['description'] ?? '', // Default to an empty string if null
       followers: json['followers'] ?? 0, // Default to 0 if null
       overview: json['overview'] ?? '', // Default to an empty string if null
-      founded: json['founded'] ?? '', // Default to an empty string if null
+      founded:
+          json['founded'] is int
+              ? json['founded']
+              : int.tryParse(json['founded']?.toString() ?? '0'),
       website: json['website'] ?? '', // Default to an empty string if null
       address: json['address'] ?? '', // Default to an empty string if null
       location: json['location'] ?? '', // Default to an empty string if null
@@ -71,7 +74,7 @@ class CompanyModel extends Company {
       banner: json['banner'] ?? '', // Default to an empty string if null
       specialities:
           json['specialities'] ?? '', // Default to an empty string if null
-      isAdmin: json['isAdmin'] ?? false,
+      isManager: json['isManager'] ?? false,
     );
   }
 
@@ -97,7 +100,7 @@ class CompanyModel extends Company {
       'contactNumber': contactNumber,
       'banner': banner,
       'specialities': specialities,
-      'isAdmin': isAdmin,
+      'isManager': isManager,
     };
   }
 }

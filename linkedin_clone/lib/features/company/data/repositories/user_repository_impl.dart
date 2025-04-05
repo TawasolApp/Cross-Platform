@@ -15,17 +15,10 @@ class UserRepositoryImpl implements UserRepository {
     return await remoteDataSource.getUserFriends(userId);
   }
 
-  @override
-  Future<bool> checkIfUserFollowsCompany(
-    String userId,
-    String companyId,
-  ) async {
-    return await remoteDataSource.checkIfUserFollowsCompany(userId, companyId);
-  }
 
   @override
-  Future<void> addAdminUser(String newUserId) async {
+  Future<void> addAdminUser(String newUserId,String companyId) async {
     final model = AddAdminRequestModel(newUserId: newUserId);
-    await remoteDataSource.addAdminUser(model);
+    await remoteDataSource.addAdminUser(model,companyId);
   }
 }

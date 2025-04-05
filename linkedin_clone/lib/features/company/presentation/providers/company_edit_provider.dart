@@ -41,13 +41,13 @@ class EditCompanyDetailsProvider with ChangeNotifier {
     required this.addAdminUseCase,
   });
 
-  Future<void> updateDetails(UpdateCompanyEntity updatedCompany) async {
+  Future<void> updateDetails(UpdateCompanyEntity updatedCompany,String companyId) async {
     _isLoading = true;
     _errorMessage = ""; // Reset any previous error
     notifyListeners();
 
     try {
-      await updateCompanyDetails.execute(updatedCompany);
+      await updateCompanyDetails.execute(updatedCompany, companyId); // Pass the companyId to the use case
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -57,13 +57,13 @@ class EditCompanyDetailsProvider with ChangeNotifier {
     }
   }
 
-   Future<void> addAdminUser(String newUserId) async {
+   Future<void> addAdminUser(String newUserId,String companyId) async {
     _isLoading = true;
     _errorMessage = "";
     notifyListeners();
 
     try {
-      await addAdminUseCase(newUserId); 
+      await addAdminUseCase(newUserId, companyId); 
     } catch (e) {
       _errorMessage = e.toString();
     } finally {

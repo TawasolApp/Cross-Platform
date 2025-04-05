@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:linkedin_clone/features/company/data/models/company_create_model.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart';
 
 class CompanyCreateProvider with ChangeNotifier {
   final CompanyRepositoryImpl _companyRepository;
@@ -129,7 +131,7 @@ class CompanyCreateProvider with ChangeNotifier {
   }
 
   /// ✅ Creates a new company
-  Future<Company?> createCompany() async {
+  Future<CompanyCreateEntity?> createCompany() async {
     if (_companyName == null ||
         _companySize == null ||
         _companyType == null ||
@@ -142,16 +144,11 @@ class CompanyCreateProvider with ChangeNotifier {
     notifyListeners();
 
     // ✅ Create Company instance
-    final newCompany = Company(
-      companyId: "", // The backend should generate an ID
+    final newCompany = CompanyCreateModel(
       name: _companyName!,
-      isFollowing: false,
-      isVerified: false,
-      isAdmin: true,
       logo: _companyLogo?.path ?? "",
       description: _companyDescription ?? "",
       companySize: _companySize ?? "",
-      followers: 0,
       companyType: _companyType ?? "",
       industry: _companyIndustry ?? "",
       overview: _companyOverview ?? "",
@@ -162,7 +159,6 @@ class CompanyCreateProvider with ChangeNotifier {
       email: _companyEmail ?? "",
       contactNumber: _companyContactNumber ?? "",
       banner: _companyBanner?.path ?? "",
-      specialities: _companySpecialities ?? "",
     );
 
     try {

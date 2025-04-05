@@ -19,7 +19,15 @@ class EditCompanyScreen extends StatelessWidget {
     '1001-10000 Employees',
     '10000+ Employees',
   ];
-
+  final List<String> companyTypeOptions = [
+    "Public Company",
+    "Self Employed",
+    "Government Agency",
+    "Non Profit",
+    "Sole Proprietorship",
+    "Privately Held",
+    "Partnership",
+  ];
   EditCompanyScreen({required this.companyId, required this.company});
 
   @override
@@ -92,21 +100,25 @@ class EditCompanyScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Spacer(),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddAdminScreen(),
-                          ),
-                        );
-                      },
-                        icon: Icon(Icons.person_add, color: Colors.white), // User+ Icon
-                      label: Text('Add Page Admin'),
-                    ),
-                    ]
+                    Row(
+                      children: [
+                        Spacer(),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddAdminScreen(companyId: companyId,),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                          ), // User+ Icon
+                          label: Text('Add Page Admin'),
+                        ),
+                      ],
                     ),
                     // Company Name Field
                     buildField(
@@ -141,7 +153,11 @@ class EditCompanyScreen extends StatelessWidget {
                       validator: emailValidator,
                     ),
                     // Company Type Field
-                    buildField('Company Type', companyTypeController),
+                    buildDropdownField(
+                      'Company Type',
+                      companyTypeController,
+                      companyTypeOptions,
+                    ),
                     // Industry Field
                     buildField('Industry', industryController),
                     // Overview Field
@@ -343,7 +359,9 @@ class EditCompanyScreen extends StatelessWidget {
                                     companyType: companyTypeController.text,
                                     industry: industryController.text,
                                     overview: overviewController.text,
-                                    founded: int.tryParse(foundedController.text) ?? 0,
+                                    founded:
+                                        int.tryParse(foundedController.text) ??
+                                        0,
                                     website: websiteController.text,
                                     address: addressController.text,
                                     contactNumber: contactNumberController.text,
@@ -356,7 +374,10 @@ class EditCompanyScreen extends StatelessWidget {
                                             .banner, // Use selected image path
                                     isVerified: company.isVerified,
                                   );
-                                  await provider.updateDetails(updatedCompany);
+                                  await provider.updateDetails(
+                                    updatedCompany,
+                                    companyId,
+                                  );
                                   if (provider.errorMessage.isEmpty) {
                                     Navigator.pop(context, true);
                                   }

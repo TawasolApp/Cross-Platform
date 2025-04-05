@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 
 class AddAdminScreen extends StatelessWidget {
   final TextEditingController userIdController = TextEditingController();
+  final String companyId;
 
+  AddAdminScreen({Key? key, required this.companyId}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<EditCompanyDetailsProvider>(context);
@@ -46,7 +48,7 @@ class AddAdminScreen extends StatelessWidget {
                       return;
                     }
 
-                    await provider.addAdminUser(userIdController.text);
+                    await provider.addAdminUser(userIdController.text,companyId);
                     ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
                     if (provider.errorMessage == "") {

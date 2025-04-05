@@ -1,159 +1,63 @@
-import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:linkedin_clone/features/company/data/models/create_job_model.dart';
 import '../models/job_model.dart';
 
 class JobRemoteDataSource {
-  Future<List<JobModel>> getRecentJobs() async {
-    //TODO:Call api to retrive the jobs
-    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-    return [
-      JobModel(
-        id: "12345",
-        company: "Google",
-        position: "Software Engineer",
-        industry: "Tech",
-        description: "Exciting opportunity to work at Google.",
-        location: "San Francisco, CA",
-        salary: 120000.0,
-        experienceLevel: "Mid-Senior",
-        locationType: "On-site",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-01T12:00:00Z"),
-        applicantCount: 120,
-      ),
-      JobModel(
-        id: "67890",
-        company: "Facebook",
-        position: "Product Manager",
-        industry: "Tech",
-        description: "Lead teams at Facebook.",
-        location: "New York, NY",
-        salary: 110000.0,
-        experienceLevel: "Senior",
-        locationType: "Hybrid",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-02T10:00:00Z"),
-        applicantCount: 90,
-      ),
-      JobModel(
-        id: "23456",
-        company: "Microsoft",
-        position: "Data Scientist",
-        industry: "Tech",
-        description: "Analyze big data and develop AI models.",
-        location: "Seattle, WA",
-        salary: 130000.0,
-        experienceLevel: "Mid-Senior",
-        locationType: "Remote",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-03T15:30:00Z"),
-        applicantCount: 80,
-      ),
-      JobModel(
-        id: "34567",
-        company: "Nike",
-        position: "Marketing Specialist",
-        industry: "Marketing",
-        description: "Create marketing campaigns for Nike products.",
-        location: "Portland, OR",
-        salary: 75000.0,
-        experienceLevel: "Entry-Level",
-        locationType: "On-site",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-04T09:45:00Z"),
-        applicantCount: 45,
-      ),
-      JobModel(
-        id: "45678",
-        company: "Goldman Sachs",
-        position: "Financial Analyst",
-        industry: "Finance",
-        description: "Analyze financial trends and investment opportunities.",
-        location: "New York, NY",
-        salary: 90000.0,
-        experienceLevel: "Mid-Level",
-        locationType: "Hybrid",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-05T08:20:00Z"),
-        applicantCount: 60,
-      ),
-      JobModel(
-        id: "56789",
-        company: "Amazon",
-        position: "Cybersecurity Engineer",
-        industry: "Tech",
-        description: "Ensure security for Amazon's cloud infrastructure.",
-        location: "Seattle, WA",
-        salary: 125000.0,
-        experienceLevel: "Senior",
-        locationType: "Remote",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-06T14:00:00Z"),
-        applicantCount: 95,
-      ),
-      JobModel(
-        id: "67891",
-        company: "Adobe",
-        position: "UX/UI Designer",
-        industry: "Design",
-        description: "Design user-friendly interfaces for Adobe products.",
-        location: "San Jose, CA",
-        salary: 95000.0,
-        experienceLevel: "Mid-Level",
-        locationType: "Hybrid",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-07T11:10:00Z"),
-        applicantCount: 55,
-      ),
-      JobModel(
-        id: "78912",
-        company: "Tesla",
-        position: "Mechanical Engineer",
-        industry: "Engineering",
-        description: "Work on innovative automotive technology.",
-        location: "Austin, TX",
-        salary: 100000.0,
-        experienceLevel: "Mid-Level",
-        locationType: "On-site",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-08T16:30:00Z"),
-        applicantCount: 70,
-      ),
-      JobModel(
-        id: "89123",
-        company: "Twitter",
-        position: "Backend Developer",
-        industry: "Tech",
-        description: "Develop high-performance backend systems.",
-        location: "San Francisco, CA",
-        salary: 115000.0,
-        experienceLevel: "Senior",
-        locationType: "Remote",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2024-03-09T13:20:00Z"),
-        applicantCount: 85,
-      ),
-      JobModel(
-        id: "91234",
-        company: "OpenAI",
-        position: "AI Research Scientist",
-        industry: "Tech",
-        description: "Research and develop AI models."*20,
-        location: "San Francisco, CA",
-        salary: 140000.0,
-        experienceLevel: "Senior",
-        locationType: "Hybrid",
-        employmentType: "Full-time",
-        postedDate: DateTime.parse("2025-03-30T20:50:00Z"),
-        applicantCount: 150,
-      ),
-    ];
+  final String baseUrl = "https://tawasolapp.me/api";
+  Future<List<JobModel>> getRecentJobs(String companyId) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final response = await http.get(
+          Uri.parse('$baseUrl/companies/$companyId/jobs'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      print('Response: ${response.body}');
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonList = jsonDecode(response.body);
+        print('CHECK THIS: ${jsonList.map((json) => JobModel.fromJson(json)).toList()}');
+        return jsonList.map((json) => JobModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load recent jobs: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to load recent jobs: $e');
+    }
   }
 
- Future<void> addJob(CreateJobEntity job) async {
-  //TODO: Post request to add a job
-    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-    print("Job added: ${job.position}");
+  Future<bool> addJob(CreateJobModel job, String companyId) async {
+    final token = await TokenService.getToken();
+    try {
+      // Convert job model to JSON format
+      final jobData = job.toJson();
+      print('Job Data: $jobData');
+      // Send the POST request to add the job
+      final response = await http.post(
+        Uri.parse('$baseUrl/companies/$companyId/jobs'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(jobData), // Convert jobData map to JSON string
+      );
+    print('Response: ${response.body}');
+      // Handle the response
+      if (response.statusCode == 201) {
+        print('Job added successfully');
+        return true; 
+      } else {
+        // Handle errors, such as bad request or server issues
+        print('Failed to add job. Status Code: ${response.statusCode}');
+        return false; 
+      }
+    } catch (e) {
+      print('Error adding job: $e');
+      return false;
+    }
   }
-   
 }

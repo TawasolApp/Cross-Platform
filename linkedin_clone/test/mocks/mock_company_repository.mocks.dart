@@ -11,6 +11,7 @@ import 'package:linkedin_clone/features/company/data/repositories/company_reposi
     as _i4;
 import 'package:linkedin_clone/features/company/domain/entities/company.dart'
     as _i3;
+import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart' as _i3;
 import 'package:linkedin_clone/features/company/domain/entities/user.dart'
     as _i6;
 import 'package:mockito/mockito.dart' as _i1;
@@ -90,7 +91,7 @@ class MockCompanyRepositoryImpl extends _i1.Mock
           as _i5.Future<List<_i3.Company>>);
 
   @override
-  _i5.Future<void> createCompany(_i3.Company? company) =>
+  _i5.Future<void> createCompany(_i3.CompanyCreateEntity? company) =>
       (super.noSuchMethod(
             Invocation.method(#createCompany, [company]),
             returnValue: _i5.Future<void>.value(),

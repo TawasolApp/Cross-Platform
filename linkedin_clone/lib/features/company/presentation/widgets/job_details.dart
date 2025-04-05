@@ -83,43 +83,64 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ✅ Display company logo and name if available
-              if (widget.companyProvider.company != null &&
-                  widget.companyProvider.company!.logo != null)
-                Row(
-                  children: [
-                    Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                            widget.companyProvider.company!.logo ??
-                                'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png',
+              Row(
+                children: [
+                  // If the company logo is available
+                  (widget.companyProvider.hasValidLogo)
+                      ? Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              widget.companyProvider.company!.logo ??
+                                  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png', // Default LinkedIn logo
+                            ),
+                            fit: BoxFit.cover,
                           ),
-                          fit: BoxFit.cover,
+                        ),
+                      )
+                      // If the logo is not available, show a default business icon
+                      : Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color:
+                              Colors.grey[300], // Background color if no logo
+                        ),
+                        child: Icon(
+                          Icons.business, // Default business icon
+                          color: Colors.black, // Icon color
+                          size: 30, // Adjust size as needed
                         ),
                       ),
-                    ),
-                    SizedBox(width: 8),
-                    Text(
-                      widget.companyProvider.company!.name ?? 'Unknown Company',
+                  SizedBox(width: 8),
+                  // Company name
+                  Expanded(
+                    child: Text(
+                      widget.companyProvider.company?.name ?? 'Unknown Company',
                       style: Theme.of(context).textTheme.bodyMedium,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      softWrap: false,
                     ),
-                  ],
-                ),
+                  ),
+                ],
+              ),
+
               SizedBox(height: 8),
               // ✅ Job position
-              Text(
-                widget.job.position,
-                style: Theme.of(context).textTheme.headlineSmall,
+              Expanded(
+                child: Text(
+                  widget.job.position,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
               ),
-              SizedBox(height: 8),
-              // ✅ Company name
-              Text(
-                "Company: ${widget.job.company}",
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              SizedBox(height: 8),
+              SizedBox(height: 8),              
               // ✅ Job location, post date, and applicants count
               Text(
                 "${widget.job.location} • ${timeAgo(widget.job.postedDate)} • ${formatNumber(widget.job.applicantCount)} people clicked apply",
@@ -171,7 +192,12 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ApplyForJobWidget(companyName: widget.companyProvider.company?.name ?? 'Unknown Company'),
+                            builder:
+                                (context) => ApplyForJobWidget(
+                                  companyName:
+                                      widget.companyProvider.company?.name ??
+                                      'Unknown Company',
+                                ),
                           ),
                         );
                       },
@@ -242,9 +268,14 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                       ),
                     ),
                   SizedBox(width: 8),
-                  Text(
-                    "About ${widget.companyProvider.company?.name ?? 'Company'}",
-                    style: Theme.of(context).textTheme.titleLarge,
+                  Expanded(
+                    child: Text(
+                      "About ${widget.companyProvider.company?.name ?? 'Company'}",
+                      style: Theme.of(context).textTheme.titleLarge,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                      softWrap: false,
+                    ),
                   ),
                 ],
               ),

@@ -6,7 +6,9 @@ class GetRecentJobs {
 
   GetRecentJobs({required this.repository});
 
-  Future<List<Job>> execute() async {
-    return await repository.getRecentJobs();
+  Future<List<Job>> execute(String companyId) async {
+     List<Job> jobs = await repository.getRecentJobs(companyId);
+     print('Jobs at use case: ${jobs}');
+      return jobs;
   }
 }

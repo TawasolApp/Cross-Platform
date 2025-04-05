@@ -10,7 +10,6 @@ class ApplyForJobWidget extends StatelessWidget {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _coverLetterController = TextEditingController();
   bool _isResumeUploaded = false;
   PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'US'); // Default country code
 

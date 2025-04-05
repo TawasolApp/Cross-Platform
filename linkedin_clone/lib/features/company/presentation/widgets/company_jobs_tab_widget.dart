@@ -29,9 +29,6 @@ class CompanyJobsWidget extends StatelessWidget {
     }
 
     final List<Job> jobs = companyProvider.jobs;
-    if (jobs.isEmpty) {
-      return Center(child: Text("No jobs available"));
-    }
     print("Jobs in Jobs Tab: ${companyProvider.jobs.length}");
 
     jobs.sort((a, b) => b.postedDate.compareTo(a.postedDate));
@@ -39,7 +36,7 @@ class CompanyJobsWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (companyProvider.isAdmin && !companyProvider.isViewingAsUser)
+        if (companyProvider.isManager && !companyProvider.isViewingAsUser)
           // Row containing "Job Analytics" and "Post a Job Opening"
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -72,13 +69,20 @@ class CompanyJobsWidget extends StatelessWidget {
                 TextButton.icon(
                   onPressed:
                       onEditPressed ??
-                      () {
-                        Navigator.push(
+                      () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddJobScreen(),
+                            builder:
+                                (context) => AddJobScreen(companyId: companyId),
                           ),
                         );
+                        if (result == true) {
+                          await Provider.of<CompanyProvider>(
+                            context,
+                            listen: false,
+                          ).fetchRecentJobs(companyId);
+                        }
                       },
                   icon: Icon(
                     Icons.add,
