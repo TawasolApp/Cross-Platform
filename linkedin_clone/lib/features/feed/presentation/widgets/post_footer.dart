@@ -3,14 +3,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../domain/entities/post_entity.dart';
 
 class PostFooter extends StatelessWidget {
-  final int likes;
+  //final int likes;
   final int comments;
   final int shares;
   final PostEntity post;
 
   const PostFooter({
     super.key,
-    required this.likes,
+    //required this.likes,
     required this.comments,
     required this.shares,
     required this.post,
@@ -33,7 +33,7 @@ class PostFooter extends StatelessWidget {
                 children: [
                   const Icon(Icons.thumb_up, color: Colors.blue, size: 14),
                   const SizedBox(width: 4),
-                  Text('${post.likes}'),
+                  Text('${post.reactCounts}'),
                 ],
               ),
               Text('${post.comments} Comments • ${post.shares} Shares'),

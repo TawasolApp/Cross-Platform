@@ -7,9 +7,14 @@ import '../../domain/usecases/save_post_usecase.dart';
 import '../../domain/usecases/edit_post_usecase.dart';
 import '../../domain/usecases/comment_post_usecase.dart';
 import '../../domain/usecases/fetch_comments_usecase.dart';
+import '../../data/models/post_model.dart';
 import '../../data/models/comment_model.dart';
-import '../../domain/entities/comment_entity.dart';
+import '../../../../../core/errors/failures.dart';
 import '../../domain/usecases/edit_comment_usecase.dart';
+import '../../domain/usecases/react_to_post_usecase.dart';
+import '../../domain/usecases/get_post_reactions_usecase.dart';
+import '../../../profile/domain/usecases/profile/get_profile.dart';
+import 'package:linkedin_clone/core/usecase/usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -19,8 +24,10 @@ class FeedProvider extends ChangeNotifier {
   final EditPostUseCase editPostUseCase;
   final CommentPostUseCase commentPostUseCase;
   final FetchCommentsUseCase fetchCommentsUseCase;
-  //final EditCommentUseCase editCommentUseCase;
-  //final ReactToPostUseCase reactToPostUseCase;
+  final EditCommentUseCase editCommentUseCase;
+  final ReactToPostUseCase reactToPostUseCase;
+  final GetPostReactionsUseCase getPostReactionsUseCase;
+  final GetProfileUseCase getProfileUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -30,8 +37,10 @@ class FeedProvider extends ChangeNotifier {
     required this.editPostUseCase,
     required this.commentPostUseCase,
     required this.fetchCommentsUseCase,
-    //required this.editCommentUseCase,
-    //required this.reactToPostUseCase,
+    required this.editCommentUseCase,
+    required this.reactToPostUseCase,
+    required this.getPostReactionsUseCase,
+    required this.getProfileUseCase,
   });
 
   List<PostEntity> _posts = [];
@@ -49,9 +58,9 @@ class FeedProvider extends ChangeNotifier {
   bool _isCreating = false;
   bool get isCreating => _isCreating;
 
-  final String _authorName = 'Ahmed Nabil';
-  final String _profileImage = 'https://via.placeholder.com/150';
-  final String _authorTitle = 'Software Engineer';
+  String _authorName = '';
+  String _profileImage = '';
+  String _authorTitle = '';
 
   String get authorName => _authorName;
   String get profileImage => _profileImage;
@@ -65,66 +74,62 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void _handleFailure(Failure failure) {
+    _errorMessage = failure.message;
+    _isLoading = false;
+    notifyListeners();
+  }
+
   /////////
-  final bool useMockData = true;
+  final bool useMockData = false;
+  Future<void> fetchProfileData() async {
+    final result = await getProfileUseCase(NoParams());
+    result.fold((failure) => _handleFailure(failure), (profile) {
+      _authorName = profile.name ?? 'Unknown';
+      _profileImage =
+          profile.profilePicture ?? 'https://via.placeholder.com/150';
+      _authorTitle = profile.headline ?? 'No Title';
+      notifyListeners();
+    });
+  }
 
   Future<void> fetchPosts({int page = 1, int limit = 10}) async {
+    if (_isLoading) {
+      print("Fetch already in progress, skipping...");
+      print("fetchPosts called from: ${StackTrace.current}");
+
+      return;
+    }
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-    if (useMockData) {
-      await Future.delayed(const Duration(milliseconds: 500)); // simulate delay
-      _posts = [
-        PostEntity(
-          id: "1",
-          authorId: "123",
-          authorName: "AbdelRahman Sabry",
-          authorPicture: "https://www.fakeprofilepic.com/image.png",
-          authorBio: "Architecture Student",
-          content: "I’m happy to share that I’m starting a new position!",
-          media: [],
-          likes: 97,
-          comments: 26,
-          shares: 10,
-          visibility: "public",
-          authorType: "individual",
-          isLiked: false,
-          timestamp: DateTime.now().subtract(const Duration(days: 7)),
-          repostDetails: null,
-        ),
-        PostEntity(
-          id: "2",
-          authorId: "456",
-          authorName: "Mayada Hadhoud",
-          authorPicture: "https://www.fakeprofilepic.com/image2.png",
-          authorBio: "Software Developer",
-          content: "Check out this new internship opportunity!",
-          media: [],
-          likes: 651,
-          comments: 28,
-          shares: 84,
-          visibility: "public",
-          authorType: "company",
-          isLiked: true,
-          timestamp: DateTime.now().subtract(const Duration(days: 4)),
-          repostDetails: null,
-        ),
-      ];
-    } else {
+    print("Fetching posts...");
+
+    try {
       final result = await getPostsUseCase(page: page, limit: limit);
       result.fold(
         (failure) {
           _errorMessage = failure.message;
+          print("Error while fetching posts: $_errorMessage");
           _isLoading = false;
+          notifyListeners();
         },
         (posts) {
-          _posts = posts;
-          //_isLoading = false;
+          _posts = List<PostEntity>.from(posts);
+          print("Posts fetched successfully, count: ${_posts.length}");
+          _isLoading = false;
+          notifyListeners();
         },
       );
+    } catch (e) {
+      _errorMessage = "Failed to fetch posts: $e";
+      print("Exception: $_errorMessage");
+      _isLoading = false;
+      notifyListeners();
+    } finally {
+      print("Fetch complete, isLoading: $_isLoading");
     }
-    _isLoading = false;
-    notifyListeners();
   }
 
   Future<void> createPost({
@@ -132,79 +137,56 @@ class FeedProvider extends ChangeNotifier {
     List<String>? media,
     List<String>? taggedUsers,
     required String visibility,
+    String? parentPostId,
+    bool isSilentRepost = false,
   }) async {
     _isCreating = true;
     _errorMessage = null;
     notifyListeners();
 
-    if (useMockData) {
-      final mockPost = PostEntity(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        authorId: "mock_author",
-        authorName: _authorName,
-        authorPicture: _profileImage,
-        authorBio: _authorTitle,
-        content: content,
-        media: media ?? [],
-        taggedUsers: taggedUsers ?? [],
-        likes: 0,
-        comments: 0,
-        shares: 0,
-        visibility: visibility,
-        authorType: "individual",
-        isLiked: false,
-        timestamp: DateTime.now(),
-        repostDetails: null,
-      );
+    final result = await createPostUseCase(
+      content: content,
+      media: media,
+      taggedUsers: taggedUsers,
+      visibility: visibility,
+      parentPostId: parentPostId?.isNotEmpty == true ? parentPostId : null,
+      isSilentRepost: isSilentRepost,
+    );
 
-      _posts.insert(0, mockPost);
-    } else {
-      final result = await createPostUseCase(
-        content: content,
-        media: media,
-        taggedUsers: taggedUsers,
-        visibility: visibility,
-      );
-
-      result.fold(
-        (failure) {
-          _errorMessage = failure.message;
-        },
-        (post) {
-          // If API returns no post, may skip inserting or create a fallback
-          _posts.insert(0, post);
-        },
-      );
-    }
-
-    _isCreating = false;
-    notifyListeners();
+    result.fold(
+      (failure) {
+        _errorMessage = failure.message;
+        _isCreating = false;
+        notifyListeners();
+      },
+      (post) {
+        _posts.insert(0, post);
+        _isCreating = false;
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> deletePost(String postId) async {
-    _errorMessage = null;
-    notifyListeners();
+    // _errorMessage = null;
+    // notifyListeners();
 
     if (useMockData) {
       // Just simulate local deletion
       _posts.removeWhere((post) => post.id == postId);
     } else {
       final result = await deletePostUseCase(postId);
-      result.fold(
-        (failure) {
-          _errorMessage = failure.message;
-        },
-        (_) {
-          _posts.removeWhere((post) => post.id == postId);
-        },
-      );
+      result.fold((failure) => _handleFailure(failure), (_) {
+        _posts.removeWhere((post) => post.id == postId);
+        notifyListeners();
+      });
     }
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   Future<void> savePost(String postId) async {
-    _errorMessage = null;
+    //_errorMessage = null;
 
     if (useMockData) {
       final index = _posts.indexWhere((post) => post.id == postId);
@@ -215,7 +197,7 @@ class FeedProvider extends ChangeNotifier {
       }
     } else {
       final result = await savePostUseCase(postId);
-      result.fold((failure) => _errorMessage = failure.message, (_) {
+      result.fold((failure) => _handleFailure(failure), (_) {
         final index = _posts.indexWhere((post) => post.id == postId);
         if (index != -1) {
           final post = _posts[index];
@@ -223,11 +205,12 @@ class FeedProvider extends ChangeNotifier {
             isSaved: true,
           ); // assume API always saves
           _posts[index] = updated;
+          notifyListeners();
         }
       });
     }
 
-    notifyListeners();
+    //notifyListeners();
   }
 
   Future<void> editPost({
@@ -263,7 +246,7 @@ class FeedProvider extends ChangeNotifier {
   }
 
   Future<void> addComment(String postId, String content) async {
-    _errorMessage = null;
+    //_errorMessage = null;
 
     final newComment = CommentModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -283,20 +266,11 @@ class FeedProvider extends ChangeNotifier {
       _comments.insert(0, newComment);
       notifyListeners();
     } else {
-      try {
-        final result = await commentPostUseCase(postId, content);
-        result.fold(
-          (failure) {
-            _errorMessage = failure.message;
-          },
-          (_) {
-            _comments.insert(0, newComment);
-            notifyListeners();
-          },
-        );
-      } catch (e) {
-        _errorMessage = "Failed to add comment";
-      }
+      final result = await commentPostUseCase(postId, content);
+      result.fold(
+        (failure) => _handleFailure(failure),
+        (_) => fetchComments(postId),
+      );
     }
   }
 
@@ -339,55 +313,70 @@ class FeedProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     } else {
-      try {
-        final result = await fetchCommentsUseCase(postId);
-        result.fold(
-          (failure) {
-            _errorMessage = failure.message;
-          },
-          (comments) {
-            _comments =
-                comments
-                    .map((comment) => CommentModel.fromJson(comment))
-                    .toList();
-          },
-        );
-      } catch (e) {
-        _errorMessage = "Failed to load comments";
-      } finally {
-        _isLoading = false;
-        notifyListeners();
-      }
+      final result = await fetchCommentsUseCase(postId);
+      result.fold(
+        (failure) {
+          _handleFailure(failure);
+          _isLoading = false;
+          notifyListeners();
+        },
+        (comments) {
+          _comments =
+              comments
+                  .map((comment) => CommentModel.fromJson(comment))
+                  .toList();
+          _isLoading = false;
+          notifyListeners();
+        },
+      );
     }
   }
 
-  // Future<void> editComment({
-  //   required String commentId,
-  //   required String content,
-  //   List<String>? taggedUsers,
-  //   bool isReply = false,
-  // }) async {
-  //   _errorMessage = null;
-  //   notifyListeners();
+  Future<void> editComment({
+    required String commentId,
+    required String content,
+    List<String>? taggedUsers,
+    bool isReply = false,
+  }) async {
+    final result = await editCommentUseCase(
+      commentId: commentId,
+      content: content,
+      tagged: taggedUsers,
+      isReply: isReply,
+    );
+    result.fold((failure) => _handleFailure(failure), (_) {
+      final index = _comments.indexWhere((c) => c.id == commentId);
+      if (index != -1) {
+        _comments[index] = _comments[index].copyWith(content: content);
+        notifyListeners();
+      }
+    });
+  }
 
-  //   final result = await editCommentUseCase(
-  //     commentId: commentId,
-  //     content: content,
-  //     taggedUsers: taggedUsers,
-  //     isReply: isReply,
-  //   );
-  //   result.fold(
-  //     (failure) {
-  //       _errorMessage = failure.message;
-  //       notifyListeners();
-  //     },
-  //     (_) {
-  //       final index = _comments.indexWhere((c) => c.id == commentId);
-  //       if (index != -1) {
-  //         _comments[index] = _comments[index].copyWith(content: content);
-  //         notifyListeners();
-  //       }
-  //     },
-  //   );
-  // }
+  Future<void> reactToPost(
+    String postId,
+    Map<String, bool> reactions,
+    String postType,
+  ) async {
+    final result = await reactToPostUseCase(
+      postId: postId,
+      reactions: reactions,
+      postType: postType,
+    );
+    result.fold((failure) => _handleFailure(failure), (_) {
+      final index = _posts.indexWhere((post) => post.id == postId);
+      if (index != -1) {
+        _posts[index] = _posts[index].copyWith(reactions: reactions);
+        notifyListeners();
+      }
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getPostReactions(String postId) async {
+    final result = await getPostReactionsUseCase(postId);
+    return result.fold((failure) {
+      _handleFailure(failure);
+      return [];
+    }, (reactions) => reactions);
+  }
 }

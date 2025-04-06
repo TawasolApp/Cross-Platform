@@ -56,34 +56,34 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
           )
           as _i3.Future<_i4.Either<_i5.Failure, List<_i6.PostEntity>>>);
 
-  @override
-  _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>> createPost({
-    required String? content,
-    List<String>? media,
-    List<String>? taggedUsers,
-    required String? visibility,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#createPost, [], {
-              #content: content,
-              #media: media,
-              #taggedUsers: taggedUsers,
-              #visibility: visibility,
-            }),
-            returnValue:
-                _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>.value(
-                  _i7.dummyValue<_i4.Either<_i5.Failure, _i6.PostEntity>>(
-                    this,
-                    Invocation.method(#createPost, [], {
-                      #content: content,
-                      #media: media,
-                      #taggedUsers: taggedUsers,
-                      #visibility: visibility,
-                    }),
-                  ),
-                ),
-          )
-          as _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>);
+  // @override
+  // _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>> createPost({
+  //   required String? content,
+  //   List<String>? media,
+  //   List<String>? taggedUsers,
+  //   required String? visibility,
+  // }) =>
+  //     (super.noSuchMethod(
+  //           Invocation.method(#createPost, [], {
+  //             #content: content,
+  //             #media: media,
+  //             #taggedUsers: taggedUsers,
+  //             #visibility: visibility,
+  //           }),
+  //           returnValue:
+  //               _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>.value(
+  //                 _i7.dummyValue<_i4.Either<_i5.Failure, _i6.PostEntity>>(
+  //                   this,
+  //                   Invocation.method(#createPost, [], {
+  //                     #content: content,
+  //                     #media: media,
+  //                     #taggedUsers: taggedUsers,
+  //                     #visibility: visibility,
+  //                   }),
+  //                 ),
+  //               ),
+  //         )
+  //         as _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>);
 
   @override
   _i3.Future<_i4.Either<_i5.Failure, void>> deletePost(String? postId) =>
@@ -111,28 +111,29 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
           )
           as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
 
-  @override
-  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> reactToPost({
-    required String? postId,
-    required Map<String, bool>? reactions,
-    required String? postType,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#reactToPost, [], {
-              #postId: postId,
-              #reactions: reactions,
-              #postType: postType,
-            }),
-            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
-              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
-                this,
-                Invocation.method(#reactToPost, [], {
-                  #postId: postId,
-                  #reactions: reactions,
-                  #postType: postType,
-                }),
-              ),
-            ),
-          )
-          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+  //   @override
+  //   _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> reactToPost({
+  //     required String? postId,
+  //     required Map<String, bool>? reactions,
+  //     required String? postType,
+  //   }) =>
+  //       (super.noSuchMethod(
+  //             Invocation.method(#reactToPost, [], {
+  //               #postId: postId,
+  //               #reactions: reactions,
+  //               #postType: postType,
+  //             }),
+  //             returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+  //               _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+  //                 this,
+  //                 Invocation.method(#reactToPost, [], {
+  //                   #postId: postId,
+  //                   #reactions: reactions,
+  //                   #postType: postType,
+  //                 }),
+  //               ),
+  //             ),
+  //           )
+  //           as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+  // }
 }

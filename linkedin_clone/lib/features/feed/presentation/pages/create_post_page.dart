@@ -80,19 +80,41 @@ class PostCreationPageState extends State<PostCreationPage> {
                             content: Text('Post updated successfully'),
                           ),
                         );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Post updated successfully'),
+                            ),
+                          );
+                          context.go(RouteNames.main);
+                        }
                         //context.go(RouteNames.main);
                       } else {
                         feedProvider.createPost(
                           content: content,
                           visibility: feedProvider.visibility,
                         );
+
+                        if (feedProvider.errorMessage != null) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(feedProvider.errorMessage!),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } else {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Post created successfully!'),
+                              ),
+                            );
+                            context.go(RouteNames.main);
+                          }
+                        }
                       }
-                      // feedProvider.createPost(
-                      //   content: _postCreationController.text.trim(),
-                      //   visibility: feedProvider.visibility,
-                      // );
-                      // ignore: use_build_context_synchronously
-                      context.go(RouteNames.main);
                     }
                     : null,
             child: Text(

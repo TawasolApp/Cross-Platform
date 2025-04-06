@@ -2,30 +2,18 @@ import '../../domain/entities/comment_entity.dart';
 
 class CommentModel extends CommentEntity {
   CommentModel({
-    required String id,
-    required String postId,
-    required String authorId,
-    required String authorName,
-    required String authorPicture,
-    required String authorBio,
-    required String content,
-    required List<String> taggedUsers,
-    required List<CommentEntity> replies,
-    required int reactCount,
-    required DateTime timestamp,
-  }) : super(
-         id: id,
-         postId: postId,
-         authorId: authorId,
-         authorName: authorName,
-         authorPicture: authorPicture,
-         authorBio: authorBio,
-         content: content,
-         taggedUsers: taggedUsers,
-         replies: replies,
-         reactCount: reactCount,
-         timestamp: timestamp,
-       );
+    required super.id,
+    required super.postId,
+    required super.authorId,
+    required super.authorName,
+    required super.authorPicture,
+    required super.authorBio,
+    required super.content,
+    required super.taggedUsers,
+    required super.replies,
+    required super.reactCount,
+    required super.timestamp,
+  });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
@@ -36,13 +24,13 @@ class CommentModel extends CommentEntity {
       authorPicture: json['authorPicture'],
       authorBio: json['authorBio'],
       content: json['content'],
-      taggedUsers: List<String>.from(json['taggedUsers']),
+      taggedUsers: List<String>.from(json['tagged'] ?? []),
       replies:
           (json['replies'] as List)
               .map((x) => CommentModel.fromJson(x))
               .toList(),
-      reactCount: json['reactCount'],
-      timestamp: DateTime.parse(json['timestamp']),
+      reactCount: json['reactCount'] ?? 0,
+      timestamp: DateTime.tryParse(json['timestamp']) ?? DateTime.now(),
     );
   }
 

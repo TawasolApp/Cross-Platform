@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 class AddAdminScreen extends StatelessWidget {
   final TextEditingController userIdController = TextEditingController();
 
+  AddAdminScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<EditCompanyDetailsProvider>(context);

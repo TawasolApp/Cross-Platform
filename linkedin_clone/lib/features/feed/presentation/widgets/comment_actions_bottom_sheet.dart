@@ -33,12 +33,12 @@ class CommentActionsBottomSheet extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) {
-                  final TextEditingController _controller =
+                  final TextEditingController controller =
                       TextEditingController(text: commentContent);
                   return AlertDialog(
                     title: const Text('Edit Comment'),
                     content: TextField(
-                      controller: _controller,
+                      controller: controller,
                       maxLines: null,
                       decoration: const InputDecoration(
                         labelText: 'Update your comment',

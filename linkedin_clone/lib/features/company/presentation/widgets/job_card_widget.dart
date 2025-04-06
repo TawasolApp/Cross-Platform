@@ -9,7 +9,12 @@ class JobCard extends StatefulWidget {
   final Job job;
   final String userId;
   final String companyId;
-  JobCard({required this.job, required this.userId, required this.companyId});
+  const JobCard({
+    super.key,
+    required this.job,
+    required this.userId,
+    required this.companyId,
+  });
 
   @override
   _JobCardState createState() => _JobCardState();

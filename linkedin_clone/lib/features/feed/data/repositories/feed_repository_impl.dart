@@ -4,49 +4,55 @@ import '../../../../core/errors/failures.dart';
 import '../../domain/entities/post_entity.dart';
 import '../data_sources/feed_remote_data_source.dart';
 import '../../../../core/errors/exceptions.dart';
-import '../../domain/entities/comment_entity.dart';
-//import 'package:dartz/dartz.dart';
+import '../../data/models/post_model.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
   final FeedRemoteDataSource remoteDataSource;
 
   FeedRepositoryImpl({required this.remoteDataSource});
 
-  // Get Newsfeed
   @override
   Future<Either<Failure, List<PostEntity>>> getPosts({
     int? page,
     int limit = 10,
   }) async {
     try {
-      final posts = await remoteDataSource.getPosts(page: page, limit: limit);
-      return Right(posts);
+      final result = await remoteDataSource.getPosts(page: page, limit: limit);
+
+      return result.fold((failure) => Left(failure), (posts) {
+        final entities = posts.map((post) => post.toEntity()).toList();
+        return Right(entities);
+      });
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure('Failed to load posts'));
     }
   }
 
-  // Create a Post
   @override
   Future<Either<Failure, PostEntity>> createPost({
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
     required String visibility,
+    String? parentPostId,
+    bool isSilentRepost = false,
   }) async {
-    try {
-      final post = await remoteDataSource.createPost(
-        content: content,
-        media: media,
-        taggedUsers: taggedUsers,
-        visibility: visibility,
-      );
-      return Right(post);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+    final result = await remoteDataSource.createPost(
+      content: content,
+      media: media,
+      taggedUsers: taggedUsers,
+      visibility: visibility,
+      parentPostId: parentPostId,
+      isSilentRepost: isSilentRepost,
+    );
+
+    return result.fold(
+      (failure) => Left(failure),
+      (postModel) => Right(postModel.toEntity()),
+    );
   }
 
+  // Delete a Post
   @override
   Future<Either<Failure, void>> deletePost(String postId) async {
     try {
@@ -59,11 +65,12 @@ class FeedRepositoryImpl implements FeedRepository {
     }
   }
 
+  // Save a Post
   @override
   Future<Either<Failure, Unit>> savePost(String postId) async {
     try {
       await remoteDataSource.savePost(postId);
-      return const Right(unit); // ✅ correct way to return Unit
+      return const Right(unit);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
@@ -71,6 +78,7 @@ class FeedRepositoryImpl implements FeedRepository {
     }
   }
 
+  // React to a Post
   @override
   Future<Either<Failure, Unit>> reactToPost({
     required String postId,
@@ -84,13 +92,24 @@ class FeedRepositoryImpl implements FeedRepository {
         postType: postType,
       );
       return const Right(unit);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(NetworkFailure(e.toString()));
+      return Left(ServerFailure(e.toString()));
     }
   }
 
+  @override
+  Future<Either<Failure, List<Map<String, dynamic>>>> getPostReactions(
+    String postId,
+  ) async {
+    try {
+      final reactions = await remoteDataSource.getPostReactions(postId);
+      return Right(reactions);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  // Edit a Post
   @override
   Future<Either<Failure, Unit>> editPost({
     required String postId,
@@ -107,20 +126,19 @@ class FeedRepositoryImpl implements FeedRepository {
         taggedUsers: taggedUsers,
         visibility: visibility,
       );
-      return right(unit);
+      return const Right(unit);
     } on ServerException catch (e) {
-      return left(
-        ServerFailure(e.message, 500),
-      ); // Or extract status if you have it
+      return Left(ServerFailure(e.message));
     } on ValidationException catch (e) {
-      return left(ValidationFailure(e.message, 400));
+      return Left(ValidationFailure(e.message));
     } on NetworkException catch (e) {
-      return left(NetworkFailure(e.message, 0));
+      return Left(NetworkFailure(e.message));
     } catch (e) {
-      return left(ServerFailure("Unexpected error occurred", 500));
+      return Left(ServerFailure("Unexpected error occurred"));
     }
   }
 
+  // Add a Comment
   @override
   Future<Either<Failure, Unit>> addComment(
     String postId,
@@ -129,11 +147,14 @@ class FeedRepositoryImpl implements FeedRepository {
     try {
       await remoteDataSource.addComment(postId, content);
       return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(NetworkFailure(e.toString()));
     }
   }
 
+  // Fetch Comments
   @override
   Future<Either<Failure, List<dynamic>>> fetchComments(
     String postId, {
@@ -147,139 +168,33 @@ class FeedRepositoryImpl implements FeedRepository {
         limit: limit,
       );
       return Right(comments);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(NetworkFailure(e.toString()));
     }
   }
 
+  // Edit a Comment
   @override
-  Future<Either<Failure, void>> editComment({
+  Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
-    List<String>? taggedUsers,
+    List<String>? tagged, // Changed to match API
     bool isReply = false,
   }) async {
     try {
       await remoteDataSource.editComment(
         commentId: commentId,
         content: content,
-        taggedUsers: taggedUsers ?? [],
+        tagged: tagged ?? [],
         isReply: isReply,
       );
-      return const Right(null);
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(NetworkFailure(e.toString()));
     }
   }
 }
-
-//   // Like a Post
-//   @override
-//   Future<Either<Failure, void>> likePost(String postId) async {
-//     return _handlePostRequest('posts/$postId/like');
-//   }
-
-//   // Unlike a Post
-//   @override
-//   Future<Either<Failure, void>> unlikePost(String postId) async {
-//     return _handlePostRequest('posts/$postId/unlike');
-//   }
-
-//   // Comment on a Post
-//   @override
-//   Future<Either<Failure, void>> commentOnPost({
-//     required String postId,
-//     required String content,
-//     List<String>? taggedUsers,
-//   }) async {
-//     return _handlePostRequest(
-//       'posts/$postId/comment',
-//       data: {"content": content, "taggedUsers": taggedUsers ?? []},
-//     );
-//   }
-
-//   // Delete a Comment
-//   @override
-//   Future<Either<Failure, void>> deleteComment(String commentId) async {
-//     return _handleDeleteRequest('comments/$commentId');
-//   }
-
-//   // Repost a Post
-//   @override
-//   Future<Either<Failure, void>> repostPost({
-//     required String authorId,
-//     required String postId,
-//     required String content,
-//     List<String>? taggedUsers,
-//     required String visibility,
-//     required String authorType,
-//   }) async {
-//     return _handlePostRequest(
-//       'posts/$postId/repost',
-//       data: {
-//         "authorId": authorId,
-//         "postId": postId,
-//         "content": content,
-//         "taggedUsers": taggedUsers ?? [],
-//         "visibility": visibility,
-//         "authorType": authorType,
-//       },
-//     );
-//   }
-
-//   // Delete a Post
-//   @override
-//   Future<Either<Failure, void>> deletePost(String postId) async {
-//     return _handleDeleteRequest('posts/$postId');
-//   }
-
-//   // 🔹 Helper for POST requests
-//   Future<Either<Failure, void>> _handlePostRequest(
-//     String path, {
-//     Map<String, dynamic>? data,
-//   }) async {
-//     try {
-//       final response = await dio.post(
-//         'https://api.example.com/$path',
-//         data: data,
-//       );
-//       return _validateResponse(response);
-//     } on DioException catch (e) {
-//       return left(_handleDioError(e));
-//     } catch (e) {
-//       return left(UnknownFailure(e.toString()));
-//     }
-//   }
-
-//   // 🔹 Helper for DELETE requests
-//   Future<Either<Failure, void>> _handleDeleteRequest(String path) async {
-//     try {
-//       final response = await dio.delete('https://api.example.com/$path');
-//       return _validateResponse(response);
-//     } on DioException catch (e) {
-//       return left(_handleDioError(e));
-//     } catch (e) {
-//       return left(UnknownFailure(e.toString()));
-//     }
-//   }
-
-//   // 🔹 Validate API response
-//   Either<Failure, void> _validateResponse(Response response) {
-//     if (response.statusCode == 200) {
-//       return right(null);
-//     }
-//     return left(ServerFailure());
-//   }
-
-//   // 🔹 Handle Dio-specific errors
-//   Failure _handleDioError(DioException e) {
-//     if (e.type == DioExceptionType.connectionTimeout ||
-//         e.type == DioExceptionType.receiveTimeout) {
-//       return NetworkFailure();
-//     } else if (e.response != null && e.response!.statusCode == 404) {
-//       return NotFoundFailure();
-//     } else {
-//       return ServerFailure();
-//     }
-//   }
-// }

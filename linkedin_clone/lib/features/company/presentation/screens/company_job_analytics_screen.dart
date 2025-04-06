@@ -5,7 +5,7 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 class JobAnalyticsScreen extends StatefulWidget {
   final CompanyProvider companyProvider;
 
-  JobAnalyticsScreen({required this.companyProvider});
+  const JobAnalyticsScreen({super.key, required this.companyProvider});
 
   @override
   _JobAnalyticsScreenState createState() => _JobAnalyticsScreenState();
@@ -80,10 +80,8 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
                 Spacer(),
                 PopupMenuTheme(
                   data: PopupMenuThemeData(
-                    color: Colors.white, 
-                    textStyle: TextStyle(
-                      color: Colors.black,
-                    ), 
+                    color: Colors.white,
+                    textStyle: TextStyle(color: Colors.black),
                   ),
                   child: PopupMenuButton<String>(
                     onSelected: (value) {
@@ -92,10 +90,7 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
                         _sortJobs();
                       });
                     },
-                    offset: Offset(
-                      0,
-                      screenHeight * 0.04,
-                    ), 
+                    offset: Offset(0, screenHeight * 0.04),
                     itemBuilder:
                         (context) => [
                           PopupMenuItem(
@@ -129,10 +124,10 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 5, 
+                    elevation: 5,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white, 
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(color: Colors.black12, blurRadius: 2),

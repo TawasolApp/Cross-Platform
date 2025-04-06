@@ -12,11 +12,11 @@ class ResumeSection extends StatefulWidget {
   final String? errorMessage;
 
   const ResumeSection({
-    Key? key,
+    super.key,
     this.resumeUrl,
     this.isCurrentUser = false,
     this.errorMessage,
-  }) : super(key: key);
+  });
 
   @override
   State<ResumeSection> createState() => _ResumeSectionState();
