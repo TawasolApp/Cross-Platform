@@ -20,6 +20,10 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.blue),
+          onPressed: () => context.go(RouteNames.forgotPassword), // Navigate to Add Email Password page
+        ),
         title: TextButton(
           onPressed: () => context.go(RouteNames.login),
           child: const Text(

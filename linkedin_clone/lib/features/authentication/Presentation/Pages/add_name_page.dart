@@ -29,10 +29,21 @@ class AddNamePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/images/linkedin_logo.png',
-                height: 25,
-                color: isDarkMode ? const Color(0xFFE5E5E5) : textColor,
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.arrow_back, color: isDarkMode ? Colors.white : Colors.black),
+                    onPressed: () {
+                      context.go(RouteNames.onboarding);
+                    },
+                  ),
+                  const Spacer(),
+                  Image.asset(
+                    'assets/images/linkedin_logo.png',
+                    height: 25,
+                    color: isDarkMode ? const Color(0xFFE5E5E5) : textColor,
+                  ),
+                ],
               ),
               const SizedBox(height: 32),
               Text(
@@ -61,7 +72,7 @@ class AddNamePage extends StatelessWidget {
                 onPressed: () {
                   if (provider.canContinueFromName) {
                     context.go(RouteNames.addEmail);
-                  }else{
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Please enter both first and last name."),

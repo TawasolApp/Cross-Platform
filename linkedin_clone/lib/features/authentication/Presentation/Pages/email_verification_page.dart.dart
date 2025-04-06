@@ -27,6 +27,12 @@ class EmailVerificationPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  context.go(RouteNames.addEmail); // Replace with the correct route name
+                },
+              ),
               Image.asset(
                 'assets/images/linkedin_logo.png',
                 height: 25,

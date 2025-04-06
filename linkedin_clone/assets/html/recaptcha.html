@@ -1,27 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>reCAPTCHA</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tawasol - Verify You Are Human</title>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-</head>
-<body style='background-color: aqua;'>
-<div style='height: 60px;'></div>
-<form action="?" method="POST">
-    <div class="g-recaptcha"
-         data-sitekey="6LcMAAsrAAAAAAEcOoshJFfHmsQZPaWg6cKVqZz8"
-         data-callback="captchaCallback"></div>
-
-</form>
-<script>
-      function captchaCallback(response){
-        //console.log(response);
-        if(typeof Captcha!=="undefined"){
-          Captcha.postMessage(response);
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f2f4f8;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
         }
-      }
+
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #0073b1;
+        }
+
+        .g-recaptcha {
+            margin: 20px 0;
+        }
+
+        .message {
+            font-size: 14px;
+            color: #555;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+        }
+
+        img {
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://tawasolapp.me/assets/logo.png" alt="Tawasol Logo">
+        </div>
+        <h2>Please Verify You Are Human</h2>
+        <p class="message">To continue using Tawasol, complete the CAPTCHA below.</p>
+        
+        <div class="g-recaptcha" 
+             data-sitekey="6Ld6TgsrAAAAAGJZqx04LYQXt1-hAcqjeJQMAdf7"
+             data-callback="onSuccess"></div>
+
+        <footer>
+            © 2025 Tawasol App. All rights reserved.
+        </footer>
+    </div>
+
+    <script>
+        function onSuccess(token) {
+            if (window.RecaptchaChannel) {
+                RecaptchaChannel.postMessage(token);
+            } else if (window.flutter_inappwebview) {
+                window.flutter_inappwebview.callHandler('recaptchaCallback', token);
+            } else {
+                console.log("Received token: " + token);
+            }
+        }
     </script>
 </body>
 </html>
-
-<html>
-<body>
