@@ -11,6 +11,6 @@ class AddExperienceUseCase implements UseCase<void, Experience> {
 
   @override
   Future<Either<Failure, void>> call(Experience experience) {
-    return repository.addExperience(experience);
+    return repository.addWorkExperience(experience);
   }
 }

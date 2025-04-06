@@ -9,7 +9,7 @@ class DeleteSkillUseCase implements UseCase<void, String> {
   DeleteSkillUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(String skill) {
-    return repository.deleteSkill(skill);
+  Future<Either<Failure, void>> call(String skillName) {
+    return repository.deleteSkill(skillName);
   }
 }

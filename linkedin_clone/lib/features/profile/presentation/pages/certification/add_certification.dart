@@ -40,8 +40,8 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final newCertification = Certification(
         name: _nameController.text,
-        issuingOrganization: _issuingOrgController.text,
-        issuingOrganizationPic: _issuingOrgPicController.text.isNotEmpty 
+        company: _issuingOrgController.text,
+        companyPic: _issuingOrgPicController.text.isNotEmpty 
             ? _issuingOrgPicController.text 
             : null,
         issueDate: _issueDateController.text,

@@ -3,38 +3,44 @@ import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'endorsement_model.dart';
 
 class SkillModel extends Equatable {
-  final String skill;
-  final List<EndorsementModel>? endorsements;
+  final String skillName;
+  // final List<EndorsementModel>? endorsements;
+  final List<String?>? endorsements;
 
   const SkillModel({
-    required this.skill,
+    required this.skillName,
     this.endorsements,
   });
 
   /// Convert to Domain Entity
   Skill toEntity() {
     return Skill(
-      skill: skill,
-      endorsements: endorsements?.map((e) => e.toEntity()).toList(),
+      skillName: skillName,
+      // endorsements: endorsements?.map((e) => e.toEntity()).toList(),
+      endorsements: endorsements
     );
   }
 
   /// Create from Domain Entity
   factory SkillModel.fromEntity(Skill entity) {
     return SkillModel(
-      skill: entity.skill,
-      endorsements: entity.endorsements
-          ?.map((e) => EndorsementModel.fromEntity(e))
-          .toList(),
+      skillName: entity.skillName,
+      // endorsements: entity.endorsements
+      //     ?.map((e) => EndorsementModel.fromEntity(e))
+      //     .toList(),
+      endorsements: entity.endorsements,
     );
   }
 
   /// Convert JSON to SkillModel
   factory SkillModel.fromJson(Map<String, dynamic> json) {
     return SkillModel(
-      skill: json['skill'] as String,
+      skillName: json['skillName'] as String,
+      // endorsements: (json['endorsements'] as List<dynamic>?)
+      //     ?.map((e) => EndorsementModel.fromJson(e as Map<String, dynamic>))
+      //     .toList(),
       endorsements: (json['endorsements'] as List<dynamic>?)
-          ?.map((e) => EndorsementModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => e as String)
           .toList(),
     );
   }
@@ -42,22 +48,24 @@ class SkillModel extends Equatable {
   /// Convert SkillModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      'skill': skill,
-      'endorsements': endorsements?.map((e) => e.toJson()).toList(),
+      'skillName': skillName,
+      // 'endorsements': endorsements?.map((e) => e.toJson()).toList(),
+      'endorsements': endorsements,
     };
   }
 
   /// Create a copy with modified fields
   SkillModel copyWith({
     String? skill,
-    List<EndorsementModel>? endorsements,
+    // List<EndorsementModel>? endorsements,
+    List<String?>? endorsements,
   }) {
     return SkillModel(
-      skill: skill ?? this.skill,
+      skillName: skill ?? this.skillName,
       endorsements: endorsements ?? this.endorsements,
     );
   }
 
   @override
-  List<Object?> get props => [skill, endorsements];
+  List<Object?> get props => [skillName, endorsements];
 }

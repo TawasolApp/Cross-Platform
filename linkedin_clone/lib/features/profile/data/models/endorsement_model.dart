@@ -29,7 +29,7 @@ class EndorsementModel extends Equatable {
   /// Convert JSON to EndorsementModel
   factory EndorsementModel.fromJson(Map<String, dynamic> json) {
     return EndorsementModel(
-      userId: json['userId'] as String,
+      userId: json['_id'] as String,
       profilePicUrl: json['profilePicUrl'] as String?,
     );
   }
@@ -37,7 +37,7 @@ class EndorsementModel extends Equatable {
   /// Convert EndorsementModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
+      '_id': userId,
       'profilePicUrl': profilePicUrl,
     };
   }

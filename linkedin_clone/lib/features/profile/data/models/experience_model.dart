@@ -1,31 +1,34 @@
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 
 class ExperienceModel {
+  final String? workExperienceId;
   final String title;
   final String company;
-  final String location;
+  final String? location;
   final String startDate;
   final String? endDate;
-  final String description;
+  final String? description;
   final String employmentType;
-  final String locationType;
+  final String? locationType;
   final String? companyPicUrl;
 
   const ExperienceModel({
+    this.workExperienceId,
     required this.title,
     required this.company,
-    required this.location,
+    this.location,
     required this.startDate,
     this.endDate,
-    required this.description,
+    this.description,
     required this.employmentType,
-    required this.locationType,
+    this.locationType,
     this.companyPicUrl,
   });
 
   // Convert to Entity
   Experience toEntity() {
     return Experience(
+      workExperienceId: workExperienceId,
       title: title,
       company: company,
       location: location,
@@ -41,6 +44,7 @@ class ExperienceModel {
   // Convert from Entity
   factory ExperienceModel.fromEntity(Experience entity) {
     return ExperienceModel(
+      workExperienceId: entity.workExperienceId,
       title: entity.title,
       company: entity.company,
       location: entity.location,
@@ -56,6 +60,7 @@ class ExperienceModel {
   // JSON Serialization
   Map<String, dynamic> toJson() {
     return {
+      '_id': workExperienceId,
       'title': title,
       'company': company,
       'location': location,
@@ -71,6 +76,7 @@ class ExperienceModel {
   // JSON Deserialization
   factory ExperienceModel.fromJson(Map<String, dynamic> json) {
     return ExperienceModel(
+      workExperienceId: json['_id'] as String? ?? '', // Assuming ID is optional
       title: json['title'] as String,
       company: json['company'] as String,
       location: json['location'] as String,
@@ -85,6 +91,7 @@ class ExperienceModel {
 
   // Copy with method
   ExperienceModel copyWith({
+    String? workExperienceId,
     String? title,
     String? company,
     String? location,
@@ -96,6 +103,7 @@ class ExperienceModel {
     String? companyPicUrl,
   }) {
     return ExperienceModel(
+      workExperienceId: workExperienceId ?? this.workExperienceId,
       title: title ?? this.title,
       company: company ?? this.company,
       location: location ?? this.location,
@@ -113,6 +121,7 @@ class ExperienceModel {
       identical(this, other) ||
       other is ExperienceModel &&
           runtimeType == other.runtimeType &&
+          workExperienceId == other.workExperienceId &&
           title == other.title &&
           company == other.company &&
           location == other.location &&
@@ -125,6 +134,7 @@ class ExperienceModel {
 
   @override
   int get hashCode =>
+      workExperienceId.hashCode ^
       title.hashCode ^
       company.hashCode ^
       location.hashCode ^

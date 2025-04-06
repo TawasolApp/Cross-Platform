@@ -23,24 +23,27 @@ class SkillWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  skill.skill,
+                  skill.skillName,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 5),
                 Row(
                   children: [
                     // Profile pictures of endorsers
-                    if (skill.endorsements != null && skill.endorsements!.isNotEmpty)
-                      ...skill.endorsements!.take(3).map((Endorsement endorser) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 4.0),
-                          child: CircleAvatar(
-                            radius: 10,
-                            backgroundColor: Colors.grey,
-                            // backgroundImage: NetworkImage(endorser.userId.profilePictureUrl ?? ''),
-                          ),
-                        );
-                      }).toList(),
+                    // if (skill.endorsements != null && skill.endorsements!.isNotEmpty)
+                    //   ...skill.endorsements!.take(3).map((Endorsement endorser) {
+                    //     return Padding(
+                    //       padding: const EdgeInsets.only(right: 4.0),
+                    //       child: CircleAvatar(
+                    //         radius: 10,
+                    //         backgroundColor: Colors.grey,
+                    //         // backgroundImage: NetworkImage(endorser.userId.profilePictureUrl ?? ''),
+                    //       ),
+                    //     );
+                    //   }).toList(),
+
+                    // Placeholder for endorsements
+                    
         
                     // Endorsements count
                     Text(

@@ -6,10 +6,7 @@ import 'package:provider/provider.dart';
 class EditExperiencePage extends StatefulWidget {
   final Experience? experience;
 
-  const EditExperiencePage({
-    super.key, 
-    this.experience,
-  });
+  const EditExperiencePage({super.key, this.experience});
 
   @override
   State<EditExperiencePage> createState() => _EditExperiencePageState();
@@ -23,20 +20,16 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
   final _startDateController = TextEditingController();
   final _endDateController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   // Define possible values for dropdowns
   static const List<String> employmentTypes = [
     "Full-time",
     "Part-time",
     "Internship",
-    "Freelance"
+    "Freelance",
   ];
-  
-  static const List<String> locationTypes = [
-    "On-site",
-    "Remote",
-    "Hybrid"
-  ];
+
+  static const List<String> locationTypes = ["On-site", "Remote", "Hybrid"];
 
   String _employmentType = "Full-time";
   String _locationType = "On-site";
@@ -46,7 +39,7 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
   @override
   void initState() {
     super.initState();
-    
+
     // Initialize with existing experience if editing
     if (widget.experience != null) {
       final exp = widget.experience!;
@@ -55,17 +48,19 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
       _locationController.text = exp.location ?? '';
       _startDateController.text = exp.startDate;
       _endDateController.text = exp.endDate ?? '';
-      _descriptionController.text = exp.description;
-      
+      _descriptionController.text = exp.description ?? '';
+
       // Ensure the values exist in our dropdown options
-      _employmentType = employmentTypes.contains(exp.employmentType) 
-          ? exp.employmentType 
-          : "Full-time";
-          
-      _locationType = locationTypes.contains(exp.locationType)
-          ? exp.locationType
-          : "On-site";
-          
+      _employmentType =
+          employmentTypes.contains(exp.employmentType)
+              ? exp.employmentType
+              : "Full-time";
+
+      _locationType =
+          exp.locationType != null && locationTypes.contains(exp.locationType!)
+              ? exp.locationType!
+              : "On-site";
+
       _isCurrentlyWorking = exp.endDate == null;
     }
   }
@@ -83,18 +78,24 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
 
   Future<void> _saveExperience() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isSaving = true);
-    
+
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final experience = Experience(
         title: _titleController.text,
         company: _companyController.text,
-        location: _locationController.text,
+        location:
+            _locationController.text.isNotEmpty
+                ? _locationController.text
+                : null,
         startDate: _startDateController.text,
         endDate: _isCurrentlyWorking ? null : _endDateController.text,
-        description: _descriptionController.text,
+        description:
+            _descriptionController.text.isNotEmpty
+                ? _descriptionController.text
+                : null,
         employmentType: _employmentType,
         locationType: _locationType,
         companyPicUrl: widget.experience?.companyPicUrl,
@@ -105,7 +106,7 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
       } else {
         await provider.addExperience(experience);
       }
-      
+
       if (mounted) {
         Navigator.pop(context, true); // Return success flag
       }
@@ -122,7 +123,10 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -130,23 +134,22 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
       lastDate: DateTime(2100),
       builder: (context, child) {
         return Theme(
-            data: ThemeData.light().copyWith(
+          data: ThemeData.light().copyWith(
             colorScheme: const ColorScheme.light(
               primary: Colors.blue,
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
             ),
-            dialogTheme: const DialogTheme(
-              backgroundColor: Colors.white,
-            ),
+            dialogTheme: const DialogTheme(backgroundColor: Colors.white),
           ),
           child: child!,
         );
       },
     );
     if (picked != null) {
-      controller.text = "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      controller.text =
+          "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
     }
   }
 
@@ -154,17 +157,29 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.experience != null ? "Edit Experience" : "Add Experience"),
+        title: Text(
+          widget.experience != null ? "Edit Experience" : "Add Experience",
+        ),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveExperience,
-            child: _isSaving 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                  )
-                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child:
+                _isSaving
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
           ),
         ],
       ),
@@ -183,7 +198,11 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: const Icon(Icons.business, size: 40, color: Colors.blueGrey),
+                    child: const Icon(
+                      Icons.business,
+                      size: 40,
+                      color: Colors.blueGrey,
+                    ),
                   ),
                 ),
               ),
@@ -194,9 +213,14 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _titleController,
                     decoration: const InputDecoration(
@@ -204,7 +228,8 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -214,9 +239,14 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _companyController,
                     decoration: const InputDecoration(
@@ -224,7 +254,8 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -234,17 +265,22 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _locationController,
                     decoration: const InputDecoration(
-                      labelText: "Location*",
+                      labelText: "Location (Optional)",
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    // Validator removed as it's now optional
                   ),
                 ),
               ),
@@ -254,17 +290,25 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: DropdownButtonFormField<String>(
                     value: _employmentType,
-                    items: employmentTypes
-                        .map((e) => DropdownMenuItem<String>(
-                              value: e,
-                              child: Text(e),
-                            ))
-                        .toList(),
+                    items:
+                        employmentTypes
+                            .map(
+                              (e) => DropdownMenuItem<String>(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         setState(() => _employmentType = value);
@@ -275,7 +319,10 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.blueGrey,
+                    ),
                     dropdownColor: Colors.white,
                   ),
                 ),
@@ -286,28 +333,39 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: DropdownButtonFormField<String>(
                     value: _locationType,
-                    items: locationTypes
-                        .map((e) => DropdownMenuItem<String>(
-                              value: e,
-                              child: Text(e),
-                            ))
-                        .toList(),
+                    items:
+                        locationTypes
+                            .map(
+                              (e) => DropdownMenuItem<String>(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         setState(() => _locationType = value);
                       }
                     },
                     decoration: const InputDecoration(
-                      labelText: "Location Type*",
+                      labelText: "Location Type (Optional)",
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.blueGrey,
+                    ),
                     dropdownColor: Colors.white,
                   ),
                 ),
@@ -318,9 +376,14 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _startDateController,
                     decoration: const InputDecoration(
@@ -330,7 +393,8 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                     ),
                     readOnly: true,
                     onTap: () => _selectDate(context, _startDateController),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -340,9 +404,14 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _endDateController,
                     decoration: const InputDecoration(
@@ -352,7 +421,11 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                     ),
                     readOnly: true,
                     enabled: !_isCurrentlyWorking,
-                    onTap: () => _isCurrentlyWorking ? null : _selectDate(context, _endDateController),
+                    onTap:
+                        () =>
+                            _isCurrentlyWorking
+                                ? null
+                                : _selectDate(context, _endDateController),
                     validator: (value) {
                       if (!_isCurrentlyWorking && (value?.isEmpty ?? true)) {
                         return "Required unless currently working";
@@ -362,12 +435,14 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                   ),
                 ),
               ),
-              
+
               Card(
                 color: Colors.white,
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
@@ -379,7 +454,10 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                         },
                         activeColor: Theme.of(context).primaryColor,
                       ),
-                      const Text("I currently work here", style: TextStyle(fontWeight: FontWeight.w500)),
+                      const Text(
+                        "I currently work here",
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
                     ],
                   ),
                 ),
@@ -390,19 +468,27 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _descriptionController,
                     decoration: const InputDecoration(
-                      labelText: "Description*",
+                      labelText: "Description (Optional)",
                       border: InputBorder.none,
                       alignLabelWithHint: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 8.0,
+                      ),
                     ),
                     maxLines: 5,
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    // Validator removed as it's now optional
                   ),
                 ),
               ),
@@ -414,20 +500,30 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                   onPressed: _isSaving ? null : _saveExperience,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 2,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20, 
-                          height: 20, 
-                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                        )
-                      : const Text(
-                          "Save Experience", 
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
+                  child:
+                      _isSaving
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
+                              color: Colors.white,
+                            ),
+                          )
+                          : const Text(
+                            "Save Experience",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ),
             ],

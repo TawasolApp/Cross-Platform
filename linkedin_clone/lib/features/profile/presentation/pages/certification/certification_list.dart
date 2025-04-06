@@ -88,10 +88,10 @@ class _CertificationListPageState extends State<CertificationListPage> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  certification.issuingOrganizationPic != null
+                  certification.companyPic != null
                       ? CircleAvatar(
                           radius: 24,
-                          backgroundImage: NetworkImage(certification.issuingOrganizationPic!),
+                          backgroundImage: NetworkImage(certification.companyPic!),
                         )
                       : const CircleAvatar(
                           radius: 24,
@@ -110,7 +110,7 @@ class _CertificationListPageState extends State<CertificationListPage> {
                           ),
                         ),
                         Text(
-                          certification.issuingOrganization,
+                          certification.company,
                           style: const TextStyle(color: Colors.grey),
                         ),
                       ],

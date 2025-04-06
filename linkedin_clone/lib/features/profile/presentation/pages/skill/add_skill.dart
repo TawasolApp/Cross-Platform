@@ -29,7 +29,7 @@ class _AddSkillPageState extends State<AddSkillPage> {
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final newSkill = Skill(
-        skill: _skillController.text,
+        skillName: _skillController.text,
         endorsements: [],
       );
 

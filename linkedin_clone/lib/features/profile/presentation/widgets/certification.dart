@@ -23,14 +23,14 @@ class CertificationWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.grey[300], // Placeholder color
               borderRadius: BorderRadius.circular(4), // Square with slight rounding
-              image: certification.issuingOrganizationPic != null
+              image: certification.companyPic != null
                   ? DecorationImage(
-                      image: NetworkImage(certification.issuingOrganizationPic!),
+                      image: NetworkImage(certification.companyPic!),
                       fit: BoxFit.cover,
                     )
                   : null,
             ),
-            child: certification.issuingOrganizationPic == null
+            child: certification.companyPic == null
                 ? const Icon(Icons.verified, size: 24, color: Colors.white)
                 : null,
           ),
@@ -52,7 +52,7 @@ class CertificationWidget extends StatelessWidget {
 
                 // Issuing Organization
                 Text(
-                  certification.issuingOrganization,
+                  certification.company,
                   style: const TextStyle(
                     fontSize: 14, 
                     color: Colors.black87,

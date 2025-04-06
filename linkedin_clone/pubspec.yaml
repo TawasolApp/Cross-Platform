@@ -30,7 +30,7 @@ dependencies:
   flutter_svg: ^2.0.17
   font_awesome_flutter: ^10.8.0
   intl_phone_number_input: ^0.7.0+2
-  fl_chart: ^0.40.0
+  fl_chart: ^0.70.2
   lucide_icons: ^0.257.0
 
 dev_dependencies:

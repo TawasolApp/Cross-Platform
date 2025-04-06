@@ -228,7 +228,9 @@ class ProfileHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        provider.name ?? 'No name provided',
+                        provider.fullName.isNotEmpty
+                            ? provider.fullName
+                            : 'No name provided',
                         style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 4), // Reduced from 4

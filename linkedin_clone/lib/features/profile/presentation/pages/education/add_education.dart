@@ -54,6 +54,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final newEducation = Education(
+        
         school: _schoolController.text,
         degree: _degreeType,
         field: _fieldController.text,

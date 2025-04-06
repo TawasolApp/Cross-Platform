@@ -34,8 +34,8 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
     if (widget.certification != null) {
       final cert = widget.certification!;
       _nameController.text = cert.name;
-      _issuingOrgController.text = cert.issuingOrganization;
-      _issuingOrgPicController.text = cert.issuingOrganizationPic ?? '';
+      _issuingOrgController.text = cert.company;
+      _issuingOrgPicController.text = cert.companyPic ?? '';
       _issueDateController.text = cert.issueDate;
       _expirationDateController.text = cert.expirationDate ?? '';
       
@@ -62,8 +62,8 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final certification = Certification(
         name: _nameController.text,
-        issuingOrganization: _issuingOrgController.text,
-        issuingOrganizationPic: _issuingOrgPicController.text.isNotEmpty 
+        company: _issuingOrgController.text,
+        companyPic: _issuingOrgPicController.text.isNotEmpty 
             ? _issuingOrgPicController.text 
             : null,
         issueDate: _issueDateController.text,

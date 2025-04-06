@@ -1,31 +1,36 @@
 import 'package:equatable/equatable.dart';
 
 class Certification extends Equatable {
+  final String? certificationId; // Added ID field
   final String name;
-  final String issuingOrganization;
-  final String? issuingOrganizationPic; // Nullable field
+  final String company;
+  final String? companyPic;
   final String issueDate;
   final String? expirationDate;
 
   const Certification({
+    this.certificationId, // Added as optional
     required this.name,
-    required this.issuingOrganization,
-    this.issuingOrganizationPic, // Now nullable
+    required this.company,
+    this.companyPic,
     required this.issueDate,
     this.expirationDate,
   });
 
   Certification copyWith({
+    String? certificationId,
     String? name,
-    String? issuingOrganization,
-    String? issuingOrganizationPic,
+    String? company,
+    String? companyPic,
     String? issueDate,
     String? expirationDate,
   }) {
     return Certification(
+      certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
-      issuingOrganization: issuingOrganization ?? this.issuingOrganization,
-      issuingOrganizationPic: issuingOrganizationPic ?? this.issuingOrganizationPic,
+      company: company ?? this.company,
+      companyPic:
+          companyPic ?? this.companyPic,
       issueDate: issueDate ?? this.issueDate,
       expirationDate: expirationDate ?? this.expirationDate,
     );
@@ -33,10 +38,11 @@ class Certification extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        issuingOrganization,
-        issuingOrganizationPic, // Nullable in props
-        issueDate,
-        expirationDate,
-      ];
+    certificationId,
+    name,
+    company,
+    companyPic,
+    issueDate,
+    expirationDate,
+  ];
 }

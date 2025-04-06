@@ -83,7 +83,7 @@ class _SkillListPageState extends State<SkillListPage> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         leading: const CircleAvatar(child: Icon(Icons.code)),
         title: Text(
-          skill.skill,
+          skill.skillName,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: endorsementCount > 0
@@ -95,7 +95,7 @@ class _SkillListPageState extends State<SkillListPage> {
         trailing: PopupMenuButton<String>(
           onSelected: (value) async {
             if (value == "edit") {
-              await _editSkill(context, skill);
+              // await _editSkill(context, skill);
             } else if (value == "delete") {
               await _deleteSkill(context, index, provider);
             }
@@ -110,7 +110,7 @@ class _SkillListPageState extends State<SkillListPage> {
             ),
           ],
         ),
-        onTap: () => _editSkill(context, skill),
+        // onTap: () => _editSkill(context, skill),
       ),
     );
   }
@@ -134,26 +134,26 @@ class _SkillListPageState extends State<SkillListPage> {
     }
   }
 
-  Future<void> _editSkill(BuildContext context, Skill skill) async {
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditSkillPage(
-          skill: skill,
-        ),
-      ),
-    );
+  // Future<void> _editSkill(BuildContext context, Skill skill) async {
+  //   final result = await Navigator.push<bool>(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => EditSkillPage(
+  //         skill: skill,
+  //       ),
+  //     ),
+  //   );
 
-    if (result == true && mounted) {
-      final provider = Provider.of<ProfileProvider>(context, listen: false);
-      await _refreshSkills(provider);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Skill updated successfully")),
-        );
-      }
-    }
-  }
+  //   if (result == true && mounted) {
+  //     final provider = Provider.of<ProfileProvider>(context, listen: false);
+  //     await _refreshSkills(provider);
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text("Skill updated successfully")),
+  //       );
+  //     }
+  //   }
+  // }
 
   Future<void> _deleteSkill(
     BuildContext context,

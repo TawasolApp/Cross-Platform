@@ -35,9 +35,13 @@ class _UserProfileState extends State<UserProfile> {
     try {
       final profileProvider = context.read<ProfileProvider>();
       await profileProvider.fetchProfile();
+      if (profileProvider.profileError != null) {
+        setState(() => _error = profileProvider.profileError);
+      }
     } catch (e) {
       if (mounted) {
-        setState(() => _error = e.toString());
+        setState(() => _error = "Error: ${e.toString()}");
+        print("Profile loading error: ${e.toString()}"); // Debug logging
       }
     } finally {
       if (mounted) {
@@ -100,7 +104,10 @@ class _UserProfileState extends State<UserProfile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(color: Colors.white, child: ProfileHeader()),
+                    Container(
+                      color: Colors.white,
+                      child: const ProfileHeader(),
+                    ), // Add parentheses and const
                     const SizedBox(height: 10),
                     if (profileProvider.bio != null &&
                         profileProvider.bio!.trim().isNotEmpty)

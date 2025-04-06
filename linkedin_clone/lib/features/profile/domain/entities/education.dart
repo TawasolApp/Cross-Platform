@@ -1,27 +1,31 @@
 import 'package:equatable/equatable.dart';
 
 class Education extends Equatable {
+  final String? educationId; // Added ID field
   final String school;
   final String? schoolPic; // Nullable field for institution image URL
   final String degree;
   final String field;
   final String startDate;
   final String? endDate; // Optional if still studying
-  final String description;
   final String grade;
+  final String description;
+
 
   const Education({
+    this.educationId, // Added as optional
     required this.school,
     this.schoolPic, // Nullable
     required this.degree,
     required this.field,
     required this.startDate,
     this.endDate, // Nullable
-    required this.description,
     required this.grade,
+    required this.description,
   });
 
   Education copyWith({
+    String? educationId,
     String? school,
     String? schoolPic,
     String? degree,
@@ -32,6 +36,7 @@ class Education extends Equatable {
     String? grade,
   }) {
     return Education(
+      educationId: educationId ?? this.educationId,
       school: school ?? this.school,
       schoolPic: schoolPic ?? this.schoolPic,
       degree: degree ?? this.degree,
@@ -45,13 +50,14 @@ class Education extends Equatable {
 
   @override
   List<Object?> get props => [
-        school,
-        schoolPic, // Include in props for comparison
-        degree,
-        field,
-        startDate,
-        endDate,
-        description,
-        grade,
-      ];
+    educationId,
+    school,
+    schoolPic, // Include in props for comparison
+    degree,
+    field,
+    startDate,
+    endDate,
+    description,
+    grade,
+  ];
 }

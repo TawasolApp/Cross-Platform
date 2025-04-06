@@ -2,16 +2,18 @@ import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
 
 class CertificationModel extends Equatable {
+  final String? certificationId;
   final String name;
-  final String issuingOrganization;
-  final String? issuingOrganizationPic;
+  final String company;
+  final String? companyPic;
   final String issueDate;
   final String? expirationDate;
 
   const CertificationModel({
+    this.certificationId,
     required this.name,
-    required this.issuingOrganization,
-    this.issuingOrganizationPic,
+    required this.company,
+    this.companyPic,
     required this.issueDate,
     this.expirationDate,
   });
@@ -19,9 +21,10 @@ class CertificationModel extends Equatable {
   /// Convert to Domain Entity
   Certification toEntity() {
     return Certification(
+      certificationId: certificationId,
       name: name,
-      issuingOrganization: issuingOrganization,
-      issuingOrganizationPic: issuingOrganizationPic,
+      company: company,
+      companyPic: companyPic,
       issueDate: issueDate,
       expirationDate: expirationDate,
     );
@@ -30,9 +33,10 @@ class CertificationModel extends Equatable {
   /// Create from Domain Entity
   factory CertificationModel.fromEntity(Certification entity) {
     return CertificationModel(
+      certificationId: entity.certificationId ?? '',// Providing default empty string if null
       name: entity.name,
-      issuingOrganization: entity.issuingOrganization,
-      issuingOrganizationPic: entity.issuingOrganizationPic,
+      company: entity.company,
+      companyPic: entity.companyPic,
       issueDate: entity.issueDate,
       expirationDate: entity.expirationDate,
     );
@@ -41,9 +45,10 @@ class CertificationModel extends Equatable {
   /// Convert JSON to `CertificationModel`
   factory CertificationModel.fromJson(Map<String, dynamic> json) {
     return CertificationModel(
+      certificationId: json['_id'] as String? ?? '', // Assuming ID is optional
       name: json['name'] as String,
-      issuingOrganization: json['issuingOrganization'] as String,
-      issuingOrganizationPic: json['issuingOrganizationPic'] as String?,
+      company: json['company'] as String,
+      companyPic: json['companyPic'] as String?,
       issueDate: json['issueDate'] as String,
       expirationDate: json['expirationDate'] as String?,
     );
@@ -52,9 +57,10 @@ class CertificationModel extends Equatable {
   /// Convert `CertificationModel` to JSON
   Map<String, dynamic> toJson() {
     return {
+      '_id': certificationId,
       'name': name,
-      'issuingOrganization': issuingOrganization,
-      'issuingOrganizationPic': issuingOrganizationPic,
+      'company': company,
+      'companyPic': companyPic,
       'issueDate': issueDate,
       'expirationDate': expirationDate,
     };
@@ -68,9 +74,10 @@ class CertificationModel extends Equatable {
     String? expirationDate,
   }) {
     return CertificationModel(
+      certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
-      issuingOrganization: issuingOrganization ?? this.issuingOrganization,
-      issuingOrganizationPic: issuingOrganizationPic ?? this.issuingOrganizationPic,
+      company: company ?? this.company,
+      companyPic: companyPic ?? this.companyPic,
       issueDate: issueDate ?? this.issueDate,
       expirationDate: expirationDate ?? this.expirationDate,
     );
@@ -79,8 +86,8 @@ class CertificationModel extends Equatable {
   @override
   List<Object?> get props => [
         name,
-        issuingOrganization,
-        issuingOrganizationPic,
+        company,
+        companyPic,
         issueDate,
         expirationDate,
       ];

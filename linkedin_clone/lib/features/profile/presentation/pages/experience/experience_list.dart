@@ -44,9 +44,7 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
         }
 
         if (provider.experiences!.isEmpty) {
-          return const Center(
-            child: Text("No experiences added yet"),
-          );
+          return const Center(child: Text("No experiences added yet"));
         }
 
         return RefreshIndicator(
@@ -74,14 +72,15 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: experience.companyPicUrl != null
-            ? CircleAvatar(backgroundImage: NetworkImage(experience.companyPicUrl!))
-            : const CircleAvatar(child: Icon(Icons.business)),
+        leading:
+            experience.companyPicUrl != null
+                ? CircleAvatar(
+                  backgroundImage: NetworkImage(experience.companyPicUrl!),
+                )
+                : const CircleAvatar(child: Icon(Icons.business)),
         title: Text(
           experience.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -90,17 +89,23 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(experience.company),
+            if (experience.location != null && experience.location!.isNotEmpty)
+              Text(
+                experience.location!,
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
             Text(
               experience.endDate != null
                   ? "${experience.startDate} - ${experience.endDate}"
                   : "${experience.startDate} - Present",
               style: const TextStyle(color: Colors.grey),
             ),
-            if (experience.description.isNotEmpty)
+            if (experience.description != null &&
+                experience.description!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
-                  experience.description,
+                  experience.description!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),
@@ -118,13 +123,14 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
           },
           color: Colors.white,
           elevation: 3,
-          itemBuilder: (context) => [
-            const PopupMenuItem(value: "edit", child: Text("Edit")),
-            const PopupMenuItem(
-              value: "delete",
-              child: Text("Delete", style: TextStyle(color: Colors.red)),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(value: "edit", child: Text("Edit")),
+                const PopupMenuItem(
+                  value: "delete",
+                  child: Text("Delete", style: TextStyle(color: Colors.red)),
+                ),
+              ],
         ),
         onTap: () => _editExperience(context, experience),
       ),
@@ -134,9 +140,7 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
   Future<void> _addExperience(BuildContext context) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AddExperiencePage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AddExperiencePage()),
     );
 
     if (result == true && mounted) {
@@ -150,13 +154,14 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
     }
   }
 
-  Future<void> _editExperience(BuildContext context, Experience experience) async {
+  Future<void> _editExperience(
+    BuildContext context,
+    Experience experience,
+  ) async {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => EditExperiencePage(
-          experience: experience,
-        ),
+        builder: (context) => EditExperiencePage(experience: experience),
       ),
     );
 
@@ -178,23 +183,26 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Experience"),
-        content: const Text("Are you sure you want to remove this experience?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete Experience"),
+            content: const Text(
+              "Are you sure you want to remove this experience?",
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {
