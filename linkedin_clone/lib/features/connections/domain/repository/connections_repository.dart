@@ -1,7 +1,10 @@
 import '../entities/connections_user_entity.dart';
 
 abstract class ConnectionsRepository {
-  Future<List<ConnectionsUserEntity>> getConnectionsList(String? token);
+  Future<List<ConnectionsUserEntity>> getConnectionsList({
+    int page = 0,
+    int limit = 0,
+  });
   Future<bool> removeConnection(String userId, String? token);
   Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
     String? token,

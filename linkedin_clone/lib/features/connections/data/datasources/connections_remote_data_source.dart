@@ -8,18 +8,22 @@ import 'package:linkedin_clone/features/connections/domain/entities/connections_
 class ConnectionsRemoteDataSource {
   final http.Client client;
   final baseUrl = 'https://tawasolapp.me/api/'; //TODO: ADJUST BASE URL
-
+  final String _token =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzYiLCJlbWFpbCI6ImZsb3lfaHlhdHQ2QGhvdG1haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQzOTgyMTA1LCJleHAiOjE3NDM5ODU3MDV9.CRRBT_Y9kUTgeu4e9YEbEPQ0tYtl3_v0hBPgoQqtrSs";
   ConnectionsRemoteDataSource({required this.client});
 
   ///////////////////Get connections list
-  Future<List<ConnectionsUserEntity>> getConnectionsList(String? token) async {
+  Future<List<ConnectionsUserEntity>> getConnectionsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
       final response = await client
           .get(
-            Uri.parse('${baseUrl}connections/list'),
+            Uri.parse('${baseUrl}connections/list?page=$page&limit=$limit'),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
+              'Authorization': 'Bearer $_token',
             },
           )
           .timeout(
@@ -40,9 +44,11 @@ class ConnectionsRemoteDataSource {
           throw Exception('Unexpected response format');
         }
       } else if (response.statusCode == 500) {
-        throw Exception('getConnectionsList: 500');
+        throw Exception('ConnectionsRemoteDataSource :getConnectionsList: 500');
       } else {
-        print('\nError: ${response.statusCode}\n');
+        print(
+          '\nConnectionsRemoteDataSource :getConnectionsList: ${response.statusCode}\n',
+        );
         throw Exception('Unknown error');
       }
     } catch (e) {
@@ -103,36 +109,44 @@ class ConnectionsRemoteDataSource {
   Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
     String? token,
   ) async {
-    final response = await client
-        .get(
-          Uri.parse('${baseUrl}pending'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        )
-        .timeout(
-          Duration(seconds: 15),
-          onTimeout: () {
-            return http.Response('Request Timeout', 408);
-          },
-        );
+    try {
+      final response = await client
+          .get(
+            Uri.parse('${baseUrl}connections/pending'),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse is List<dynamic>) {
-        return jsonResponse
-            .map((json) => ConnectionsUserModel.fromJson(json))
-            .toList();
-      } else {
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
         throw Exception(
-          'Invalid JSON structure: Expected a list or an object with "connections" key.',
+          'ConnectionsRemoteDataSource :getReceivedConnectionRequestsList: 500',
         );
+      } else {
+        print(
+          '\nConnectionsRemoteDataSource :getReceivedConnectionRequestsList: ${response.statusCode}\n',
+        );
+        throw Exception('Unknown error');
       }
-    } else {
-      throw Exception(
-        'Failed to load connections, Status Code: ${response.statusCode}',
-      );
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -140,36 +154,45 @@ class ConnectionsRemoteDataSource {
   Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
     String? token,
   ) async {
-    final response = await client
-        .get(
-          Uri.parse('${baseUrl}sent'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        )
-        .timeout(
-          Duration(seconds: 15),
-          onTimeout: () {
-            return http.Response('Request Timeout', 408);
-          },
-        );
+    try {
+      print("wewaa");
+      final response = await client
+          .get(
+            Uri.parse('${baseUrl}connections/sent'),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse is List<dynamic>) {
-        return jsonResponse
-            .map((json) => ConnectionsUserModel.fromJson(json))
-            .toList();
-      } else {
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
         throw Exception(
-          'Invalid JSON structure: Expected a list or an object with "connections" key.',
+          'ConnectionsRemoteDataSource : getSentConnectionRequestsList: 500',
         );
+      } else {
+        print(
+          '\nConnectionsRemoteDataSource :getSentConnectionRequestsList: ${response.statusCode}\n',
+        );
+        throw Exception('Unknown error');
       }
-    } else {
-      throw Exception(
-        'Failed to load connections, Status Code: ${response.statusCode}',
-      );
+    } catch (e) {
+      rethrow;
     }
   }
 

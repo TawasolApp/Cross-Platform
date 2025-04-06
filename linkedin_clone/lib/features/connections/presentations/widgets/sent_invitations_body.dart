@@ -4,6 +4,7 @@ import '../provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/invitation_card.dart';
 import 'no_internet_connection.dart';
 import '../../../../core/utils/time_formatter.dart';
+import 'linkedin_iconic_button.dart'; // Adjust the path if necessary
 
 class SentInvitationsBody extends StatelessWidget {
   @override
@@ -14,23 +15,41 @@ class SentInvitationsBody extends StatelessWidget {
       builder: (context, connectionsProvider, _) {
         return RefreshIndicator(
           color: Theme.of(context).primaryColor,
-          onRefresh: () {
-            return Future(() {
-              connectionsProvider.getReceivedConnectionRequests();
-              connectionsProvider.getSentConnectionRequests();
-            });
+          onRefresh: () async {
+            {
+              await connectionsProvider.getReceivedConnectionRequests();
+              await connectionsProvider.getSentConnectionRequests();
+            }
           },
           child: Consumer<ConnectionsProvider>(
             builder: (context, provider, _) {
-              if (provider.sentConnectionRequestsList == null) {
-                return NoInternetConnection(
-                  onRetry: () {
-                    provider.getReceivedConnectionRequests();
-                    provider.getSentConnectionRequests();
-                  },
-                );
+              if (provider.isLoading) {
+                return const SizedBox();
+              } else if (provider.hasError) {
+                if (provider.error == 'Request Timeout') {
+                  return NoInternetConnection(
+                    onRetry: () {
+                      connectionsProvider.getReceivedConnectionRequests();
+                      connectionsProvider.getSentConnectionRequests();
+                    },
+                  );
+                } else {
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height:
+                          MediaQuery.of(context).size.height - kToolbarHeight,
+                      width: MediaQuery.of(context).size.width,
+                    ),
+                  );
+                }
               } else if (provider.sentConnectionRequestsList!.isEmpty) {
-                return const Center(child: Text('No sent invitations found.'));
+                return Center(
+                  child: Text(
+                    'No Sent Connection Requests',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                );
               }
               return ListView.builder(
                 itemCount: provider.sentConnectionRequestsList!.length,
@@ -38,7 +57,7 @@ class SentInvitationsBody extends StatelessWidget {
                   final request = provider.sentConnectionRequestsList![index];
                   return InvitationCard(
                     userId: request.userId,
-                    userName: request.userName,
+                    userName: request.firstName,
                     headLine: request.headLine,
                     profilePicture: request.profilePicture,
                     mutualConnections:

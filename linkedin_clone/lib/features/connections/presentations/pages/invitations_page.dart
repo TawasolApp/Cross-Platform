@@ -14,7 +14,6 @@ class InvitationsPage extends StatelessWidget {
       context,
       listen: false,
     );
-    connectionsProvider.setToken(token);
     connectionsProvider.getReceivedConnectionRequests();
     connectionsProvider.getSentConnectionRequests();
     return DefaultTabController(

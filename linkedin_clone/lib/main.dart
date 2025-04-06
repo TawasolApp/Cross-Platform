@@ -49,12 +49,8 @@ import '../features/feed/presentation/provider/feed_provider.dart';
 import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
-import 'package:provider/provider.dart';
-import 'package:linkedin_clone/core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-// import 'package:http/http.dart' as http;
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
@@ -293,10 +289,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const ConnectionsPage(
-        token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YxYWMyZTE1NzAwNjE1N2YyYjIzN2MiLCJlbWFpbCI6ImRlcm9uX2NoYW1wbGluMTJAaG90bWFpbC5jb20iLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NDM5NTA4NzksImV4cCI6MTc0Mzk1NDQ3OX0.tTFqw0or1BdldTlHjTsJbbf_z3jnJ49whdFe-OkTmFk",
-      ),
+      home: const ConnectionsPage(),
     );
   }
 }

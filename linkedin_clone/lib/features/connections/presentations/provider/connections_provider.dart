@@ -1,19 +1,51 @@
 // ignore_for_file: avoid_print
 
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
+import '../../domain/entities/connections_user_entity.dart';
 import '../../domain/usecases/get_connections_usecase.dart';
 import '../../domain/usecases/remove_connection_usecase.dart';
 import '../../domain/usecases/get_received_connection_requests_usecase.dart';
 import '../../domain/usecases/get_sent_connection_requests_usecase.dart';
 import '../../domain/usecases/accept_connection_request_usecase.dart';
-import '../../domain/usecases/accept_connection_request_usecase.dart';
 import '../../domain/usecases/ignore_connection_request_usecase.dart';
 import '../../domain/usecases/send_connection_request_usecase.dart';
-import '../../domain/entities/connections_user_entity.dart';
 
 class ConnectionsProvider with ChangeNotifier {
+  // Variables
+  List<ConnectionsUserEntity>? connectionsList;
+  List<ConnectionsUserEntity>? receivedConnectionRequestsList;
+  List<ConnectionsUserEntity>? sentConnectionRequestsList;
+
+  String? _error;
+  bool _isloading = false;
+  int _currentPage = 1;
+  // ignore: prefer_final_fields
+  bool _isBusy = false;
+  bool _hasMore = true;
+  String _activeFilter = 'Recently added';
+  String _selectedFilter = 'Recently added';
+
+  // Getters
+  String? get error => _error;
+  bool get hasError => _error != null;
+  bool get isLoading => _isloading;
+  bool get isBusy => _isBusy;
+  bool get hasMore => _hasMore;
+  int get currentPage => _currentPage;
+  String get selectedFilter => _selectedFilter;
+  String get activeFilter => _activeFilter;
+
+  // UseCases
+  final GetConnectionsUseCase getConnectionsUseCase;
+  final RemoveConnectionUseCase removeConnectionUseCase;
+  final GetReceivedConnectionRequestsUseCase
+  getReceivedConnectionRequestsUseCase;
+  final GetSentConnectionRequestsUseCase getSentConnectionRequestsUseCase;
+  final AcceptConnectionRequestUseCase acceptConnectionRequestUseCase;
+  final IgnoreConnectionRequestUseCase ignoreConnectionRequestUseCase;
+  final SendConnectionRequestUseCase sendConnectionRequestUseCase;
+
+  // Constructor
   ConnectionsProvider(
     this.getConnectionsUseCase,
     this.removeConnectionUseCase,
@@ -24,79 +56,94 @@ class ConnectionsProvider with ChangeNotifier {
     this.sendConnectionRequestUseCase,
   );
 
-  List<ConnectionsUserEntity>? connectionsList;
-  List<ConnectionsUserEntity>? receivedConnectionRequestsList;
-  List<ConnectionsUserEntity>? sentConnectionRequestsList;
-  ////Get connections usecase
-  ///
-  final GetConnectionsUseCase getConnectionsUseCase;
-
-  ////Get received Connection Requests usecase
-  ///
-
-  final GetReceivedConnectionRequestsUseCase
-  getReceivedConnectionRequestsUseCase;
-
-  ////Get sent Connection Requests usecase
-  ///
-
-  final GetSentConnectionRequestsUseCase getSentConnectionRequestsUseCase;
-
-  /////////////////////////////////////////////////
-  ///
-  ////Remove connection
-  final RemoveConnectionUseCase removeConnectionUseCase;
-
-  ////accept connection request
-
-  final AcceptConnectionRequestUseCase acceptConnectionRequestUseCase;
-
-  ////ignore connection request
-  ///
-  final IgnoreConnectionRequestUseCase ignoreConnectionRequestUseCase;
-
-  ////////////////////send connection request
-  final SendConnectionRequestUseCase sendConnectionRequestUseCase;
-
-  ///
-  ////filter
-  ///
-  String _activeFilter = 'Recently added';
-  String _selectedFilter = 'Recently added';
-
-  ///Token
-  ///
-  String? _token;
-  String? _error;
-  String? get error => _error;
-  bool get hasError => _error != null;
-  bool _isloading = false;
-  bool get isLoading => _isloading;
-
-  void setToken(String newToken) {
-    _token = newToken;
-  }
-
-  Future<void> getConnections() async {
+  // Get connections
+  Future<void> getConnections({bool isInitial = false}) async {
+    if (_isBusy) return;
     try {
       _isloading = true;
       _error = null;
-      connectionsList = await getConnectionsUseCase.call(_token);
+      if (isInitial) {
+        _currentPage = 1;
+        _hasMore = true;
+      } else {
+        _currentPage++;
+      }
+      //notifyListeners();
+      if (currentPage == 1) {
+        connectionsList = await getConnectionsUseCase.call(
+          page: _currentPage,
+          limit: 15,
+        );
+      } else {
+        final newConnectionsList = await getConnectionsUseCase.call(
+          page: _currentPage,
+          limit: 15,
+        );
+        if (newConnectionsList.isEmpty) {
+          _hasMore = false;
+        } else {
+          connectionsList!.addAll(newConnectionsList);
+        }
+      }
       sortList(_activeFilter, connectionsList);
     } catch (e) {
-      print('\n Error in connections provider: $e\n');
+      print('\nConnectionsProvider: getConnections $e\n');
       _error = e.toString();
     } finally {
       _isloading = false;
-      print('\nIs loading: $_isloading\n');
+      _isBusy = false;
+
       notifyListeners();
     }
   }
 
-  String get selectedFilter => _selectedFilter;
+  // Get received connection requests
+  Future<void> getReceivedConnectionRequests() async {
+    try {
+      _isloading = true;
+      _error = null;
 
-  String get activeFilter => _activeFilter;
+      receivedConnectionRequestsList =
+          await getReceivedConnectionRequestsUseCase.call("");
 
+      receivedConnectionRequestsList = sortList(
+        "Recently added",
+        receivedConnectionRequestsList,
+      );
+    } catch (e) {
+      print('\nConnectionsProvider: getReceivedConnectionRequests $e\n');
+      _error = e.toString();
+    } finally {
+      _isloading = false;
+      notifyListeners();
+    }
+  }
+
+  // Get sent connection requests
+  Future<void> getSentConnectionRequests() async {
+    try {
+      print("Fetching sent connection requests...");
+      _isloading = true;
+      _error = null;
+
+      sentConnectionRequestsList = await getSentConnectionRequestsUseCase.call(
+        "",
+      );
+
+      sentConnectionRequestsList = sortList(
+        "Recently added",
+        sentConnectionRequestsList,
+      );
+    } catch (e) {
+      print('\nConnectionsProvider: sentConnectionRequestsList $e\n');
+      _error = e.toString();
+    } finally {
+      _isloading = false;
+      notifyListeners();
+    }
+  }
+
+  // Sort handling
   void setFilter(String filter) {
     if (_selectedFilter != filter) {
       _selectedFilter = filter;
@@ -118,76 +165,42 @@ class ConnectionsProvider with ChangeNotifier {
     if (_activeFilter != _selectedFilter) {
       _activeFilter = _selectedFilter;
     }
+
     if (_activeFilter == 'Recently added') {
       list!.sort(
         (a, b) => DateTime.parse(b.time).compareTo(DateTime.parse(a.time)),
       );
     } else if (_activeFilter == 'Last name') {
-      list!.sort(
-        (a, b) => a.userName.compareTo(b.userName),
-      ); //TODO: Implement sorting by last name lma el backend y3ml el API doc sah
+      list!.sort((a, b) => a.lastName.compareTo(b.lastName));
     } else if (_activeFilter == 'First name') {
-      print('Sorting by first name');
-      list!.sort((a, b) => a.userName.compareTo(b.userName));
+      list!.sort((a, b) => a.firstName.compareTo(b.firstName));
     }
+
     return list;
   }
 
+  // Actions with bool returns
   Future<bool> removeConnection(String userId) async {
-    bool removed = await removeConnectionUseCase.call(userId, _token);
+    final removed = await removeConnectionUseCase.call(userId, "_token");
     await getConnections();
     return removed;
   }
 
-  Future<void> getReceivedConnectionRequests() async {
-    receivedConnectionRequestsList = await getReceivedConnectionRequestsUseCase
-        .call(_token);
-    receivedConnectionRequestsList = sortList(
-      "Recently added",
-      receivedConnectionRequestsList,
-    );
-    notifyListeners();
-  }
-
-  Future<void> getSentConnectionRequests() async {
-    receivedConnectionRequestsList = await getReceivedConnectionRequestsUseCase
-        .call(_token);
-    receivedConnectionRequestsList = sortList(
-      "Recently added",
-      receivedConnectionRequestsList,
-    );
-    notifyListeners();
-  }
-
   Future<bool> acceptConnectionRequest(String userId) async {
-    if (_token == null) {
-      throw Exception("Token cannot be null");
-    }
-    bool accepted = await acceptConnectionRequestUseCase.call(_token!, userId);
-    if (accepted == false) {
-      return accepted;
-    }
-    await getReceivedConnectionRequests();
+    final accepted = await acceptConnectionRequestUseCase.call("", userId);
+    if (accepted) await getReceivedConnectionRequests();
     return accepted;
   }
 
   Future<bool> ignoreConnectionRequest(String userId) async {
-    bool ignored = await ignoreConnectionRequestUseCase.call(_token!, userId);
-    print(ignored);
-    if (ignored == false) {
-      return ignored;
-    }
-    await getReceivedConnectionRequests();
+    final ignored = await ignoreConnectionRequestUseCase.call('', userId);
+    if (ignored) await getReceivedConnectionRequests();
     return ignored;
   }
 
   Future<bool> sendConnectionRequest(String userId) async {
-    bool sent = await sendConnectionRequestUseCase.call(_token!, userId);
-    print(sent);
-    if (sent == false) {
-      return sent;
-    }
-    await getReceivedConnectionRequests();
+    final sent = await sendConnectionRequestUseCase.call("", userId);
+    if (sent) await getReceivedConnectionRequests();
     return sent;
   }
 }

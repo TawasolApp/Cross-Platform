@@ -7,7 +7,8 @@ import '../../../../core/utils/time_formatter.dart';
 /// - User Data includes user image, name, headline, connection time, and online status
 class ConnectionCard extends StatelessWidget {
   final String userId;
-  final String userName;
+  final String firstName;
+  final String lastName;
   final String headLine;
   final String connectionTime;
   final String profilePicture;
@@ -17,7 +18,8 @@ class ConnectionCard extends StatelessWidget {
   const ConnectionCard({
     super.key,
     required this.userId,
-    required this.userName,
+    required this.firstName,
+    required this.lastName,
     required this.headLine,
     required this.connectionTime,
     required this.isOnline,
@@ -117,7 +119,7 @@ class ConnectionCard extends StatelessWidget {
                         children: [
                           /// **Name**
                           Text(
-                            userName,
+                            '$firstName $lastName',
                             style: Theme.of(context).textTheme.titleMedium,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -154,7 +156,7 @@ class ConnectionCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8.0),
                   child: PopUpMenuUser(
                     userId: userId,
-                    userName: userName,
+                    userName: '$firstName $lastName',
                     connectionsProvider: connectionsProvider,
                   ),
                 ),

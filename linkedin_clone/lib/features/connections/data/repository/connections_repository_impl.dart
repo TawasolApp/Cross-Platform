@@ -8,9 +8,15 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   ConnectionsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ConnectionsUserEntity>> getConnectionsList(String? token) async {
+  Future<List<ConnectionsUserEntity>> getConnectionsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
-      final connectionsList = await remoteDataSource.getConnectionsList(token);
+      final connectionsList = await remoteDataSource.getConnectionsList(
+        page: page,
+        limit: limit,
+      );
       return connectionsList;
     } catch (e) {
       rethrow;
@@ -34,12 +40,9 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
     try {
       final pendingList = await remoteDataSource
           .getReceivedConnectionRequestsList(token);
-      if (pendingList.isEmpty) {
-        throw Exception('No pending connection requests found');
-      }
       return pendingList;
     } catch (e) {
-      throw Exception('no connection');
+      rethrow;
     }
   }
 
@@ -51,12 +54,9 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       final sentList = await remoteDataSource.getSentConnectionRequestsList(
         token,
       );
-      if (sentList.isEmpty) {
-        throw Exception('No sent connection requests found');
-      }
       return sentList;
     } catch (e) {
-      throw Exception('no connection');
+      rethrow;
     }
   }
 

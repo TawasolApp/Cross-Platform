@@ -1,33 +1,53 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/error_dialog.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
 import 'package:provider/provider.dart';
 import '../widgets/view_connections_card.dart';
-import '../../domain/entities/connections_user_entity.dart';
 import '../provider/connections_provider.dart';
 
-class ConnectionsPage extends StatelessWidget {
-  final String token;
-  const ConnectionsPage({Key? key, required this.token}) : super(key: key);
+class ConnectionsPage extends StatefulWidget {
+  const ConnectionsPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final connectionsProvider = Provider.of<ConnectionsProvider>(
+  State<ConnectionsPage> createState() => _ConnectionsPageState();
+}
+
+class _ConnectionsPageState extends State<ConnectionsPage> {
+  late ConnectionsProvider connectionsProvider;
+  late ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    connectionsProvider = Provider.of<ConnectionsProvider>(
       context,
       listen: false,
     );
-    connectionsProvider.setToken(token);
-    connectionsProvider.getConnections();
+    _scrollController = ScrollController()..addListener(_scrollListener);
+    connectionsProvider.getConnections(isInitial: true);
+  }
 
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (!connectionsProvider.isBusy && connectionsProvider.hasMore) {
+        connectionsProvider.getConnections();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Theme.of(
-            context,
-          ).scaffoldBackgroundColor, // Directly setting background color
-
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
@@ -37,9 +57,7 @@ class ConnectionsPage extends StatelessWidget {
             Icons.arrow_back,
             color: Theme.of(context).iconTheme.color,
           ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: Text(
@@ -49,36 +67,34 @@ class ConnectionsPage extends StatelessWidget {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(42),
           child: Consumer<ConnectionsProvider>(
-            builder: (context, connectionsProvider, child) {
-              if (connectionsProvider.connectionsList == null ||
-                  connectionsProvider.connectionsList!.isEmpty ||
-                  connectionsProvider.isLoading ||
-                  connectionsProvider.hasError) {
-                return SizedBox();
-              } else {
-                return ViewConnectionsAppBar(
-                  connectionsProvider: connectionsProvider,
-                  connectionsCount: connectionsProvider.connectionsList!.length,
-                );
+            builder: (context, provider, _) {
+              if (provider.connectionsList == null ||
+                  provider.connectionsList!.isEmpty ||
+                  provider.isLoading ||
+                  provider.hasError) {
+                return const SizedBox();
               }
+              return ViewConnectionsAppBar(
+                connectionsProvider: provider,
+                connectionsCount: provider.connectionsList!.length,
+              );
             },
           ),
         ),
       ),
       body: Consumer<ConnectionsProvider>(
-        builder: (context, connectionsProvider, _) {
+        builder: (context, provider, _) {
           return RefreshIndicator(
             color: Theme.of(context).primaryColor,
-            onRefresh: () => connectionsProvider.getConnections(),
-            child: Consumer<ConnectionsProvider>(
-              builder: (context, provider, _) {
-                print('widget print ${provider.isLoading.toString()}');
+            onRefresh: () => provider.getConnections(isInitial: true),
+            child: Builder(
+              builder: (context) {
                 if (provider.isLoading) {
-                  return const SizedBox();
+                  return const Center(child: CircularProgressIndicator());
                 } else if (provider.hasError) {
                   if (provider.error == 'Request Timeout') {
                     return NoInternetConnection(
-                      onRetry: () => connectionsProvider.getConnections(),
+                      onRetry: () => provider.getConnections(isInitial: true),
                     );
                   } else {
                     return SingleChildScrollView(
@@ -91,26 +107,47 @@ class ConnectionsPage extends StatelessWidget {
                     );
                   }
                 } else if (provider.connectionsList!.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'No connections found',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                  return SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: SizedBox(
+                      height:
+                          MediaQuery.of(context).size.height - kToolbarHeight,
+                      width: double.infinity,
+                      child: Center(
+                        child: Text(
+                          'No Connections',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
                     ),
                   );
                 }
+
                 return ListView.builder(
-                  itemCount: provider.connectionsList!.length,
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: provider.connectionsList!.length + 1,
                   itemBuilder: (context, index) {
-                    final connection = provider.connectionsList![index];
-                    return ConnectionCard(
-                      userId: connection.userId,
-                      userName: connection.userName,
-                      headLine: connection.headLine,
-                      connectionTime: connection.time,
-                      isOnline: false,
-                      profilePicture: connection.profilePicture,
-                      connectionsProvider: provider,
-                    );
+                    if (index < provider.connectionsList!.length) {
+                      final connection = provider.connectionsList![index];
+                      return ConnectionCard(
+                        userId: connection.userId,
+                        firstName: connection.firstName,
+                        lastName: connection.lastName,
+                        headLine: connection.headLine,
+                        connectionTime: connection.time,
+                        isOnline: false,
+                        profilePicture: connection.profilePicture,
+                        connectionsProvider: provider,
+                      );
+                    } else {
+                      return provider.isBusy
+                          ? const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                          : const SizedBox(height: 30);
+                    }
                   },
                 );
               },

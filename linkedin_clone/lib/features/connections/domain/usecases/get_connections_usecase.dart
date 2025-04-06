@@ -6,9 +6,12 @@ class GetConnectionsUseCase {
 
   GetConnectionsUseCase(this.repository);
 
-  Future<List<ConnectionsUserEntity>> call(String? token) async {
+  Future<List<ConnectionsUserEntity>> call({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
-      return await repository.getConnectionsList(token);
+      return await repository.getConnectionsList(page: page, limit: limit);
     } catch (e) {
       rethrow;
     }
