@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import '../../domain/usecases/get_connections_usecase.dart';
 import '../../domain/usecases/remove_connection_usecase.dart';
@@ -65,15 +67,30 @@ class ConnectionsProvider with ChangeNotifier {
   ///Token
   ///
   String? _token;
+  String? _error;
+  String? get error => _error;
+  bool get hasError => _error != null;
+  bool _isloading = false;
+  bool get isLoading => _isloading;
 
   void setToken(String newToken) {
     _token = newToken;
   }
 
   Future<void> getConnections() async {
-    connectionsList = await getConnectionsUseCase.call(_token);
-    sortList(_activeFilter, connectionsList);
-    notifyListeners();
+    try {
+      _isloading = true;
+      _error = null;
+      connectionsList = await getConnectionsUseCase.call(_token);
+      sortList(_activeFilter, connectionsList);
+    } catch (e) {
+      print('\n Error in connections provider: $e\n');
+      _error = e.toString();
+    } finally {
+      _isloading = false;
+      print('\nIs loading: $_isloading\n');
+      notifyListeners();
+    }
   }
 
   String get selectedFilter => _selectedFilter;

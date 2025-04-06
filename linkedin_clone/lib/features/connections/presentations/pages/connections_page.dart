@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/error_dialog.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,7 @@ class ConnectionsPage extends StatelessWidget {
     );
     connectionsProvider.setToken(token);
     connectionsProvider.getConnections();
+
     return Scaffold(
       backgroundColor:
           Theme.of(
@@ -48,7 +50,10 @@ class ConnectionsPage extends StatelessWidget {
           preferredSize: const Size.fromHeight(42),
           child: Consumer<ConnectionsProvider>(
             builder: (context, connectionsProvider, child) {
-              if (connectionsProvider.connectionsList == null) {
+              if (connectionsProvider.connectionsList == null ||
+                  connectionsProvider.connectionsList!.isEmpty ||
+                  connectionsProvider.isLoading ||
+                  connectionsProvider.hasError) {
                 return SizedBox();
               } else {
                 return ViewConnectionsAppBar(
@@ -67,12 +72,31 @@ class ConnectionsPage extends StatelessWidget {
             onRefresh: () => connectionsProvider.getConnections(),
             child: Consumer<ConnectionsProvider>(
               builder: (context, provider, _) {
-                if (provider.connectionsList == null) {
-                  return NoInternetConnection(
-                    onRetry: () => connectionsProvider.getConnections(),
-                  );
-                } else if (provider.connectionsList!.isEmpty) {
+                print('widget print ${provider.isLoading.toString()}');
+                if (provider.isLoading) {
                   return const SizedBox();
+                } else if (provider.hasError) {
+                  if (provider.error == 'Request Timeout') {
+                    return NoInternetConnection(
+                      onRetry: () => connectionsProvider.getConnections(),
+                    );
+                  } else {
+                    return SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: SizedBox(
+                        height:
+                            MediaQuery.of(context).size.height - kToolbarHeight,
+                        width: MediaQuery.of(context).size.width,
+                      ),
+                    );
+                  }
+                } else if (provider.connectionsList!.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No connections found',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  );
                 }
                 return ListView.builder(
                   itemCount: provider.connectionsList!.length,

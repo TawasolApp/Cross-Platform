@@ -144,7 +144,12 @@ void main() {
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
+          create:
+              (_) => SettingsProvider(
+                changePasswordUseCase,
+                updateEmailUsecase,
+                deleteAccountUsecase,
+              ),
         ),
         ChangeNotifierProvider(
           create:
@@ -221,34 +226,56 @@ void main() {
                 ),
               ),
         ),
-       ChangeNotifierProvider(
-  create: (_) => ProfileProvider(
-    getProfileUseCase: GetProfileUseCase(profileRepository),
-    updateProfilePictureUseCase: UpdateProfilePictureUseCase(profileRepository),
-    deleteProfilePictureUseCase: DeleteProfilePictureUseCase(profileRepository),
-    updateCoverPictureUseCase: UpdateCoverPictureUseCase(profileRepository),
-    deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(profileRepository),
-    updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
-    updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
-    updateLocationUseCase: UpdateLocationUseCase(profileRepository),
-    updateNameUseCase: UpdateNameUseCase(profileRepository),
-    updateResumeUseCase: UpdateResumeUseCase(profileRepository),
-    updateBioUseCase: UpdateBioUseCase(profileRepository),
-    addExperienceUseCase: AddExperienceUseCase(profileRepository),
-    updateExperienceUseCase: UpdateExperienceUseCase(profileRepository),
-    deleteExperienceUseCase: DeleteExperienceUseCase(profileRepository),
-    addEducationUseCase: AddEducationUseCase(profileRepository),
-    updateEducationUseCase: UpdateEducationUseCase(profileRepository),
-    deleteEducationUseCase: DeleteEducationUseCase(profileRepository),
-    addCertificationUseCase: AddCertificationUseCase(profileRepository),
-    updateCertificationUseCase: UpdateCertificationUseCase(profileRepository),
-    deleteCertificationUseCase: DeleteCertificationUseCase(profileRepository),
-    addSkillUseCase: AddSkillUseCase(profileRepository),
-    updateSkillUseCase: UpdateSkillUseCase(profileRepository),
-    deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
-  ),
-),
-
+        ChangeNotifierProvider(
+          create:
+              (_) => ProfileProvider(
+                getProfileUseCase: GetProfileUseCase(profileRepository),
+                updateProfilePictureUseCase: UpdateProfilePictureUseCase(
+                  profileRepository,
+                ),
+                deleteProfilePictureUseCase: DeleteProfilePictureUseCase(
+                  profileRepository,
+                ),
+                updateCoverPictureUseCase: UpdateCoverPictureUseCase(
+                  profileRepository,
+                ),
+                deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(
+                  profileRepository,
+                ),
+                updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
+                updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
+                updateLocationUseCase: UpdateLocationUseCase(profileRepository),
+                updateNameUseCase: UpdateNameUseCase(profileRepository),
+                updateResumeUseCase: UpdateResumeUseCase(profileRepository),
+                updateBioUseCase: UpdateBioUseCase(profileRepository),
+                addExperienceUseCase: AddExperienceUseCase(profileRepository),
+                updateExperienceUseCase: UpdateExperienceUseCase(
+                  profileRepository,
+                ),
+                deleteExperienceUseCase: DeleteExperienceUseCase(
+                  profileRepository,
+                ),
+                addEducationUseCase: AddEducationUseCase(profileRepository),
+                updateEducationUseCase: UpdateEducationUseCase(
+                  profileRepository,
+                ),
+                deleteEducationUseCase: DeleteEducationUseCase(
+                  profileRepository,
+                ),
+                addCertificationUseCase: AddCertificationUseCase(
+                  profileRepository,
+                ),
+                updateCertificationUseCase: UpdateCertificationUseCase(
+                  profileRepository,
+                ),
+                deleteCertificationUseCase: DeleteCertificationUseCase(
+                  profileRepository,
+                ),
+                addSkillUseCase: AddSkillUseCase(profileRepository),
+                updateSkillUseCase: UpdateSkillUseCase(profileRepository),
+                deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
+              ),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -260,16 +287,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      //theme: ThemeData(primarySwatch: Colors.blue),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-
-      //routes: {'/create-post': (_) => const PostCreationPage()},
-      routerConfig: AppRouter.router,
+      home: const ConnectionsPage(
+        token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YxYWMyZTE1NzAwNjE1N2YyYjIzN2MiLCJlbWFpbCI6ImRlcm9uX2NoYW1wbGluMTJAaG90bWFpbC5jb20iLCJyb2xlIjoiY3VzdG9tZXIiLCJpYXQiOjE3NDM5NTA4NzksImV4cCI6MTc0Mzk1NDQ3OX0.tTFqw0or1BdldTlHjTsJbbf_z3jnJ49whdFe-OkTmFk",
+      ),
     );
   }
 }

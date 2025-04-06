@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:linkedin_clone/features/connections/data/models/connections_user_model.dart';
@@ -5,42 +7,46 @@ import 'package:linkedin_clone/features/connections/domain/entities/connections_
 
 class ConnectionsRemoteDataSource {
   final http.Client client;
-  final baseUrl = 'http://192.168.1.9:3000/'; //TODO: ADJUST BASE URL
+  final baseUrl = 'https://tawasolapp.me/api/'; //TODO: ADJUST BASE URL
 
   ConnectionsRemoteDataSource({required this.client});
 
   ///////////////////Get connections list
   Future<List<ConnectionsUserEntity>> getConnectionsList(String? token) async {
-    final response = await client
-        .get(
-          Uri.parse('${baseUrl}list'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        )
-        .timeout(
-          Duration(seconds: 15),
-          onTimeout: () {
-            return http.Response('Request Timeout', 408);
-          },
-        );
+    try {
+      final response = await client
+          .get(
+            Uri.parse('${baseUrl}connections/list'),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
 
-    if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      if (jsonResponse is List<dynamic>) {
-        return jsonResponse
-            .map((json) => ConnectionsUserModel.fromJson(json))
-            .toList();
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
+        throw Exception('getConnectionsList: 500');
       } else {
-        throw Exception(
-          'Invalid JSON structure: Expected a list or an object with "connections" key.',
-        );
+        print('\nError: ${response.statusCode}\n');
+        throw Exception('Unknown error');
       }
-    } else {
-      throw Exception(
-        'Failed to load connections, Status Code: ${response.statusCode}',
-      );
+    } catch (e) {
+      rethrow;
     }
   }
 

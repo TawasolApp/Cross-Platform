@@ -13,7 +13,7 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       final connectionsList = await remoteDataSource.getConnectionsList(token);
       return connectionsList;
     } catch (e) {
-      throw Exception('no connection');
+      rethrow;
     }
   }
 
