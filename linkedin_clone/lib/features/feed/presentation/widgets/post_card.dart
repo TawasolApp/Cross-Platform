@@ -1,33 +1,47 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
+import 'post_header.dart';
+import 'post_content.dart';
+import 'reaction_bar.dart';
+import 'post_footer.dart';
 
 class PostCard extends StatelessWidget {
   final PostEntity post;
 
-  const PostCard({Key? key, required this.post}) : super(key: key);
+  const PostCard({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Padding(
-        padding: EdgeInsets.all(screenWidth * 0.04),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              post.authorName,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              overflow: TextOverflow.ellipsis,
+            PostHeader(
+              profileImage: post.authorPicture ?? '',
+              authorName: post.authorName,
+              authorTitle: post.authorBio,
+              postTime: post.timestamp.toString(),
+              postId: post.id,
+              postContent: post.content,
             ),
-            const SizedBox(height: 4),
-            Text(
-              post.content,
-              style: const TextStyle(fontSize: 16),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
+            const SizedBox(height: 8),
+            PostContent(
+              content: post.content,
+              imageUrl:
+                  post.media != null && post.media!.isNotEmpty
+                      ? post.media!.first
+                      : null,
+            ),
+            const SizedBox(height: 8),
+            ReactionSummaryBar(post: post),
+            const Divider(),
+            PostFooter(
+              post: post,
+              comments: post.comments,
+              shares: post.shares,
             ),
           ],
         ),

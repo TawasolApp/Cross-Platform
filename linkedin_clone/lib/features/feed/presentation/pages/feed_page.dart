@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
@@ -36,25 +35,6 @@ class _FeedPageState extends State<FeedPage> {
       body:
           feedProvider.isLoading
               ? const Center(child: CircularProgressIndicator())
-              : feedProvider.errorMessage != null
-              ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      feedProvider.errorMessage!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        feedProvider.fetchPosts();
-                      },
-                      child: const Text("Retry"),
-                    ),
-                  ],
-                ),
-              )
               : ListView.builder(
                 padding: const EdgeInsets.only(top: 10),
                 itemCount: feedProvider.posts.length,
@@ -65,7 +45,7 @@ class _FeedPageState extends State<FeedPage> {
               ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          context.go(RouteNames.createPost);
+          context.go('/createPost');
         },
         backgroundColor: Colors.blue,
         tooltip: 'Create Post',

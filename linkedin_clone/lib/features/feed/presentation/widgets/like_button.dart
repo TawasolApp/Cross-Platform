@@ -5,13 +5,12 @@ class LikeButton extends StatelessWidget {
   final bool isLiked;
   final String postId;
 
-  const LikeButton({Key? key, required this.isLiked, required this.postId})
-    : super(key: key);
+  const LikeButton({super.key, required this.isLiked, required this.postId});
 
   void _showReactionPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => ReactionPopup(postId: postId),
+      builder: (_) => ReactionPopup(postId: postId),
     );
   }
 
@@ -19,8 +18,6 @@ class LikeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => _showReactionPopup(context),
-      onLongPress:
-          () => _showReactionPopup(context), // Long press triggers the popup
       child: Row(
         children: [
           Icon(

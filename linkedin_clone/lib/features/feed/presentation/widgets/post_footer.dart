@@ -1,74 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'like_button.dart';
 import '../../domain/entities/post_entity.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class PostFooter extends StatelessWidget {
-  //final int likes;
+  final PostEntity post;
   final int comments;
   final int shares;
-  final PostEntity post;
 
   const PostFooter({
     super.key,
-    //required this.likes,
+    required this.post,
     required this.comments,
     required this.shares,
-    required this.post,
   });
-
-  //const PostFooter({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    bool isLiked = post.reactType == 'Like';
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        // Stats row: Like count, comments, shares
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  const Icon(Icons.thumb_up, color: Colors.blue, size: 14),
-                  const SizedBox(width: 4),
-                  Text('${post.reactCounts}'),
-                ],
-              ),
-              Text('${post.comments} Comments • ${post.shares} Shares'),
-            ],
-          ),
-        ),
-
-        const Divider(height: 10),
-
-        // Action buttons row (icon + label)
+        LikeButton(isLiked: isLiked, postId: post.id),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildAction(FontAwesomeIcons.thumbsUp, "Like"),
-            _buildAction(FontAwesomeIcons.comment, "Comment"),
-            _buildAction(FontAwesomeIcons.retweet, "Repost"),
-            _buildAction(FontAwesomeIcons.paperPlane, "Send"),
+            const Icon(Icons.comment, color: Colors.grey, size: 20),
+            const SizedBox(width: 4),
+            Text("Comment", style: TextStyle(color: Colors.grey[600])),
           ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildAction(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FaIcon(icon, color: const Color.fromARGB(255, 78, 78, 78), size: 16),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Color.fromARGB(255, 78, 78, 78),
-            fontSize: 12,
-          ),
+        Row(
+          children: [
+            const Icon(Icons.loop, color: Colors.grey, size: 20),
+            const SizedBox(width: 4),
+            Text("Repost", style: TextStyle(color: Colors.grey[600])),
+          ],
+        ),
+        Row(
+          children: [
+            const Icon(Icons.send, color: Colors.grey, size: 20),
+            const SizedBox(width: 4),
+            Text("Send", style: TextStyle(color: Colors.grey[600])),
+          ],
         ),
       ],
     );

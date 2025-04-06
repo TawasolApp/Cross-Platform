@@ -4,13 +4,12 @@ import '../../domain/entities/post_entity.dart';
 class ReactionSummaryBar extends StatelessWidget {
   final PostEntity post;
 
-  const ReactionSummaryBar({Key? key, required this.post}) : super(key: key);
+  const ReactionSummaryBar({super.key, required this.post});
 
   @override
   Widget build(BuildContext context) {
     int totalReactions =
-        post.reactCounts?.values.fold(0, (sum, count) => sum! + (count ?? 0)) ??
-        0;
+        post.reactCounts?.values.fold(0, (sum, count) => sum! + count) ?? 0;
 
     return Row(
       children: [
