@@ -21,6 +21,8 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <meta-data
+              android:name="com.google.android.gms.auth.api.credentials.ClientId"
+              android:value="946817335569-d75dbdgvre907lfo8splmpukmhkvjh8n.apps.googleusercontent.com" 
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
@@ -17,6 +18,7 @@ class UpdateEmailPage extends StatelessWidget {
     String newEmail = '';
     String password = '';
     final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
+    final RegisterProvider  registerProvider = Provider.of<RegisterProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,16 +65,46 @@ class UpdateEmailPage extends StatelessWidget {
                   if (!context.mounted) return;
 
                   if (success) {
-                    
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Email updated successfully')),
+                      const SnackBar(content: Text('Email updated successfully. Please verify your email.')),
                     );
-                    //context.go(RouteNames.signInAndSecurity);
+
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text('Verify Your Email'),
+                          content: const Text('A verification email has been sent to your new email address. Please verify your email to complete the update.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Close'),
+                            ),
+                            TextButton(
+                              onPressed: () async {
+                                final resendSuccess = await registerProvider.resendVerificationEmail(newEmail);
+                                Navigator.of(context).pop();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(resendSuccess
+                                        ? 'Verification email resent successfully.'
+                                        : 'Failed to resend verification email.'),
+                                  ),
+                                );
+                              },
+                              child: const Text('Resend Email'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Failed to update email')),
                     );
-                  } 
+                  }
                 },
               ),
           ],
@@ -80,7 +112,4 @@ class UpdateEmailPage extends StatelessWidget {
       ),
     );
   }
-
-
-  
 }

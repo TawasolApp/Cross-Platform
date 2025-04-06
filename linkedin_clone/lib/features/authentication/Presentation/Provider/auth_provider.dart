@@ -79,17 +79,32 @@ Future<bool> forgotPassword(String email)async {
 
 Future<bool> loginWithGoogle() async {
   try {
+    print("Starting Google sign-in process...");
     final googleUser = await GoogleSignIn().signIn();
-    if (googleUser == null) return false;
+    if (googleUser == null) {
+      print("Google sign-in canceled by user.");
+      return false;
+    }
 
+    print("Google user signed in: ${googleUser.displayName}");
     final googleAuth = await googleUser.authentication;
     final idToken = googleAuth.idToken;
 
-    if (idToken == null) return false;
+    if (idToken == null) {
+      print("Google sign-in failed: idToken is null.");
+      return false;
+    }
 
+    print("Google idToken retrieved successfully.");
     final result = await loginUseCase.loginWithGoogle(idToken);
 
-    return result.isRight();
+    if (result.isRight()) {
+      print("Google login successful.");
+      return true;
+    } else {
+      print("Google login failed.");
+      return false;
+    }
   } catch (e) {
     print("Google sign-in error: $e");
     return false;
