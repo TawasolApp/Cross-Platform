@@ -24,6 +24,7 @@ import 'package:linkedin_clone/features/connections/data/datasources/connections
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_followers_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
@@ -32,6 +33,7 @@ import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignor
 
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/followers_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/following_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
@@ -244,6 +246,13 @@ void main() {
                     ),
                   ),
                 ),
+                GetFollowersListUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
               ),
         ),
         ChangeNotifierProvider(
@@ -313,7 +322,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const FollowingPage(),
+      home: const FollowersPage(),
     );
   }
 }

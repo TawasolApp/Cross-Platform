@@ -25,12 +25,12 @@ class NetworksProvider with ChangeNotifier {
 
   GetFollowingListUseCase getFollowingListUseCase;
   UnfollowUserUseCase unfollowUseCase;
-  //GetFollowersListUseCase getFollowersListUseCase;
+  GetFollowersListUseCase getFollowersListUseCase;
 
   NetworksProvider(
     this.getFollowingListUseCase,
     this.unfollowUseCase,
-    //this.getFollowersListUseCase,
+    this.getFollowersListUseCase,
   );
 
   Future<void> getFollowingList({bool isInitial = false}) async {
@@ -85,12 +85,12 @@ class NetworksProvider with ChangeNotifier {
         _currentPage++;
       }
       if (_currentPage == 1) {
-        followersList = await getFollowingListUseCase.call(
+        followersList = await getFollowersListUseCase.call(
           page: _currentPage,
           limit: 15,
         );
       } else {
-        final newFollowersList = await getFollowingListUseCase.call(
+        final newFollowersList = await getFollowersListUseCase.call(
           page: _currentPage,
           limit: 15,
         );

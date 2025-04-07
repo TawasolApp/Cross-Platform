@@ -182,7 +182,7 @@ class ConnectionsRemoteDataSource {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-
+        print('jsonResponse: $jsonResponse');
         if (jsonResponse is List<dynamic>) {
           return jsonResponse
               .map((json) => ConnectionsUserModel.fromJson(json))
@@ -228,8 +228,6 @@ class ConnectionsRemoteDataSource {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        print('jsonResponse: ${jsonResponse}');
-
         if (jsonResponse is List<dynamic>) {
           return jsonResponse
               .map((json) => ConnectionsUserModel.fromJson(json))

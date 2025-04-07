@@ -15,10 +15,10 @@ class ConnectionsUserModel extends ConnectionsUserEntity {
     return ConnectionsUserModel(
       userId: json['userId'] ?? '0',
       firstName: json['firstName'] ?? 'Unknown',
-      lastName: json['lastName'] ?? 'Unknown',
+      lastName: json['lastName'] ?? '',
       profilePicture: json['profilePicture'] ?? 'notavailable',
-      headLine: json['headline'] ?? 'Unknown',
-      time: json['createdAt'] ?? 'Unknown',
+      headLine: json['headline'] ?? '',
+      time: json['createdAt'] ?? '',
       //  isOnline: json['connectionStatus']  ?? false,
     );
   }

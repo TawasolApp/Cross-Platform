@@ -8,14 +8,14 @@ import 'package:provider/provider.dart';
 import '../widgets/view_connections_card.dart';
 import '../provider/networks_provider.dart';
 
-class FollowingPage extends StatefulWidget {
-  const FollowingPage({Key? key}) : super(key: key);
+class FollowersPage extends StatefulWidget {
+  const FollowersPage({Key? key}) : super(key: key);
 
   @override
-  State<FollowingPage> createState() => _FollowingPageState();
+  State<FollowersPage> createState() => _FollowingPageState();
 }
 
-class _FollowingPageState extends State<FollowingPage> {
+class _FollowingPageState extends State<FollowersPage> {
   late NetworksProvider networksProvider;
   late ScrollController _scrollController;
 
@@ -24,14 +24,14 @@ class _FollowingPageState extends State<FollowingPage> {
     super.initState();
     networksProvider = Provider.of<NetworksProvider>(context, listen: false);
     _scrollController = ScrollController()..addListener(_scrollListener);
-    networksProvider.getFollowingList(isInitial: true);
+    networksProvider.getFollowersList(isInitial: true);
   }
 
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
       if (!networksProvider.isBusy && networksProvider.hasMore) {
-        networksProvider.getFollowingList();
+        networksProvider.getFollowersList();
       }
     }
   }
@@ -58,16 +58,13 @@ class _FollowingPageState extends State<FollowingPage> {
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
-          'People I Follow',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
+        title: Text('Followers', style: Theme.of(context).textTheme.titleLarge),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(42),
           child: Consumer<NetworksProvider>(
             builder: (context, provider, _) {
-              if (provider.followingList == null ||
-                  provider.followingList!.isEmpty ||
+              if (provider.followersList == null ||
+                  provider.followersList!.isEmpty ||
                   provider.isLoading ||
                   provider.hasError) {
                 return const SizedBox();
@@ -86,7 +83,7 @@ class _FollowingPageState extends State<FollowingPage> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                            '${provider.followingList!.length} people',
+                            '${provider.followersList!.length} people',
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                         ),
@@ -108,11 +105,10 @@ class _FollowingPageState extends State<FollowingPage> {
         builder: (context, provider, _) {
           return RefreshIndicator(
             color: Theme.of(context).primaryColor,
-            onRefresh: () => provider.getFollowingList(isInitial: true),
+            onRefresh: () => provider.getFollowersList(isInitial: true),
             child: Builder(
               builder: (context) {
                 if (provider.isLoading) {
-                  print('FollowingPage: Loading...');
                   return Center(
                     child: CircularProgressIndicator(
                       color: Theme.of(context).primaryColor,
@@ -121,7 +117,7 @@ class _FollowingPageState extends State<FollowingPage> {
                 } else if (provider.hasError) {
                   if (provider.error == 'Request Timeout') {
                     return NoInternetConnection(
-                      onRetry: () => provider.getFollowingList(isInitial: true),
+                      onRetry: () => provider.getFollowersList(isInitial: true),
                     );
                   } else {
                     return SingleChildScrollView(
@@ -133,7 +129,7 @@ class _FollowingPageState extends State<FollowingPage> {
                       ),
                     );
                   }
-                } else if (provider.followingList!.isEmpty) {
+                } else if (provider.followersList!.isEmpty) {
                   return SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
                     child: SizedBox(
@@ -142,7 +138,7 @@ class _FollowingPageState extends State<FollowingPage> {
                       width: double.infinity,
                       child: Center(
                         child: Text(
-                          'There are no people you follow',
+                          'No Followers',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),
@@ -153,10 +149,10 @@ class _FollowingPageState extends State<FollowingPage> {
                 return ListView.builder(
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: provider.followingList!.length + 1,
+                  itemCount: provider.followersList!.length + 1,
                   itemBuilder: (context, index) {
-                    if (index < provider.followingList!.length) {
-                      final connection = provider.followingList![index];
+                    if (index < provider.followersList!.length) {
+                      final connection = provider.followersList![index];
                       return FollowCard(
                         userId: connection.userId,
                         firstName: connection.firstName,
@@ -165,7 +161,7 @@ class _FollowingPageState extends State<FollowingPage> {
                         isOnline: false,
                         profilePicture: connection.profilePicture,
                         networksProvider: provider,
-                        followingPage: true,
+                        followingPage: false,
                       );
                     } else {
                       return provider.isBusy

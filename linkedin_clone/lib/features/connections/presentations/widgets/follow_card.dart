@@ -12,6 +12,7 @@ class FollowCard extends StatelessWidget {
   final String profilePicture;
   final bool isOnline;
   final NetworksProvider networksProvider;
+  final bool followingPage; // TODO: Change to false when not following
 
   const FollowCard({
     super.key,
@@ -22,6 +23,7 @@ class FollowCard extends StatelessWidget {
     required this.isOnline,
     required this.profilePicture,
     required this.networksProvider,
+    required this.followingPage,
   });
 
   @override
@@ -137,23 +139,29 @@ class FollowCard extends StatelessWidget {
                       ),
 
                       /// **Following Button**
-                      TextButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => UnfollowDialog(
-                                  firstName: firstName,
-                                  lastName: lastName,
-                                  networksProvider: networksProvider,
-                                  userId: userId,
+                      Builder(
+                        builder: (context) {
+                          return followingPage
+                              ? TextButton(
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => UnfollowDialog(
+                                          firstName: firstName,
+                                          lastName: lastName,
+                                          networksProvider: networksProvider,
+                                          userId: userId,
+                                        ),
+                                  );
+                                },
+                                child: Text(
+                                  'Following',
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
-                          );
+                              )
+                              : SizedBox();
                         },
-                        child: Text(
-                          'Following',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
                       ),
                     ],
                   ),
