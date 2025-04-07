@@ -20,6 +20,7 @@ class EmailVerificationPage extends StatelessWidget {
     final registerProvider = Provider.of<RegisterProvider>(context, listen: false);
     final email = registerProvider.email;
     final password = registerProvider.password;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -27,6 +28,19 @@ class EmailVerificationPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // === BACK BUTTON (Arrow Only) ===
+              GestureDetector(
+                onTap: () {
+                  context.pop();
+                },
+                child: Icon(
+                  Icons.arrow_back,
+                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
               Image.asset(
                 'assets/images/linkedin_logo.png',
                 height: 25,
@@ -74,25 +88,25 @@ class EmailVerificationPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: PrimaryButton(
-                text: "Sign in",
-                onPressed: () async {
-                  final success = await authProvider.login(email!, password!);
-                  if (!context.mounted) return;
+                  text: "Sign in",
+                  onPressed: () async {
+                    final success = await authProvider.login(email!, password!);
+                    if (!context.mounted) return;
 
-                  if (success) {
-                    context.go(RouteNames.main);
-                  } else {
-                    showModalBottomSheet(
-                      context: context,
-                      backgroundColor: Colors.transparent,
-                      isScrollControlled: true,
-                      builder: (context) => const CustomAuthErrorDialog(
-                        message: "Please verify your email before continuing",
-                      ),
-                    );
-                  }
-                },
-              ),
+                    if (success) {
+                      context.go(RouteNames.main);
+                    } else {
+                      showModalBottomSheet(
+                        context: context,
+                        backgroundColor: Colors.transparent,
+                        isScrollControlled: true,
+                        builder: (context) => const CustomAuthErrorDialog(
+                          message: "Please verify your email before continuing",
+                        ),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),

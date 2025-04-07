@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Pages/add_name_page.dart';
 import 'package:linkedin_clone/features/authentication/presentation/widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/presentation/widgets/social_login_buttons.dart';
 import '../widgets/auth_footer.dart';
@@ -57,7 +58,12 @@ class OnboardingPage extends StatelessWidget {
                 PrimaryButton(
                   text: "Agree & Join",
                   onPressed: () {
-                    context.go(RouteNames.addName);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddNamePage(), // Replace with your target page
+                      ),
+                    );
                   },
                 ),
                 SizedBox(height: 10),

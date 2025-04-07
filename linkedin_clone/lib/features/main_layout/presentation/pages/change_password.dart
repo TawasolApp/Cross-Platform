@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
-import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -68,13 +67,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    String currentPassword = '';
-    String newPassword = '';
-    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Change password'),
+        title: const Text('Change Password'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go(RouteNames.signInAndSecurity),
@@ -86,98 +83,102 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Create a new password that is at least 8 characters long.',
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => _showPasswordStrengthDialog(context),
-              child: Row(
-                children: const [
-                  Icon(Icons.shield_outlined, color: Color(0xFF0073B1)),
-                  SizedBox(width: 8),
-                  Text(
-                    'What makes a strong password?',
-                    style: TextStyle(color: Color(0xFF0073B1)),
-                  ),
-                ],
+      body: SingleChildScrollView( // Wrap the body with SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Create a new password that is at least 8 characters long.',
               ),
-            ),
-            const SizedBox(height: 20),
-            _buildPasswordField('Type your current password', _showCurrentPassword, (value) {
-              setState(() {
-                _showCurrentPassword = value;
-              });
-            }),
-            const SizedBox(height: 10),
-            _buildPasswordField('Type your new password', _showNewPassword, (value) {
-              setState(() {
-                _showNewPassword = value;
-              });
-            }),
-            const SizedBox(height: 10),
-            _buildPasswordField('Retype your new password', _showConfirmPassword, (value) {
-              setState(() {
-                _showConfirmPassword = value;
-              });
-            }),
-            const SizedBox(height: 20),
-            CheckboxListTile(
-              title: const Text(
-                'Require all devices to sign in with the new password',
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () => _showPasswordStrengthDialog(context),
+                child: Row(
+                  children: const [
+                    Icon(Icons.shield_outlined, color: Color(0xFF0073B1)),
+                    SizedBox(width: 8),
+                    Text(
+                      'What makes a strong password?',
+                      style: TextStyle(color: Color(0xFF0073B1)),
+                    ),
+                  ],
+                ),
               ),
-              value: _requireSignIn,
-              onChanged: (value) {
+              const SizedBox(height: 20),
+              _buildPasswordField('Type your current password', _showCurrentPassword, (value) {
                 setState(() {
-                  _requireSignIn = value ?? true;
+                  _showCurrentPassword = value;
                 });
-              },
-            ),
-            const SizedBox(height: 20),
-            PrimaryButton(
+              }, onChanged: settingsProvider.setCurrentPassword),
+              const SizedBox(height: 10),
+              _buildPasswordField('Type your new password', _showNewPassword, (value) {
+                setState(() {
+                  _showNewPassword = value;
+                });
+              }, onChanged: settingsProvider.setNewPassword),
+              const SizedBox(height: 10),
+              _buildPasswordField('Retype your new password', _showConfirmPassword, (value) {
+                setState(() {
+                  _showConfirmPassword = value;
+                });
+              }, onChanged: settingsProvider.setNewPassword),
+              const SizedBox(height: 20),
+              CheckboxListTile(
+                title: const Text(
+                  'Require all devices to sign in with the new password',
+                ),
+                value: _requireSignIn,
+                onChanged: (value) {
+                  setState(() {
+                    _requireSignIn = value ?? true;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              PrimaryButton(
                 text: "Save Changes",
                 onPressed: () async {
-                  final success = await settingsProvider.changePassword(currentPassword, newPassword);
+                  final success = await settingsProvider.changePassword(
+                    settingsProvider.currentPasswordValue,
+                    settingsProvider.newPasswordValue,
+                  );
                   if (!context.mounted) return;
 
                   if (success) {
-                    
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Password updated successfully')),
                     );
-                    //context.go(RouteNames.signInAndSecurity);
+                    context.go(RouteNames.signInAndSecurity);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to update Password')),
+                      SnackBar(content: Text('Failed to update password: ${settingsProvider.errorMessage}')),
                     );
-                  } 
+                  }
                 },
               ),
-            const SizedBox(height: 20),
-            GestureDetector(
-              onTap: () {
-                // Navigate to forgot password page
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
-              },
-              child: const Text(
-                'Forgot Password',
-                style: TextStyle(color: Color(0xFF0073B1)),
+              const SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
+                },
+                child: const Text(
+                  'Forgot Password',
+                  style: TextStyle(color: Color(0xFF0073B1)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildPasswordField(String hint, bool showText, ValueChanged<bool> onToggle) {
+  Widget _buildPasswordField(String hint, bool showText, ValueChanged<bool> onToggle, {required ValueChanged<String> onChanged}) {
     return TextField(
       obscureText: !showText,
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: hint,
         suffixIcon: GestureDetector(

@@ -12,11 +12,7 @@ class UpdateEmailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    String currentEmail = '';
-    String newEmail = '';
-    String password = '';
-    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,47 +36,42 @@ class UpdateEmailPage extends StatelessWidget {
             const Text('Update your email address'),
             CustomTextField(
               keyboardType: TextInputType.emailAddress,
-              hintText: 'Current Email',
-              onChanged: (value) => currentEmail = value,
-            ),
-            CustomTextField(
-              keyboardType: TextInputType.emailAddress,
               hintText: 'New Email',
-              onChanged: (value) => newEmail = value,
+              onChanged: settingsProvider.setEmail, // Directly update the provider
             ),
             const SizedBox(height: 10),
             CustomTextField(
               keyboardType: TextInputType.visiblePassword,
               hintText: 'Password',
               isPassword: true,
-              onChanged: (value) => password = value,
+              onChanged: settingsProvider.setPassword, // Directly update the provider
             ),
             const SizedBox(height: 20),
-              PrimaryButton(
-                text: "Save Changes",
-                onPressed: () async {
-                  final success = await settingsProvider.updateEmail(newEmail, password);
-                  if (!context.mounted) return;
+            PrimaryButton(
+              text: "Save Changes",
+              onPressed: () async {
+                final success = await settingsProvider.updateEmail(
+                  settingsProvider.newEmailValue,
+                  settingsProvider.passwordValue,
+                );
 
-                  if (success) {
-                    
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Email updated successfully')),
-                    );
-                    //context.go(RouteNames.signInAndSecurity);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to update email')),
-                    );
-                  } 
-                },
-              ),
+                if (!context.mounted) return;
+
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Email updated successfully')),
+                  );
+                  context.go(RouteNames.signInAndSecurity);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to update email: ${settingsProvider.errorMessage}')),
+                  );
+                }
+              },
+            ),
           ],
         ),
       ),
     );
   }
-
-
-  
 }

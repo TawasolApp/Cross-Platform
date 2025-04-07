@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Pages/add_email_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
@@ -29,6 +30,21 @@ class AddNamePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 12),
+
+              // === BACK BUTTON (Arrow Only) ===
+              GestureDetector(
+                onTap: () {
+                  context.pop();
+                },
+                child: Icon(
+                  Icons.arrow_back,
+                  color: isDarkMode ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
               Image.asset(
                 'assets/images/linkedin_logo.png',
                 height: 25,
@@ -60,8 +76,13 @@ class AddNamePage extends StatelessWidget {
                 text: "Continue",
                 onPressed: () {
                   if (provider.canContinueFromName) {
-                    context.go(RouteNames.addEmail);
-                  }else{
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddEmailPasswordPage(), // Replace 'NextPage' with your target page widget
+                      ),
+                    );
+                  } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Please enter both first and last name."),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -11,6 +14,8 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final regProvider = Provider.of<RegisterProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -78,9 +83,13 @@ class SettingsPage extends StatelessWidget {
           // Notifications
           ListTile(
             leading: const Icon(Icons.notifications),
-            title: const Text("Notifications"),
+            title: const Text("Logout"),
             onTap: () {
-              // Navigate to Notifications Page
+              // Navigate to Logout Page
+              authProvider.Logout();
+              regProvider.reset();
+              
+              context.go(RouteNames.onboarding);
             },
           ),
            ListTile(

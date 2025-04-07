@@ -20,13 +20,43 @@ SettingsProvider(this.changePasswordUseCase,this.updateEmailUsecase,this.deleteA
 
 String? _errorMessage;
 String? _email;
+String newPassword = '';
+String currentPassword = '';
+String password = '';
+String newEmail = '';
+
 
 
 String? get errorMessage => _errorMessage;
 String? get email => _email;
+String get newPasswordValue => newPassword;
+String get currentPasswordValue => currentPassword;
+String get passwordValue => password;
+String get newEmailValue => newEmail;
+
+
+  void setErrorMessage(String value) {
+    _errorMessage = value;
+    notifyListeners();
+  }
+
+  void setNewPassword(String value) {
+    newPassword = value;
+    notifyListeners();
+  }
+
+  void setCurrentPassword(String value) {
+    currentPassword = value;
+    notifyListeners();
+  }
+
+  void setPassword(String value) {
+    password = value;
+    notifyListeners();
+  }
 
 void setEmail(String value) {
-    _email = value;
+    newEmail = value;
     notifyListeners();
   }
 
@@ -78,7 +108,7 @@ void setEmail(String value) {
 
     Future<bool> deleteAccount(String email,String password) async { 
     
-    final result = await changePasswordUseCase.call(email, password);
+    final result = await deleteAccountUsecase.call(email, password);
 
     return result.fold(
       (failure){

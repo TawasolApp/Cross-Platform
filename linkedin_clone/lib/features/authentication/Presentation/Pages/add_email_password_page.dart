@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_verification_page.dart.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
@@ -24,6 +25,20 @@ class AddEmailPasswordPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 12),
+
+              // === BACK BUTTON (Arrow Only) ===
+              GestureDetector(
+                onTap: () {
+                  context.pop();
+                },
+                child: Icon(
+                  Icons.arrow_back,
+                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
               Image.asset(
                 'assets/images/linkedin_logo.png',
                 height: 25,
@@ -95,49 +110,54 @@ class AddEmailPasswordPage extends StatelessWidget {
               const SizedBox(height: 8),
 
               // === CONTINUE BUTTON ===
-          PrimaryButton(
-            text: "Continue",
-            onPressed: () async {
-              if (!provider.showPasswordStep) {
-                if (provider.isValidEmail) {
-                  provider.showPasswordInput();
-                }else{
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please enter a valid email."),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
-              } else {
-                if (provider.isValidPassword) {
-                  final email = provider.email;
-                  final password = provider.password;
-                  final firstName = provider.firstName;
-                  final lastName = provider.lastName;
-
-                  final success = await provider.register(firstName!, lastName!, email!, password!, "test-token");
-
-                  if (!context.mounted) return;
-
-                  if (success) {
-                    context.go(RouteNames.verifyEmail);
+              PrimaryButton(
+                text: "Continue",
+                onPressed: () async {
+                  if (!provider.showPasswordStep) {
+                    if (provider.isValidEmail) {
+                      provider.showPasswordInput();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Please enter a valid email."),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Registration failed.")),
+                    if (provider.isValidPassword) {
+                      final email = provider.email;
+                      final password = provider.password;
+                      final firstName = provider.firstName;
+                      final lastName = provider.lastName;
+
+                      final success = await provider.register(firstName!, lastName!, email!, password!, "test-token");
+
+                      if (!context.mounted) return;
+
+                      if (success) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EmailVerificationPage(), // Replace with your target page
+                      ),
                     );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Registration failed.")),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Password must be 6+ characters."),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
                   }
-                }else{
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Password must be 6+ characters."),
-                      duration: Duration(seconds: 2),
-                    ),
-                  );
-                }
-              }
-            },
-          ),
+                },
+              ),
 
               const SizedBox(height: 12),
 

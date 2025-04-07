@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Entities/user_entity.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/forgot_password_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/login_usecase.dart';
@@ -48,6 +50,7 @@ Future<bool> login(String email, String password) async {
       return false;
     },
     (userEntity) {
+      _email = email;
       setUserEntity(userEntity);
       _isLoading = false;
       notifyListeners();
@@ -95,6 +98,30 @@ Future<bool> loginWithGoogle() async {
     return false;
   }
 }
+
+  Future<void> Logout() async{
+
+    try{
+      await TokenService.removeToken();
+      await TokenService.removeRefreshToken();
+      clearUserData();
+      notifyListeners();
+
+
+    }
+    catch(e){
+      print("Logout error: $e");
+    }
+
+  }
+  void clearUserData() {
+    _userEntity = null;
+    _email = null;
+    _errorMessage = null;
+    _isLoading = false;
+
+    notifyListeners();
+  }
 
 }
 
