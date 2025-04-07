@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:provider/provider.dart';
 import '../widgets/post_creation_header.dart';
 import '../widgets/post_creation_textfield.dart';
@@ -14,6 +12,7 @@ class PostCreationPage extends StatefulWidget {
   final String? authorTitle;
   final String? authorImage;
   final String? visibility;
+
   const PostCreationPage({
     super.key,
     this.initialContent,
@@ -58,61 +57,79 @@ class PostCreationPageState extends State<PostCreationPage> {
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
-    final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text(""),
+        title: const Text("Create Post"),
         actions: [
           TextButton(
             onPressed:
                 _isPostCreationButtonActive
                     ? () async {
                       final content = _postCreationController.text.trim();
-                      if (widget.postId != null) {
-                        await feedProvider.editPost(
-                          postId: widget.postId!,
-                          content: content,
-                        );
-                        // ignore: use_build_context_synchronously
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Post updated successfully'),
-                          ),
-                        );
+                      try {
+                        if (widget.postId != null) {
+                          // Editing existing post
+                          await feedProvider.editPost(
+                            postId: widget.postId!,
+                            content: content,
+                            visibility: feedProvider.visibility,
+                          );
+                          if (feedProvider.errorMessage != null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(feedProvider.errorMessage!),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Post updated successfully!'),
+                                ),
+                              );
+                              Navigator.pop(context, true); // Return success
+                            }
+                          }
+                        } else {
+                          // Creating a new post
+                          await feedProvider.createPost(
+                            content: content,
+                            visibility: feedProvider.visibility,
+                          );
+                          if (feedProvider.errorMessage != null) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(feedProvider.errorMessage!),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Post created successfully!'),
+                                ),
+                              );
+                              Navigator.pop(context, true); // Return success
+                            }
+                          }
+                        }
+                      } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Post updated successfully'),
+                              content: Text(
+                                'An error occurred while saving the post.',
+                              ),
+                              backgroundColor: Colors.red,
                             ),
                           );
-                          context.go(RouteNames.main);
-                        }
-                        //context.go(RouteNames.main);
-                      } else {
-                        feedProvider.createPost(
-                          content: content,
-                          visibility: feedProvider.visibility,
-                        );
-
-                        if (feedProvider.errorMessage != null) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(feedProvider.errorMessage!),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        } else {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Post created successfully!'),
-                              ),
-                            );
-                            context.go(RouteNames.main);
-                          }
                         }
                       }
                     }

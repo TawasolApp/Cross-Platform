@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
+import 'create_post_page.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -17,7 +17,9 @@ class _FeedPageState extends State<FeedPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-      feedProvider.fetchPosts();
+      if (feedProvider.posts.isEmpty) {
+        feedProvider.fetchPosts();
+      }
     });
   }
 
@@ -44,12 +46,22 @@ class _FeedPageState extends State<FeedPage> {
                 },
               ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.go('/createPost');
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const PostCreationPage()),
+          );
+          if (result == true) {
+            final feedProvider = Provider.of<FeedProvider>(
+              context,
+              listen: false,
+            );
+            await feedProvider.fetchPosts();
+          }
         },
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.white,
         tooltip: 'Create Post',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, color: Colors.blue),
       ),
     );
   }

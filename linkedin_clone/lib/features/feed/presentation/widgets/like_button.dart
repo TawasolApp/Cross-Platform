@@ -10,7 +10,8 @@ class LikeButton extends StatelessWidget {
   void _showReactionPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (_) => ReactionPopup(postId: postId),
+      builder:
+          (_) => ReactionPopup(postId: postId, onReactionSelected: (String) {}),
     );
   }
 

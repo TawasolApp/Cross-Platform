@@ -17,18 +17,19 @@ class CommentModel extends CommentEntity {
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
-      id: json['id'],
-      postId: json['postId'],
-      authorId: json['authorId'],
-      authorName: json['authorName'],
-      authorPicture: json['authorPicture'],
-      authorBio: json['authorBio'],
-      content: json['content'],
-      taggedUsers: List<String>.from(json['tagged'] ?? []),
+      id: json['id'] ?? '',
+      postId: json['postId'] ?? '',
+      authorId: json['authorId'] ?? '',
+      authorName: json['authorName'] ?? '',
+      authorPicture: json['authorPicture'] ?? '',
+      authorBio: json['authorBio'] ?? '',
+      content: json['content'] ?? '',
+      taggedUsers: List<String>.from(json['taggedUsers'] ?? []), // Fix here
       replies:
-          (json['replies'] as List)
-              .map((x) => CommentModel.fromJson(x))
-              .toList(),
+          (json['replies'] as List<dynamic>?)
+              ?.map((x) => CommentModel.fromJson(x))
+              .toList() ??
+          [], // Fix here
       reactCount: json['reactCount'] ?? 0,
       timestamp: DateTime.tryParse(json['timestamp']) ?? DateTime.now(),
     );

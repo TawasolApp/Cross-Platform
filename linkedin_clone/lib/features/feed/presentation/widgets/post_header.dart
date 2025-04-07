@@ -8,6 +8,7 @@ class PostHeader extends StatelessWidget {
   final String postTime;
   final String postId;
   final String postContent;
+  final String visibility; // Add this line to include visibility
   const PostHeader({
     super.key,
     required this.profileImage,
@@ -16,6 +17,7 @@ class PostHeader extends StatelessWidget {
     required this.postTime,
     required this.postId,
     required this.postContent,
+    required this.visibility,
   });
 
   @override
@@ -71,6 +73,8 @@ class PostHeader extends StatelessWidget {
                     authorImage: profileImage,
                     authorName: authorName,
                     authorTitle: authorTitle,
+                    visibility: visibility,
+                    rootContext: context,
                   ),
             );
           },

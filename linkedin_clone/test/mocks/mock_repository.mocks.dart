@@ -85,18 +85,18 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
   //         )
   //         as _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>);
 
-  @override
-  _i3.Future<_i4.Either<_i5.Failure, void>> deletePost(String? postId) =>
-      (super.noSuchMethod(
-            Invocation.method(#deletePost, [postId]),
-            returnValue: _i3.Future<_i4.Either<_i5.Failure, void>>.value(
-              _i7.dummyValue<_i4.Either<_i5.Failure, void>>(
-                this,
-                Invocation.method(#deletePost, [postId]),
-              ),
-            ),
-          )
-          as _i3.Future<_i4.Either<_i5.Failure, void>>);
+  // @override
+  // _i3.Future<_i4.Either<_i5.Failure, void>> deletePost(String? postId) =>
+  //     (super.noSuchMethod(
+  //           Invocation.method(#deletePost, [postId]),
+  //           returnValue: _i3.Future<_i4.Either<_i5.Failure, void>>.value(
+  //             _i7.dummyValue<_i4.Either<_i5.Failure, void>>(
+  //               this,
+  //               Invocation.method(#deletePost, [postId]),
+  //             ),
+  //           ),
+  //         )
+  //         as _i3.Future<_i4.Either<_i5.Failure, void>>);
 
   @override
   _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> savePost(String? postId) =>

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'like_button.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import '../../domain/entities/post_entity.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'reaction_popup.dart';
+import 'package:linkedin_clone/core/utils/reaction_type.dart';
+import 'package:go_router/go_router.dart';
 
-class PostFooter extends StatelessWidget {
+class PostFooter extends StatefulWidget {
   final PostEntity post;
   final int comments;
   final int shares;
@@ -16,35 +18,112 @@ class PostFooter extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    bool isLiked = post.reactType == 'Like';
+  _PostFooterState createState() => _PostFooterState();
+}
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        LikeButton(isLiked: isLiked, postId: post.id),
-        Row(
-          children: [
-            const Icon(Icons.comment, color: Colors.grey, size: 20),
-            const SizedBox(width: 4),
-            Text("Comment", style: TextStyle(color: Colors.grey[600])),
-          ],
-        ),
-        Row(
-          children: [
-            const Icon(Icons.loop, color: Colors.grey, size: 20),
-            const SizedBox(width: 4),
-            Text("Repost", style: TextStyle(color: Colors.grey[600])),
-          ],
-        ),
-        Row(
-          children: [
-            const Icon(Icons.send, color: Colors.grey, size: 20),
-            const SizedBox(width: 4),
-            Text("Send", style: TextStyle(color: Colors.grey[600])),
-          ],
-        ),
-      ],
+ReactionType getReactionTypeByName(String name) {
+  return ReactionType.values.firstWhere(
+    (reaction) => reaction.name.toLowerCase() == name.toLowerCase(),
+    orElse: () => ReactionType.like, // Default to "Like" if not found
+  );
+}
+
+class _PostFooterState extends State<PostFooter> {
+  String currentReactionName = 'Like';
+
+  void _showReactionPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (_) => ReactionPopup(
+            postId: widget.post.id,
+            onReactionSelected: (reactionName) {
+              setState(() {
+                currentReactionName = reactionName;
+              });
+            },
+          ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Get the current reaction type based on the name
+    ReactionType currentReaction = getReactionTypeByName(currentReactionName);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                currentReactionName = 'Like';
+              });
+            },
+            onLongPress: () => _showReactionPopup(context),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  currentReaction.icon,
+                  size: 22,
+                  color: currentReaction.color,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  currentReaction.name,
+                  style: TextStyle(color: currentReaction.color, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap:
+                () =>
+                    context.push(RouteNames.postDetails, extra: widget.post.id),
+
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.comment_outlined,
+                  size: 20,
+                  color: Colors.grey,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  "Comment",
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.loop, size: 20, color: Colors.grey),
+              const SizedBox(height: 2),
+              Text(
+                "Repost",
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.send_outlined, size: 20, color: Colors.grey),
+              const SizedBox(height: 2),
+              Text(
+                "Send",
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

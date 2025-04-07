@@ -13,6 +13,7 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -26,6 +27,7 @@ class PostCard extends StatelessWidget {
               postTime: post.timestamp.toString(),
               postId: post.id,
               postContent: post.content,
+              visibility: post.visibility ?? 'Public',
             ),
             const SizedBox(height: 8),
             PostContent(
@@ -37,7 +39,7 @@ class PostCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             ReactionSummaryBar(post: post),
-            const Divider(),
+            const Divider(height: 2),
             PostFooter(
               post: post,
               comments: post.comments,

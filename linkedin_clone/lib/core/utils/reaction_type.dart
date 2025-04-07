@@ -48,15 +48,15 @@ extension ReactionTypeExtension on ReactionType {
       case ReactionType.like:
         return Colors.blue;
       case ReactionType.celebrate:
-        return Colors.orange;
+        return const Color.fromARGB(255, 63, 131, 65);
       case ReactionType.love:
         return Colors.red;
       case ReactionType.insightful:
         return Colors.amber;
       case ReactionType.funny:
-        return Colors.purple;
-      case ReactionType.support:
         return Colors.teal;
+      case ReactionType.support:
+        return const Color.fromARGB(255, 190, 98, 206);
       case ReactionType.none:
       default:
         return Colors.grey;
