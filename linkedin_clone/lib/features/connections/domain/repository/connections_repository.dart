@@ -4,6 +4,7 @@ abstract class ConnectionsRepository {
   Future<List<ConnectionsUserEntity>> getConnectionsList({
     int page = 0,
     int limit = 0,
+    int sortBy = 1,
   });
   Future<bool> removeConnection(String userId, String? token);
   Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList({

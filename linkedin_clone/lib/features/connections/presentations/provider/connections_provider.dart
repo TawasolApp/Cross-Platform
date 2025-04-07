@@ -64,6 +64,12 @@ class ConnectionsProvider with ChangeNotifier {
   // Get connections
   Future<void> getConnections({bool isInitial = false}) async {
     if (_isBusy) return;
+    int sortBy = 1;
+    if (_activeFilter == 'First name') {
+      sortBy = 2;
+    } else if (_activeFilter == 'last name') {
+      sortBy = 3;
+    }
     _isBusy = true;
     try {
       _isLoading = true;
@@ -78,11 +84,13 @@ class ConnectionsProvider with ChangeNotifier {
         connectionsList = await getConnectionsUseCase.call(
           page: _currentPageMain,
           limit: 15,
+          sortBy: sortBy,
         );
       } else {
         final newConnectionsList = await getConnectionsUseCase.call(
           page: _currentPageMain,
           limit: 15,
+          sortBy: sortBy,
         );
         if (newConnectionsList.isEmpty) {
           _hasMoreMain = false;
@@ -104,7 +112,6 @@ class ConnectionsProvider with ChangeNotifier {
 
   // Get received connection requests
   Future<void> _getReceivedConnectionRequests({bool isInitial = false}) async {
-    print("\nConnectionsProvider: _getReceivedConnectionRequests\n");
     try {
       if (isInitial) {
         _currentPageMain = 1;

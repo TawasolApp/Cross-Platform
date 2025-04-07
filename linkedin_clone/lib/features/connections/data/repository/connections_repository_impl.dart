@@ -11,11 +11,13 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   Future<List<ConnectionsUserEntity>> getConnectionsList({
     int page = 0,
     int limit = 0,
+    int sortBy = 1,
   }) async {
     try {
       final connectionsList = await remoteDataSource.getConnectionsList(
         page: page,
         limit: limit,
+        sortBy: sortBy,
       );
       return connectionsList;
     } catch (e) {

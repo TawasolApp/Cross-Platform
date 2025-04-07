@@ -17,11 +17,14 @@ class ConnectionsRemoteDataSource {
   Future<List<ConnectionsUserEntity>> getConnectionsList({
     int page = 0,
     int limit = 0,
+    int sortBy = 1,
   }) async {
     try {
       final response = await client
           .get(
-            Uri.parse('${baseUrl}connections/list?page=$page&limit=$limit'),
+            Uri.parse(
+              '${baseUrl}connections/list?page=$page&limit=$limit&by=$sortBy&direction=1',
+            ),
             headers: {
               'Accept': 'application/json',
               'Authorization': 'Bearer $_token',

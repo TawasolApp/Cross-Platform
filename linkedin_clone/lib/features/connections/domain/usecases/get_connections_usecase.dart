@@ -9,6 +9,7 @@ class GetConnectionsUseCase {
   Future<List<ConnectionsUserEntity>> call({
     int page = 0,
     int limit = 0,
+    int sortBy = 1,
   }) async {
     try {
       return await repository.getConnectionsList(page: page, limit: limit);
