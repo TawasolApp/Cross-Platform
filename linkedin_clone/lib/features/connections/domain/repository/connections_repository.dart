@@ -1,3 +1,5 @@
+import 'package:linkedin_clone/features/connections/presentations/widgets/unfollow_dialog.dart';
+
 import '../entities/connections_user_entity.dart';
 
 abstract class ConnectionsRepository {
@@ -26,4 +28,5 @@ abstract class ConnectionsRepository {
   Future<bool> acceptIgnoreConnectionRequest(String userId);
   Future<bool> sendConnectionRequest(String userId);
   Future<bool> withdrawConnectionRequest(String userId);
+  Future<bool> unfollowUser(String userId);
 }

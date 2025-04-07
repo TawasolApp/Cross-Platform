@@ -130,4 +130,14 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       throw Exception('Failed to withdraw connection request');
     }
   }
+
+  @override
+  Future<bool> unfollowUser(String userId) async {
+    try {
+      final unfollowed = await remoteDataSource.unfollowUser(userId);
+      return unfollowed;
+    } catch (e) {
+      throw Exception('Failed to unfollow user');
+    }
+  }
 }

@@ -9,7 +9,7 @@ class ConnectionsRemoteDataSource {
   final http.Client client;
   final baseUrl = 'https://tawasolapp.me/api/';
   final String _token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzAiLCJlbWFpbCI6Imhhbms2OEBnbWFpbC5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDAxNDAyOSwiZXhwIjoxNzQ0MDE3NjI5fQ.k6BIAplzwsGMUiV9RoKySzcrxyiZ9HAl5fModP9_zQI";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzAiLCJlbWFpbCI6Imhhbms2OEBnbWFpbC5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDAxODAxNCwiZXhwIjoxNzQ0MDIxNjE0fQ.JUCKITIUkFYySauT8wyJFcMt5ddDfXBUFOizKM3d-mw";
 
   ConnectionsRemoteDataSource({required this.client});
 
@@ -400,6 +400,39 @@ class ConnectionsRemoteDataSource {
       } else {
         print(
           'ConnectionsRemoteDataSource :withdrawConnectionRequest: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  ////////unfollow user
+  Future<bool> unfollowUser(String userId) async {
+    try {
+      print("⭐⭐⭐⭐⭐⭐");
+      print('userId: $userId');
+      final response = await client.delete(
+        Uri.parse('${baseUrl}connections/unfollow/$userId'),
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 204) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 400");
+      } else if (response.statusCode == 500) {
+        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 500");
+      } else if (response.statusCode == 404) {
+        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 404");
+      } else if (response.statusCode == 401) {
+        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 401");
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :unfollowUser: ${response.statusCode}',
         );
         // Handle other status codes as needed
         throw Exception("Unknown error");

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
+import "unfollow_dialog.dart";
 
 /// **Follow Card** includes user data
 /// - User Data includes user image, name, headline, and online status
@@ -138,7 +139,16 @@ class FollowCard extends StatelessWidget {
                       /// **Following Button**
                       TextButton(
                         onPressed: () {
-                          // Handle unfollow logic
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => UnfollowDialog(
+                                  firstName: firstName,
+                                  lastName: lastName,
+                                  networksProvider: networksProvider,
+                                  userId: userId,
+                                ),
+                          );
                         },
                         child: Text(
                           'Following',

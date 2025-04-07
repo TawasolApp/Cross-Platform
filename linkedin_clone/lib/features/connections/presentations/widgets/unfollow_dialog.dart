@@ -1,19 +1,21 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import '../provider/connections_provider.dart';
+import '../provider/networks_provider.dart';
 import "error_dialog.dart";
 
 class UnfollowDialog extends StatelessWidget {
   final String userId;
-  final String userName;
-  final ConnectionsProvider connectionsProvider;
+  final String firstName;
+  final String lastName;
+  final NetworksProvider networksProvider;
 
   const UnfollowDialog({
     super.key,
     required this.userId,
-    required this.userName,
-    required this.connectionsProvider,
+    required this.firstName,
+    required this.lastName,
+    required this.networksProvider,
   });
 
   @override
@@ -32,12 +34,12 @@ class UnfollowDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Unfollow $userName?",
+              "Unfollow $firstName $lastName?",
               style: Theme.of(context).textTheme.titleLarge,
             ),
             SizedBox(height: 10),
             Text(
-              "Are you sure you want to unfollow $userName?",
+              "Are you sure you want to unfollow $firstName $lastName?",
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             SizedBox(height: 14),
@@ -47,6 +49,7 @@ class UnfollowDialog extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
+                    Navigator.pop(context); // Close dialog
                   },
                   child: Text(
                     "Cancel",
@@ -55,8 +58,8 @@ class UnfollowDialog extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
-                    //await connectionsProvider.unfollowUser(userId)
-                    if (true) {
+                    if (await networksProvider.unfollowUser(userId)) {
+                      networksProvider.getFollowersList(isInitial: true);
                       Navigator.pop(context); // Close unfollow dialog
                     } else {
                       showDialog(
@@ -64,12 +67,13 @@ class UnfollowDialog extends StatelessWidget {
                         builder:
                             (context) => ErrorDialog(
                               title: "Error",
-                              message: "Failed to unfollow user",
-                              buttonText: "OK",
+                              message:
+                                  "Failed to unfollow $firstName $lastName",
+                              buttonText: "Cancel",
                               onPressed: () {
-                                Navigator.of(
-                                  context,
-                                ).pop(); // Close error dialog
+                                Navigator.of(context).pop();
+                                // Close error dialog
+                                Navigator.of(context).pop();
                               },
                             ),
                       );

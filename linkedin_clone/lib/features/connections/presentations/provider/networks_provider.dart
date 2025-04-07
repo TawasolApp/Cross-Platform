@@ -2,6 +2,7 @@
 
 import 'package:flutter/foundation.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';
 import '../../domain/usecases/get_followers_list_usecase.dart';
 
@@ -23,10 +24,12 @@ class NetworksProvider with ChangeNotifier {
   List<ConnectionsUserEntity>? followersList;
 
   GetFollowingListUseCase getFollowingListUseCase;
+  UnfollowUserUseCase unfollowUseCase;
   //GetFollowersListUseCase getFollowersListUseCase;
 
   NetworksProvider(
     this.getFollowingListUseCase,
+    this.unfollowUseCase,
     //this.getFollowersListUseCase,
   );
 
@@ -65,6 +68,56 @@ class NetworksProvider with ChangeNotifier {
       _isLoading = false;
       _isBusy = false;
       notifyListeners();
+    }
+  }
+
+  Future<void> getFollowersList({bool isInitial = false}) async {
+    ///TODO azabtha for followers not following
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _isLoading = true;
+      _error = null;
+      if (isInitial) {
+        _currentPage = 1;
+        _hasMore = true;
+      } else {
+        _currentPage++;
+      }
+      if (_currentPage == 1) {
+        followersList = await getFollowingListUseCase.call(
+          page: _currentPage,
+          limit: 15,
+        );
+      } else {
+        final newFollowersList = await getFollowingListUseCase.call(
+          page: _currentPage,
+          limit: 15,
+        );
+        if (newFollowersList.isEmpty) {
+          _hasMore = false;
+        } else {
+          followersList!.addAll(newFollowersList);
+        }
+      }
+    } catch (e) {
+      print('\nNetworksProvider: getFollowersList $e\n');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      _isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> unfollowUser(String userId) async {
+    try {
+      // Call the unfollow use case here
+      return await unfollowUseCase.call(userId);
+    } catch (e) {
+      print('\nNetworksProvider: unFollowUser $e\n');
+      _error = e.toString();
+      return false; // Return false if there was an error
     }
   }
 }

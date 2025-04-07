@@ -24,6 +24,7 @@ import 'package:linkedin_clone/features/connections/data/datasources/connections
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
@@ -236,6 +237,13 @@ void main() {
                     ),
                   ),
                 ),
+                UnfollowUserUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
               ),
         ),
         ChangeNotifierProvider(
@@ -305,7 +313,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const ConnectionsPage(),
+      home: const FollowingPage(),
     );
   }
 }
