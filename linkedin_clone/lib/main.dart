@@ -23,6 +23,7 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
@@ -30,6 +31,7 @@ import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignor
 
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/following_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -54,6 +56,7 @@ import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/update_certification.dart';
@@ -225,6 +228,18 @@ void main() {
         ),
         ChangeNotifierProvider(
           create:
+              (_) => NetworksProvider(
+                GetFollowingListUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
               (_) => ProfileProvider(
                 getProfileUseCase: GetProfileUseCase(profileRepository),
                 updateProfilePictureUseCase: UpdateProfilePictureUseCase(
@@ -290,7 +305,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const InvitationsPage(),
+      home: const ConnectionsPage(),
     );
   }
 }

@@ -72,7 +72,34 @@ class _FollowingPageState extends State<FollowingPage> {
                   provider.hasError) {
                 return const SizedBox();
               }
-              return SizedBox();
+              return Column(
+                children: [
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Text(
+                            '${provider.followingList!.length} people',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Theme.of(context).dividerColor,
+                  ),
+                ],
+              );
             },
           ),
         ),
@@ -115,7 +142,7 @@ class _FollowingPageState extends State<FollowingPage> {
                       width: double.infinity,
                       child: Center(
                         child: Text(
-                          'No Connections',
+                          'There are no people you follow',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ),

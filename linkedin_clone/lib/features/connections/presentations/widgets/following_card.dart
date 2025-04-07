@@ -25,124 +25,132 @@ class FollowCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap:
-          () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Routing to user profile page')),
-          ), //TODO: Navigate to user profile
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 1),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// **Profile Image with Online Indicator**
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Stack(
-                        children: [
-                          /// **Profile Picture**
-                          CircleAvatar(
-                            radius: 28,
-                            backgroundImage:
-                                profilePicture != 'not available'
-                                    ? NetworkImage(profilePicture)
-                                    : null,
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              214,
-                              210,
-                              200,
-                            ), // Optional background color
-                            child:
-                                profilePicture == 'not available'
-                                    ? Icon(
-                                      Icons.person,
-                                      size: 40,
-                                      color: Theme.of(context).primaryColor,
-                                    )
-                                    : null,
-                          ),
-
-                          /// **Online Indicator**
-                          if (isOnline)
-                            Positioned(
-                              bottom: 2,
-                              right: 2,
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  /// **Larger Green Dot**
-                                  Container(
-                                    width: 14,
-                                    height: 14,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(
-                                        255,
-                                        43,
-                                        109,
-                                        46,
-                                      ),
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-
-                                  /// **Smaller White Dot on Top**
-                                  Container(
-                                    width: 7,
-                                    height: 7,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap:
+              () => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Routing to user profile page')),
+              ), // TODO: Navigate to user profile
+          borderRadius: BorderRadius.circular(8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 1),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// **Profile Image with Online Indicator**
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: 8,
+                          right: 8,
+                          left: 8,
+                        ),
+                        child: Stack(
+                          children: [
+                            /// **Profile Picture**
+                            CircleAvatar(
+                              radius: 28,
+                              backgroundImage:
+                                  profilePicture != 'notavailable'
+                                      ? NetworkImage(profilePicture)
+                                      : null,
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                214,
+                                210,
+                                200,
                               ),
+                              child:
+                                  profilePicture == 'notavailable'
+                                      ? Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Theme.of(context).primaryColor,
+                                      )
+                                      : null,
                             ),
-                        ],
-                      ),
-                    ),
 
-                    /// **User Details**
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          /// **Name**
-                          Text(
-                            '$firstName $lastName',
-                            style: Theme.of(context).textTheme.titleMedium,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+                            /// **Online Indicator**
+                            if (isOnline)
+                              Positioned(
+                                bottom: 2,
+                                right: 2,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    /// **Larger Green Dot**
+                                    Container(
+                                      width: 14,
+                                      height: 14,
+                                      decoration: const BoxDecoration(
+                                        color: Color.fromARGB(255, 43, 109, 46),
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
 
-                          /// **Headline**
-                          Text(
-                            headLine,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            softWrap: true,
-                          ),
-                        ],
+                                    /// **Smaller White Dot on Top**
+                                    Container(
+                                      width: 7,
+                                      height: 7,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        shape: BoxShape.circle,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'Following',
-                        style: Theme.of(context).textTheme.bodyMedium,
+
+                      /// **User Details**
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            /// **Name**
+                            Text(
+                              '$firstName $lastName',
+                              style: Theme.of(context).textTheme.titleMedium,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+
+                            /// **Headline**
+                            Text(
+                              headLine,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+
+                      /// **Following Button**
+                      TextButton(
+                        onPressed: () {
+                          // Handle unfollow logic
+                        },
+                        child: Text(
+                          'Following',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
