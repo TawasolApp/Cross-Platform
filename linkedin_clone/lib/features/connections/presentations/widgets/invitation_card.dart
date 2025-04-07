@@ -1,9 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '../provider/connections_provider.dart';
 
 class InvitationCard extends StatelessWidget {
   final String userId;
-  final String userName;
+  final String firstName;
+  final String lastName;
   final String headLine;
   final String profilePicture;
   final ConnectionsProvider connectionsProvider;
@@ -15,7 +18,8 @@ class InvitationCard extends StatelessWidget {
   const InvitationCard({
     super.key,
     required this.userId,
-    required this.userName,
+    required this.firstName,
+    required this.lastName,
     required this.headLine,
     required this.profilePicture,
     required this.connectionsProvider,
@@ -45,7 +49,8 @@ class InvitationCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -80,7 +85,7 @@ class InvitationCard extends StatelessWidget {
                       children: [
                         /// **Name**
                         Text(
-                          userName,
+                          "$firstName $lastName",
                           style: Theme.of(context).textTheme.titleMedium,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -93,8 +98,6 @@ class InvitationCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
                         ),
-
-                        const SizedBox(height: 5),
 
                         /// **Connection Time**
                         Text(

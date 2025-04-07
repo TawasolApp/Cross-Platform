@@ -1,14 +1,31 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/linkedin_iconic_button.dart';
 import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/invitation_card.dart';
 import 'no_internet_connection.dart';
-import '../../../../\core/utils/time_formatter.dart';
+import '../../../../core/utils/time_formatter.dart';
 
-class ReceivedInvitationsBody extends StatelessWidget {
-  @override
+class ReceivedInvitationsBody extends StatefulWidget {
   const ReceivedInvitationsBody({super.key});
+
+  @override
+  State<ReceivedInvitationsBody> createState() =>
+      _ReceivedInvitationsBodyState();
+}
+
+class _ReceivedInvitationsBodyState extends State<ReceivedInvitationsBody> {
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   final connectionsProvider = Provider.of<ConnectionsProvider>(
+  //     context,
+  //     listen: false,
+  //   );
+  //   connectionsProvider.getReceivedConnectionRequests(isInitial: true);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<ConnectionsProvider>(
@@ -16,19 +33,38 @@ class ReceivedInvitationsBody extends StatelessWidget {
         return RefreshIndicator(
           color: Theme.of(context).primaryColor,
           onRefresh: () async {
-            await connectionsProvider.getReceivedConnectionRequests();
-            await connectionsProvider.getSentConnectionRequests();
+            await connectionsProvider.getReceivedConnectionRequests(
+              isInitial: true,
+            );
           },
           child: Consumer<ConnectionsProvider>(
             builder: (context, provider, _) {
+              print(
+                'ReceivedInvitationsBody: isLoading: ${provider.isLoading}',
+              );
+              print(
+                'ReceivedInvitationsBody: hasErrorMain: ${provider.hasErrorMain}',
+              );
+              print(
+                'ReceivedInvitationsBody: receivedConnectionRequestsList: ${provider.receivedConnectionRequestsList}',
+              );
               if (provider.isLoading) {
-                return const SizedBox();
-              } else if (provider.hasError) {
-                if (provider.error == 'Request Timeout') {
+                return Center(
+                  child: CircularProgressIndicator(
+                    color: Theme.of(context).primaryColor,
+                  ),
+                );
+              } else if (provider.hasErrorMain) {
+                print('ReceivedInvitationsBody: Error: ${provider.errorMain}');
+                if (provider.errorMain?.contains('Request Timeout') ?? false) {
                   return NoInternetConnection(
                     onRetry: () {
-                      connectionsProvider.getReceivedConnectionRequests();
-                      connectionsProvider.getSentConnectionRequests();
+                      connectionsProvider.getInvitations(
+                        isInitsent: true,
+                        isInitRec: true,
+                        refreshRec: true,
+                        refreshSent: true,
+                      );
                     },
                   );
                 } else {
@@ -42,31 +78,39 @@ class ReceivedInvitationsBody extends StatelessWidget {
                   );
                 }
               } else if (provider.receivedConnectionRequestsList!.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No Pending Connection Requests',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height - kToolbarHeight,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text(
+                        'No Pending Connection Requests',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
                   ),
                 );
-              }
-              return ListView.builder(
-                itemCount: provider.receivedConnectionRequestsList!.length,
-                itemBuilder: (context, index) {
-                  final request =
-                      provider.receivedConnectionRequestsList![index];
-                  return InvitationCard(
-                    userId: request.userId,
-                    userName: request.firstName,
-                    headLine: request.headLine,
-                    profilePicture: request.profilePicture,
-                    mutualConnections:
-                        '5', // Replace with actual data if available
-                    connectionsProvider: connectionsProvider,
-                    receivedInvitation: true,
-                    time: formatTime(request.time),
-                  );
-                },
-              );
+              } else
+                return ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: provider.receivedConnectionRequestsList!.length,
+                  itemBuilder: (context, index) {
+                    final request =
+                        provider.receivedConnectionRequestsList![index];
+                    return InvitationCard(
+                      userId: request.userId,
+                      firstName: request.firstName,
+                      lastName: request.lastName,
+                      headLine: request.headLine,
+                      profilePicture: request.profilePicture,
+                      mutualConnections: '5',
+                      connectionsProvider: connectionsProvider,
+                      receivedInvitation: true,
+                      time: formatTime(request.time),
+                    );
+                  },
+                );
             },
           ),
         );

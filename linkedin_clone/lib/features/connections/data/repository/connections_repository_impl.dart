@@ -34,12 +34,13 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
-      final pendingList = await remoteDataSource
-          .getReceivedConnectionRequestsList(token);
+      final pendingList =
+          await remoteDataSource.getReceivedConnectionRequestsList();
       return pendingList;
     } catch (e) {
       rethrow;
@@ -47,12 +48,14 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
       final sentList = await remoteDataSource.getSentConnectionRequestsList(
-        token,
+        page: page,
+        limit: limit,
       );
       return sentList;
     } catch (e) {

@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, prefer_final_fields, curly_braces_in_flow_control_structures
 
 import 'package:flutter/foundation.dart';
 import '../../domain/entities/connections_user_entity.dart';
@@ -16,22 +16,27 @@ class ConnectionsProvider with ChangeNotifier {
   List<ConnectionsUserEntity>? receivedConnectionRequestsList;
   List<ConnectionsUserEntity>? sentConnectionRequestsList;
 
-  String? _error;
-  bool _isloading = false;
-  int _currentPage = 1;
-  // ignore: prefer_final_fields
+  String? _errorMain, _errorSecondary;
+  bool _isLoading = false;
+  int _currentPageMain = 1;
+  int _currentPageSecondary = 1;
   bool _isBusy = false;
-  bool _hasMore = true;
+  bool _hasMoreMain = true;
+  bool _hasMoreSecondary = true;
   String _activeFilter = 'Recently added';
   String _selectedFilter = 'Recently added';
 
   // Getters
-  String? get error => _error;
-  bool get hasError => _error != null;
-  bool get isLoading => _isloading;
+  String? get errorMain => _errorMain;
+  bool get hasErrorMain => _errorMain != null;
+  bool get hasErrorSecondary => _errorSecondary != null;
+  String? get errorSecondary => _errorSecondary;
+  bool get isLoading => _isLoading;
   bool get isBusy => _isBusy;
-  bool get hasMore => _hasMore;
-  int get currentPage => _currentPage;
+  bool get hasMoreMain => _hasMoreMain;
+  bool get hasMoreSecondary => _hasMoreSecondary;
+  int get currentPageMain => _currentPageMain;
+  int get currentPageSecondary => _currentPageSecondary;
   String get selectedFilter => _selectedFilter;
   String get activeFilter => _activeFilter;
 
@@ -59,28 +64,28 @@ class ConnectionsProvider with ChangeNotifier {
   // Get connections
   Future<void> getConnections({bool isInitial = false}) async {
     if (_isBusy) return;
+    _isBusy = true;
     try {
-      _isloading = true;
-      _error = null;
+      _isLoading = true;
+      _errorMain = null;
       if (isInitial) {
-        _currentPage = 1;
-        _hasMore = true;
+        _currentPageMain = 1;
+        _hasMoreMain = true;
       } else {
-        _currentPage++;
+        _currentPageMain++;
       }
-      //notifyListeners();
-      if (currentPage == 1) {
+      if (_currentPageMain == 1) {
         connectionsList = await getConnectionsUseCase.call(
-          page: _currentPage,
+          page: _currentPageMain,
           limit: 15,
         );
       } else {
         final newConnectionsList = await getConnectionsUseCase.call(
-          page: _currentPage,
+          page: _currentPageMain,
           limit: 15,
         );
         if (newConnectionsList.isEmpty) {
-          _hasMore = false;
+          _hasMoreMain = false;
         } else {
           connectionsList!.addAll(newConnectionsList);
         }
@@ -88,9 +93,9 @@ class ConnectionsProvider with ChangeNotifier {
       sortList(_activeFilter, connectionsList);
     } catch (e) {
       print('\nConnectionsProvider: getConnections $e\n');
-      _error = e.toString();
+      _errorMain = e.toString();
     } finally {
-      _isloading = false;
+      _isLoading = false;
       _isBusy = false;
 
       notifyListeners();
@@ -98,47 +103,137 @@ class ConnectionsProvider with ChangeNotifier {
   }
 
   // Get received connection requests
-  Future<void> getReceivedConnectionRequests() async {
+  Future<void> _getReceivedConnectionRequests({bool isInitial = false}) async {
+    print("\nConnectionsProvider: _getReceivedConnectionRequests\n");
     try {
-      _isloading = true;
-      _error = null;
+      if (isInitial) {
+        _currentPageMain = 1;
+        _hasMoreMain = true;
+      } else {
+        _currentPageMain++;
+      }
 
-      receivedConnectionRequestsList =
-          await getReceivedConnectionRequestsUseCase.call("");
-
+      if (_currentPageMain == 1) {
+        receivedConnectionRequestsList =
+            await getReceivedConnectionRequestsUseCase.call(
+              page: _currentPageMain,
+              limit: 15,
+            );
+      } else {
+        final newReceivedConnectionsList =
+            await getReceivedConnectionRequestsUseCase.call(
+              page: _currentPageMain,
+              limit: 15,
+            );
+        if (newReceivedConnectionsList.isEmpty) {
+          _hasMoreMain = false;
+        } else {
+          receivedConnectionRequestsList!.addAll(newReceivedConnectionsList);
+        }
+      }
       receivedConnectionRequestsList = sortList(
         "Recently added",
         receivedConnectionRequestsList,
       );
     } catch (e) {
+      print('\nConnectionsProvider: _getReceivedConnectionRequests $e\n');
+      _errorMain = e.toString();
+    }
+  }
+
+  Future<void> getReceivedConnectionRequests({bool isInitial = false}) async {
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _isLoading = true;
+      _errorMain = null;
+      notifyListeners();
+
+      await _getReceivedConnectionRequests(isInitial: isInitial);
+    } catch (e) {
       print('\nConnectionsProvider: getReceivedConnectionRequests $e\n');
-      _error = e.toString();
+      _errorMain = e.toString();
     } finally {
-      _isloading = false;
+      _isBusy = false;
+      _isLoading = false;
+      print("weselt henaaaaaaaaaaaaaaaaaaaa😭😭😭😭😭😭😭😭😭😭😭😭😭😭");
       notifyListeners();
     }
   }
 
   // Get sent connection requests
-  Future<void> getSentConnectionRequests() async {
+  Future<void> _getSentConnectionRequests({bool isInitial = false}) async {
     try {
-      print("Fetching sent connection requests...");
-      _isloading = true;
-      _error = null;
+      print("\nConnectionsProvider: _getSentConnectionRequests\n");
+      if (isInitial) {
+        _currentPageSecondary = 1;
+        _hasMoreSecondary = true;
+      } else {
+        _currentPageSecondary++;
+      }
 
-      sentConnectionRequestsList = await getSentConnectionRequestsUseCase.call(
-        "",
-      );
-
+      if (_currentPageSecondary == 1) {
+        sentConnectionRequestsList = await getSentConnectionRequestsUseCase
+            .call(page: _currentPageSecondary, limit: 15);
+      } else {
+        final newSentConnectionsList = await getSentConnectionRequestsUseCase
+            .call(page: _currentPageSecondary, limit: 15);
+        if (newSentConnectionsList.isEmpty) {
+          _hasMoreSecondary = false;
+        } else {
+          sentConnectionRequestsList!.addAll(newSentConnectionsList);
+        }
+      }
       sentConnectionRequestsList = sortList(
         "Recently added",
         sentConnectionRequestsList,
       );
     } catch (e) {
-      print('\nConnectionsProvider: sentConnectionRequestsList $e\n');
-      _error = e.toString();
+      print('\nConnectionsProvider: _getSentConnectionRequests $e\n');
+      _errorSecondary = e.toString();
+    }
+  }
+
+  Future<void> getSentConnectionRequests({bool isInitial = false}) async {
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _isLoading = true;
+      _errorSecondary = null;
+      notifyListeners();
+      await _getSentConnectionRequests(isInitial: isInitial);
+    } catch (e) {
+      print('\nConnectionsProvider: getSentConnectionRequests $e\n');
+      _errorMain = e.toString();
     } finally {
-      _isloading = false;
+      _isBusy = false;
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> getInvitations({
+    bool isInitsent = false,
+    bool isInitRec = false,
+    bool refreshSent = false,
+    bool refreshRec = false,
+  }) async {
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _isLoading = true;
+      _errorMain = null;
+      _errorSecondary = null;
+      print("providerisloading: $_isLoading");
+      if (refreshSent) await _getSentConnectionRequests(isInitial: isInitsent);
+      if (refreshRec)
+        await _getReceivedConnectionRequests(isInitial: isInitRec);
+    } catch (e) {
+      print('\nConnectionsProvider: getInvitationDetails $e\n');
+      _errorMain = e.toString();
+    } finally {
+      _isBusy = false;
+      _isLoading = false;
       notifyListeners();
     }
   }

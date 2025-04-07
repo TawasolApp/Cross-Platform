@@ -6,12 +6,14 @@ abstract class ConnectionsRepository {
     int limit = 0,
   });
   Future<bool> removeConnection(String userId, String? token);
-  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
-    String? token,
-  );
-  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
-    String? token,
-  );
+  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  });
+  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  });
   Future<bool> acceptConnectionRequest(String userId, String? token);
   Future<bool> ignoreConnectionRequest(String userId, String? token);
   Future<bool> sendConnectionRequest(String userId, String? token);

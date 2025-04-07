@@ -7,9 +7,10 @@ import 'package:linkedin_clone/features/connections/domain/entities/connections_
 
 class ConnectionsRemoteDataSource {
   final http.Client client;
-  final baseUrl = 'https://tawasolapp.me/api/'; //TODO: ADJUST BASE URL
+  final baseUrl = 'https://tawasolapp.me/api/';
   final String _token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzYiLCJlbWFpbCI6ImZsb3lfaHlhdHQ2QGhvdG1haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQzOTgyMTA1LCJleHAiOjE3NDM5ODU3MDV9.CRRBT_Y9kUTgeu4e9YEbEPQ0tYtl3_v0hBPgoQqtrSs";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzYiLCJlbWFpbCI6ImZsb3lfaHlhdHQ2QGhvdG1haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQ0MDAwMTI4LCJleHAiOjE3NDQwMDM3Mjh9.s7OaT9QKJVA_bFHcKsB7q3G7fXYSBVnpyZSY0NpLn5o";
+
   ConnectionsRemoteDataSource({required this.client});
 
   ///////////////////Get connections list
@@ -27,7 +28,7 @@ class ConnectionsRemoteDataSource {
             },
           )
           .timeout(
-            Duration(seconds: 15),
+            const Duration(seconds: 15),
             onTimeout: () {
               throw Exception('Request Timeout');
             },
@@ -56,70 +57,24 @@ class ConnectionsRemoteDataSource {
     }
   }
 
-  ///////////////////remove connection
-  Future<bool> removeConnection(String userId, String? token) async {
-    try {
-      // Fetch all connections for the given userId
-      final checkResponse = await client
-          .get(
-            Uri.parse('${baseUrl}list?userId=$userId'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-          )
-          .timeout(
-            Duration(seconds: 15),
-            onTimeout: () => http.Response('Request Timeout', 408),
-          );
-
-      if (checkResponse.statusCode == 404 || checkResponse.body.isEmpty) {
-        return false;
-      }
-
-      final connections = jsonDecode(checkResponse.body);
-
-      if (connections.isEmpty) return false;
-      // Delete each connection individually
-      for (var connection in connections) {
-        final connectionId = connection['id']; // Ensure the key is correct
-        final response = await client.delete(
-          Uri.parse('${baseUrl}list/$connectionId'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        );
-
-        if (response.statusCode != 200 && response.statusCode != 204) {
-          throw Exception(
-            'Failed to remove connection (ID: $connectionId), Status Code: ${response.statusCode}',
-          );
-        }
-      }
-
-      return true;
-    } catch (e) {
-      print('Error removing connection: $e');
-      return false;
-    }
-  }
   ///////////////////Get received connections list
-
-  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
       final response = await client
           .get(
-            Uri.parse('${baseUrl}connections/pending'),
+            Uri.parse(
+              '${baseUrl}connections/pending/?page=$page&limit=$limit&by=1&direction=1',
+            ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
+              'Authorization': 'Bearer $_token',
             },
           )
           .timeout(
-            Duration(seconds: 15),
+            const Duration(seconds: 15),
             onTimeout: () {
               throw Exception('Request Timeout');
             },
@@ -151,21 +106,21 @@ class ConnectionsRemoteDataSource {
   }
 
   ///////////////////Get sent connections list
-  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
-      print("wewaa");
       final response = await client
           .get(
-            Uri.parse('${baseUrl}connections/sent'),
+            Uri.parse('${baseUrl}connections/sent/?page=$page&limit=$limit'),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
+              'Authorization': 'Bearer $_token',
             },
           )
           .timeout(
-            Duration(seconds: 15),
+            const Duration(seconds: 15),
             onTimeout: () {
               throw Exception('Request Timeout');
             },
@@ -193,6 +148,54 @@ class ConnectionsRemoteDataSource {
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  ///////////////////remove connection
+  Future<bool> removeConnection(String userId, String? token) async {
+    try {
+      final checkResponse = await client
+          .get(
+            Uri.parse('${baseUrl}list?userId=$userId'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () => http.Response('Request Timeout', 408),
+          );
+
+      if (checkResponse.statusCode == 404 || checkResponse.body.isEmpty) {
+        return false;
+      }
+
+      final connections = jsonDecode(checkResponse.body);
+
+      if (connections.isEmpty) return false;
+
+      for (var connection in connections) {
+        final connectionId = connection['id'];
+        final response = await client.delete(
+          Uri.parse('${baseUrl}list/$connectionId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode != 200 && response.statusCode != 204) {
+          throw Exception(
+            'Failed to remove connection (ID: $connectionId), Status Code: ${response.statusCode}',
+          );
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print('Error removing connection: $e');
+      return false;
     }
   }
 
@@ -237,11 +240,11 @@ class ConnectionsRemoteDataSource {
         return true;
       } else {
         throw Exception(
-          'Failed to accept connection request, Status Code: ${response.statusCode}',
+          'Failed to reject connection request, Status Code: ${response.statusCode}',
         );
       }
     } catch (e) {
-      print('Error accepting connection request: $e');
+      print('Error rejecting connection request: $e');
       return false;
     }
   }

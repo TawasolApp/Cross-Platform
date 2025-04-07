@@ -32,7 +32,7 @@ class _ConnectionsPageState extends State<ConnectionsPage> {
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      if (!connectionsProvider.isBusy && connectionsProvider.hasMore) {
+      if (!connectionsProvider.isBusy && connectionsProvider.hasMoreMain) {
         connectionsProvider.getConnections();
       }
     }
@@ -71,7 +71,7 @@ class _ConnectionsPageState extends State<ConnectionsPage> {
               if (provider.connectionsList == null ||
                   provider.connectionsList!.isEmpty ||
                   provider.isLoading ||
-                  provider.hasError) {
+                  provider.hasErrorMain) {
                 return const SizedBox();
               }
               return ViewConnectionsAppBar(
@@ -90,9 +90,14 @@ class _ConnectionsPageState extends State<ConnectionsPage> {
             child: Builder(
               builder: (context) {
                 if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (provider.hasError) {
-                  if (provider.error == 'Request Timeout') {
+                  print('ConnectionsPage: Loading...');
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  );
+                } else if (provider.hasErrorMain) {
+                  if (provider.errorSecondary == 'Request Timeout') {
                     return NoInternetConnection(
                       onRetry: () => provider.getConnections(isInitial: true),
                     );

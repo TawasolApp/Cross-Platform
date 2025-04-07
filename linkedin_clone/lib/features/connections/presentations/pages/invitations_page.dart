@@ -1,21 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../provider/connections_provider.dart'; // Adjust the path as needed
 import 'package:linkedin_clone/features/connections/presentations/widgets/received_invitations_body.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/sent_invitations_body.dart';
+import 'package:provider/provider.dart';
+import '../provider/connections_provider.dart'; // Ensure this is the correct path
 
-class InvitationsPage extends StatelessWidget {
-  final String token;
-  const InvitationsPage({super.key, required this.token});
+class InvitationsPage extends StatefulWidget {
+  const InvitationsPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<InvitationsPage> createState() => _InvitationsPageState();
+}
+
+class _InvitationsPageState extends State<InvitationsPage> {
+  @override
+  void initState() {
+    super.initState();
     final connectionsProvider = Provider.of<ConnectionsProvider>(
       context,
       listen: false,
     );
-    connectionsProvider.getReceivedConnectionRequests();
-    connectionsProvider.getSentConnectionRequests();
+    connectionsProvider.getInvitations(
+      isInitsent: true,
+      isInitRec: true,
+      refreshRec: true,
+      refreshSent: true,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: 2,
       initialIndex: 0,
@@ -39,7 +52,9 @@ class InvitationsPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  // Settings action if needed
+                },
                 icon: Icon(
                   Icons.settings,
                   color: Theme.of(context).textTheme.titleLarge?.color,
@@ -58,14 +73,13 @@ class InvitationsPage extends StatelessWidget {
                 labelColor: const Color.fromARGB(255, 43, 109, 46),
                 unselectedLabelColor:
                     Theme.of(context).textTheme.bodyMedium?.color,
-                tabs: [Tab(text: 'Received'), Tab(text: 'Sent')],
-                dividerColor:
-                    Theme.of(context).dividerColor, //TODO adjust tab aligment
+                tabs: const [Tab(text: 'Received'), Tab(text: 'Sent')],
+                dividerColor: Theme.of(context).dividerColor,
               ),
             ),
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [ReceivedInvitationsBody(), SentInvitationsBody()],
         ),
       ),
