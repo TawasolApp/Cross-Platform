@@ -156,7 +156,6 @@ class ConnectionsProvider with ChangeNotifier {
     } finally {
       _isBusy = false;
       _isLoading = false;
-      print("weselt henaaaaaaaaaaaaaaaaaaaa😭😭😭😭😭😭😭😭😭😭😭😭😭😭");
       notifyListeners();
     }
   }
@@ -164,7 +163,6 @@ class ConnectionsProvider with ChangeNotifier {
   // Get sent connection requests
   Future<void> _getSentConnectionRequests({bool isInitial = false}) async {
     try {
-      print("\nConnectionsProvider: _getSentConnectionRequests\n");
       if (isInitial) {
         _currentPageSecondary = 1;
         _hasMoreSecondary = true;
@@ -224,7 +222,6 @@ class ConnectionsProvider with ChangeNotifier {
       _isLoading = true;
       _errorMain = null;
       _errorSecondary = null;
-      print("providerisloading: $_isLoading");
       if (refreshSent) await _getSentConnectionRequests(isInitial: isInitsent);
       if (refreshRec)
         await _getReceivedConnectionRequests(isInitial: isInitRec);

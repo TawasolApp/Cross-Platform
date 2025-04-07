@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print, curly_braces_in_flow_control_structures
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,15 +39,6 @@ class _ReceivedInvitationsBodyState extends State<ReceivedInvitationsBody> {
           },
           child: Consumer<ConnectionsProvider>(
             builder: (context, provider, _) {
-              print(
-                'ReceivedInvitationsBody: isLoading: ${provider.isLoading}',
-              );
-              print(
-                'ReceivedInvitationsBody: hasErrorMain: ${provider.hasErrorMain}',
-              );
-              print(
-                'ReceivedInvitationsBody: receivedConnectionRequestsList: ${provider.receivedConnectionRequestsList}',
-              );
               if (provider.isLoading) {
                 return Center(
                   child: CircularProgressIndicator(
@@ -55,11 +46,10 @@ class _ReceivedInvitationsBodyState extends State<ReceivedInvitationsBody> {
                   ),
                 );
               } else if (provider.hasErrorMain) {
-                print('ReceivedInvitationsBody: Error: ${provider.errorMain}');
                 if (provider.errorMain?.contains('Request Timeout') ?? false) {
                   return NoInternetConnection(
-                    onRetry: () {
-                      connectionsProvider.getInvitations(
+                    onRetry: () async {
+                      await connectionsProvider.getInvitations(
                         isInitsent: true,
                         isInitRec: true,
                         refreshRec: true,
@@ -104,7 +94,7 @@ class _ReceivedInvitationsBodyState extends State<ReceivedInvitationsBody> {
                       lastName: request.lastName,
                       headLine: request.headLine,
                       profilePicture: request.profilePicture,
-                      mutualConnections: '5',
+                      mutualConnections: '0',
                       connectionsProvider: connectionsProvider,
                       receivedInvitation: true,
                       time: formatTime(request.time),

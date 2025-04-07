@@ -9,7 +9,7 @@ class ConnectionsRemoteDataSource {
   final http.Client client;
   final baseUrl = 'https://tawasolapp.me/api/';
   final String _token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzYiLCJlbWFpbCI6ImZsb3lfaHlhdHQ2QGhvdG1haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQ0MDAwMTI4LCJleHAiOjE3NDQwMDM3Mjh9.s7OaT9QKJVA_bFHcKsB7q3G7fXYSBVnpyZSY0NpLn5o";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzYiLCJlbWFpbCI6ImZsb3lfaHlhdHQ2QGhvdG1haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQ0MDA0NDI5LCJleHAiOjE3NDQwMDgwMjl9._o52vTj7hN6o8q2hEKVax6OjNYE6bi_nNFjZ8McRRgI";
 
   ConnectionsRemoteDataSource({required this.client});
 
@@ -63,13 +63,14 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
+      print('page: $page, limit: $limit');
       final response = await client
           .get(
             Uri.parse(
-              '${baseUrl}connections/pending/?page=$page&limit=$limit&by=1&direction=1',
+              '${baseUrl}connections/pending?page=$page&limit=$limit&by=1&direction=1',
             ),
             headers: {
-              'Accept': 'application/json',
+              'Content-Type': 'application/json',
               'Authorization': 'Bearer $_token',
             },
           )
@@ -113,7 +114,9 @@ class ConnectionsRemoteDataSource {
     try {
       final response = await client
           .get(
-            Uri.parse('${baseUrl}connections/sent/?page=$page&limit=$limit'),
+            Uri.parse(
+              '${baseUrl}connections/sent/?page=$page&limit=$limit&by=1&direction=1',
+            ),
             headers: {
               'Accept': 'application/json',
               'Authorization': 'Bearer $_token',

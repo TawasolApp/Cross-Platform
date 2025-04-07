@@ -39,8 +39,8 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
     int limit = 0,
   }) async {
     try {
-      final pendingList =
-          await remoteDataSource.getReceivedConnectionRequestsList();
+      final pendingList = await remoteDataSource
+          .getReceivedConnectionRequestsList(page: page, limit: limit);
       return pendingList;
     } catch (e) {
       rethrow;

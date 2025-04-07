@@ -81,7 +81,7 @@ class InvitationCard extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         /// **Name**
                         Text(
@@ -98,19 +98,20 @@ class InvitationCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           softWrap: true,
                         ),
+                        SizedBox(height: 5),
 
                         /// **Connection Time**
-                        Text(
-                          receivedInvitation
-                              ? int.parse(mutualConnections) == 1
-                                  ? '1 mutual connection'
-                                  : int.parse(mutualConnections) == 0
-                                  ? " "
-                                  : '$mutualConnections mutual connections'
-                              : "",
-                          style: Theme.of(context).textTheme.bodySmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        // Text(
+                        //   receivedInvitation
+                        //       ? int.parse(mutualConnections) == 1
+                        //           ? '1 mutual connection'
+                        //           : int.parse(mutualConnections) == 0
+                        //           ? ""
+                        //           : '$mutualConnections mutual connections'
+                        //       : "",
+                        //   style: Theme.of(context).textTheme.bodySmall,
+                        //   overflow: TextOverflow.ellipsis,
+                        // ),
                         Text(
                           receivedInvitation ? time : "Sent $time",
                           style: Theme.of(context).textTheme.bodySmall,

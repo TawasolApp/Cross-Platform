@@ -46,8 +46,8 @@ class _SentInvitationsBodyState extends State<SentInvitationsBody> {
                 if (provider.errorSecondary?.contains('Request Timeout') ??
                     false) {
                   return NoInternetConnection(
-                    onRetry: () {
-                      connectionsProvider.getInvitations(
+                    onRetry: () async {
+                      await connectionsProvider.getInvitations(
                         isInitsent: true,
                         isInitRec: true,
                         refreshRec: true,
