@@ -1,7 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
+import "error_dialog.dart";
 
 class InvitationCard extends StatelessWidget {
   final String userId;
@@ -99,8 +101,6 @@ class InvitationCard extends StatelessWidget {
                           softWrap: true,
                         ),
                         SizedBox(height: 5),
-
-                        /// **Connection Time**
                         // Text(
                         //   receivedInvitation
                         //       ? int.parse(mutualConnections) == 1
@@ -137,24 +137,25 @@ class InvitationCard extends StatelessWidget {
                                   onPressed: () async {
                                     bool result = await connectionsProvider
                                         .ignoreConnectionRequest(userId);
-                                    if (result) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Connection removed!'),
-                                        ),
+                                    if (!result) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (context) => ErrorDialog(
+                                              title: 'Error',
+                                              message:
+                                                  'Failed to ignore connection request.',
+                                              buttonText: 'Cancel',
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
                                       );
                                     } else {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Failed to remove connection.',
-                                          ),
-                                        ),
-                                      );
+                                      connectionsProvider
+                                          .getReceivedConnectionRequests(
+                                            isInitial: true,
+                                          );
                                     }
                                   },
                                 ),
@@ -170,24 +171,25 @@ class InvitationCard extends StatelessWidget {
                                   onPressed: () async {
                                     bool result = await connectionsProvider
                                         .acceptConnectionRequest(userId);
-                                    if (result) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text('Connection accepted!'),
-                                        ),
+                                    if (!result) {
+                                      showDialog(
+                                        context: context,
+                                        builder:
+                                            (context) => ErrorDialog(
+                                              title: 'Error',
+                                              message:
+                                                  'Failed to accept connection request.',
+                                              buttonText: 'Cancel',
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
                                       );
                                     } else {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                            'Failed to accept connection.',
-                                          ),
-                                        ),
-                                      );
+                                      connectionsProvider
+                                          .getReceivedConnectionRequests(
+                                            isInitial: true,
+                                          );
                                     }
                                   },
                                 ),
@@ -196,20 +198,24 @@ class InvitationCard extends StatelessWidget {
                             : TextButton(
                               onPressed: () async {
                                 bool result = await connectionsProvider
-                                    .removeConnection(userId);
-                                if (result) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Connection removed!'),
-                                    ),
+                                    .withdrawConnectionRequest(userId);
+                                if (!result) {
+                                  showDialog(
+                                    context: context,
+                                    builder:
+                                        (context) => ErrorDialog(
+                                          title: 'Error',
+                                          message:
+                                              'Failed to withdraw connection request.',
+                                          buttonText: 'Cancel',
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
                                   );
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Failed to remove connection.',
-                                      ),
-                                    ),
+                                  connectionsProvider.getSentConnectionRequests(
+                                    isInitial: true,
                                   );
                                 }
                               },

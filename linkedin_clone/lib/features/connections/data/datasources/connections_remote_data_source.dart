@@ -9,7 +9,7 @@ class ConnectionsRemoteDataSource {
   final http.Client client;
   final baseUrl = 'https://tawasolapp.me/api/';
   final String _token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzYiLCJlbWFpbCI6ImZsb3lfaHlhdHQ2QGhvdG1haWwuY29tIiwicm9sZSI6ImN1c3RvbWVyIiwiaWF0IjoxNzQ0MDA0NDI5LCJleHAiOjE3NDQwMDgwMjl9._o52vTj7hN6o8q2hEKVax6OjNYE6bi_nNFjZ8McRRgI";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzAiLCJlbWFpbCI6Imhhbms2OEBnbWFpbC5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDAxNDAyOSwiZXhwIjoxNzQ0MDE3NjI5fQ.k6BIAplzwsGMUiV9RoKySzcrxyiZ9HAl5fModP9_zQI";
 
   ConnectionsRemoteDataSource({required this.client});
 
@@ -157,125 +157,254 @@ class ConnectionsRemoteDataSource {
     }
   }
 
-  ///////////////////remove connection
-  Future<bool> removeConnection(String userId, String? token) async {
+  ///////////////////Get followers list
+  Future<List<ConnectionsUserEntity>> getFollowersList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
-      final checkResponse = await client
+      final response = await client
           .get(
-            Uri.parse('${baseUrl}list?userId=$userId'),
+            Uri.parse(
+              '${baseUrl}connections/followers?page=$page&limit=$limit&by=1&direction=1',
+            ),
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer $token',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $_token',
             },
           )
           .timeout(
             const Duration(seconds: 15),
-            onTimeout: () => http.Response('Request Timeout', 408),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
           );
 
-      if (checkResponse.statusCode == 404 || checkResponse.body.isEmpty) {
-        return false;
-      }
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
 
-      final connections = jsonDecode(checkResponse.body);
-
-      if (connections.isEmpty) return false;
-
-      for (var connection in connections) {
-        final connectionId = connection['id'];
-        final response = await client.delete(
-          Uri.parse('${baseUrl}list/$connectionId'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        );
-
-        if (response.statusCode != 200 && response.statusCode != 204) {
-          throw Exception(
-            'Failed to remove connection (ID: $connectionId), Status Code: ${response.statusCode}',
-          );
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
         }
+      } else if (response.statusCode == 500) {
+        throw Exception('ConnectionsRemoteDataSource :getFollowersList: 500');
+      } else {
+        print(
+          '\nConnectionsRemoteDataSource :getFollowersList: ${response.statusCode}\n',
+        );
+        throw Exception('Unknown error');
       }
-
-      return true;
     } catch (e) {
-      print('Error removing connection: $e');
+      rethrow;
+    }
+  }
+
+  ///////////////////Get following list
+  Future<List<ConnectionsUserEntity>> getFollowingList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final response = await client
+          .get(
+            Uri.parse(
+              '${baseUrl}connections/following?page=$page&limit=$limit&by=1&direction=1',
+            ),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $_token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
+        throw Exception('ConnectionsRemoteDataSource :getFollowingList: 500');
+      } else {
+        print(
+          '\nConnectionsRemoteDataSource :getFollowingList: ${response.statusCode}\n',
+        );
+        throw Exception('Unknown error');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  ///////////////////remove connection
+  Future<bool> removeConnection(String userId) async {
+    try {
+      final response = await client.delete(
+        Uri.parse('${baseUrl}connections/$userId'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $_token',
+        },
+        body: jsonEncode({"isAccept": true}),
+      );
+
+      if (response.statusCode == 204) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception("ConnectionsRemoteDataSource :removeConnection: 400");
+      } else if (response.statusCode == 500) {
+        throw Exception("ConnectionsRemoteDataSource :removeConnection: 500");
+      } else if (response.statusCode == 404) {
+        throw Exception("ConnectionsRemoteDataSource :removeConnection: 404");
+      } else if (response.statusCode == 401) {
+        throw Exception("ConnectionsRemoteDataSource :removeConnection: 401");
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :acceptConnectionRequest: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
+      }
+    } catch (e) {
+      print(e.toString());
       return false;
     }
   }
 
-  ///////////////////Accept connection Request
-  Future<bool> acceptConnectionRequest(String userId, String? token) async {
+  ///////////////////Accept or Ignore connection Request
+  Future<bool> acceptIgnoreConnectionRequest(String userId) async {
+    print('userId: $userId');
     try {
       final response = await client.post(
         Uri.parse('${baseUrl}connections/$userId'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Authorization': 'Bearer $_token'},
         body: jsonEncode({"isAccept": true}),
       );
 
       if (response.statusCode == 200) {
         return true;
-      } else {
+      } else if (response.statusCode == 400) {
         throw Exception(
-          'Failed to accept connection request, Status Code: ${response.statusCode}',
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 400",
         );
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 500",
+        );
+      } else if (response.statusCode == 404) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 404",
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 401",
+        );
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :acceptConnectionRequest: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
       }
     } catch (e) {
-      print('Error accepting connection request: $e');
-      return false;
-    }
-  }
-
-  ///////////////////Reject connection Request
-  Future<bool> ignoreConnectionRequest(String userId, String? token) async {
-    try {
-      final response = await client.post(
-        Uri.parse('${baseUrl}connections/$userId'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({"isAccept": false}),
-      );
-
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        throw Exception(
-          'Failed to reject connection request, Status Code: ${response.statusCode}',
-        );
-      }
-    } catch (e) {
-      print('Error rejecting connection request: $e');
+      print(e.toString());
       return false;
     }
   }
 
   ///////////////////Send connection Request
-  Future<bool> sendConnectionRequest(String userId, String? token) async {
+  Future<bool> sendConnectionRequest(String userId) async {
+    print('userId: $userId');
     try {
       final response = await client.post(
         Uri.parse('${baseUrl}connections/'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({"userId": userId}),
+        headers: {'Authorization': 'Bearer $_token'},
+        body: jsonEncode({'userId': userId}),
       );
 
       if (response.statusCode == 201) {
         return true;
-      } else {
+      } else if (response.statusCode == 400) {
         throw Exception(
-          'Failed to send connection request, Status Code: ${response.statusCode}',
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 400",
         );
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :remosendConnectionRequestveConnection: 500",
+        );
+      } else if (response.statusCode == 404) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 404",
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 401",
+        );
+      } else if (response.statusCode == 409) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 409",
+        );
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :sendConnectionRequest: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
       }
     } catch (e) {
-      print('Error sending connection request: $e');
+      print(e.toString());
+      return false;
+    }
+  }
+  ///////////////////withdraw connection Request
+
+  Future<bool> withdrawConnectionRequest(String userId) async {
+    try {
+      final response = await client.delete(
+        Uri.parse('${baseUrl}connections/$userId/pending'),
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 400",
+        );
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 500",
+        );
+      } else if (response.statusCode == 404) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 404",
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 401",
+        );
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :withdrawConnectionRequest: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
+      }
+    } catch (e) {
+      print(e.toString());
       return false;
     }
   }

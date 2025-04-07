@@ -6,9 +6,9 @@ import '../../domain/usecases/get_connections_usecase.dart';
 import '../../domain/usecases/remove_connection_usecase.dart';
 import '../../domain/usecases/get_received_connection_requests_usecase.dart';
 import '../../domain/usecases/get_sent_connection_requests_usecase.dart';
-import '../../domain/usecases/accept_connection_request_usecase.dart';
-import '../../domain/usecases/ignore_connection_request_usecase.dart';
+import '../../domain/usecases/accept_ignore_connection_request_usecase.dart';
 import '../../domain/usecases/send_connection_request_usecase.dart';
+import '../../domain/usecases/withdraw_connection_request_usecase.dart';
 
 class ConnectionsProvider with ChangeNotifier {
   // Variables
@@ -46,9 +46,10 @@ class ConnectionsProvider with ChangeNotifier {
   final GetReceivedConnectionRequestsUseCase
   getReceivedConnectionRequestsUseCase;
   final GetSentConnectionRequestsUseCase getSentConnectionRequestsUseCase;
-  final AcceptConnectionRequestUseCase acceptConnectionRequestUseCase;
-  final IgnoreConnectionRequestUseCase ignoreConnectionRequestUseCase;
+  final AcceptIgnoreConnectionRequestUseCase
+  acceptIgnoreConnectionRequestUseCase;
   final SendConnectionRequestUseCase sendConnectionRequestUseCase;
+  final WithdrawConnectionRequestUseCase withdrawConnectionRequestUsecase;
 
   // Constructor
   ConnectionsProvider(
@@ -56,9 +57,9 @@ class ConnectionsProvider with ChangeNotifier {
     this.removeConnectionUseCase,
     this.getReceivedConnectionRequestsUseCase,
     this.getSentConnectionRequestsUseCase,
-    this.acceptConnectionRequestUseCase,
-    this.ignoreConnectionRequestUseCase,
+    this.acceptIgnoreConnectionRequestUseCase,
     this.sendConnectionRequestUseCase,
+    this.withdrawConnectionRequestUsecase,
   );
 
   // Get connections
@@ -98,7 +99,6 @@ class ConnectionsProvider with ChangeNotifier {
           connectionsList!.addAll(newConnectionsList);
         }
       }
-      sortList(_activeFilter, connectionsList);
     } catch (e) {
       print('\nConnectionsProvider: getConnections $e\n');
       _errorMain = e.toString();
@@ -138,10 +138,6 @@ class ConnectionsProvider with ChangeNotifier {
           receivedConnectionRequestsList!.addAll(newReceivedConnectionsList);
         }
       }
-      receivedConnectionRequestsList = sortList(
-        "Recently added",
-        receivedConnectionRequestsList,
-      );
     } catch (e) {
       print('\nConnectionsProvider: _getReceivedConnectionRequests $e\n');
       _errorMain = e.toString();
@@ -154,7 +150,6 @@ class ConnectionsProvider with ChangeNotifier {
     try {
       _isLoading = true;
       _errorMain = null;
-      notifyListeners();
 
       await _getReceivedConnectionRequests(isInitial: isInitial);
     } catch (e) {
@@ -189,10 +184,6 @@ class ConnectionsProvider with ChangeNotifier {
           sentConnectionRequestsList!.addAll(newSentConnectionsList);
         }
       }
-      sentConnectionRequestsList = sortList(
-        "Recently added",
-        sentConnectionRequestsList,
-      );
     } catch (e) {
       print('\nConnectionsProvider: _getSentConnectionRequests $e\n');
       _errorSecondary = e.toString();
@@ -205,7 +196,6 @@ class ConnectionsProvider with ChangeNotifier {
     try {
       _isLoading = true;
       _errorSecondary = null;
-      notifyListeners();
       await _getSentConnectionRequests(isInitial: isInitial);
     } catch (e) {
       print('\nConnectionsProvider: getSentConnectionRequests $e\n');
@@ -250,56 +240,31 @@ class ConnectionsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void sortConnectionBy(String filter) {
-    if (_activeFilter != filter) {
-      connectionsList = sortList(filter, connectionsList);
-      notifyListeners();
-    }
-  }
-
-  List<ConnectionsUserEntity>? sortList(
-    String filter,
-    List<ConnectionsUserEntity>? list,
-  ) {
-    if (_activeFilter != _selectedFilter) {
-      _activeFilter = _selectedFilter;
-    }
-
-    if (_activeFilter == 'Recently added') {
-      list!.sort(
-        (a, b) => DateTime.parse(b.time).compareTo(DateTime.parse(a.time)),
-      );
-    } else if (_activeFilter == 'Last name') {
-      list!.sort((a, b) => a.lastName.compareTo(b.lastName));
-    } else if (_activeFilter == 'First name') {
-      list!.sort((a, b) => a.firstName.compareTo(b.firstName));
-    }
-
-    return list;
-  }
-
   // Actions with bool returns
   Future<bool> removeConnection(String userId) async {
-    final removed = await removeConnectionUseCase.call(userId, "_token");
-    await getConnections();
+    final removed = await removeConnectionUseCase.call(userId);
+    if (removed) await getConnections();
     return removed;
   }
 
   Future<bool> acceptConnectionRequest(String userId) async {
-    final accepted = await acceptConnectionRequestUseCase.call("", userId);
+    final accepted = await acceptIgnoreConnectionRequestUseCase.call(userId);
     if (accepted) await getReceivedConnectionRequests();
     return accepted;
   }
 
   Future<bool> ignoreConnectionRequest(String userId) async {
-    final ignored = await ignoreConnectionRequestUseCase.call('', userId);
-    if (ignored) await getReceivedConnectionRequests();
+    final ignored = await acceptIgnoreConnectionRequestUseCase.call(userId);
     return ignored;
   }
 
   Future<bool> sendConnectionRequest(String userId) async {
     final sent = await sendConnectionRequestUseCase.call("", userId);
-    if (sent) await getReceivedConnectionRequests();
     return sent;
+  }
+
+  Future<bool> withdrawConnectionRequest(String userId) async {
+    final withdrawn = await withdrawConnectionRequestUsecase.call(userId);
+    return withdrawn;
   }
 }

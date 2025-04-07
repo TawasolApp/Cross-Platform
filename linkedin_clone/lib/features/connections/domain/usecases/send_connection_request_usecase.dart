@@ -5,7 +5,7 @@ class SendConnectionRequestUseCase {
 
   SendConnectionRequestUseCase(this.repository);
 
-  Future<bool> call(String token, String connectionId) async {
-    return await repository.sendConnectionRequest(token, connectionId);
+  Future<bool> call(String token, String userID) async {
+    return await repository.sendConnectionRequest(userID);
   }
 }

@@ -123,19 +123,7 @@ class PopUpMenuSortBy extends StatelessWidget {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              if (selectedFilter == 'Last name') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Sorting by last name is not supported yet',
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                connectionsProvider.sortConnectionBy(
-                                  selectedFilter,
-                                );
-                              }
+                              connectionsListProvider.getConnections();
                               Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(

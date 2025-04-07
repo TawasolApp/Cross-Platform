@@ -6,7 +6,7 @@ abstract class ConnectionsRepository {
     int limit = 0,
     int sortBy = 1,
   });
-  Future<bool> removeConnection(String userId, String? token);
+  Future<bool> removeConnection(String userId);
   Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList({
     int page = 0,
     int limit = 0,
@@ -15,7 +15,15 @@ abstract class ConnectionsRepository {
     int page = 0,
     int limit = 0,
   });
-  Future<bool> acceptConnectionRequest(String userId, String? token);
-  Future<bool> ignoreConnectionRequest(String userId, String? token);
-  Future<bool> sendConnectionRequest(String userId, String? token);
+  Future<List<ConnectionsUserEntity>> getFollowingList({
+    int page = 0,
+    int limit = 0,
+  });
+  Future<List<ConnectionsUserEntity>> getFollowersList({
+    int page = 0,
+    int limit = 0,
+  });
+  Future<bool> acceptIgnoreConnectionRequest(String userId);
+  Future<bool> sendConnectionRequest(String userId);
+  Future<bool> withdrawConnectionRequest(String userId);
 }

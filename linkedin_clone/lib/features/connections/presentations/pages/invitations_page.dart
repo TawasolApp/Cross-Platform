@@ -79,8 +79,11 @@ class _InvitationsPageState extends State<InvitationsPage> {
             ),
           ),
         ),
-        body: const TabBarView(
-          children: [ReceivedInvitationsBody(), SentInvitationsBody()],
+        body: TabBarView(
+          children: [
+            ReceivedInvitationsBody(),
+            SentInvitationsBody(),
+          ],
         ),
       ),
     );

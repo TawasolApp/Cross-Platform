@@ -26,9 +26,10 @@ import 'package:linkedin_clone/features/connections/domain/usecases/get_connecti
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/accept_connection_request_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/ignore_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignore_connection_request_usecase.dart';
+
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -199,14 +200,7 @@ void main() {
                     ),
                   ),
                 ),
-                AcceptConnectionRequestUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
-                IgnoreConnectionRequestUseCase(
+                AcceptIgnoreConnectionRequestUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
@@ -214,6 +208,13 @@ void main() {
                   ),
                 ),
                 SendConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                WithdrawConnectionRequestUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
@@ -289,7 +290,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const ConnectionsPage(),
+      home: const InvitationsPage(),
     );
   }
 }

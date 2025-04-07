@@ -16,15 +16,34 @@ class ReceivedInvitationsBody extends StatefulWidget {
 }
 
 class _ReceivedInvitationsBodyState extends State<ReceivedInvitationsBody> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   final connectionsProvider = Provider.of<ConnectionsProvider>(
-  //     context,
-  //     listen: false,
-  //   );
-  //   connectionsProvider.getReceivedConnectionRequests(isInitial: true);
-  // }
+  late ScrollController _scrollController;
+  late ConnectionsProvider connectionsProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
+    connectionsProvider = Provider.of<ConnectionsProvider>(
+      context,
+      listen: false,
+    );
+    connectionsProvider.getReceivedConnectionRequests(isInitial: true);
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 200 &&
+        !connectionsProvider.isBusy &&
+        connectionsProvider.hasMoreSecondary) {
+      connectionsProvider.getReceivedConnectionRequests();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,22 +102,34 @@ class _ReceivedInvitationsBodyState extends State<ReceivedInvitationsBody> {
                 );
               } else
                 return ListView.builder(
+                  controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: provider.receivedConnectionRequestsList!.length,
+                  itemCount:
+                      provider.receivedConnectionRequestsList!.length + 1,
                   itemBuilder: (context, index) {
-                    final request =
-                        provider.receivedConnectionRequestsList![index];
-                    return InvitationCard(
-                      userId: request.userId,
-                      firstName: request.firstName,
-                      lastName: request.lastName,
-                      headLine: request.headLine,
-                      profilePicture: request.profilePicture,
-                      mutualConnections: '0',
-                      connectionsProvider: connectionsProvider,
-                      receivedInvitation: true,
-                      time: formatTime(request.time),
-                    );
+                    if (index <
+                        provider.receivedConnectionRequestsList!.length) {
+                      final request =
+                          provider.receivedConnectionRequestsList![index];
+                      return InvitationCard(
+                        userId: request.userId,
+                        firstName: request.firstName,
+                        lastName: request.lastName,
+                        headLine: request.headLine,
+                        profilePicture: request.profilePicture,
+                        mutualConnections: '0',
+                        connectionsProvider: connectionsProvider,
+                        receivedInvitation: true,
+                        time: formatTime(request.time),
+                      );
+                    } else {
+                      return provider.isBusy
+                          ? const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: Center(child: CircularProgressIndicator()),
+                          )
+                          : const SizedBox.shrink();
+                    }
                   },
                 );
             },

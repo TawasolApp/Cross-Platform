@@ -13,15 +13,7 @@ class SentInvitationsBody extends StatefulWidget {
 }
 
 class _SentInvitationsBodyState extends State<SentInvitationsBody> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   final connectionsProvider = Provider.of<ConnectionsProvider>(
-  //     context,
-  //     listen: false,
-  //   );
-  //   connectionsProvider.getSentConnectionRequests(isInitial: true);
-  // }
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +58,23 @@ class _SentInvitationsBodyState extends State<SentInvitationsBody> {
                   );
                 }
               } else if (provider.sentConnectionRequestsList!.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No Sent Connection Requests',
-                    style: Theme.of(context).textTheme.bodyMedium,
+                return SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height - kToolbarHeight,
+                    width: MediaQuery.of(context).size.width,
+                    child: Center(
+                      child: Text(
+                        'No Sent Connection Requests',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
                   ),
                 );
-              } else
+              } else {
                 return ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  controller: _scrollController,
                   itemCount: provider.sentConnectionRequestsList!.length,
                   itemBuilder: (context, index) {
                     final request = provider.sentConnectionRequestsList![index];
@@ -90,6 +91,7 @@ class _SentInvitationsBodyState extends State<SentInvitationsBody> {
                     );
                   },
                 );
+              }
             },
           ),
         );
