@@ -22,4 +22,8 @@ class RouteNames {
   static const String updateInfo = "/update_info";
   static const String signInAndSecurity = "/sign_in_and_security";
   static const String postDetails = "/post_details";
+  static const String connections = "/connections";
+  static const String followers = "/followers";
+  static const String following = "/following";
+  static const String invitations = "/invitations";
 }

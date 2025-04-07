@@ -23,7 +23,7 @@ class NetworksProvider with ChangeNotifier {
 
   List<ConnectionsUserEntity>? followingList;
   List<ConnectionsUserEntity>? followersList;
-
+  List<ConnectionsUserEntity>? blockedList;
   GetFollowingListUseCase getFollowingListUseCase;
   UnfollowUserUseCase unfollowUseCase;
   GetFollowersListUseCase getFollowersListUseCase;
@@ -75,7 +75,6 @@ class NetworksProvider with ChangeNotifier {
   }
 
   Future<void> getFollowersList({bool isInitial = false}) async {
-    ///TODO azabtha for followers not following
     if (_isBusy) return;
     _isBusy = true;
     try {
@@ -113,6 +112,44 @@ class NetworksProvider with ChangeNotifier {
     }
   }
 
+  Future<void> getBlockedList({bool isInitial = false}) async {
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _isLoading = true;
+      _error = null;
+      if (isInitial) {
+        _currentPage = 1;
+        _hasMore = true;
+      } else {
+        _currentPage++;
+      }
+      if (_currentPage == 1) {
+        blockedList = await getFollowersListUseCase.call(
+          page: _currentPage,
+          limit: 15,
+        );
+      } else {
+        final newBlockedList = await getFollowersListUseCase.call(
+          page: _currentPage,
+          limit: 15,
+        );
+        if (newBlockedList.isEmpty) {
+          _hasMore = false;
+        } else {
+          blockedList!.addAll(newBlockedList);
+        }
+      }
+    } catch (e) {
+      print('\nNetworksProvider: getBlockedList $e\n');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      _isBusy = false;
+      notifyListeners();
+    }
+  }
+
   Future<bool> unfollowUser(String userId) async {
     try {
       // Call the unfollow use case here
@@ -129,6 +166,26 @@ class NetworksProvider with ChangeNotifier {
       return await followUseCase.call(userId);
     } catch (e) {
       print('\nNetworksProvider: followUser $e\n');
+      _error = e.toString();
+      return false; // Return false if there was an error
+    }
+  }
+
+  Future<bool> blockUser(String userId) async {
+    try {
+      return await unfollowUseCase.call(userId);
+    } catch (e) {
+      print('\nNetworksProvider: blockUser $e\n');
+      _error = e.toString();
+      return false; // Return false if there was an error
+    }
+  }
+
+  Future<bool> unblockUser(String userId) async {
+    try {
+      return await followUseCase.call(userId);
+    } catch (e) {
+      print('\nNetworksProvider: unblockUser $e\n');
       _error = e.toString();
       return false; // Return false if there was an error
     }

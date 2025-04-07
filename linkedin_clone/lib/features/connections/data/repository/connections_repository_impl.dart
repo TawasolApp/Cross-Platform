@@ -98,14 +98,31 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<bool> acceptIgnoreConnectionRequest(String userId) async {
+  Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept) async {
     try {
       final accepted = await remoteDataSource.acceptIgnoreConnectionRequest(
         userId,
+        accept,
       );
       return accepted;
     } catch (e) {
       throw Exception('Failed to accept connection request');
+    }
+  }
+
+  @override
+  Future<List<ConnectionsUserEntity>> getBlockedList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final blockedList = await remoteDataSource.getBlockedList(
+        page: page,
+        limit: limit,
+      );
+      return blockedList;
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -148,6 +165,26 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       return unfollowed;
     } catch (e) {
       throw Exception('Failed to unfollow user');
+    }
+  }
+
+  @override
+  Future<bool> blockUser(String userId) async {
+    try {
+      final blocked = await remoteDataSource.blockUser(userId);
+      return blocked;
+    } catch (e) {
+      throw Exception('Failed to block user');
+    }
+  }
+
+  @override
+  Future<bool> unblockUser(String userId) async {
+    try {
+      final unBlocked = await remoteDataSource.unblockUser(userId);
+      return unBlocked;
+    } catch (e) {
+      throw Exception('Failed to block user');
     }
   }
 }

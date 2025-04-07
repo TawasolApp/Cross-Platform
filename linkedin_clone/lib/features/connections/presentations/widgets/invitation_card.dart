@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 import "error_dialog.dart";
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 
 class InvitationCard extends StatelessWidget {
   final String userId;
@@ -34,11 +36,7 @@ class InvitationCard extends StatelessWidget {
     return Material(
       color: Theme.of(context).colorScheme.onSecondary,
       child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Routing to Messaging page')),
-          );
-        },
+        onTap: () => _goToProfile(context),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 1),
           child: Column(
@@ -217,4 +215,11 @@ class InvitationCard extends StatelessWidget {
       ),
     );
   }
+}
+
+void _goToProfile(BuildContext context) {
+  // Navigate to user profile
+  GoRouter.of(
+    context,
+  ).go(RouteNames.profile); // Ensure RouteNames.profile is defined
 }

@@ -22,6 +22,10 @@ import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page.dart';
 import '../../features/main_layout/presentation/pages/settings.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/following_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/followers_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -73,38 +77,101 @@ class AppRouter {
         path: RouteNames.profile,
         builder: (context, state) => UserProfile(),
       ),
+      GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
-        path: RouteNames.home,
-         builder: (context, state) => HomePage(),
-      ), 
-      GoRoute(path: RouteNames.addName, builder: (context, state) => AddNamePage()),
-      GoRoute(path: RouteNames.addEmail, builder: (context, state) => AddEmailPasswordPage()),
-      GoRoute(path: RouteNames.verifyEmail, builder: (context, state) => EmailVerificationPage()),
-      GoRoute(path: RouteNames.forgotPassword, builder: (context, state) => ForgotPasswordPage()),
-      GoRoute(path: RouteNames.checkemail, builder: (context, state) => ForgotPasswordCheckEmailPage()),
-      GoRoute(path: RouteNames.main, builder: (context, state) => MainNavigationPage()),
-      GoRoute(path: RouteNames.createPost,builder: (context, state) => PostCreationPage() ),
-      GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
-      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "elsewedy-electric", title: "Test") ),
-      GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
-      GoRoute(path: RouteNames.settings, builder: (context, state) => SettingsPage()),
-      GoRoute(path: RouteNames.deleteAccount, builder: (context, state) => DeleteAccountPage(
-        userName: "Omar Kaddah",
-        connectionName: "Shikabala",
-        connectionRole: "Greatest of all time",
-        connectionCount: 100,
-      )),
-      GoRoute(path: RouteNames.signInAndSecurity, builder: (context, state) => SignInSecurityPage()),
-      GoRoute(path: RouteNames.changePassword, builder: (context, state) => ChangePasswordPage()),
-      GoRoute(path: RouteNames.updateEmail, builder: (context, state) => UpdateEmailPage()),
-      GoRoute(path: RouteNames.updateInfo, builder: (context, state) => UpdateInfoPage()),
-      GoRoute(path: RouteNames.postDetails,
-              builder: (context, state) {
-                final postId = state.extra as String;
-                return PostDetailsPage(postId: postId);
+        path: RouteNames.addName,
+        builder: (context, state) => AddNamePage(),
+      ),
+      GoRoute(
+        path: RouteNames.addEmail,
+        builder: (context, state) => AddEmailPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.verifyEmail,
+        builder: (context, state) => EmailVerificationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        builder: (context, state) => ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.checkemail,
+        builder: (context, state) => ForgotPasswordCheckEmailPage(),
+      ),
+      GoRoute(
+        path: RouteNames.main,
+        builder: (context, state) => MainNavigationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.createPost,
+        builder: (context, state) => PostCreationPage(),
+      ),
+      GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
+      GoRoute(
+        path: RouteNames.companyPage,
+        builder:
+            (context, state) => CompanyProfileScreen(
+              companyId: "elsewedy-electric",
+              title: "Test",
+            ),
+      ),
+      GoRoute(
+        path: RouteNames.profile,
+        builder: (context, state) => UserProfile(),
+      ),
+      GoRoute(
+        path: RouteNames.settings,
+        builder: (context, state) => SettingsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.deleteAccount,
+        builder:
+            (context, state) => DeleteAccountPage(
+              userName: "Omar Kaddah",
+              connectionName: "Shikabala",
+              connectionRole: "Greatest of all time",
+              connectionCount: 100,
+            ),
+      ),
+      GoRoute(
+        path: RouteNames.signInAndSecurity,
+        builder: (context, state) => SignInSecurityPage(),
+      ),
+      GoRoute(
+        path: RouteNames.changePassword,
+        builder: (context, state) => ChangePasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.updateEmail,
+        builder: (context, state) => UpdateEmailPage(),
+      ),
+      GoRoute(
+        path: RouteNames.updateInfo,
+        builder: (context, state) => UpdateInfoPage(),
+      ),
+      GoRoute(
+        path: RouteNames.postDetails,
+        builder: (context, state) {
+          final postId = state.extra as String;
+          return PostDetailsPage(postId: postId);
         },
       ),
-
+      GoRoute(
+        path: RouteNames.connections,
+        builder: (context, state) => ConnectionsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.followers,
+        builder: (context, state) => FollowersPage(),
+      ),
+      GoRoute(
+        path: RouteNames.following,
+        builder: (context, state) => FollowingPage(),
+      ),
+      GoRoute(
+        path: RouteNames.invitations,
+        builder: (context, state) => InvitationsPage(),
+      ),
     ],
   );
 }

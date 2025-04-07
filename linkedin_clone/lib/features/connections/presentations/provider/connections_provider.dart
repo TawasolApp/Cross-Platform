@@ -248,13 +248,18 @@ class ConnectionsProvider with ChangeNotifier {
   }
 
   Future<bool> acceptConnectionRequest(String userId) async {
-    final accepted = await acceptIgnoreConnectionRequestUseCase.call(userId);
-    if (accepted) await getReceivedConnectionRequests();
+    final accepted = await acceptIgnoreConnectionRequestUseCase.call(
+      userId,
+      true,
+    );
     return accepted;
   }
 
   Future<bool> ignoreConnectionRequest(String userId) async {
-    final ignored = await acceptIgnoreConnectionRequestUseCase.call(userId);
+    final ignored = await acceptIgnoreConnectionRequestUseCase.call(
+      userId,
+      false,
+    );
     return ignored;
   }
 

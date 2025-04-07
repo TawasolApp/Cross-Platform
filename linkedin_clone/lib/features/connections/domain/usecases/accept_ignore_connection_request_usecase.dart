@@ -5,7 +5,7 @@ class AcceptIgnoreConnectionRequestUseCase {
 
   AcceptIgnoreConnectionRequestUseCase(this.repository);
 
-  Future<bool> call(String userId) async {
-    return await repository.acceptIgnoreConnectionRequest(userId);
+  Future<bool> call(String userId, bool accept) async {
+    return await repository.acceptIgnoreConnectionRequest(userId, accept);
   }
 }

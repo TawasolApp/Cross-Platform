@@ -25,9 +25,15 @@ abstract class ConnectionsRepository {
     int page = 0,
     int limit = 0,
   });
-  Future<bool> acceptIgnoreConnectionRequest(String userId);
+  Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept);
   Future<bool> sendConnectionRequest(String userId);
   Future<bool> withdrawConnectionRequest(String userId);
   Future<bool> unfollowUser(String userId);
   Future<bool> followUser(String userId);
+  Future<bool> blockUser(String userId);
+  Future<bool> unblockUser(String userId);
+  Future<List<ConnectionsUserEntity>> getBlockedList({
+    int page = 0,
+    int limit = 0,
+  });
 }

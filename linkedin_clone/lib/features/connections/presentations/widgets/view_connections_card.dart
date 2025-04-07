@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/pop_up_menu_user.dart';
 import '../provider/connections_provider.dart';
 import '../../../../core/utils/time_formatter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 
 /// **Connection Card** includes user data and action buttons
 /// - User Data includes user image, name, headline, connection time, and online status
@@ -30,10 +32,7 @@ class ConnectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap:
-          () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Routing to user profile page')),
-          ), //TODO: Navigate to user profile ,
+      onTap: () => _goToProfile(context), //TODO: Navigate to user profile ,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         child: Row(
@@ -185,4 +184,11 @@ class ConnectionCard extends StatelessWidget {
       ),
     );
   }
+}
+
+void _goToProfile(BuildContext context) {
+  // Navigate to user profile
+  GoRouter.of(
+    context,
+  ).go(RouteNames.profile); // Ensure RouteNames.profile is defined
 }

@@ -4,14 +4,21 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:linkedin_clone/features/connections/data/models/connections_user_model.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 
 class ConnectionsRemoteDataSource {
   final http.Client client;
   final baseUrl = 'https://tawasolapp.me/api/';
-  final String _token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzAiLCJlbWFpbCI6Imhhbms2OEBnbWFpbC5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDAxODAxNCwiZXhwIjoxNzQ0MDIxNjE0fQ.JUCKITIUkFYySauT8wyJFcMt5ddDfXBUFOizKM3d-mw";
 
   ConnectionsRemoteDataSource({required this.client});
+
+  Future<String> initToken() async {
+    final token = await TokenService.getToken();
+    if (token == null) {
+      throw Exception('Token not found');
+    }
+    return token;
+  }
 
   ///////////////////Get connections list
   Future<List<ConnectionsUserEntity>> getConnectionsList({
@@ -27,7 +34,7 @@ class ConnectionsRemoteDataSource {
             ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $_token',
+              'Authorization': 'Bearer $initToken()',
             },
           )
           .timeout(
@@ -69,12 +76,10 @@ class ConnectionsRemoteDataSource {
       print('page: $page, limit: $limit');
       final response = await client
           .get(
-            Uri.parse(
-              '${baseUrl}connections/pending?page=$page&limit=$limit&by=1&direction=1',
-            ),
+            Uri.parse('${baseUrl}connections/pending?page=$page&limit=$limit'),
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer $_token',
+              'Authorization': 'Bearer $initToken()',
             },
           )
           .timeout(
@@ -117,12 +122,10 @@ class ConnectionsRemoteDataSource {
     try {
       final response = await client
           .get(
-            Uri.parse(
-              '${baseUrl}connections/sent/?page=$page&limit=$limit&by=1&direction=1',
-            ),
+            Uri.parse('${baseUrl}connections/sent/?page=$page&limit=$limit'),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $_token',
+              'Authorization': 'Bearer $initToken()',
             },
           )
           .timeout(
@@ -166,11 +169,11 @@ class ConnectionsRemoteDataSource {
       final response = await client
           .get(
             Uri.parse(
-              '${baseUrl}connections/followers?page=$page&limit=$limit&by=1&direction=1',
+              '${baseUrl}connections/followers?page=$page&limit=$limit',
             ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $_token',
+              'Authorization': 'Bearer $initToken()',
             },
           )
           .timeout(
@@ -212,11 +215,11 @@ class ConnectionsRemoteDataSource {
       final response = await client
           .get(
             Uri.parse(
-              '${baseUrl}connections/following?page=$page&limit=$limit&by=1&direction=1',
+              '${baseUrl}connections/following?page=$page&limit=$limit',
             ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $_token',
+              'Authorization': 'Bearer $initToken()',
             },
           )
           .timeout(
@@ -248,6 +251,49 @@ class ConnectionsRemoteDataSource {
     }
   }
 
+  ///////////////////Get blocked list
+  Future<List<ConnectionsUserEntity>> getBlockedList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final response = await client
+          .get(
+            Uri.parse('${baseUrl}connections/blocked?page=$page&limit=$limit'),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $initToken()',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
+        throw Exception('ConnectionsRemoteDataSource :getBlockedList: 500');
+      } else {
+        print(
+          '\nConnectionsRemoteDataSource :getBlockedList: ${response.statusCode}\n',
+        );
+        throw Exception('Unknown error');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   ///////////////////remove connection
   Future<bool> removeConnection(String userId) async {
     try {
@@ -255,7 +301,7 @@ class ConnectionsRemoteDataSource {
         Uri.parse('${baseUrl}connections/$userId'),
         headers: {
           'Accept': 'application/json',
-          'Authorization': 'Bearer $_token',
+          'Authorization': 'Bearer $initToken()',
         },
         body: jsonEncode({"isAccept": true}),
       );
@@ -284,16 +330,16 @@ class ConnectionsRemoteDataSource {
   }
 
   ///////////////////Accept or Ignore connection Request
-  Future<bool> acceptIgnoreConnectionRequest(String userId) async {
+  Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept) async {
     print('userId: $userId');
     try {
       final response = await client.post(
         Uri.parse('${baseUrl}connections/$userId'),
-        headers: {'Authorization': 'Bearer $_token'},
-        body: jsonEncode({"isAccept": true}),
+        headers: {'Authorization': 'Bearer $initToken()'},
+        body: jsonEncode({"isAccept": accept}),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 204) {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(
@@ -330,7 +376,7 @@ class ConnectionsRemoteDataSource {
     try {
       final response = await client.post(
         Uri.parse('${baseUrl}connections/'),
-        headers: {'Authorization': 'Bearer $_token'},
+        headers: {'Authorization': 'Bearer $initToken()'},
         body: jsonEncode({'userId': userId}),
       );
 
@@ -374,7 +420,7 @@ class ConnectionsRemoteDataSource {
     try {
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/$userId/pending'),
-        headers: {'Authorization': 'Bearer $_token'},
+        headers: {'Authorization': 'Bearer $initToken()'},
       );
 
       if (response.statusCode == 200) {
@@ -413,7 +459,7 @@ class ConnectionsRemoteDataSource {
     try {
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/unfollow/$userId'),
-        headers: {'Authorization': 'Bearer $_token'},
+        headers: {'Authorization': 'Bearer $initToken()'},
       );
 
       if (response.statusCode == 204) {
@@ -444,7 +490,7 @@ class ConnectionsRemoteDataSource {
     try {
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/follow'),
-        headers: {'Authorization': 'Bearer $_token'},
+        headers: {'Authorization': 'Bearer $initToken()'},
         body: jsonEncode({'userId': userId}),
       );
 
@@ -463,6 +509,67 @@ class ConnectionsRemoteDataSource {
       } else {
         print(
           'ConnectionsRemoteDataSource :followUser: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  ///////////////////block user
+  Future<bool> blockUser(String userId) async {
+    try {
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/block/$userId'),
+        headers: {'Authorization': 'Bearer $initToken()'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception("ConnectionsRemoteDataSource :blockUser: 400");
+      } else if (response.statusCode == 500) {
+        throw Exception("ConnectionsRemoteDataSource :blockUser: 500");
+      } else if (response.statusCode == 404) {
+        throw Exception("ConnectionsRemoteDataSource :blockUser: 404");
+      } else if (response.statusCode == 401) {
+        throw Exception("ConnectionsRemoteDataSource :blockUser: 401");
+      } else {
+        print('ConnectionsRemoteDataSource :blockUser: ${response.statusCode}');
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  ///////////////////unblock user
+  ///
+  Future<bool> unblockUser(String userId) async {
+    try {
+      final response = await client.delete(
+        Uri.parse('${baseUrl}connections/block/$userId'),
+        headers: {'Authorization': 'Bearer $initToken()'},
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception("ConnectionsRemoteDataSource :unblockUser: 400");
+      } else if (response.statusCode == 500) {
+        throw Exception("ConnectionsRemoteDataSource :unblockUser: 500");
+      } else if (response.statusCode == 404) {
+        throw Exception("ConnectionsRemoteDataSource :unblockUser: 404");
+      } else if (response.statusCode == 401) {
+        throw Exception("ConnectionsRemoteDataSource :unblockUser: 401");
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :unblockUser: ${response.statusCode}',
         );
         // Handle other status codes as needed
         throw Exception("Unknown error");

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import "unfollow_dialog.dart";
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 
 /// **Follow Card** includes user data
 /// - User Data includes user image, name, headline, and online status
@@ -33,10 +35,7 @@ class FollowCard extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap:
-              () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Routing to user profile page')),
-              ), // TODO: Navigate to user profile
+          onTap: () => _goToProfile(context),
           borderRadius: BorderRadius.circular(8),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,4 +172,11 @@ class FollowCard extends StatelessWidget {
       ),
     );
   }
+}
+
+void _goToProfile(BuildContext context) {
+  // Navigate to user profile
+  GoRouter.of(
+    context,
+  ).go(RouteNames.profile); // Ensure RouteNames.profile is defined
 }
