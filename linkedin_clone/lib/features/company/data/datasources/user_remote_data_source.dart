@@ -102,7 +102,9 @@ class UserRemoteDataSource {
     );
     print('Fetching common user following:');
     print('Response body for fetch common users following: ${response.body}');
-    print('Response status code for common users following: ${response.statusCode}');
+    print(
+      'Response status code for common users following: ${response.statusCode}',
+    );
     if (response.statusCode == 200) {
       // If the server returns a successful response
       List<dynamic> data = json.decode(response.body);
@@ -110,6 +112,32 @@ class UserRemoteDataSource {
     } else {
       // If the response is not successful, throw an exception
       throw Exception('Failed to load admins');
+    }
+  }
+
+  Future<List<UserModel>> searchUsers(String query,{int page = 1,
+    int limit = 3}) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/connections/users?name=$query&page=$page&limit=$limit'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      print('Response from search users: ${response.body}');
+      print('Response status code from search users: ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.map((e) => UserModel.fromJson(e)).toList();
+      } else {
+        throw Exception('Failed to load users');
+      }
+    } catch (e) {
+      throw Exception('Error occurred while fetching users: $e');
     }
   }
 }

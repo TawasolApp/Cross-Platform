@@ -16,13 +16,18 @@ import 'package:linkedin_clone/features/authentication/Presentation/Provider/aut
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/geta_all_company_admins.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/search_users_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_admins_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_list_companies_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
@@ -305,6 +310,7 @@ void main() {
                   companyRepository: companyrepos,
                 ),
                 addAdminUseCase: AddAdminUseCase(repository: userRepos),
+                searchUsersUseCase: SearchUsersUseCase(userRemoteDataSource: userRemoteDataSource)
               ),
         ),
 
@@ -321,6 +327,19 @@ void main() {
               (_) => RelatedCompaniesProvider(
                 getRelatedCompaniesUseCase: GetRelatedCompanies(
                   repository: companyrepos,
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => CompanyCreateProvider(
+                companyRepository: CompanyRepositoryImpl(
+                  remoteDataSource: CompanyRemoteDataSource(),
+                ),
+                uploadImageUseCase: UploadImageUseCase(
+                  mediaRepository: MediaRepository(
+                    mediaRemoteDataSource: MediaRemoteDataSource(),
+                  ),
                 ),
               ),
         ),

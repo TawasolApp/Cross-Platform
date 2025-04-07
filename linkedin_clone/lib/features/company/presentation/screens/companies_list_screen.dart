@@ -28,7 +28,7 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
             child: TextField(
               controller: _searchController,
-              onSubmitted: (value) {
+              onChanged: (value) {
                 // Reset provider and fetch companies based on new query
                 provider.resetProvider();
                 provider.fetchCompanies(value.trim(), page: 1, limit: 5);

@@ -24,49 +24,63 @@ class CompanyAboutWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Overview", style: Theme.of(context).textTheme.titleLarge),
+          Text("Description", style: Theme.of(context).textTheme.titleLarge),
           SizedBox(height: 8),
           Text(
-            context.read<CompanyProvider>().company!.overview ??
-                'No overview available',
+            context.read<CompanyProvider>().company?.description?.isEmpty ??
+                    true
+                ? 'No description available'
+                : context.read<CompanyProvider>().company?.description ??
+                    'No description available',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           SizedBox(height: 16),
           Text("Details", style: Theme.of(context).textTheme.titleLarge),
           SizedBox(height: 8),
-          Text('Website', style: Theme.of(context).textTheme.bodyLarge),
+          Text('Website', style: Theme.of(context).textTheme.titleMedium),
           GestureDetector(
             onTap: () async {
               final Uri url = Uri.parse(
-                context.read<CompanyProvider>().company!.website ??
-                    "https://www.google.com",
+                context.read<CompanyProvider>().company!.website?.isEmpty ??
+                        true
+                    ? "https://www.google.com"
+                    : context.read<CompanyProvider>().company!.website!,
               );
               await launchUrl(url);
             },
             child: Text(
-              context.read<CompanyProvider>().company!.website ??
-                  'No website available',
-              style: Theme.of(context).textTheme.bodySmall,
+              context.read<CompanyProvider>().company!.website?.isEmpty ?? true
+                  ? 'No website available'
+                  : context.read<CompanyProvider>().company!.website!,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                decoration:
+                    TextDecoration.underline, 
+              ),
             ),
           ),
           SizedBox(height: 4),
-          Text('Industry', style: Theme.of(context).textTheme.bodyLarge),
+          Text('Industry', style: Theme.of(context).textTheme.titleMedium),
           Text(
-            context.read<CompanyProvider>().company!.industry,
-            style: Theme.of(context).textTheme.bodySmall,
+            context.read<CompanyProvider>().company!.industry.isEmpty
+                ? 'No industry available'
+                : context.read<CompanyProvider>().company!.industry,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           SizedBox(height: 4),
-          Text('Headquarters', style: Theme.of(context).textTheme.bodyLarge),
+          Text('Headquarters', style: Theme.of(context).textTheme.titleMedium),
           Text(
-            context.read<CompanyProvider>().company!.address ??
-                'No address available',
-            style: Theme.of(context).textTheme.bodySmall,
+            context.read<CompanyProvider>().company!.address?.isEmpty ?? true
+                ? 'No address available'
+                : context.read<CompanyProvider>().company!.address!,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           SizedBox(height: 4),
-          Text('Company Size', style: Theme.of(context).textTheme.bodyLarge),
+          Text('Company Size', style: Theme.of(context).textTheme.titleMedium),
           Text(
-            '${context.read<CompanyProvider>().company!.companySize} ',
-            style: Theme.of(context).textTheme.bodySmall,
+            context.read<CompanyProvider>().company!.companySize.isEmpty
+                ? 'No company size available'
+                : context.read<CompanyProvider>().company!.companySize,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           SizedBox(height: 8),
 
@@ -203,7 +217,9 @@ class CompanyAboutWidget extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder:
-                              (_) => FullRelatedCompaniesScreen(companyId: companyId,),
+                              (_) => FullRelatedCompaniesScreen(
+                                companyId: companyId,
+                              ),
                         ),
                       );
                     },

@@ -6,8 +6,7 @@ class FetchCompanyAdminsUseCase {
 
   FetchCompanyAdminsUseCase({required this.companyRepository});
 
-  Future<List<User>> execute (String companyId) async {
-    print('HHIIIIIIIIIIIIIIIIIIII');
-    return await companyRepository.getCompanyAdmins(companyId);
+  Future<List<User>> execute (String companyId,{int page = 1, int limit = 3}) async {
+    return await companyRepository.getCompanyAdmins(companyId,page: page, limit: limit);
   }
 }

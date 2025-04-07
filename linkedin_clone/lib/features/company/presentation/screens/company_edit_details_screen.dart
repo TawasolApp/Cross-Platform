@@ -108,7 +108,9 @@ class EditCompanyScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddAdminScreen(companyId: companyId,),
+                                builder:
+                                    (context) =>
+                                        AddAdminScreen(companyId: companyId),
                               ),
                             );
                           },
@@ -131,7 +133,6 @@ class EditCompanyScreen extends StatelessWidget {
                       'Description',
                       descriptionController,
                       maxLines: 3,
-                      validator: requiredValidator,
                     ),
                     // Company Size Dropdown Field
                     buildDropdownField(
@@ -159,14 +160,13 @@ class EditCompanyScreen extends StatelessWidget {
                       companyTypeOptions,
                     ),
                     // Industry Field
-                    buildField('Industry', industryController),
-                    // Overview Field
                     buildField(
-                      'Overview',
-                      overviewController,
-                      maxLines: 4,
+                      'Industry',
+                      industryController,
                       validator: requiredValidator,
                     ),
+                    // Overview Field
+                    buildField('Overview', overviewController, maxLines: 4),
                     // Founded Year Field
                     buildField('Founded Year', foundedController),
                     // Website Field
@@ -361,7 +361,7 @@ class EditCompanyScreen extends StatelessWidget {
                                     overview: overviewController.text,
                                     founded:
                                         int.tryParse(foundedController.text) ??
-                                        0,
+                                        2000,
                                     website: websiteController.text,
                                     address: addressController.text,
                                     contactNumber: contactNumberController.text,
@@ -484,7 +484,7 @@ class EditCompanyScreen extends StatelessWidget {
   String? emailValidator(String? value) {
     final emailPattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
     if (value == null || value.isEmpty) {
-      return 'This field is required';
+      return null;
     }
     if (!RegExp(emailPattern).hasMatch(value)) {
       return 'Enter a valid email address';
@@ -494,9 +494,8 @@ class EditCompanyScreen extends StatelessWidget {
 
   String? urlValidator(String? value) {
     final urlPattern = r"^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$";
-    if (value == null || value.isEmpty) {
-      return 'This field is required';
-    }
+  if (value == null || value.isEmpty) return null;
+
     if (!RegExp(urlPattern).hasMatch(value)) {
       return 'Enter a valid URL';
     }

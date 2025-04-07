@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
+import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_edit_details_screen.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_list_followers.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_page_tabs.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_create_screen.dart';
 import 'package:provider/provider.dart';
@@ -86,14 +90,25 @@ class CompanyProfileScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) => ChangeNotifierProvider(
-                                create:
-                                    (_) => CompanyCreateProvider(
-                                      companyRepository: CompanyRepositoryImpl(
-                                        remoteDataSource:
-                                            CompanyRemoteDataSource(),
-                                      ),
-                                    ),
+                              (context) => MultiProvider(
+                                providers: [
+                                  ChangeNotifierProvider(
+                                    create:
+                                        (_) => CompanyCreateProvider(
+                                          companyRepository:
+                                              CompanyRepositoryImpl(
+                                                remoteDataSource:
+                                                    CompanyRemoteDataSource(),
+                                              ),
+                                          uploadImageUseCase: UploadImageUseCase(
+                                            mediaRepository: MediaRepository(
+                                              mediaRemoteDataSource:
+                                                  MediaRemoteDataSource(),
+                                            ),
+                                          ),
+                                        ),
+                                  ),
+                                ],
                                 child: CreateCompanyScreen(),
                               ),
                         ),
@@ -125,6 +140,8 @@ class CompanyProfileScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+
           title: Consumer<CompanyProvider>(
             builder: (context, provider, child) {
               return (TextField(
@@ -343,7 +360,11 @@ class CompanyProfileScreen extends StatelessWidget {
                                             runSpacing: 4,
                                             children: [
                                               if (provider.company?.industry !=
-                                                  null)
+                                                      null &&
+                                                  provider
+                                                      .company!
+                                                      .industry!
+                                                      .isNotEmpty)
                                                 Text(
                                                   "${provider.company!.industry} •",
                                                   style: Theme.of(context)
@@ -354,7 +375,11 @@ class CompanyProfileScreen extends StatelessWidget {
                                                       ),
                                                 ),
                                               if (provider.company?.address !=
-                                                  null)
+                                                      null &&
+                                                  provider
+                                                      .company!
+                                                      .address!
+                                                      .isNotEmpty)
                                                 Text(
                                                   "${provider.company!.address} •",
                                                   style: Theme.of(context)
@@ -373,14 +398,33 @@ class CompanyProfileScreen extends StatelessWidget {
                                                       color: Colors.grey,
                                                     ),
                                               ),
-                                              Text(
-                                                "${formatNumber(provider.company?.followers ?? 0)} followers",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      color: Colors.grey,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // Navigate to the CompanyFollowersScreen
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (context) =>
+                                                              CompanyFollowersScreen(
+                                                                companyId:
+                                                                    provider
+                                                                        .company
+                                                                        ?.companyId ??
+                                                                    "",
+                                                              ),
                                                     ),
+                                                  );
+                                                },
+                                                child: Text(
+                                                  "${formatNumber(provider.company?.followers ?? 0)} followers",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        color: Colors.grey,
+                                                      ),
+                                                ),
                                               ),
                                             ],
                                           ),
@@ -418,7 +462,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                                     softWrap: true,
                                                     overflow:
                                                         TextOverflow.ellipsis,
-                                                        maxLines: 2,
+                                                    maxLines: 2,
                                                   ),
                                                 ),
                                               ],

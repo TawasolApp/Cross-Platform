@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkedin_clone/features/company/data/models/company_create_model.dart';
-import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 
 class CompanyCreateProvider with ChangeNotifier {
   final CompanyRepositoryImpl _companyRepository;
+  final UploadImageUseCase _uploadImageUseCase;
 
-  CompanyCreateProvider({required CompanyRepositoryImpl companyRepository})
-    : _companyRepository = companyRepository;
+  CompanyCreateProvider({
+    required CompanyRepositoryImpl companyRepository,
+    required UploadImageUseCase uploadImageUseCase,
+  }) : _companyRepository = companyRepository,
+       _uploadImageUseCase = uploadImageUseCase;
 
   // ✅ Create Company Form Fields
   String? _companyName;
@@ -142,11 +146,15 @@ class CompanyCreateProvider with ChangeNotifier {
 
     _isLoading = true;
     notifyListeners();
+    String? logoUrl =
+        _companyLogo != null ? await _uploadImageUseCase.execute(_companyLogo!) : null;
+    String? bannerUrl =
+        _companyBanner != null ? await _uploadImageUseCase.execute(_companyBanner!) : null;
 
     // ✅ Create Company instance
     final newCompany = CompanyCreateModel(
       name: _companyName!,
-      logo: _companyLogo?.path ?? "",
+      logo: logoUrl ?? "",
       description: _companyDescription ?? "",
       companySize: _companySize ?? "",
       companyType: _companyType ?? "",
@@ -158,7 +166,7 @@ class CompanyCreateProvider with ChangeNotifier {
       location: _companyLocation ?? "",
       email: _companyEmail ?? "",
       contactNumber: _companyContactNumber ?? "",
-      banner: _companyBanner?.path ?? "",
+      banner: bannerUrl ?? "",
     );
 
     try {

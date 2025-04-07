@@ -35,22 +35,28 @@ class CompanyRemoteDataSource {
     }
   }
 
-
-  Future<List<CompanyModel>> getRelatedCompanies(String companyId,{int page = 1,
-    int limit = 4}) async {
+  Future<List<CompanyModel>> getRelatedCompanies(
+    String companyId, {
+    int page = 1,
+    int limit = 4,
+  }) async {
     // TODO: Replace this mock data with an API request once the backend is ready
     print('Fetching related companies...');
     final token = await TokenService.getToken();
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/companies/$companyId/suggested?page=$page&limit=$limit'),
+        Uri.parse(
+          '$baseUrl/companies/$companyId/suggested?page=$page&limit=$limit',
+        ),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
       print('Response body for related companies: ${response.body}');
-      print('Response status code for related companies: ${response.statusCode}');
+      print(
+        'Response status code for related companies: ${response.statusCode}',
+      );
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         // Print each company for debugging
@@ -121,69 +127,28 @@ class CompanyRemoteDataSource {
       throw Exception('Failed to fetch company data');
     }
 
-    // Parse the existing company data
-    Map<String, dynamic> existingCompany = jsonDecode(response.body);
+    // Decode existing company data
+    final Map<String, dynamic> existingCompany = jsonDecode(response.body);
+    print("Existing company data:");
+    existingCompany.forEach((key, value) {
+      print("$key: $value");
+    });
+    // Get the new data from the model
+    final Map<String, dynamic> newCompanyData = company.toJson();
 
-    // Prepare a map for the fields that have changed
+    // Compare and keep only changed fields
     final Map<String, dynamic> updatedData = {};
+    newCompanyData.forEach((key, value) {
+      final existingValue = existingCompany[key];
 
-    // Only update fields that have changed
-    if (company.name != null && company.name != existingCompany['name']) {
-      updatedData['name'] = company.name;
-    }
-    if (company.companySize != null &&
-        company.companySize != existingCompany['companySize']) {
-      updatedData['companySize'] = company.companySize;
-    }
-    if (company.logo != '' && company.logo != existingCompany['logo']) {
-      updatedData['logo'] = company.logo;
-    }
-    if (company.description != null &&
-        company.description != existingCompany['description']) {
-      updatedData['description'] = company.description;
-    }
-    if (company.overview != null &&
-        company.overview != existingCompany['overview']) {
-      updatedData['overview'] = company.overview;
-    }
-    if (company.founded != null &&
-        company.founded != existingCompany['founded']) {
-      updatedData['founded'] = company.founded;
-    }
-    if (company.website != null &&
-        company.website != existingCompany['website']) {
-      updatedData['website'] = company.website;
-    }
-    if (company.address != null &&
-        company.address != existingCompany['address']) {
-      updatedData['address'] = company.address;
-    }
-    if (company.location != null &&
-        company.location != existingCompany['location']) {
-      updatedData['location'] = company.location;
-    }
-    if (company.email != null && company.email != existingCompany['email']) {
-      updatedData['email'] = company.email;
-    }
-    if (company.contactNumber != null &&
-        company.contactNumber != existingCompany['contactNumber']) {
-      updatedData['contactNumber'] = company.contactNumber;
-    }
-    if (company.banner != '' && company.banner != existingCompany['banner']) {
-      updatedData['banner'] = company.banner;
-    }
-    if (company.companyType != null &&
-        company.companyType != existingCompany['companyType']) {
-      updatedData['companyType'] = company.companyType;
-    }
-    if (company.industry != null &&
-        company.industry != existingCompany['industry']) {
-      updatedData['industry'] = company.industry;
-    }
-    if (company.isVerified != null &&
-        company.isVerified != existingCompany['isVerified']) {
-      updatedData['isVerified'] = company.isVerified;
-    }
+      // Only include the fields where the new value is different from the existing value.
+      // Consider null as a valid update for fields that were cleared
+      if (value != existingValue) {
+        updatedData[key] = value;
+      }
+    });
+
+    print(updatedData); // This will print the modified fields only.
 
     // If no fields have changed, do not send an update request
     if (updatedData.isEmpty) {
@@ -235,13 +200,19 @@ class CompanyRemoteDataSource {
     }
   }
 
-  Future<List<UserModel>> fetchCompanyAdmins(String companyId) async {
+  Future<List<UserModel>> fetchCompanyAdmins(
+    String companyId, {
+    int page = 1,
+    int limit = 4,
+  }) async {
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token is missing');
     }
     final response = await http.get(
-      Uri.parse('$baseUrl/companies/$companyId/managers'),
+      Uri.parse(
+        '$baseUrl/companies/$companyId/managers?&page=$page&limit=$limit',
+      ),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -259,13 +230,14 @@ class CompanyRemoteDataSource {
     }
   }
 
-  Future<List<UserModel>> getFollowers(String companyId) async {
+  Future<List<UserModel>> getFollowers(String companyId,{int page = 1,
+    int limit = 5}) async {
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token is missing');
     }
     final response = await http.get(
-      Uri.parse('$baseUrl/companies/$companyId/followers'),
+      Uri.parse('$baseUrl/companies/$companyId/followers?&page=$page&limit=$limit'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

@@ -112,13 +112,13 @@ class CompanyRepositoryImpl implements CompanyRepository {
   return await remoteDataSource.getAllCompanies(query, page: page, limit: limit);
 }
 
-  Future<List<User>> getCompanyAdmins(String companyId) async {
+  Future<List<User>> getCompanyAdmins(String companyId,{int page = 1, int limit = 3}) async {
     // Fetch data from the service
-    return await remoteDataSource.fetchCompanyAdmins(companyId);
+    return await remoteDataSource.fetchCompanyAdmins(companyId,page:page,limit:limit);
   }
 
   @override
-  Future<List<User>> getFollowers(String companyId) async {
-    return await remoteDataSource.getFollowers(companyId);
+  Future<List<User>> getFollowers(String companyId,{int page = 1, int limit = 4}) async {
+    return await remoteDataSource.getFollowers(companyId,page: page,limit: limit);
   }
 }

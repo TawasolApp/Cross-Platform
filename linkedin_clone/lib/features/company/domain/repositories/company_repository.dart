@@ -13,6 +13,6 @@ abstract class CompanyRepository {
     String companyId,
   );
 Future<List<Company>> getAllCompanies(String query, {int page = 1, int limit = 4});
-  Future<List<User>> getCompanyAdmins(String companyId);
-  Future<List<User>> getFollowers(String companyId);
+  Future<List<User>> getCompanyAdmins(String companyId,{int page = 1, int limit = 3});
+  Future<List<User>> getFollowers(String companyId,{int page = 1, int limit = 4});
 }

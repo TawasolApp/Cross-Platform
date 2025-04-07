@@ -7,7 +7,7 @@ class GetCompanyFollowersUseCase {
 
   GetCompanyFollowersUseCase({required this.repository});
 
-  Future<List<User>> execute(String companyId) {
-    return repository.getFollowers(companyId);
+  Future<List<User>> execute(String companyId,{int page = 1, int limit = 4}) {
+    return repository.getFollowers(companyId,page: page,limit: limit);
   }
 }

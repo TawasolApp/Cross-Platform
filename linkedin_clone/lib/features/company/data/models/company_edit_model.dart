@@ -59,7 +59,6 @@ class UpdateCompanyModel extends UpdateCompanyEntity {
   }
 
   // Method to convert the model to a Map (used for sending data to an API)
-  @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,

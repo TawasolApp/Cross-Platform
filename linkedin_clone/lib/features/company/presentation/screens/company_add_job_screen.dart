@@ -24,21 +24,20 @@ class AddJobScreen extends StatelessWidget {
     // For responsive padding
     final screenWidth = MediaQuery.of(context).size.width;
     final padding =
-        screenWidth > 600 ? 32.0 : 16.0; // Adjust padding for larger screens
+        screenWidth > 600 ? 32.0 : 16.0; 
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Add New Job"),
-        backgroundColor: Theme.of(context).primaryColor, // Set app bar color
+        backgroundColor: Theme.of(context).primaryColor, 
       ),
-      backgroundColor: Colors.white, // Set the background color to white
+      backgroundColor: Colors.white, 
       body: SingleChildScrollView(
-        // Wrap the body in SingleChildScrollView
         padding: EdgeInsets.all(padding),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align items left
+            crossAxisAlignment: CrossAxisAlignment.start, 
             children: [
               _buildTextField(
                 _positionController,

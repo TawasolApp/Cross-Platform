@@ -63,7 +63,7 @@ class CompanyModel extends Company {
       founded:
           json['founded'] is int
               ? json['founded']
-              : int.tryParse(json['founded']?.toString() ?? '0'),
+              : int.tryParse(json['founded']?.toString() ?? '2000'),
       website: json['website'] ?? '', // Default to an empty string if null
       address: json['address'] ?? '', // Default to an empty string if null
       location: json['location'] ?? '', // Default to an empty string if null
