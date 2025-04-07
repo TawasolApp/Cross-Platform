@@ -11,8 +11,8 @@ class JobRepositoryImpl implements JobRepository {
   JobRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Job>> getRecentJobs(String companyId) async {
-    List<Job> jobs = await remoteDataSource.getRecentJobs(companyId);
+  Future<List<Job>> getRecentJobs(String companyId,{int page = 1, int limit = 4}) async {
+    List<Job> jobs = await remoteDataSource.getRecentJobs(companyId,page: page,limit: limit);
     print('Jobs at repository: ${jobs}');
     return jobs;
   }

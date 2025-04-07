@@ -15,12 +15,18 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/onboar
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/geta_all_company_admins.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_admins_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_list_companies_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/related_companies_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
@@ -102,12 +108,13 @@ void main() {
   //   client: http.Client(),
   //   baseUrl: 'https://your-api-url.com',
   // );
-  final companyRemoteDataSource =
-      CompanyRemoteDataSource(); // Make sure this is initialized
+  final companyRemoteDataSource = CompanyRemoteDataSource();
+  final jobRemoteDataSource = JobRemoteDataSource();
   final userRemoteDataSource = UserRemoteDataSource();
   final companyrepos = CompanyRepositoryImpl(
     remoteDataSource: companyRemoteDataSource,
   );
+  final jobrepos = JobRepositoryImpl(remoteDataSource: jobRemoteDataSource);
   final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
   final MockProfileRemoteDataSource dataSourceProfile =
       MockProfileRemoteDataSource();
@@ -288,19 +295,34 @@ void main() {
                   companyRepository:
                       companyrepos, // Using the existing repository here
                 ),
-                addAdminUseCase: AddAdminUseCase(
-                  repository: userRepos, // Using the existing repository here
-                ),
               ),
         ),
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
         ChangeNotifierProvider(
           create:
+              (_) => CompanyAdminsProvider(
+                fetchAdminsUseCase: FetchCompanyAdminsUseCase(
+                  companyRepository: companyrepos,
+                ),
+                addAdminUseCase: AddAdminUseCase(repository: userRepos),
+              ),
+        ),
+
+        ChangeNotifierProvider(
+          create:
               (_) => CompanyListProvider(
-                getAllCompaniesUseCase: GetAllCompanies(
+                getAllCompaniesUseCase: GetAllCompaniesUseCase(
                   repository: companyrepos,
                 ),
-              )
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => RelatedCompaniesProvider(
+                getRelatedCompaniesUseCase: GetRelatedCompanies(
+                  repository: companyrepos,
+                ),
+              ),
         ),
       ],
       child: const MyApp(),

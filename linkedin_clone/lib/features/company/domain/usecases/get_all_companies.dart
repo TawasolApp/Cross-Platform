@@ -1,12 +1,12 @@
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/repositories/company_repository.dart';
 
-class GetAllCompanies {
+class GetAllCompaniesUseCase {
   final CompanyRepository repository;
 
-  GetAllCompanies({required this.repository});
+  GetAllCompaniesUseCase({required this.repository});
 
-  Future<List<Company>> execute() async {
-    return await repository.getAllCompanies();
+  Future<List<Company>> execute(String query, {int page = 1, int limit = 10}) {
+    return repository.getAllCompanies(query, page: page, limit: limit);
   }
 }

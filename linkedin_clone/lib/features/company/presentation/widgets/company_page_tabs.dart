@@ -31,7 +31,7 @@ class CompanyTabsWidget extends StatelessWidget {
             child: TabBarView(
               children: [
                 CompanyHomeTab(userId: userId),
-                CompanyAboutWidget(userId),
+                CompanyAboutWidget(companyId),
                 Center(child: Text("Posts Content")),
                 CompanyJobsWidget(userId: userId,companyId: companyId,),
               ],

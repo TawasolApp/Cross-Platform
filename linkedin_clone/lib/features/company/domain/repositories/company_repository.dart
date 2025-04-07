@@ -6,12 +6,13 @@ import '../entities/user.dart';
 
 abstract class CompanyRepository {
   Future<Company> getCompanyDetails(String companyId);
-  Future<List<User>> getCompanyFollowers(String companyId);
-  Future<List<Company>> getRelatedCompanies(String companyId);
+  Future<List<Company>> getRelatedCompanies(String companyId,{int page = 1, int limit = 10});
   Future<void> createCompany(CompanyCreateEntity company);
   Future<void> updateCompanyDetails(
     UpdateCompanyEntity updatedcompany,
     String companyId,
   );
-  Future<List<Company>> getAllCompanies();
+Future<List<Company>> getAllCompanies(String query, {int page = 1, int limit = 4});
+  Future<List<User>> getCompanyAdmins(String companyId);
+  Future<List<User>> getFollowers(String companyId);
 }

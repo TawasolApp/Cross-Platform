@@ -387,33 +387,45 @@ class CompanyProfileScreen extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    if (provider.friendsFollowing.isNotEmpty)
-                                      SizedBox(height: 16),
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            provider
-                                                .friendsFollowing
-                                                .first
-                                                .profilePicture,
-                                          ),
-                                          radius: 20,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    provider.friendsFollowing.isNotEmpty
+                                        ? Column(
+                                          children: [
+                                            const SizedBox(height: 16),
+                                            Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                    provider
+                                                        .friendsFollowing
+                                                        .first
+                                                        .profilePicture,
+                                                  ),
+                                                  radius: 20,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    provider
+                                                                .friendsFollowing
+                                                                .length ==
+                                                            1
+                                                        ? "${provider.friendsFollowing.first.firstName} follows this page"
+                                                        : "${provider.friendsFollowing.first.firstName} & ${provider.friendsFollowing.length - 1} other connection(s) follow this page",
+                                                    style:
+                                                        Theme.of(
+                                                          context,
+                                                        ).textTheme.bodyMedium,
+                                                    softWrap: true,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                        maxLines: 2,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                        : const SizedBox.shrink(),
                                     SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
@@ -452,7 +464,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                                 ),
                                                 onPressed: () {
                                                   provider.toggleFollowStatus(
-                                                    userId,
+                                                    companyId,
                                                     companyId,
                                                   );
                                                 },

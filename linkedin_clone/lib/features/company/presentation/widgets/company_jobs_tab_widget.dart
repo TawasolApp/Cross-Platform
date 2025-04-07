@@ -6,7 +6,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_job
 import 'package:linkedin_clone/features/company/presentation/widgets/job_card_widget.dart';
 import 'package:provider/provider.dart';
 
-class CompanyJobsWidget extends StatelessWidget {
+class CompanyJobsWidget extends StatefulWidget {
   final String userId;
   final String companyId;
   final VoidCallback? onEditPressed;
@@ -21,10 +21,15 @@ class CompanyJobsWidget extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _CompanyJobsWidgetState createState() => _CompanyJobsWidgetState();
+}
+
+class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
+  @override
   Widget build(BuildContext context) {
     final companyProvider = Provider.of<CompanyProvider>(context);
 
-    if (companyProvider.isLoadingJobs) {
+    if (companyProvider.isLoadingJobs && companyProvider.jobs.isEmpty) {
       return Center(child: CircularProgressIndicator());
     }
 
@@ -45,7 +50,7 @@ class CompanyJobsWidget extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed:
-                      onAnalyticsPressed ??
+                      widget.onAnalyticsPressed ??
                       () {
                         Navigator.push(
                           context,
@@ -68,20 +73,21 @@ class CompanyJobsWidget extends StatelessWidget {
                 ),
                 TextButton.icon(
                   onPressed:
-                      onEditPressed ??
+                      widget.onEditPressed ??
                       () async {
                         final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder:
-                                (context) => AddJobScreen(companyId: companyId),
+                                (context) =>
+                                    AddJobScreen(companyId: widget.companyId),
                           ),
                         );
                         if (result == true) {
                           await Provider.of<CompanyProvider>(
                             context,
                             listen: false,
-                          ).fetchRecentJobs(companyId);
+                          ).fetchRecentJobs(widget.companyId);
                         }
                       },
                   icon: Icon(
@@ -118,12 +124,34 @@ class CompanyJobsWidget extends StatelessWidget {
             itemBuilder: (context, index) {
               return JobCard(
                 job: jobs[index],
-                userId: userId,
-                companyId: companyId,
+                userId: widget.userId,
+                companyId: widget.companyId,
               );
             },
           ),
         ),
+
+        // "Load More Jobs" Button
+        if (!companyProvider.isLoadingJobs && !companyProvider.isAllJobsLoaded)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () => companyProvider.loadMoreJobs(),
+              child: Text("Load More Jobs"),
+            ),
+          )
+        else if (companyProvider.isAllJobsLoaded)
+          // If all jobs are loaded, show "No more jobs"
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(child: const Text('No more jobs available.')),
+          )
+        // Show loading indicator at the bottom when more jobs are being loaded
+        else if (companyProvider.isLoadingJobs && jobs.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: Center(child: CircularProgressIndicator()),
+          ),
       ],
     );
   }

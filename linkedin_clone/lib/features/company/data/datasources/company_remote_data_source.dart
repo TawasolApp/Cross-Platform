@@ -35,54 +35,22 @@ class CompanyRemoteDataSource {
     }
   }
 
-  Future<List<UserModel>> fetchCompanyFollowers(String companyId) async {
-    // TODO: Replace this mock api call with an API request once the backend is ready
-    // Simulate API call delay
-    // final response = await http.get(Uri.parse('http://192.168.1.100:3000/companies/elsewedy-electric/followers'));
-    // if (response.statusCode == 200) {
-    //   final List<dynamic> data = jsonDecode(response.body);
-    //   return data.map((userJson) => UserModel.fromJson(userJson)).toList();
-    // } else {
-    //   throw Exception('Failed to load company followers');
-    // }
 
-    // Mock followers data
-    List<UserModel> followers = [
-      UserModel(
-        userId: "user1",
-        username: "John Doe",
-        profilePicture: "https://randomuser.me/api/portraits/women/1.jpg",
-        headline: "Software Engineer at TechCorp",
-      ),
-      UserModel(
-        userId: "user2",
-        username: "Jane Smith",
-        profilePicture: "https://randomuser.me/api/portraits/men/2.jpg",
-        headline: "Product Manager at InnovateX",
-      ),
-      UserModel(
-        userId: "user3",
-        username: "Ali Ahmed",
-        profilePicture: "https://randomuser.me/api/portraits/men/3.jpg",
-        headline: "Data Scientist at AI Labs",
-      ),
-    ];
-
-    return followers;
-  }
-
-  Future<List<CompanyModel>> getRelatedCompanies(String companyId) async {
+  Future<List<CompanyModel>> getRelatedCompanies(String companyId,{int page = 1,
+    int limit = 4}) async {
     // TODO: Replace this mock data with an API request once the backend is ready
+    print('Fetching related companies...');
     final token = await TokenService.getToken();
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/companies/$companyId/suggested'),
+        Uri.parse('$baseUrl/companies/$companyId/suggested?page=$page&limit=$limit'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
-
+      print('Response body for related companies: ${response.body}');
+      print('Response status code for related companies: ${response.statusCode}');
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         // Print each company for debugging
@@ -244,10 +212,14 @@ class CompanyRemoteDataSource {
     }
   }
 
-  Future<List<CompanyModel>> getAllCompanies() async {
+  Future<List<CompanyModel>> getAllCompanies(
+    String query, {
+    int page = 1,
+    int limit = 10,
+  }) async {
     final token = await TokenService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/companies?name=e'),
+      Uri.parse('$baseUrl/companies?name=$query&page=$page&limit=$limit'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -260,6 +232,56 @@ class CompanyRemoteDataSource {
       return decoded.map((json) => CompanyModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load companies');
+    }
+  }
+
+  Future<List<UserModel>> fetchCompanyAdmins(String companyId) async {
+    final token = await TokenService.getToken();
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
+    final response = await http.get(
+      Uri.parse('$baseUrl/companies/$companyId/managers'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print('Response body for fetch admins: ${response.body}');
+    print('Response status code for fetch admins: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      // If the server returns a successful response
+      List<dynamic> data = json.decode(response.body);
+      return data.map((user) => UserModel.fromJson(user)).toList();
+    } else {
+      // If the response is not successful, throw an exception
+      throw Exception('Failed to load admins');
+    }
+  }
+
+  Future<List<UserModel>> getFollowers(String companyId) async {
+    final token = await TokenService.getToken();
+    if (token == null) {
+      throw Exception('Token is missing');
+    }
+    final response = await http.get(
+      Uri.parse('$baseUrl/companies/$companyId/followers'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print('Response body for fetch company followers: ${response.body}');
+    print(
+      'Response status code for fetch company followers: ${response.statusCode}',
+    );
+    if (response.statusCode == 200) {
+      // If the server returns a successful response
+      List<dynamic> data = json.decode(response.body);
+      return data.map((user) => UserModel.fromJson(user)).toList();
+    } else {
+      // If the response is not successful, throw an exception
+      throw Exception('Failed to load admins');
     }
   }
 }

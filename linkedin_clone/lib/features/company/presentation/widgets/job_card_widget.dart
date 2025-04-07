@@ -106,7 +106,7 @@ class _JobCardState extends State<JobCard> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          widget.job.company,
+                          widget.job.industry,
                           style: Theme.of(context).textTheme.bodyMedium,
                           overflow: TextOverflow.ellipsis,
                         ),

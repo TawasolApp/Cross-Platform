@@ -7,41 +7,8 @@ import 'package:linkedin_clone/features/company/data/models/user_model.dart';
 
 class UserRemoteDataSource {
   final String baseUrl = "https://tawasolapp.me/api";
-  Future<List<UserModel>> getUserFriends(String userId) async {
-    // TODO: Replace this mock data with a real API request once Auth is available
-    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
 
-    return [
-      UserModel(
-        userId: "user1",
-        username: "Alice",
-        profilePicture:
-            "https://media.istockphoto.com/id/1682296067/photo/happy-studio-portrait-or-professional-man-real-estate-agent-or-asian-businessman-smile-for.jpg?s=612x612&w=0&k=20&c=9zbG2-9fl741fbTWw5fNgcEEe4ll-JegrGlQQ6m54rg=",
-        headline: 'Software Engineer',
-      ),
-      UserModel(
-        userId: "user2",
-        username: "Bob",
-        profilePicture:
-            "https://media.istockphoto.com/id/1682296067/photo/happy-studio-portrait-or-professional-man-real-estate-agent-or-asian-businessman-smile-for.jpg?s=612x612&w=0&k=20&c=9zbG2-9fl741fbTWw5fNgcEEe4ll-JegrGlQQ6m54rg=",
-        headline: 'Software Engineer',
-      ),
-      UserModel(
-        userId: "user3",
-        username: "Charlie",
-        profilePicture:
-            "https://media.istockphoto.com/id/1682296067/photo/happy-studio-portrait-or-professional-man-real-estate-agent-or-asian-businessman-smile-for.jpg?s=612x612&w=0&k=20&c=9zbG2-9fl741fbTWw5fNgcEEe4ll-JegrGlQQ6m54rg=",
-        headline: 'Software Engineer',
-      ),
-    ];
-  }
-
-
-  Future<bool> toggleFollowCompany(
-    String userId,
-    String companyId,
-    bool isFollowing,
-  ) async {
+  Future<bool> toggleFollowCompany(String companyId, bool isFollowing) async {
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token is missing');
@@ -82,7 +49,7 @@ class UserRemoteDataSource {
         // Successfully toggled the follow/unfollow status
         bool newFollowStatus = !isFollowing;
         print(
-          "User $userId ${newFollowStatus ? 'followed' : 'unfollowed'} company $companyId",
+          "User ${newFollowStatus ? 'followed' : 'unfollowed'} company $companyId",
         );
         return newFollowStatus; // Return updated status
       } else {
@@ -96,13 +63,12 @@ class UserRemoteDataSource {
     }
   }
 
-  @override
-  Future<void> addAdminUser(AddAdminRequestModel user,String companyId) async {
+  Future<void> addAdminUser(AddAdminRequestModel user, String companyId) async {
     //TODO: Post Api Request
     final token = await TokenService.getToken();
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/companies/$companyId/admins/'),
+        Uri.parse('$baseUrl/companies/$companyId/managers/'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
@@ -111,19 +77,39 @@ class UserRemoteDataSource {
       );
 
       if (response.statusCode == 201) {
-        print('✅ Company created successfully');
+        print('✅ Add Admin  successfully');
         print('Response body: ${response.body}');
       } else {
-        print(
-          '❌ Failed to create company. Status code: ${response.statusCode}',
-        );
+        print('❌ Failed to add admin. Status code: ${response.statusCode}');
         print('Response body: ${response.body}');
-        throw Exception('Failed to create company');
+        throw Exception('Failed to add admin');
       }
     } catch (e) {
       print('⚠️ Exception occurred: $e');
-      throw Exception('Something went wrong while creating the company');
+      throw Exception('Something went wrong while adding admin');
     }
     print('Admin with id:${user.newUserId} is added');
+  }
+
+  Future<List<UserModel>> getCommonFollowers(String companyId) async {
+    final token = await TokenService.getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/companies/$companyId/common'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    print('Fetching common user following:');
+    print('Response body for fetch common users following: ${response.body}');
+    print('Response status code for common users following: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      // If the server returns a successful response
+      List<dynamic> data = json.decode(response.body);
+      return data.map((user) => UserModel.fromJson(user)).toList();
+    } else {
+      // If the response is not successful, throw an exception
+      throw Exception('Failed to load admins');
+    }
   }
 }

@@ -10,9 +10,9 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<User>> getUserFriends(String userId) async {
+  Future<List<User>> getCommonFollowers(String userId) async {
     // TODO: Implement error handling for API call failures.
-    return await remoteDataSource.getUserFriends(userId);
+    return await remoteDataSource.getCommonFollowers(userId);
   }
 
 

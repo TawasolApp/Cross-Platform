@@ -6,18 +6,18 @@ import '../models/job_model.dart';
 
 class JobRemoteDataSource {
   final String baseUrl = "https://tawasolapp.me/api";
-  Future<List<JobModel>> getRecentJobs(String companyId) async {
+  Future<List<JobModel>> getRecentJobs(String companyId,{int page = 1, int limit = 5}) async {
     final token = await TokenService.getToken();
 
     try {
       final response = await http.get(
-          Uri.parse('$baseUrl/companies/$companyId/jobs'),
+          Uri.parse('$baseUrl/companies/$companyId/jobs?page=$page&limit=$limit'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
-      print('Response: ${response.body}');
+      print('Response from get recent jobs: ${response.body}');
       if (response.statusCode == 200) {
         final List<dynamic> jsonList = jsonDecode(response.body);
         print('CHECK THIS: ${jsonList.map((json) => JobModel.fromJson(json)).toList()}');
