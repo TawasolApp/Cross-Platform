@@ -286,7 +286,19 @@ After everything is installed, follow the next steps to run the E2E tests:
    appium
    ```
 
-### 2. **Run Android Tests**
+### 2. **Build Flutter Application**
+
+   Build Android app:
+   ```bash
+   flutter build apk
+   ```
+
+   Build Desktop app:
+   ```bash
+   flutter build windows
+   ```
+
+### 3. **Run Android Tests**
    First, make sure you have a connected physical device or a running emulator. Then, go to appium/android/capabilities.py and update the 'deviceName' with the name of your device.
 
    You can get a list of the detected devices by running:
@@ -299,7 +311,7 @@ After everything is installed, follow the next steps to run the E2E tests:
    pytest appium/android
    ```
 
-### 3. **Run Windows Tests**
+### 4. **Run Windows Tests**
    Assuming your local device is a Windows device, just run the following command:
    ```bash
    pytest appium/desktop
