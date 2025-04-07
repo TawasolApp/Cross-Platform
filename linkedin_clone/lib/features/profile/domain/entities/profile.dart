@@ -21,6 +21,7 @@ class Profile extends Equatable {
   final List<Experience> workExperience;
   final String visibility;
   final int? connectionCount;
+  final String status;
 
   const Profile({
     required this.userId,
@@ -39,6 +40,7 @@ class Profile extends Equatable {
     this.workExperience = const [],
     this.visibility = "public",
     this.connectionCount,
+    this.status = "Owner",
   });
 
   // Get full name
@@ -61,6 +63,7 @@ class Profile extends Equatable {
     List<Experience>? workExperience,
     String? visibility,
     int? connectionCount,
+    String? status,
   }) {
     return Profile(
       userId: userId ?? this.userId,
@@ -79,6 +82,7 @@ class Profile extends Equatable {
       workExperience: workExperience ?? this.workExperience,
       visibility: visibility ?? this.visibility,
       connectionCount: connectionCount ?? this.connectionCount,
+      status: status ?? this.status,
     );
   }
 
@@ -100,5 +104,6 @@ class Profile extends Equatable {
     workExperience,
     visibility,
     connectionCount,
+    status,
   ];
 }

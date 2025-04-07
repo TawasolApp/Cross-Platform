@@ -47,19 +47,25 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
       _companyController.text = exp.company;
       _locationController.text = exp.location ?? '';
       _startDateController.text = exp.startDate;
-      _endDateController.text = exp.endDate ?? '';
+      _isCurrentlyWorking = exp.endDate == null;
+      _endDateController.text =
+          exp.endDate ?? (_isCurrentlyWorking ? 'Present' : '');
       _descriptionController.text = exp.description ?? '';
 
-      // Ensure the values exist in our dropdown options
-      _employmentType =
-          employmentTypes.contains(exp.employmentType)
-              ? exp.employmentType
-              : "Full-time";
+      // Convert stored values to match our dropdown options format
+      final storedEmploymentType = exp.employmentType.replaceAll('_', '-');
+      _employmentType = employmentTypes.firstWhere(
+        (type) => type.toLowerCase() == storedEmploymentType.toLowerCase(),
+        orElse: () => "Full-time",
+      );
 
-      _locationType =
-          exp.locationType != null && locationTypes.contains(exp.locationType!)
-              ? exp.locationType!
-              : "On-site";
+      if (exp.locationType != null) {
+        final storedLocationType = exp.locationType!.replaceAll('_', '-');
+        _locationType = locationTypes.firstWhere(
+          (type) => type.toLowerCase() == storedLocationType.toLowerCase(),
+          orElse: () => "On-site",
+        );
+      }
 
       _isCurrentlyWorking = exp.endDate == null;
     }
@@ -83,6 +89,13 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
 
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
+
+      // Make sure to set endDate to null when currently working
+      String? endDate;
+      if (!_isCurrentlyWorking) {
+        endDate = _endDateController.text;
+      }
+
       final experience = Experience(
         title: _titleController.text,
         company: _companyController.text,
@@ -91,14 +104,14 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 ? _locationController.text
                 : null,
         startDate: _startDateController.text,
-        endDate: _isCurrentlyWorking ? null : _endDateController.text,
+        endDate: endDate, // Use the correctly processed endDate
         description:
             _descriptionController.text.isNotEmpty
                 ? _descriptionController.text
                 : null,
-        employmentType: _employmentType,
-        locationType: _locationType,
-        companyPicUrl: widget.experience?.companyPicUrl,
+        employmentType: _employmentType.toLowerCase().replaceAll('-', '_'),
+        locationType: _locationType.toLowerCase().replaceAll('-', '_'),
+        workExperiencePicture: widget.experience?.workExperiencePicture,
       );
 
       if (widget.experience != null) {
@@ -149,7 +162,7 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
     );
     if (picked != null) {
       controller.text =
-          "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+          "${picked.year}-${picked.month.toString().padLeft(2, '0')}";
     }
   }
 
@@ -387,7 +400,7 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                   child: TextFormField(
                     controller: _startDateController,
                     decoration: const InputDecoration(
-                      labelText: "Start Date* (MM/YYYY)",
+                      labelText: "Start Date* (YYYY-MM)",
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
@@ -414,10 +427,21 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                   ),
                   child: TextFormField(
                     controller: _endDateController,
-                    decoration: const InputDecoration(
-                      labelText: "End Date (MM/YYYY)",
+                    decoration: InputDecoration(
+                      labelText:
+                          "End Date" +
+                          (_isCurrentlyWorking ? " (Present)" : " (YYYY-MM)"),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                      ),
+                      suffixIcon:
+                          _isCurrentlyWorking
+                              ? const Icon(
+                                Icons.lock_outline,
+                                color: Colors.grey,
+                              )
+                              : null,
                     ),
                     readOnly: true,
                     enabled: !_isCurrentlyWorking,
@@ -450,7 +474,15 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                       Switch(
                         value: _isCurrentlyWorking,
                         onChanged: (value) {
-                          setState(() => _isCurrentlyWorking = value);
+                          setState(() {
+                            _isCurrentlyWorking = value;
+                            // Update end date field when switch changes
+                            if (value) {
+                              _endDateController.text = "Present";
+                            } else {
+                              _endDateController.clear();
+                            }
+                          });
                         },
                         activeColor: Theme.of(context).primaryColor,
                       ),

@@ -6,18 +6,17 @@ class SkillModel extends Equatable {
   final String skillName;
   // final List<EndorsementModel>? endorsements;
   final List<String?>? endorsements;
+  final String? position;
 
-  const SkillModel({
-    required this.skillName,
-    this.endorsements,
-  });
+  const SkillModel({required this.skillName, this.endorsements, this.position});
 
   /// Convert to Domain Entity
   Skill toEntity() {
     return Skill(
       skillName: skillName,
       // endorsements: endorsements?.map((e) => e.toEntity()).toList(),
-      endorsements: endorsements
+      endorsements: endorsements,
+      position: position,
     );
   }
 
@@ -29,6 +28,7 @@ class SkillModel extends Equatable {
       //     ?.map((e) => EndorsementModel.fromEntity(e))
       //     .toList(),
       endorsements: entity.endorsements,
+      position: entity.position,
     );
   }
 
@@ -39,9 +39,11 @@ class SkillModel extends Equatable {
       // endorsements: (json['endorsements'] as List<dynamic>?)
       //     ?.map((e) => EndorsementModel.fromJson(e as Map<String, dynamic>))
       //     .toList(),
-      endorsements: (json['endorsements'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+      endorsements:
+          (json['endorsements'] as List<dynamic>?)
+              ?.map((e) => e as String?)
+              .toList(),
+      position: json['position'] as String?,
     );
   }
 
@@ -51,21 +53,23 @@ class SkillModel extends Equatable {
       'skillName': skillName,
       // 'endorsements': endorsements?.map((e) => e.toJson()).toList(),
       'endorsements': endorsements,
+      'position': position,
     };
   }
 
   /// Create a copy with modified fields
   SkillModel copyWith({
-    String? skill,
-    // List<EndorsementModel>? endorsements,
+    String? skillName,
     List<String?>? endorsements,
+    String? position,
   }) {
     return SkillModel(
-      skillName: skill ?? this.skillName,
+      skillName: skillName ?? this.skillName,
       endorsements: endorsements ?? this.endorsements,
+      position: position ?? this.position,
     );
   }
 
   @override
-  List<Object?> get props => [skillName, endorsements];
+  List<Object?> get props => [skillName, endorsements, position];
 }

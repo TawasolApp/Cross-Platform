@@ -4,35 +4,35 @@ class Certification extends Equatable {
   final String? certificationId; // Added ID field
   final String name;
   final String company;
-  final String? companyPic;
+  final String? certificationPicture;
   final String issueDate;
-  final String? expirationDate;
+  final String? expiryDate;
 
   const Certification({
     this.certificationId, // Added as optional
     required this.name,
     required this.company,
-    this.companyPic,
+    this.certificationPicture,
     required this.issueDate,
-    this.expirationDate,
+    this.expiryDate,
   });
 
   Certification copyWith({
     String? certificationId,
     String? name,
     String? company,
-    String? companyPic,
+    String? certificationPicture,
     String? issueDate,
-    String? expirationDate,
+    String? expiryDate,
   }) {
     return Certification(
       certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
       company: company ?? this.company,
-      companyPic:
-          companyPic ?? this.companyPic,
+      certificationPicture:
+          certificationPicture ?? this.certificationPicture,
       issueDate: issueDate ?? this.issueDate,
-      expirationDate: expirationDate ?? this.expirationDate,
+      expiryDate: expiryDate ?? this.expiryDate,
     );
   }
 
@@ -41,8 +41,8 @@ class Certification extends Equatable {
     certificationId,
     name,
     company,
-    companyPic,
+    certificationPicture,
     issueDate,
-    expirationDate,
+    expiryDate,
   ];
 }

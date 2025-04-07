@@ -68,6 +68,42 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
     int index,
     ProfileProvider provider,
   ) {
+    // Format the employment type for display
+    String formatEmploymentType(String type) {
+      // Convert snake_case to title case with hyphens
+      return type
+          .split('_')
+          .map(
+            (word) =>
+                word.isNotEmpty
+                    ? '${word[0].toUpperCase()}${word.substring(1)}'
+                    : '',
+          )
+          .join('-');
+    }
+
+    // Format the location type for display
+    String formatLocationType(String? type) {
+      if (type == null) return '';
+      // Convert snake_case to title case with hyphens
+      return type
+          .split('_')
+          .map(
+            (word) =>
+                word.isNotEmpty
+                    ? '${word[0].toUpperCase()}${word.substring(1)}'
+                    : '',
+          )
+          .join('-');
+    }
+
+    final String formattedEmploymentType = formatEmploymentType(
+      experience.employmentType,
+    );
+    final String formattedLocationType = formatLocationType(
+      experience.locationType,
+    );
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
@@ -76,9 +112,11 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading:
-            experience.companyPicUrl != null
+            experience.workExperiencePicture != null
                 ? CircleAvatar(
-                  backgroundImage: NetworkImage(experience.companyPicUrl!),
+                  backgroundImage: NetworkImage(
+                    experience.workExperiencePicture!,
+                  ),
                 )
                 : const CircleAvatar(child: Icon(Icons.business)),
         title: Text(
@@ -88,18 +126,46 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(experience.company),
+            // Company with employment type
+            Row(
+              children: [
+                Text(experience.company),
+                const Text(" · ", style: TextStyle(color: Colors.grey)),
+                Text(
+                  formattedEmploymentType,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
+            // Location with location type if available
             if (experience.location != null && experience.location!.isNotEmpty)
-              Text(
-                experience.location!,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              Row(
+                children: [
+                  Text(
+                    experience.location!,
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                  if (experience.locationType != null &&
+                      experience.locationType!.isNotEmpty) ...[
+                    const Text(
+                      " · ",
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    Text(
+                      formattedLocationType,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ],
               ),
+            // Date range
             Text(
               experience.endDate != null
                   ? "${experience.startDate} - ${experience.endDate}"
                   : "${experience.startDate} - Present",
               style: const TextStyle(color: Colors.grey),
             ),
+            // Description
             if (experience.description != null &&
                 experience.description!.isNotEmpty)
               Padding(

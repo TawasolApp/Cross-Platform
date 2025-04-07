@@ -23,6 +23,7 @@ abstract interface class ProfileRepository {
 
   /// Skills Management
   Future<Either<Failure, void>> addSkill(Skill skill);
+  Future<Either<Failure, void>> updateSkill(String skillName, Skill skill);
   Future<Either<Failure, void>> deleteSkill(String skillName);
 
   /// Education Management

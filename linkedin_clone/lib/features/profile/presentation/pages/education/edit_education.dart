@@ -6,10 +6,7 @@ import 'package:provider/provider.dart';
 class EditEducationPage extends StatefulWidget {
   final Education? education;
 
-  const EditEducationPage({
-    super.key,
-    this.education,
-  });
+  const EditEducationPage({super.key, this.education});
 
   @override
   State<EditEducationPage> createState() => _EditEducationPageState();
@@ -32,7 +29,7 @@ class _EditEducationPageState extends State<EditEducationPage> {
     "Master's Degree",
     "Doctorate",
     "Associate Degree",
-    "Professional Certificate"
+    "Professional Certificate",
   ];
 
   String _degreeType = "Bachelor's Degree";
@@ -50,16 +47,15 @@ class _EditEducationPageState extends State<EditEducationPage> {
       _degreeController.text = edu.degree;
       _fieldController.text = edu.field;
       _startDateController.text = edu.startDate;
-      _endDateController.text = edu.endDate ?? '';
+      _isCurrentlyStudying = edu.endDate == null;
+      _endDateController.text =
+          edu.endDate ?? (_isCurrentlyStudying ? 'Present' : '');
       _gradeController.text = edu.grade;
       _descriptionController.text = edu.description;
 
       // Ensure the values exist in our dropdown options
-      _degreeType = degreeTypes.contains(edu.degree)
-          ? edu.degree
-          : "Bachelor's Degree";
-
-      _isCurrentlyStudying = edu.endDate == null;
+      _degreeType =
+          degreeTypes.contains(edu.degree) ? edu.degree : "Bachelor's Degree";
     }
   }
 
@@ -82,12 +78,19 @@ class _EditEducationPageState extends State<EditEducationPage> {
 
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
+
+      // Make sure to set endDate to null when currently studying
+      String? endDate;
+      if (!_isCurrentlyStudying) {
+        endDate = _endDateController.text;
+      }
+
       final education = Education(
         school: _schoolController.text,
         degree: _degreeController.text,
         field: _fieldController.text,
         startDate: _startDateController.text,
-        endDate: _isCurrentlyStudying ? null : _endDateController.text,
+        endDate: endDate, // Use the correctly processed endDate
         grade: _gradeController.text,
         description: _descriptionController.text,
       );
@@ -114,7 +117,10 @@ class _EditEducationPageState extends State<EditEducationPage> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -129,16 +135,15 @@ class _EditEducationPageState extends State<EditEducationPage> {
               surface: Colors.white,
               onSurface: Colors.black,
             ),
-            dialogTheme: const DialogTheme(
-              backgroundColor: Colors.white,
-            ),
+            dialogTheme: const DialogTheme(backgroundColor: Colors.white),
           ),
           child: child!,
         );
       },
     );
     if (picked != null) {
-      controller.text = "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      controller.text =
+          "${picked.year}-${picked.month.toString().padLeft(2, '0')}";
     }
   }
 
@@ -146,17 +151,29 @@ class _EditEducationPageState extends State<EditEducationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.education != null ? "Edit Education" : "Add Education"),
+        title: Text(
+          widget.education != null ? "Edit Education" : "Add Education",
+        ),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveEducation,
-            child: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                  )
-                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child:
+                _isSaving
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
           ),
         ],
       ),
@@ -175,7 +192,11 @@ class _EditEducationPageState extends State<EditEducationPage> {
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: const Icon(Icons.school, size: 40, color: Colors.blueGrey),
+                    child: const Icon(
+                      Icons.school,
+                      size: 40,
+                      color: Colors.blueGrey,
+                    ),
                   ),
                 ),
               ),
@@ -186,9 +207,14 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _schoolController,
                     decoration: const InputDecoration(
@@ -196,7 +222,8 @@ class _EditEducationPageState extends State<EditEducationPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -206,17 +233,25 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: DropdownButtonFormField<String>(
                     value: _degreeType,
-                    items: degreeTypes
-                        .map((e) => DropdownMenuItem<String>(
-                              value: e,
-                              child: Text(e),
-                            ))
-                        .toList(),
+                    items:
+                        degreeTypes
+                            .map(
+                              (e) => DropdownMenuItem<String>(
+                                value: e,
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
                     onChanged: (value) {
                       if (value != null) {
                         setState(() {
@@ -230,7 +265,10 @@ class _EditEducationPageState extends State<EditEducationPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    icon: const Icon(Icons.arrow_drop_down, color: Colors.blueGrey),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.blueGrey,
+                    ),
                     dropdownColor: Colors.white,
                   ),
                 ),
@@ -241,9 +279,14 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _fieldController,
                     decoration: const InputDecoration(
@@ -251,7 +294,8 @@ class _EditEducationPageState extends State<EditEducationPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -261,19 +305,25 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _startDateController,
                     decoration: const InputDecoration(
-                      labelText: "Start Date* (MM/YYYY)",
+                      labelText: "Start Date* (YYYY-MM)",
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
                     readOnly: true,
                     onTap: () => _selectDate(context, _startDateController),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -283,19 +333,39 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _endDateController,
-                    decoration: const InputDecoration(
-                      labelText: "End Date (MM/YYYY)",
+                    decoration: InputDecoration(
+                      labelText:
+                          "End Date" +
+                          (_isCurrentlyStudying ? " (Present)" : " (YYYY-MM)"),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                      ),
+                      suffixIcon:
+                          _isCurrentlyStudying
+                              ? const Icon(
+                                Icons.lock_outline,
+                                color: Colors.grey,
+                              )
+                              : null,
                     ),
                     readOnly: true,
                     enabled: !_isCurrentlyStudying,
-                    onTap: () => _isCurrentlyStudying ? null : _selectDate(context, _endDateController),
+                    onTap:
+                        () =>
+                            _isCurrentlyStudying
+                                ? null
+                                : _selectDate(context, _endDateController),
                     validator: (value) {
                       if (!_isCurrentlyStudying && (value?.isEmpty ?? true)) {
                         return "Required unless currently studying";
@@ -305,12 +375,14 @@ class _EditEducationPageState extends State<EditEducationPage> {
                   ),
                 ),
               ),
-              
+
               Card(
                 color: Colors.white,
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
@@ -318,11 +390,22 @@ class _EditEducationPageState extends State<EditEducationPage> {
                       Switch(
                         value: _isCurrentlyStudying,
                         onChanged: (value) {
-                          setState(() => _isCurrentlyStudying = value);
+                          setState(() {
+                            _isCurrentlyStudying = value;
+                            // Update end date field when switch changes
+                            if (value) {
+                              _endDateController.text = "Present";
+                            } else {
+                              _endDateController.clear();
+                            }
+                          });
                         },
                         activeColor: Theme.of(context).primaryColor,
                       ),
-                      const Text("I currently study here", style: TextStyle(fontWeight: FontWeight.w500)),
+                      const Text(
+                        "I currently study here",
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
                     ],
                   ),
                 ),
@@ -333,9 +416,14 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _gradeController,
                     decoration: const InputDecoration(
@@ -343,7 +431,8 @@ class _EditEducationPageState extends State<EditEducationPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -353,19 +442,28 @@ class _EditEducationPageState extends State<EditEducationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _descriptionController,
                     decoration: const InputDecoration(
                       labelText: "Description*",
                       border: InputBorder.none,
                       alignLabelWithHint: true,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 8.0,
+                      ),
                     ),
                     maxLines: 5,
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -377,20 +475,32 @@ class _EditEducationPageState extends State<EditEducationPage> {
                   onPressed: _isSaving ? null : _saveEducation,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 2,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                        )
-                      : Text(
-                          widget.education != null ? "Update Education" : "Add Education",
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
+                  child:
+                      _isSaving
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
+                              color: Colors.white,
+                            ),
+                          )
+                          : Text(
+                            widget.education != null
+                                ? "Update Education"
+                                : "Add Education",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ),
             ],

@@ -8,6 +8,7 @@ import 'package:linkedin_clone/features/profile/data/models/experience_model.dar
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
+import 'package:mime_type/mime_type.dart';
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   // final http.Client client;
@@ -37,17 +38,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     );
     if (response.statusCode == 200) {
       final profileJson = json.decode(response.body);
-      // If the response contains a "name" field but not firstName/lastName, split it
-      if (profileJson['name'] != null && 
-        (profileJson['firstName'] == null || profileJson['lastName'] == null)) {
-        final nameParts = profileJson['name'].toString().split(' ');
-        profileJson['firstName'] = nameParts.first;
-        profileJson['lastName'] = nameParts.length > 1 
-          ? nameParts.skip(1).join(' ') 
-          : '';
-        // Remove name field after processing
-        profileJson.remove('name');
-      }
+
       return ProfileModel.fromJson(profileJson);
     } else {
       throw ServerException('Failed to load profile');
@@ -169,13 +160,26 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<void> addSkill(SkillModel skill) async {
     final headers = await _getAuthHeaders();
-    final response = await http.patch(
+    final response = await http.post(
       Uri.parse('$baseUrl/profile/skills'),
       headers: headers,
       body: json.encode(skill.toJson()),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw ServerException('Failed to add skill');
+    }
+  }
+
+  @override
+  Future<void> updateSkill(String skillName, SkillModel skill) async {
+    final headers = await _getAuthHeaders();
+    final response = await http.patch(
+      Uri.parse('$baseUrl/profile/skills/$skillName'),
+      headers: headers,
+      body: json.encode(skill.toJson()),
+    );
+    if (response.statusCode != 200) {
+      throw ServerException('Failed to update skill');
     }
   }
 
@@ -206,7 +210,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   }
 
   @override
-  Future<void> updateEducation(String educationId, EducationModel education) async {
+  Future<void> updateEducation(
+    String educationId,
+    EducationModel education,
+  ) async {
     final headers = await _getAuthHeaders();
     final response = await http.patch(
       Uri.parse('$baseUrl/profile/education/$educationId'),
@@ -245,7 +252,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   }
 
   @override
-  Future<void> updateCertification(String certificationId, CertificationModel certification) async {
+  Future<void> updateCertification(
+    String certificationId,
+    CertificationModel certification,
+  ) async {
     final headers = await _getAuthHeaders();
     final response = await http.patch(
       Uri.parse('$baseUrl/profile/certification/$certificationId'),
@@ -284,7 +294,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   }
 
   @override
-  Future<void> updateWorkExperience(String workExperienceId, ExperienceModel experience) async {
+  Future<void> updateWorkExperience(
+    String workExperienceId,
+    ExperienceModel experience,
+  ) async {
     final headers = await _getAuthHeaders();
     final response = await http.patch(
       Uri.parse('$baseUrl/profile/work-experience/$workExperienceId'),

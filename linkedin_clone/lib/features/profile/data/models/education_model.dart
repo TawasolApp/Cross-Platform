@@ -1,6 +1,23 @@
 import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 
+class DateUtils {
+  static String formatToYearMonth(String dateString) {
+    try {
+      // Handle various date formats that might come from API
+      if (dateString.contains('-')) {
+        final parts = dateString.split('-');
+        if (parts.length >= 2) {
+          return '${parts[0]}-${parts[1].padLeft(2, '0')}';
+        }
+      }
+      // If format is unexpected, return as-is (you might want to throw an error instead)
+      return dateString;
+    } catch (e) {
+      return dateString; // or throw FormatException('Invalid date format');
+    }
+  }
+}
 class EducationModel extends Equatable {
   final String? educationId;
   final String school;
@@ -57,13 +74,15 @@ class EducationModel extends Equatable {
   /// Convert JSON to EducationModel
   factory EducationModel.fromJson(Map<String, dynamic> json) {
     return EducationModel(
-      educationId: json['_id'] as String? ?? '', // Assuming ID is optional
+      educationId: json['_id'] as String? ?? '',
       school: json['school'] as String,
       schoolPic: json['schoolPic'] as String?,
       degree: json['degree'] as String,
       field: json['field'] as String,
-      startDate: json['startDate'] as String,
-      endDate: json['endDate'] as String?,
+      startDate: DateUtils.formatToYearMonth(json['startDate'] as String),
+      endDate: json['endDate'] != null 
+          ? DateUtils.formatToYearMonth(json['endDate'] as String)
+          : null,
       grade: json['grade'] as String,
       description: json['description'] as String,
     );

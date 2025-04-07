@@ -1,21 +1,38 @@
 import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
 
+class DateUtils {
+  static String formatToYearMonth(String dateString) {
+    try {
+      // Handle various date formats that might come from API
+      if (dateString.contains('-')) {
+        final parts = dateString.split('-');
+        if (parts.length >= 2) {
+          return '${parts[0]}-${parts[1].padLeft(2, '0')}';
+        }
+      }
+      // If format is unexpected, return as-is (you might want to throw an error instead)
+      return dateString;
+    } catch (e) {
+      return dateString; // or throw FormatException('Invalid date format');
+    }
+  }
+}
 class CertificationModel extends Equatable {
   final String? certificationId;
   final String name;
   final String company;
-  final String? companyPic;
+  final String? certificationPicture;
   final String issueDate;
-  final String? expirationDate;
+  final String? expiryDate;
 
   const CertificationModel({
     this.certificationId,
     required this.name,
     required this.company,
-    this.companyPic,
+    this.certificationPicture,
     required this.issueDate,
-    this.expirationDate,
+    this.expiryDate,
   });
 
   /// Convert to Domain Entity
@@ -24,9 +41,9 @@ class CertificationModel extends Equatable {
       certificationId: certificationId,
       name: name,
       company: company,
-      companyPic: companyPic,
+      certificationPicture: certificationPicture,
       issueDate: issueDate,
-      expirationDate: expirationDate,
+      expiryDate: expiryDate,
     );
   }
 
@@ -36,21 +53,23 @@ class CertificationModel extends Equatable {
       certificationId: entity.certificationId ?? '',// Providing default empty string if null
       name: entity.name,
       company: entity.company,
-      companyPic: entity.companyPic,
+      certificationPicture: entity.certificationPicture,
       issueDate: entity.issueDate,
-      expirationDate: entity.expirationDate,
+      expiryDate: entity.expiryDate,
     );
   }
 
   /// Convert JSON to `CertificationModel`
   factory CertificationModel.fromJson(Map<String, dynamic> json) {
     return CertificationModel(
-      certificationId: json['_id'] as String? ?? '', // Assuming ID is optional
+      certificationId: json['_id'] as String? ?? '',
       name: json['name'] as String,
       company: json['company'] as String,
-      companyPic: json['companyPic'] as String?,
-      issueDate: json['issueDate'] as String,
-      expirationDate: json['expirationDate'] as String?,
+      certificationPicture: json['certificationPicture'] as String?,
+      issueDate: DateUtils.formatToYearMonth(json['issueDate'] as String),
+      expiryDate: json['expiryDate'] != null
+          ? DateUtils.formatToYearMonth(json['expiryDate'] as String)
+          : null,
     );
   }
 
@@ -60,9 +79,9 @@ class CertificationModel extends Equatable {
       '_id': certificationId,
       'name': name,
       'company': company,
-      'companyPic': companyPic,
+      'certificationPicture': certificationPicture,
       'issueDate': issueDate,
-      'expirationDate': expirationDate,
+      'expiryDate': expiryDate,
     };
   }
 
@@ -71,15 +90,15 @@ class CertificationModel extends Equatable {
     String? issuingOrganization,
     String? issuingOrganizationPic,
     String? issueDate,
-    String? expirationDate,
+    String? expiryDate,
   }) {
     return CertificationModel(
       certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
       company: company ?? this.company,
-      companyPic: companyPic ?? this.companyPic,
+      certificationPicture: certificationPicture ?? this.certificationPicture,
       issueDate: issueDate ?? this.issueDate,
-      expirationDate: expirationDate ?? this.expirationDate,
+      expiryDate: expiryDate ?? this.expiryDate,
     );
   }
 
@@ -87,8 +106,8 @@ class CertificationModel extends Equatable {
   List<Object?> get props => [
         name,
         company,
-        companyPic,
+        certificationPicture,
         issueDate,
-        expirationDate,
+        expiryDate,
       ];
 }

@@ -13,28 +13,32 @@ class AddSkillPage extends StatefulWidget {
 class _AddSkillPageState extends State<AddSkillPage> {
   final _formKey = GlobalKey<FormState>();
   final _skillController = TextEditingController();
+  final _positionController = TextEditingController();
   bool _isSaving = false;
 
   @override
   void dispose() {
     _skillController.dispose();
+    _positionController.dispose();
     super.dispose();
   }
 
   Future<void> _saveSkill() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isSaving = true);
-    
+
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
       final newSkill = Skill(
         skillName: _skillController.text,
         endorsements: [],
+        position:
+            _positionController.text.isEmpty ? null : _positionController.text,
       );
 
       await provider.addSkill(newSkill);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -68,13 +72,23 @@ class _AddSkillPageState extends State<AddSkillPage> {
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveSkill,
-            child: _isSaving 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                  )
-                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child:
+                _isSaving
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
           ),
         ],
       ),
@@ -93,7 +107,11 @@ class _AddSkillPageState extends State<AddSkillPage> {
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: const Icon(Icons.code, size: 40, color: Colors.blueGrey),
+                    child: const Icon(
+                      Icons.code,
+                      size: 40,
+                      color: Colors.blueGrey,
+                    ),
                   ),
                 ),
               ),
@@ -104,9 +122,14 @@ class _AddSkillPageState extends State<AddSkillPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _skillController,
                     decoration: const InputDecoration(
@@ -114,7 +137,33 @@ class _AddSkillPageState extends State<AddSkillPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
+                  ),
+                ),
+              ),
+
+              // Position field (optional)
+              Card(
+                color: Colors.white,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  child: TextFormField(
+                    controller: _positionController,
+                    decoration: const InputDecoration(
+                      labelText: "Where did you use this skill? (Optional)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                    // No validator since it's optional
                   ),
                 ),
               ),
@@ -126,20 +175,30 @@ class _AddSkillPageState extends State<AddSkillPage> {
                   onPressed: _isSaving ? null : _saveSkill,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 2,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20, 
-                          height: 20, 
-                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                        )
-                      : const Text(
-                          "Save Skill", 
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
+                  child:
+                      _isSaving
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
+                              color: Colors.white,
+                            ),
+                          )
+                          : const Text(
+                            "Save Skill",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ),
             ],

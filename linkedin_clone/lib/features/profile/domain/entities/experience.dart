@@ -10,7 +10,7 @@ class Experience extends Equatable {
   final String? description;
   final String employmentType;
   final String? locationType;
-  final String? companyPicUrl; // Nullable company picture URL
+  final String? workExperiencePicture; // Nullable company picture URL
 
   const Experience({
     this.workExperienceId, // Added as optional
@@ -22,7 +22,7 @@ class Experience extends Equatable {
      this.description,
     required this.employmentType,
     this.locationType,
-    this.companyPicUrl, // Now nullable
+    this.workExperiencePicture, // Now nullable
   });
 
   Experience copyWith({
@@ -35,7 +35,7 @@ class Experience extends Equatable {
     String? description,
     String? employmentType,
     String? locationType,
-    String? companyPicUrl,
+    String? workExperiencePicture,
   }) {
     return Experience(
       workExperienceId: workExperienceId ?? this.workExperienceId,
@@ -47,7 +47,7 @@ class Experience extends Equatable {
       description: description ?? this.description,
       employmentType: employmentType ?? this.employmentType,
       locationType: locationType ?? this.locationType,
-      companyPicUrl: companyPicUrl ?? this.companyPicUrl,
+      workExperiencePicture: workExperiencePicture ?? this.workExperiencePicture,
     );
   }
 
@@ -62,6 +62,6 @@ class Experience extends Equatable {
     description,
     employmentType,
     locationType,
-    companyPicUrl,
+    workExperiencePicture,
   ];
 }

@@ -49,12 +49,7 @@ import '../features/feed/presentation/provider/feed_provider.dart';
 import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
-import 'package:provider/provider.dart';
-import 'package:linkedin_clone/core/themes/app_theme.dart';
-import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
@@ -67,6 +62,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/experience/add_e
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/delete_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/update_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/add_skill.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_cover_photo.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_profile_picture.dart';
@@ -283,6 +279,7 @@ void main() {
                   profileRepository,
                 ),
                 addSkillUseCase: AddSkillUseCase(profileRepository),
+                updateSkillUseCase: UpdateSkillUseCase(profileRepository),
                 deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
               ),
         ),

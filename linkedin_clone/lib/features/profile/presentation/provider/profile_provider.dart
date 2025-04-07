@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
+import 'package:linkedin_clone/core/api/media.dart'; // Add this import for media upload
+import 'package:image_picker/image_picker.dart'; // Add this import for XFile
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
@@ -35,6 +37,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_l
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_industry.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
 
 class ProfileProvider extends ChangeNotifier {
   // Use cases
@@ -66,6 +69,7 @@ class ProfileProvider extends ChangeNotifier {
   final AddCertificationUseCase addCertificationUseCase;
   final UpdateCertificationUseCase updateCertificationUseCase;
   final DeleteCertificationUseCase deleteCertificationUseCase;
+  final UpdateSkillUseCase updateSkillUseCase;
 
   // Profile data
   String? _userId;
@@ -84,6 +88,7 @@ class ProfileProvider extends ChangeNotifier {
   List<Experience>? _experiences;
   String? _visibility;
   int? _connectionCount;
+  String? _status; // Add status field
 
   // Expansion states
   bool _isExpandedBio = false;
@@ -129,6 +134,7 @@ class ProfileProvider extends ChangeNotifier {
     required this.addCertificationUseCase,
     required this.updateCertificationUseCase,
     required this.deleteCertificationUseCase,
+    required this.updateSkillUseCase,
     required this.addSkillUseCase,
     required this.deleteSkillUseCase,
   });
@@ -151,6 +157,7 @@ class ProfileProvider extends ChangeNotifier {
   List<Experience>? get experiences => _experiences;
   String? get visibility => _visibility;
   int? get connectionCount => _connectionCount;
+  String? get status => _status; // Add status getter
 
   // Expansion state getters
   bool get isExpandedBio => _isExpandedBio;
@@ -184,7 +191,6 @@ class ProfileProvider extends ChangeNotifier {
     _lastName = value;
     notifyListeners();
   }
-
 
   set profilePicture(String? value) {
     _profilePicture = value;
@@ -248,6 +254,11 @@ class ProfileProvider extends ChangeNotifier {
 
   set connectionCount(int? value) {
     _connectionCount = value;
+    notifyListeners();
+  }
+
+  set status(String? value) {
+    _status = value;
     notifyListeners();
   }
 
@@ -345,33 +356,11 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Profile methods
- 
-  // JWT Token Helper Method
-  String _extractUserIdFromToken(String token) {
-    try {
-      final parts = token.split('.');
-      if (parts.length != 3) throw Exception('Invalid token format');
-      
-      final payload = parts[1];
-      final normalized = base64.normalize(payload);
-      final decoded = utf8.decode(base64Url.decode(normalized));
-      final payloadMap = json.decode(decoded) as Map<String, dynamic>;
-      
-      final userId = payloadMap['sub']?.toString();
-      if (userId == null || userId.isEmpty) {
-        throw Exception('User ID not found in token');
-      }
-      return userId;
-    } catch (e) {
-      debugPrint('Token decoding error: $e');
-      rethrow;
-    }
-  }
 
   // Profile Data Update Helper
   void _updateProfileData(dynamic profile) {
     if (profile == null) return;
-    
+
     _userId = profile.userId;
     _firstName = profile.firstName;
     _lastName = profile.lastName;
@@ -388,7 +377,8 @@ class ProfileProvider extends ChangeNotifier {
     _experiences = profile.workExperience;
     _visibility = profile.visibility;
     _connectionCount = profile.connectionCount;
-    
+    _status = profile.status;
+
     // Add necessary null checks and notifyListeners
     notifyListeners();
   }
@@ -399,21 +389,7 @@ class ProfileProvider extends ChangeNotifier {
     _profileError = null;
 
     try {
-      final token = await TokenService.getToken();
-      if (token == null) {
-        _profileError = "No authentication token found";
-        _setLoading(false);
-        return;
-      }
-
-      try {
-        _userId = _extractUserIdFromToken(token);
-        debugPrint('Extracted userId: $_userId');
-      } catch (e) {
-        _profileError = "Failed to get user ID from token: ${e.toString()}";
-        _setLoading(false);
-        return;
-      }
+      _userId = '67f417a8262957c2de3609bb';
 
       if (_userId == null || _userId!.isEmpty) {
         _profileError = "User ID is not set or invalid";
@@ -442,34 +418,42 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-
   // Profile Picture methods
-  Future<void> updateProfilePicture(String imageUrl) async {
+  Future<void> updateProfilePicture(String imagePath) async {
     _setLoading(true);
     _profileError = null;
 
-    if (_userId == null) {
-      _profileError = "User ID is not set";
+    try {
+      // First upload the image using the media API
+      final imageUrl = await uploadImage(XFile(imagePath));
+
+      if (_userId == null) {
+        _profileError = "User ID is not set";
+        _setLoading(false);
+        return;
+      }
+
+      // Then update the profile with the returned URL
+      final result = await updateProfilePictureUseCase.call(
+        ProfilePictureParams(userId: _userId!, profilePicture: imageUrl),
+      );
+
+      result.fold(
+        (failure) {
+          _profileError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          _profilePicture = imageUrl;
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _profileError = "Failed to upload image: ${e.toString()}";
+      notifyListeners();
+    } finally {
       _setLoading(false);
-      return;
     }
-
-    final result = await updateProfilePictureUseCase.call(
-      ProfilePictureParams(userId: _userId!, profilePicture: imageUrl),
-    );
-
-    result.fold(
-      (failure) {
-        _profileError = _mapFailureToMessage(failure);
-        notifyListeners();
-      },
-      (_) {
-        _profilePicture = imageUrl;
-        notifyListeners();
-      },
-    );
-
-    _setLoading(false);
   }
 
   Future<void> deleteProfilePicture() async {
@@ -492,32 +476,41 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Cover Photo methods
-  Future<void> updateCoverPhoto(String imageUrl) async {
+  Future<void> updateCoverPhoto(String imagePath) async {
     _setLoading(true);
     _profileError = null;
 
-    if (_userId == null) {
-      _profileError = "User ID is not set";
+    try {
+      // First upload the image using the media API
+      final imageUrl = await uploadImage(XFile(imagePath));
+
+      if (_userId == null) {
+        _profileError = "User ID is not set";
+        _setLoading(false);
+        return;
+      }
+
+      // Then update the profile with the returned URL
+      final result = await updateCoverPictureUseCase.call(
+        CoverPictureParams(userId: _userId!, coverPhoto: imageUrl),
+      );
+
+      result.fold(
+        (failure) {
+          _profileError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          _coverPhoto = imageUrl;
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _profileError = "Failed to upload image: ${e.toString()}";
+      notifyListeners();
+    } finally {
       _setLoading(false);
-      return;
     }
-
-    final result = await updateCoverPictureUseCase.call(
-      CoverPictureParams(userId: _userId!, coverPhoto: imageUrl),
-    );
-
-    result.fold(
-      (failure) {
-        _profileError = _mapFailureToMessage(failure);
-        notifyListeners();
-      },
-      (_) {
-        _coverPhoto = imageUrl;
-        notifyListeners();
-      },
-    );
-
-    _setLoading(false);
   }
 
   Future<void> deleteCoverPhoto() async {
@@ -1136,6 +1129,49 @@ class ProfileProvider extends ChangeNotifier {
         },
       );
 
+      _setLoading(false);
+    }
+  }
+
+  // Add method for updating skill position
+  Future<void> updateSkill(int index, Skill updatedSkill) async {
+    if (_skills == null || index < 0 || index >= _skills!.length) {
+      _skillError = "Invalid skill index";
+      notifyListeners();
+      return;
+    }
+
+    _setLoading(true);
+    _skillError = null;
+
+    try {
+      final currentSkill = _skills![index];
+      final skillName = currentSkill.skillName;
+
+      // Use the proper use case for updating skills
+      final result = await updateSkillUseCase.call(
+        UpdateSkillParams(skillName: skillName, skill: updatedSkill),
+      );
+
+      result.fold(
+        (failure) {
+          _skillError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          // Only position can change, skillName and endorsements stay the same
+          _skills![index] = Skill(
+            skillName: currentSkill.skillName,
+            endorsements: currentSkill.endorsements,
+            position: updatedSkill.position, // This can be null
+          );
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _skillError = "Failed to update skill: ${e.toString()}";
+      notifyListeners();
+    } finally {
       _setLoading(false);
     }
   }

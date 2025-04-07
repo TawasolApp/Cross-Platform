@@ -274,6 +274,25 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<Either<Failure, void>> updateSkill(
+    String skillName,
+    Skill skill,
+  ) async {
+    try {
+      // if (!await connectionChecker.isConnected) {
+      //   return left(Failure(message: "No internet connection", errorCode: 500));
+      // }
+      await profileRemoteDataSource.updateSkill(
+        skillName,
+        SkillModel.fromEntity(skill),
+      );
+      return right(null);
+    } on ServerException catch (e) {
+      return left(Failure(message: e.message, errorCode: 400));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> deleteSkill(String skillName) async {
     try {
       // if (!await connectionChecker.isConnected) {

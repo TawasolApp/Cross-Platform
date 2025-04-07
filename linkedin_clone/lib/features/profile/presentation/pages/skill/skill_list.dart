@@ -44,9 +44,7 @@ class _SkillListPageState extends State<SkillListPage> {
         }
 
         if (provider.skills!.isEmpty) {
-          return const Center(
-            child: Text("No skills added yet"),
-          );
+          return const Center(child: Text("No skills added yet"));
         }
 
         return RefreshIndicator(
@@ -71,46 +69,66 @@ class _SkillListPageState extends State<SkillListPage> {
     ProfileProvider provider,
   ) {
     final endorsementCount = skill.endorsements?.length ?? 0;
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         leading: const CircleAvatar(child: Icon(Icons.code)),
         title: Text(
           skill.skillName,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: endorsementCount > 0
-            ? Text(
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Position/Where used (if available)
+            if (skill.position != null && skill.position!.isNotEmpty)
+              Text(
+                skill.position!,
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+
+            // Endorsements count
+            if (endorsementCount > 0)
+              Text(
                 "$endorsementCount ${endorsementCount == 1 ? 'endorsement' : 'endorsements'}",
                 style: const TextStyle(color: Colors.grey),
-              )
-            : null,
+              ),
+          ],
+        ),
         trailing: PopupMenuButton<String>(
           onSelected: (value) async {
             if (value == "edit") {
-              // await _editSkill(context, skill);
+              await _editSkill(context, skill, index);
             } else if (value == "delete") {
               await _deleteSkill(context, index, provider);
             }
           },
           color: Colors.white,
           elevation: 3,
-          itemBuilder: (context) => [
-            const PopupMenuItem(value: "edit", child: Text("Edit")),
-            const PopupMenuItem(
-              value: "delete",
-              child: Text("Delete", style: TextStyle(color: Colors.red)),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(
+                  value: "edit",
+                  child: Text("Edit"),
+                ),
+                const PopupMenuItem(
+                  value: "delete",
+                  child: Text("Delete", style: TextStyle(color: Colors.red)),
+                ),
+              ],
         ),
-        // onTap: () => _editSkill(context, skill),
+        onTap: () => _editSkill(context, skill, index),
       ),
     );
   }
@@ -118,9 +136,7 @@ class _SkillListPageState extends State<SkillListPage> {
   Future<void> _addSkill(BuildContext context) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AddSkillPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AddSkillPage()),
     );
 
     if (result == true && mounted) {
@@ -134,26 +150,24 @@ class _SkillListPageState extends State<SkillListPage> {
     }
   }
 
-  // Future<void> _editSkill(BuildContext context, Skill skill) async {
-  //   final result = await Navigator.push<bool>(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => EditSkillPage(
-  //         skill: skill,
-  //       ),
-  //     ),
-  //   );
+  Future<void> _editSkill(BuildContext context, Skill skill, int index) async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditSkillPage(skill: skill, index: index),
+      ),
+    );
 
-  //   if (result == true && mounted) {
-  //     final provider = Provider.of<ProfileProvider>(context, listen: false);
-  //     await _refreshSkills(provider);
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(content: Text("Skill updated successfully")),
-  //       );
-  //     }
-  //   }
-  // }
+    if (result == true && mounted) {
+      final provider = Provider.of<ProfileProvider>(context, listen: false);
+      await _refreshSkills(provider);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Skill position updated successfully")),
+        );
+      }
+    }
+  }
 
   Future<void> _deleteSkill(
     BuildContext context,
@@ -162,23 +176,24 @@ class _SkillListPageState extends State<SkillListPage> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Skill"),
-        content: const Text("Are you sure you want to remove this skill?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete Skill"),
+            content: const Text("Are you sure you want to remove this skill?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {

@@ -1,5 +1,22 @@
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 
+class DateUtils {
+  static String formatToYearMonth(String dateString) {
+    try {
+      // Handle various date formats that might come from API
+      if (dateString.contains('-')) {
+        final parts = dateString.split('-');
+        if (parts.length >= 2) {
+          return '${parts[0]}-${parts[1].padLeft(2, '0')}';
+        }
+      }
+      // If format is unexpected, return as-is (you might want to throw an error instead)
+      return dateString;
+    } catch (e) {
+      return dateString; // or throw FormatException('Invalid date format');
+    }
+  }
+}
 class ExperienceModel {
   final String? workExperienceId;
   final String title;
@@ -10,7 +27,7 @@ class ExperienceModel {
   final String? description;
   final String employmentType;
   final String? locationType;
-  final String? companyPicUrl;
+  final String? workExperiencePicture;
 
   const ExperienceModel({
     this.workExperienceId,
@@ -22,7 +39,7 @@ class ExperienceModel {
     this.description,
     required this.employmentType,
     this.locationType,
-    this.companyPicUrl,
+    this.workExperiencePicture,
   });
 
   // Convert to Entity
@@ -37,7 +54,7 @@ class ExperienceModel {
       description: description,
       employmentType: employmentType,
       locationType: locationType,
-      companyPicUrl: companyPicUrl,
+      workExperiencePicture: workExperiencePicture,
     );
   }
 
@@ -53,7 +70,7 @@ class ExperienceModel {
       description: entity.description,
       employmentType: entity.employmentType,
       locationType: entity.locationType,
-      companyPicUrl: entity.companyPicUrl,
+      workExperiencePicture: entity.workExperiencePicture,
     );
   }
 
@@ -69,23 +86,25 @@ class ExperienceModel {
       'description': description,
       'employmentType': employmentType,
       'locationType': locationType,
-      'companyPicUrl': companyPicUrl,
+      'workExperiencePicture': workExperiencePicture,
     };
   }
 
   // JSON Deserialization
   factory ExperienceModel.fromJson(Map<String, dynamic> json) {
     return ExperienceModel(
-      workExperienceId: json['_id'] as String? ?? '', // Assuming ID is optional
+      workExperienceId: json['_id'] as String? ?? '',
       title: json['title'] as String,
       company: json['company'] as String,
-      location: json['location'] as String,
-      startDate: json['startDate'] as String,
-      endDate: json['endDate'] as String?,
-      description: json['description'] as String,
+      location: json['location'] as String?,
+      startDate: DateUtils.formatToYearMonth(json['startDate'] as String),
+      endDate: json['endDate'] != null
+          ? DateUtils.formatToYearMonth(json['endDate'] as String)
+          : null,
+      description: json['description'] as String?,
       employmentType: json['employmentType'] as String,
-      locationType: json['locationType'] as String,
-      companyPicUrl: json['companyPicUrl'] as String?,
+      locationType: json['locationType'] as String?,
+      workExperiencePicture: json['workExperiencePicture'] as String?,
     );
   }
 
@@ -100,7 +119,7 @@ class ExperienceModel {
     String? description,
     String? employmentType,
     String? locationType,
-    String? companyPicUrl,
+    String? workExperiencePicture,
   }) {
     return ExperienceModel(
       workExperienceId: workExperienceId ?? this.workExperienceId,
@@ -112,7 +131,7 @@ class ExperienceModel {
       description: description ?? this.description,
       employmentType: employmentType ?? this.employmentType,
       locationType: locationType ?? this.locationType,
-      companyPicUrl: companyPicUrl ?? this.companyPicUrl,
+      workExperiencePicture: workExperiencePicture ?? this.workExperiencePicture,
     );
   }
 
@@ -130,7 +149,7 @@ class ExperienceModel {
           description == other.description &&
           employmentType == other.employmentType &&
           locationType == other.locationType &&
-          companyPicUrl == other.companyPicUrl;
+          workExperiencePicture == other.workExperiencePicture;
 
   @override
   int get hashCode =>
@@ -143,5 +162,5 @@ class ExperienceModel {
       description.hashCode ^
       employmentType.hashCode ^
       locationType.hashCode ^
-      companyPicUrl.hashCode;
+      workExperiencePicture.hashCode;
 }

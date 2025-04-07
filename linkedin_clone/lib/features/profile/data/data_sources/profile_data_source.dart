@@ -9,7 +9,7 @@ abstract class ProfileRemoteDataSource {
   Future<ProfileModel> getProfile(String id);
   Future<void> createProfile(ProfileModel profile);
   Future<void> updateProfile(ProfileModel profile);
-
+  
   /// Profile components deletion
   Future<void> deleteProfilePicture();
   Future<void> deleteCoverPhoto();
@@ -21,6 +21,7 @@ abstract class ProfileRemoteDataSource {
 
   /// Skills Management
   Future<void> addSkill(SkillModel skill);
+  Future<void> updateSkill(String skillName, SkillModel skill);
   Future<void> deleteSkill(String skillName);
 
   /// Education Management
