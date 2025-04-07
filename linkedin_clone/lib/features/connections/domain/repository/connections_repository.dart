@@ -1,5 +1,3 @@
-import 'package:linkedin_clone/features/connections/presentations/widgets/unfollow_dialog.dart';
-
 import '../entities/connections_user_entity.dart';
 
 abstract class ConnectionsRepository {

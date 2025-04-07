@@ -13,6 +13,7 @@ class ConnectionsRemoteDataSource {
   ConnectionsRemoteDataSource({required this.client});
 
   Future<String> initToken() async {
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzAiLCJlbWFpbCI6Imhhbms2OEBnbWFpbC5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDA0MjM2NiwiZXhwIjoxNzQ0MDQ1OTY2fQ.iKcfUNpYFsW4GyKe-23Ry2YKAtogZZ30bTjlIGWpx00";
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token not found');

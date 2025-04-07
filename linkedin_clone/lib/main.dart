@@ -36,6 +36,9 @@ import 'package:linkedin_clone/features/connections/domain/usecases/send_connect
 import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/followers_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/following_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -57,6 +60,7 @@ import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
+
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
@@ -330,7 +334,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const FollowersPage(),
+      home: const MyNetworkPage(),
     );
   }
 }

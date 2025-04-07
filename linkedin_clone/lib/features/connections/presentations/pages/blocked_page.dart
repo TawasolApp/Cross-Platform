@@ -3,11 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/blocked_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
 import 'package:provider/provider.dart';
-import '../widgets/view_connections_card.dart';
 import '../provider/networks_provider.dart';
-import "../widgets/blocked_card.dart";
 
 class BlockedPage extends StatefulWidget {
   const BlockedPage({Key? key}) : super(key: key);

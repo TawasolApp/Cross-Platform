@@ -3,13 +3,11 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/follow_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
 import 'package:provider/provider.dart';
-import '../widgets/view_connections_card.dart';
 import '../provider/networks_provider.dart';
 
 class FollowingPage extends StatefulWidget {
-  const FollowingPage({Key? key}) : super(key: key);
+  const FollowingPage({super.key});
 
   @override
   State<FollowingPage> createState() => _FollowingPageState();
