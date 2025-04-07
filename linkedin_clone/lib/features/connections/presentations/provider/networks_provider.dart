@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/foundation.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';
@@ -26,11 +27,13 @@ class NetworksProvider with ChangeNotifier {
   GetFollowingListUseCase getFollowingListUseCase;
   UnfollowUserUseCase unfollowUseCase;
   GetFollowersListUseCase getFollowersListUseCase;
+  FollowUserUseCase followUseCase;
 
   NetworksProvider(
     this.getFollowingListUseCase,
     this.unfollowUseCase,
     this.getFollowersListUseCase,
+    this.followUseCase,
   );
 
   Future<void> getFollowingList({bool isInitial = false}) async {
@@ -116,6 +119,16 @@ class NetworksProvider with ChangeNotifier {
       return await unfollowUseCase.call(userId);
     } catch (e) {
       print('\nNetworksProvider: unFollowUser $e\n');
+      _error = e.toString();
+      return false; // Return false if there was an error
+    }
+  }
+
+  Future<bool> followUser(String userId) async {
+    try {
+      return await followUseCase.call(userId);
+    } catch (e) {
+      print('\nNetworksProvider: followUser $e\n');
       _error = e.toString();
       return false; // Return false if there was an error
     }

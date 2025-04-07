@@ -29,4 +29,5 @@ abstract class ConnectionsRepository {
   Future<bool> sendConnectionRequest(String userId);
   Future<bool> withdrawConnectionRequest(String userId);
   Future<bool> unfollowUser(String userId);
+  Future<bool> followUser(String userId);
 }

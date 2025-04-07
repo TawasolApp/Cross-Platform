@@ -411,8 +411,6 @@ class ConnectionsRemoteDataSource {
   ////////unfollow user
   Future<bool> unfollowUser(String userId) async {
     try {
-      print("⭐⭐⭐⭐⭐⭐");
-      print('userId: $userId');
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/unfollow/$userId'),
         headers: {'Authorization': 'Bearer $_token'},
@@ -431,6 +429,40 @@ class ConnectionsRemoteDataSource {
       } else {
         print(
           'ConnectionsRemoteDataSource :unfollowUser: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception("Unknown error");
+      }
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  ////////unfollow user
+  Future<bool> followUser(String userId) async {
+    try {
+      final response = await client.delete(
+        Uri.parse('${baseUrl}connections/follow'),
+        headers: {'Authorization': 'Bearer $_token'},
+        body: jsonEncode({'userId': userId}),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception("ConnectionsRemoteDataSource :followUser: 400");
+      } else if (response.statusCode == 500) {
+        throw Exception("ConnectionsRemoteDataSource :followUser: 500");
+      } else if (response.statusCode == 404) {
+        throw Exception("ConnectionsRemoteDataSource :followUser: 404");
+      } else if (response.statusCode == 401) {
+        throw Exception("ConnectionsRemoteDataSource :followUser: 401");
+      } else if (response.statusCode == 409) {
+        throw Exception("ConnectionsRemoteDataSource :followUser: 409");
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :followUser: ${response.statusCode}',
         );
         // Handle other status codes as needed
         throw Exception("Unknown error");

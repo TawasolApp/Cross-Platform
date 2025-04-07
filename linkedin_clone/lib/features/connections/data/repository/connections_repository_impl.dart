@@ -140,4 +140,14 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       throw Exception('Failed to unfollow user');
     }
   }
+
+  @override
+  Future<bool> followUser(String userId) async {
+    try {
+      final unfollowed = await remoteDataSource.followUser(userId);
+      return unfollowed;
+    } catch (e) {
+      throw Exception('Failed to unfollow user');
+    }
+  }
 }

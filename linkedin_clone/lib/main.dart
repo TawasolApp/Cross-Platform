@@ -26,6 +26,7 @@ import 'package:linkedin_clone/features/connections/domain/usecases/get_connecti
 import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_followers_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
@@ -247,6 +248,13 @@ void main() {
                   ),
                 ),
                 GetFollowersListUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                FollowUserUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
