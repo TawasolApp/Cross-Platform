@@ -232,11 +232,13 @@ Before running the tests, ensure you have the following dependencies installed o
    - You can install the Android SDK via [Android Studio](https://developer.android.com/studio) or by installing the standalone SDK.
    - Set the `ANDROID_HOME` environment variable to the directory where the Android SDK is installed.
    - Ensure the following environment variables are added to the system PATH:
-         - %ANDROID_HOME%/platform-tools
-         - %ANDROID_HOME%/cmdline-tools/latest/bin
-         - %ANDROID_HOME%/build-tools/<version> where version could be something like 36.0.0
-         - %ANDROID_HOME%/emulator
-         - where %ANDROID_HOME% is the directory where the ANDROID SDK is installed
+   ```bash
+   %ANDROID_HOME%/platform-tools
+   %ANDROID_HOME%/cmdline-tools/latest/bin
+   %ANDROID_HOME%/build-tools/<version>
+   %ANDROID_HOME%/emulator
+   ```
+   where version could be something like 36.0.0 and %ANDROID_HOME% is the directory where the ANDROID SDK is installed
 
    - You can verify the Android SDK installation by running:
      ```bash
