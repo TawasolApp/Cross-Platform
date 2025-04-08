@@ -36,15 +36,21 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> forgotPassword(String email) async {
+    print("Email: $email");
+    print("Sending password reset request...");
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/forgot-password'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email": email}),
+      body: jsonEncode({
+        "email": email,
+        "isAndroid": true}),
     );
 
     if (response.statusCode == 200) {
+
       print("Password reset link sent to your email");
     } else {
+      print("Failed to send password reset request: ${response.body}");
       throw Exception("Failed to reset password: ${response.body}");
     }
   }
