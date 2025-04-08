@@ -19,8 +19,8 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final double radius = screenWidth * 0.09 > 20 ? 20 : screenWidth * 0.09;
-    final double iconSize = screenWidth * 0.1 > 60 ? 60 : screenWidth * 0.1;
+    final double radius = screenWidth * 0.09 > 50 ? 50 : screenWidth * 0.09;
+    final double iconSize = screenWidth * 0.1 > 40 ? 40 : screenWidth * 0.1;
     final showOnline =
         cardType == PageType.connections ||
         cardType == PageType.followers ||

@@ -118,15 +118,20 @@ class _InvitationsBodyState extends State<InvitationsBody> {
               itemBuilder: (context, index) {
                 if (index < list.length) {
                   final request = list[index];
-                  return UserCard(
-                    userId: request.userId,
-                    firstName: request.firstName,
-                    lastName: request.lastName,
-                    headLine: request.headLine,
-                    profilePicture: request.profilePicture,
-                    connectionsProvider: connectionsProvider,
-                    time: request.time,
-                    cardType: widget.cardType,
+                  return Column(
+                    children: [
+                      UserCard(
+                        userId: request.userId,
+                        firstName: request.firstName,
+                        lastName: request.lastName,
+                        headLine: request.headLine,
+                        profilePicture: request.profilePicture,
+                        connectionsProvider: connectionsProvider,
+                        time: request.time,
+                        cardType: widget.cardType,
+                      ),
+                      Divider(height: 1, color: Theme.of(context).dividerColor),
+                    ],
                   );
                 } else {
                   return provider.isBusy

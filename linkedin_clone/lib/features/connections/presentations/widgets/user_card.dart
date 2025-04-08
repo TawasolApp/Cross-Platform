@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
@@ -43,14 +45,15 @@ class UserCard extends StatelessWidget {
     return Material(
       color: Theme.of(context).colorScheme.onSecondary,
       borderRadius: BorderRadius.zero,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 80),
-        padding: const EdgeInsets.all(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: InkWell(
           onTap: () => _goToProfile(context),
           borderRadius: BorderRadius.zero,
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               /// Profile image and online indicator
               UserAvatar(
@@ -62,7 +65,8 @@ class UserCard extends StatelessWidget {
               const SizedBox(width: 8),
 
               /// User info (name, headline, time)
-              Expanded(
+              Flexible(
+                fit: FlexFit.tight,
                 child: UserCardInfo(
                   firstName: firstName,
                   lastName: lastName,
@@ -72,10 +76,14 @@ class UserCard extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 8),
-
               /// Right-side action buttons
-              _buildActions(context),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: _buildActions(context),
+                ),
+              ),
             ],
           ),
         ),

@@ -258,6 +258,7 @@ class ConnectionsProvider with ChangeNotifier {
       userId,
       true,
     );
+    if (accepted) await getReceivedConnectionRequests(isInitial: true);
     return accepted;
   }
 
@@ -266,16 +267,19 @@ class ConnectionsProvider with ChangeNotifier {
       userId,
       false,
     );
+    if (ignored) await getReceivedConnectionRequests(isInitial: true);
     return ignored;
   }
 
   Future<bool> sendConnectionRequest(String userId) async {
     final sent = await sendConnectionRequestUseCase.call("", userId);
+    if (sent) await getSentConnectionRequests(isInitial: true);
     return sent;
   }
 
   Future<bool> withdrawConnectionRequest(String userId) async {
     final withdrawn = await withdrawConnectionRequestUsecase.call(userId);
+    if (withdrawn) await getSentConnectionRequests(isInitial: true);
     return withdrawn;
   }
 }
