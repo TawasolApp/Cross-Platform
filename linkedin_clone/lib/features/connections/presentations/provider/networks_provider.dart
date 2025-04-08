@@ -153,7 +153,9 @@ class NetworksProvider with ChangeNotifier {
   Future<bool> unfollowUser(String userId) async {
     try {
       // Call the unfollow use case here
-      return await unfollowUseCase.call(userId);
+      bool result = await unfollowUseCase.call(userId);
+      if (result) getFollowingList(isInitial: true);
+      return result;
     } catch (e) {
       print('\nNetworksProvider: unFollowUser $e\n');
       _error = e.toString();

@@ -333,7 +333,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: ListPage(type: PageType.connections),
+      home: ListPage(type: PageType.following),
     );
   }
 }

@@ -13,7 +13,7 @@ class ConnectionsRemoteDataSource {
   ConnectionsRemoteDataSource({required this.client});
 
   Future<String> initToken() async {
-    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y0MTdhODI2Mjk1N2MyZGUzNjA5YjYiLCJlbWFpbCI6Imtlbm5lZHlfZGlja2Vucy10aWxsbWFuQHlhaG9vLmNvbSIsInJvbGUiOiJlbXBsb3llciIsImlhdCI6MTc0NDA5MTk4NywiZXhwIjoxNzQ0MDk1NTg3fQ.o3SMjCcKrJZEgqGFyS5DGtujDxbFe0wkXPtSGblczOQ";
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y0MTdhODI2Mjk1N2MyZGUzNjA5YjYiLCJlbWFpbCI6Imtlbm5lZHlfZGlja2Vucy10aWxsbWFuQHlhaG9vLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0MDk5ODU4LCJleHAiOjE3NDQxMDM0NTh9.xlZCDpZ5xuKgFArMnlJD_hLWUt7-AP6KLWbFHy6DIK4";
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token not found');
@@ -57,14 +57,20 @@ class ConnectionsRemoteDataSource {
           throw Exception('Unexpected response format');
         }
       } else if (response.statusCode == 500) {
-        throw Exception('ConnectionsRemoteDataSource :getConnectionsList: 500');
-      } else {
-        print(
-          '\nConnectionsRemoteDataSource :getConnectionsList: ${response.statusCode}\n',
+        throw Exception(
+          'ConnectionsRemoteDataSource :getConnectionsList: 500 ',
         );
-        throw Exception('Unknown error');
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getConnectionsList: 401 Authentication failed",
+        );
+      } else {
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getConnectionsList: ${e.toString()}\n',
+      );
       rethrow;
     }
   }
@@ -75,13 +81,13 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
-      print('page: $page, limit: $limit');
+      final token = await initToken();
       final response = await client
           .get(
             Uri.parse('${baseUrl}connections/pending?page=$page&limit=$limit'),
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': 'Bearer $initToken()',
+              'Authorization': 'Bearer $token',
             },
           )
           .timeout(
@@ -103,7 +109,11 @@ class ConnectionsRemoteDataSource {
         }
       } else if (response.statusCode == 500) {
         throw Exception(
-          'ConnectionsRemoteDataSource :getReceivedConnectionRequestsList: 500',
+          'ConnectionsRemoteDataSource :getReceivedConnectionRequestsList: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getReceivedConnectionRequestsList: 401 Authentication failed",
         );
       } else {
         print(
@@ -112,6 +122,9 @@ class ConnectionsRemoteDataSource {
         throw Exception('Unknown error');
       }
     } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getReceivedConnectionRequestsList: ${e.toString()}\n',
+      );
       rethrow;
     }
   }
@@ -122,12 +135,13 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
+      final token = await initToken();
       final response = await client
           .get(
             Uri.parse('${baseUrl}connections/sent/?page=$page&limit=$limit'),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $initToken()',
+              'Authorization': 'Bearer $token',
             },
           )
           .timeout(
@@ -149,7 +163,11 @@ class ConnectionsRemoteDataSource {
         }
       } else if (response.statusCode == 500) {
         throw Exception(
-          'ConnectionsRemoteDataSource : getSentConnectionRequestsList: 500',
+          'ConnectionsRemoteDataSource : getSentConnectionRequestsList: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getSentConnectionRequestsList: 401 Authentication failed",
         );
       } else {
         print(
@@ -158,6 +176,9 @@ class ConnectionsRemoteDataSource {
         throw Exception('Unknown error');
       }
     } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getSentConnectionRequestsList: ${e.toString()}\n',
+      );
       rethrow;
     }
   }
@@ -168,6 +189,7 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
+      final token = await initToken();
       final response = await client
           .get(
             Uri.parse(
@@ -175,7 +197,7 @@ class ConnectionsRemoteDataSource {
             ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $initToken()',
+              'Authorization': 'Bearer $token',
             },
           )
           .timeout(
@@ -196,7 +218,13 @@ class ConnectionsRemoteDataSource {
           throw Exception('Unexpected response format');
         }
       } else if (response.statusCode == 500) {
-        throw Exception('ConnectionsRemoteDataSource :getFollowersList: 500');
+        throw Exception(
+          'ConnectionsRemoteDataSource :getFollowersList: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getFollowersList: 401 Authentication failed",
+        );
       } else {
         print(
           '\nConnectionsRemoteDataSource :getFollowersList: ${response.statusCode}\n',
@@ -204,6 +232,9 @@ class ConnectionsRemoteDataSource {
         throw Exception('Unknown error');
       }
     } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getFollowersList: ${e.toString()}\n',
+      );
       rethrow;
     }
   }
@@ -214,6 +245,7 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
+      final token = await initToken();
       final response = await client
           .get(
             Uri.parse(
@@ -221,7 +253,7 @@ class ConnectionsRemoteDataSource {
             ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $initToken()',
+              'Authorization': 'Bearer $token',
             },
           )
           .timeout(
@@ -241,7 +273,13 @@ class ConnectionsRemoteDataSource {
           throw Exception('Unexpected response format');
         }
       } else if (response.statusCode == 500) {
-        throw Exception('ConnectionsRemoteDataSource :getFollowingList: 500');
+        throw Exception(
+          'ConnectionsRemoteDataSource :getFollowingList: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getFollowingList: 401 Authentication failed",
+        );
       } else {
         print(
           '\nConnectionsRemoteDataSource :getFollowingList: ${response.statusCode}\n',
@@ -249,6 +287,9 @@ class ConnectionsRemoteDataSource {
         throw Exception('Unknown error');
       }
     } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getFollowingList: ${e.toString()}\n',
+      );
       rethrow;
     }
   }
@@ -259,12 +300,13 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
+      final token = await initToken();
       final response = await client
           .get(
             Uri.parse('${baseUrl}connections/blocked?page=$page&limit=$limit'),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $initToken()',
+              'Authorization': 'Bearer $token',
             },
           )
           .timeout(
@@ -284,7 +326,13 @@ class ConnectionsRemoteDataSource {
           throw Exception('Unexpected response format');
         }
       } else if (response.statusCode == 500) {
-        throw Exception('ConnectionsRemoteDataSource :getBlockedList: 500');
+        throw Exception(
+          'ConnectionsRemoteDataSource :getBlockedList: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getBlockedList: 401 Authentication failed",
+        );
       } else {
         print(
           '\nConnectionsRemoteDataSource :getBlockedList: ${response.statusCode}\n',
@@ -292,6 +340,7 @@ class ConnectionsRemoteDataSource {
         throw Exception('Unknown error');
       }
     } catch (e) {
+      print('\nConnectionsRemoteDataSource :getBlockedList: ${e.toString()}\n');
       rethrow;
     }
   }
@@ -311,22 +360,32 @@ class ConnectionsRemoteDataSource {
       if (response.statusCode == 204) {
         return true;
       } else if (response.statusCode == 400) {
-        throw Exception("ConnectionsRemoteDataSource :removeConnection: 400");
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeConnection: 400 invalid input",
+        );
       } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :removeConnection: 500");
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeConnection: 500 Failed",
+        );
       } else if (response.statusCode == 404) {
-        throw Exception("ConnectionsRemoteDataSource :removeConnection: 404");
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeConnection: 404 not found",
+        );
       } else if (response.statusCode == 401) {
-        throw Exception("ConnectionsRemoteDataSource :removeConnection: 401");
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeConnection: 401 Authentication failed",
+        );
       } else {
         print(
-          'ConnectionsRemoteDataSource :acceptConnectionRequest: ${response.statusCode}',
+          'ConnectionsRemoteDataSource :removeConnection: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print(
+        '\nConnectionsRemoteDataSource :removeConnection: ${e.toString()}\n',
+      );
       return false;
     }
   }
@@ -335,9 +394,10 @@ class ConnectionsRemoteDataSource {
   Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept) async {
     print('userId: $userId');
     try {
+      final token = await initToken();
       final response = await client.post(
         Uri.parse('${baseUrl}connections/$userId'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
         body: jsonEncode({"isAccept": accept}),
       );
 
@@ -345,29 +405,31 @@ class ConnectionsRemoteDataSource {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(
-          "ConnectionsRemoteDataSource :acceptConnectionRequest: 400",
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 400 invalid input",
         );
       } else if (response.statusCode == 500) {
         throw Exception(
-          "ConnectionsRemoteDataSource :acceptConnectionRequest: 500",
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 500 Failed",
         );
       } else if (response.statusCode == 404) {
         throw Exception(
-          "ConnectionsRemoteDataSource :acceptConnectionRequest: 404",
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 404 not found",
         );
       } else if (response.statusCode == 401) {
         throw Exception(
-          "ConnectionsRemoteDataSource :acceptConnectionRequest: 401",
+          "ConnectionsRemoteDataSource :acceptConnectionRequest: 401 Authentication failed",
         );
       } else {
         print(
           'ConnectionsRemoteDataSource :acceptConnectionRequest: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print(
+        '\nConnectionsRemoteDataSource :acceptIgnoreConnectionRequest: ${e.toString()}\n',
+      );
       return false;
     }
   }
@@ -376,9 +438,10 @@ class ConnectionsRemoteDataSource {
   Future<bool> sendConnectionRequest(String userId) async {
     print('userId: $userId');
     try {
+      final token = await initToken();
       final response = await client.post(
         Uri.parse('${baseUrl}connections/'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
         body: jsonEncode({'userId': userId}),
       );
 
@@ -386,33 +449,35 @@ class ConnectionsRemoteDataSource {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(
-          "ConnectionsRemoteDataSource :sendConnectionRequest: 400",
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 400 invalid input",
         );
       } else if (response.statusCode == 500) {
         throw Exception(
-          "ConnectionsRemoteDataSource :remosendConnectionRequestveConnection: 500",
+          "ConnectionsRemoteDataSource :remosendConnectionRequestveConnection: 500 Failed",
         );
       } else if (response.statusCode == 404) {
         throw Exception(
-          "ConnectionsRemoteDataSource :sendConnectionRequest: 404",
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 404 not found",
         );
       } else if (response.statusCode == 401) {
         throw Exception(
-          "ConnectionsRemoteDataSource :sendConnectionRequest: 401",
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 401 Authentication failed",
         );
       } else if (response.statusCode == 409) {
         throw Exception(
-          "ConnectionsRemoteDataSource :sendConnectionRequest: 409",
+          "ConnectionsRemoteDataSource :sendConnectionRequest: 409 already exists",
         );
       } else {
         print(
           'ConnectionsRemoteDataSource :sendConnectionRequest: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print(
+        '\nConnectionsRemoteDataSource :sendConnectionRequest: ${e.toString()}\n',
+      );
       return false;
     }
   }
@@ -420,38 +485,41 @@ class ConnectionsRemoteDataSource {
 
   Future<bool> withdrawConnectionRequest(String userId) async {
     try {
+      final token = await initToken();
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/$userId/pending'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(
-          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 400",
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 400 invalid input",
         );
       } else if (response.statusCode == 500) {
         throw Exception(
-          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 500",
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 500 Failed",
         );
       } else if (response.statusCode == 404) {
         throw Exception(
-          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 404",
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 404 not found",
         );
       } else if (response.statusCode == 401) {
         throw Exception(
-          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 401",
+          "ConnectionsRemoteDataSource :withdrawConnectionRequest: 401 Authentication failed",
         );
       } else {
         print(
           'ConnectionsRemoteDataSource :withdrawConnectionRequest: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print(
+        '\nConnectionsRemoteDataSource :withdrawConnectionRequest: ${e.toString()}\n',
+      );
       return false;
     }
   }
@@ -459,64 +527,82 @@ class ConnectionsRemoteDataSource {
   ////////unfollow user
   Future<bool> unfollowUser(String userId) async {
     try {
+      final token = await initToken();
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/unfollow/$userId'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 204) {
         return true;
       } else if (response.statusCode == 400) {
-        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 400");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unfollowUser: 400 invalid input",
+        );
       } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 500");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unfollowUser: 500 Failed",
+        );
       } else if (response.statusCode == 404) {
-        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 404");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unfollowUser: 404 not found",
+        );
       } else if (response.statusCode == 401) {
-        throw Exception("ConnectionsRemoteDataSource :unfollowUser: 401");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unfollowUser: 401 Authentication failed",
+        );
       } else {
         print(
           'ConnectionsRemoteDataSource :unfollowUser: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print('\nConnectionsRemoteDataSource :unfollowUser: ${e.toString()}\n');
       return false;
     }
   }
 
-  ////////unfollow user
+  ////////follow user
   Future<bool> followUser(String userId) async {
     try {
+      final token = await initToken();
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/follow'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
         body: jsonEncode({'userId': userId}),
       );
 
       if (response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
-        throw Exception("ConnectionsRemoteDataSource :followUser: 400");
+        throw Exception(
+          "ConnectionsRemoteDataSource :followUser: 400 invalid input",
+        );
       } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :followUser: 500");
+        throw Exception("ConnectionsRemoteDataSource :followUser: 500 Failed");
       } else if (response.statusCode == 404) {
-        throw Exception("ConnectionsRemoteDataSource :followUser: 404");
+        throw Exception(
+          "ConnectionsRemoteDataSource :followUser: 404 not found",
+        );
       } else if (response.statusCode == 401) {
-        throw Exception("ConnectionsRemoteDataSource :followUser: 401");
+        throw Exception(
+          "ConnectionsRemoteDataSource :followUser: 401 Authentication failed",
+        );
       } else if (response.statusCode == 409) {
-        throw Exception("ConnectionsRemoteDataSource :followUser: 409");
+        throw Exception(
+          "ConnectionsRemoteDataSource :followUser: 409 already exists",
+        );
       } else {
         print(
           'ConnectionsRemoteDataSource :followUser: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print('\nConnectionsRemoteDataSource :followUser: ${e.toString()}\n');
       return false;
     }
   }
@@ -524,60 +610,73 @@ class ConnectionsRemoteDataSource {
   ///////////////////block user
   Future<bool> blockUser(String userId) async {
     try {
+      final token = await initToken();
       final response = await client.post(
         Uri.parse('${baseUrl}connections/block/$userId'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 400) {
-        throw Exception("ConnectionsRemoteDataSource :blockUser: 400");
+        throw Exception(
+          "ConnectionsRemoteDataSource :blockUser: 400 invalid input",
+        );
       } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :blockUser: 500");
+        throw Exception("ConnectionsRemoteDataSource :blockUser: 500 Failed");
       } else if (response.statusCode == 404) {
-        throw Exception("ConnectionsRemoteDataSource :blockUser: 404");
+        throw Exception(
+          "ConnectionsRemoteDataSource :blockUser: 404 not found",
+        );
       } else if (response.statusCode == 401) {
-        throw Exception("ConnectionsRemoteDataSource :blockUser: 401");
+        throw Exception(
+          "ConnectionsRemoteDataSource :blockUser: 401 Authentication failed",
+        );
       } else {
         print('ConnectionsRemoteDataSource :blockUser: ${response.statusCode}');
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print('\nConnectionsRemoteDataSource :blockUser: ${e.toString()}\n');
       return false;
     }
   }
 
   ///////////////////unblock user
-  ///
   Future<bool> unblockUser(String userId) async {
     try {
+      final token = await initToken();
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/block/$userId'),
-        headers: {'Authorization': 'Bearer $initToken()'},
+        headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 400) {
-        throw Exception("ConnectionsRemoteDataSource :unblockUser: 400");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unblockUser: 400 invalid input",
+        );
       } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :unblockUser: 500");
+        throw Exception("ConnectionsRemoteDataSource :unblockUser: 500 Failed");
       } else if (response.statusCode == 404) {
-        throw Exception("ConnectionsRemoteDataSource :unblockUser: 404");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unblockUser: 404 not found",
+        );
       } else if (response.statusCode == 401) {
-        throw Exception("ConnectionsRemoteDataSource :unblockUser: 401");
+        throw Exception(
+          "ConnectionsRemoteDataSource :unblockUser: 401 Authentication failed",
+        );
       } else {
         print(
           'ConnectionsRemoteDataSource :unblockUser: ${response.statusCode}',
         );
         // Handle other status codes as needed
-        throw Exception("Unknown error");
+        throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print(e.toString());
+      print('\nConnectionsRemoteDataSource :unblockUser: ${e.toString()}\n');
       return false;
     }
   }

@@ -5,7 +5,7 @@ import 'page_type_enum.dart';
 class UserCardInfo extends StatelessWidget {
   final String firstName;
   final String lastName;
-  final String headLine;
+  final String? headLine;
   final String time;
   final PageType cardType;
 
@@ -30,7 +30,7 @@ class UserCardInfo extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         Text(
-          headLine,
+          headLine!,
           style: Theme.of(context).textTheme.bodyMedium,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,

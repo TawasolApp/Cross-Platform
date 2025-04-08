@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/view_connections_appbar.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/list_page_appbar.dart';
+
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
@@ -132,9 +133,64 @@ class _ListPageState extends State<ListPage> {
                           provider.hasErrorMain) {
                         return const SizedBox();
                       }
-                      return ViewConnectionsAppBar(
+                      return ListPageAppBar(
+                        pageType: widget.type,
+                        count: provider.connectionsList!.length,
                         connectionsProvider: provider,
-                        connectionsCount: provider.connectionsList!.length,
+                      );
+                    },
+                  ),
+                )
+                : widget.type == PageType.followers
+                ? PreferredSize(
+                  preferredSize: const Size.fromHeight(42),
+                  child: Consumer<NetworksProvider>(
+                    builder: (context, provider, _) {
+                      if (provider.followersList == null ||
+                          provider.followersList!.isEmpty ||
+                          provider.isLoading ||
+                          provider.hasError) {
+                        return const SizedBox();
+                      }
+                      return ListPageAppBar(
+                        pageType: widget.type,
+                        count: provider.followersList!.length,
+                      );
+                    },
+                  ),
+                )
+                : widget.type == PageType.following
+                ? PreferredSize(
+                  preferredSize: const Size.fromHeight(42),
+                  child: Consumer<NetworksProvider>(
+                    builder: (context, provider, _) {
+                      if (provider.followingList == null ||
+                          provider.followingList!.isEmpty ||
+                          provider.isLoading ||
+                          provider.hasError) {
+                        return const SizedBox();
+                      }
+                      return ListPageAppBar(
+                        pageType: widget.type,
+                        count: provider.followingList!.length,
+                      );
+                    },
+                  ),
+                )
+                : widget.type == PageType.blocked
+                ? PreferredSize(
+                  preferredSize: const Size.fromHeight(42),
+                  child: Consumer<NetworksProvider>(
+                    builder: (context, provider, _) {
+                      if (provider.blockedList == null ||
+                          provider.blockedList!.isEmpty ||
+                          provider.isLoading ||
+                          provider.hasError) {
+                        return const SizedBox();
+                      }
+                      return ListPageAppBar(
+                        pageType: widget.type,
+                        count: provider.blockedList!.length,
                       );
                     },
                   ),
@@ -159,7 +215,6 @@ class _ListPageState extends State<ListPage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    final isWide = MediaQuery.of(context).size.width >= 600;
     final list = _getList();
 
     return RefreshIndicator(

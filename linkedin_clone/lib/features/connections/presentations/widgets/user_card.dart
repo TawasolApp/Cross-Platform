@@ -95,11 +95,6 @@ class UserCard extends StatelessWidget {
           buttonText: "Withdraw",
           confirmAction:
               () => connectionsProvider!.withdrawConnectionRequest(userId),
-          conrifmDialogCancelAction: () async => Navigator.pop(context),
-          afterConfirmAction:
-              () async => connectionsProvider!.getSentConnectionRequests(
-                isInitial: true,
-              ),
           errorDialogAction: () async => Navigator.pop(context),
           confirmDialog: false,
           errorTitle: "Couldn't withdraw request",
@@ -110,9 +105,6 @@ class UserCard extends StatelessWidget {
         return ConfirmableActionButton(
           buttonText: "Following",
           confirmAction: () => networksProvider!.unfollowUser(userId),
-          conrifmDialogCancelAction: () async => Navigator.pop(context),
-          afterConfirmAction:
-              () async => networksProvider!.getFollowingList(isInitial: true),
           errorDialogAction: () async => Navigator.pop(context),
           confirmTitle: "Unfollow $firstName $lastName?",
           confirmMessage:
@@ -130,7 +122,6 @@ class UserCard extends StatelessWidget {
         return ConfirmableActionButton(
           buttonText: "Unblock",
           confirmAction: () => networksProvider!.unblockUser(userId),
-          conrifmDialogCancelAction: () async => Navigator.pop(context),
           afterConfirmAction:
               () async => networksProvider!.getBlockedList(isInitial: true),
           errorDialogAction: () async => Navigator.pop(context),

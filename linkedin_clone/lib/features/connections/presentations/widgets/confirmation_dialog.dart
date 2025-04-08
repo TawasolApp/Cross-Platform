@@ -44,10 +44,7 @@ class ConfirmationDialog extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // Close dialog
-                    if (onCancel != null) {
-                      onCancel!();
-                    }
+                    Navigator.pop(context);
                   },
                   child: Text(
                     cancelButtonText,

@@ -6,11 +6,9 @@ import 'error_dialog.dart';
 
 class ConfirmableActionButton extends StatelessWidget {
   final String buttonText;
-  final Future<dynamic> Function()? confirmAction; //like unfollow for example
-  final Future<dynamic> Function()?
-  conrifmDialogCancelAction; //usually pop dialog
-  final Future<dynamic> Function()? errorDialogAction; //usually pop dialog
-  final Future<dynamic> Function()? afterConfirmAction; //like refresh the page
+  final Future<bool> Function()? confirmAction; // like unfollow for example
+  final Future<dynamic> Function()? errorDialogAction; // usually pop dialog
+  final Future<dynamic> Function()? afterConfirmAction; // like refresh the page
   final String? confirmTitle;
   final String? confirmMessage;
   final String? confirmButtonText;
@@ -24,7 +22,6 @@ class ConfirmableActionButton extends StatelessWidget {
     super.key,
     required this.buttonText,
     this.confirmAction,
-    this.conrifmDialogCancelAction,
     this.afterConfirmAction,
     required this.errorDialogAction,
     this.confirmTitle,
@@ -42,9 +39,12 @@ class ConfirmableActionButton extends StatelessWidget {
     return TextButton(
       onPressed: () async {
         bool result = false;
+
         if (confirmDialog) {
-          showDialog(
+          // Show confirmation dialog and wait for user response
+          await showDialog(
             context: context,
+            barrierDismissible: true,
             builder:
                 (context) => ConfirmationDialog(
                   title: confirmTitle!,
@@ -52,32 +52,59 @@ class ConfirmableActionButton extends StatelessWidget {
                   confirmButtonText: confirmButtonText!,
                   cancelButtonText: cancelButtonText!,
                   onConfirm: () async {
+                    // Close the confirmation dialog
+
+                    // Execute the action if provided
                     if (confirmAction != null) {
                       result = await confirmAction!();
+
+                      // Handle result after action completes
+                      if (!result) {
+                        // Show error dialog if action failed
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => ErrorDialog(
+                                title: errorTitle,
+                                message: errorMessage,
+                                buttonText: errorButtonText,
+                                onPressed: errorDialogAction,
+                              ),
+                        );
+                      } else if (afterConfirmAction != null) {
+                        // Execute after-action if provided and action succeeded
+                        afterConfirmAction!();
+                      }
                     }
+                  },
+                  onCancel: () {
+                    // Close the confirmation dialog
+                    //  Navigator.of(context).pop();
                   },
                 ),
           );
         } else {
+          // Execute action directly without confirmation
           if (confirmAction != null) {
             result = await confirmAction!();
-          }
-        }
-        if (!result) {
-          showDialog(
-            context: context,
-            builder:
-                (context) => ErrorDialog(
-                  title: errorTitle,
-                  message: errorMessage,
-                  buttonText: errorButtonText,
-                  onPressed: errorDialogAction,
-                ),
-          );
-        } else {
-          Navigator.of(context).pop(); // Close dialog
-          if (afterConfirmAction != null) {
-            afterConfirmAction!(); // Perform the action after confirmation
+
+            // Handle result after action completes
+            if (!result) {
+              // Show error dialog if action failed
+              showDialog(
+                context: context,
+                builder:
+                    (context) => ErrorDialog(
+                      title: errorTitle,
+                      message: errorMessage,
+                      buttonText: errorButtonText,
+                      onPressed: errorDialogAction,
+                    ),
+              );
+            } else if (afterConfirmAction != null) {
+              // Execute after-action if provided and action succeeded
+              afterConfirmAction!();
+            }
           }
         }
       },

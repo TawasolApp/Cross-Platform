@@ -120,9 +120,6 @@ class PopUpMenuSortBy extends StatelessWidget {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              print(
-                                "🤍🤍🤍🤍🤍🤍${connectionsListProvider.selectedFilter},",
-                              );
                               connectionsListProvider.setActiveFilter();
                               Navigator.pop(context);
                             },
