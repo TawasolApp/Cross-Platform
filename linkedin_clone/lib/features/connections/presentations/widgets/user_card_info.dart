@@ -22,45 +22,33 @@ class UserCardInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Flexible(
-          child: Text(
-            '$firstName $lastName',
-            style: Theme.of(context).textTheme.titleMedium,
-            overflow: TextOverflow.ellipsis,
-          ),
+        Text(
+          '$firstName $lastName',
+          style: Theme.of(context).textTheme.titleMedium,
+          overflow: TextOverflow.ellipsis,
         ),
-        Flexible(
-          child: Text(
-            headLine,
-            style: Theme.of(context).textTheme.bodyMedium,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
+        Text(
+          headLine,
+          style: Theme.of(context).textTheme.bodyMedium,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
         ),
         if (cardType == PageType.pending || cardType == PageType.connections)
           const SizedBox(height: 5),
         if (cardType == PageType.pending)
-          Flexible(
-            child: Text(
-              formatTime(time),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
+          Text(formatTime(time), style: Theme.of(context).textTheme.bodySmall),
         if (cardType == PageType.sent)
-          Expanded(
-            child: Text(
-              "Sent $formatTime(time)",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+          Text(
+            "Sent ${formatTime(time)}",
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         if (cardType == PageType.connections)
-          Flexible(
-            child: Text(
-              formatTime(time),
-              style: Theme.of(context).textTheme.bodySmall,
-              overflow: TextOverflow.ellipsis,
-            ),
+          Text(
+            formatTime(time),
+            style: Theme.of(context).textTheme.bodySmall,
+            overflow: TextOverflow.ellipsis,
           ),
       ],
     );

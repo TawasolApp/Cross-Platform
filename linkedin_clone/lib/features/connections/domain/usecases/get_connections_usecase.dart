@@ -12,7 +12,11 @@ class GetConnectionsUseCase {
     int sortBy = 1,
   }) async {
     try {
-      return await repository.getConnectionsList(page: page, limit: limit);
+      return await repository.getConnectionsList(
+        page: page,
+        limit: limit,
+        sortBy: sortBy,
+      );
     } catch (e) {
       rethrow;
     }

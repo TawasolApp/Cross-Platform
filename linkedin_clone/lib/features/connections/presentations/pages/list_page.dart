@@ -97,9 +97,9 @@ class _ListPageState extends State<ListPage> {
     final isWide = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
-        surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
+        surfaceTintColor: Theme.of(context).colorScheme.onSecondary,
         elevation: 0,
         toolbarHeight: isWide ? 80 : 65,
         title: Text(
@@ -119,7 +119,7 @@ class _ListPageState extends State<ListPage> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
         bottom:
             widget.type == PageType.connections
                 ? PreferredSize(
@@ -198,23 +198,26 @@ class _ListPageState extends State<ListPage> {
               itemBuilder: (context, index) {
                 if (index < list.length) {
                   final user = list[index];
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: isWide ? 48 : 8,
-                      vertical: 8,
-                    ),
-                    child: UserCard(
-                      userId: user.userId,
-                      firstName: user.firstName,
-                      lastName: user.lastName,
-                      headLine: user.headLine,
-                      profilePicture: user.profilePicture,
-                      isOnline: false,
-                      time: user.time ?? '',
-                      cardType: widget.type,
-                      networksProvider: networksProvider,
-                      connectionsProvider: connectionsProvider,
-                    ),
+                  return Column(
+                    children: [
+                      UserCard(
+                        userId: user.userId,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        headLine: user.headLine,
+                        profilePicture: user.profilePicture,
+                        isOnline: false,
+                        time: user.time ?? '',
+                        cardType: widget.type,
+                        networksProvider: networksProvider,
+                        connectionsProvider: connectionsProvider,
+                      ),
+                      Divider(
+                        height: 1,
+                        thickness: 1,
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                    ],
                   );
                 } else {
                   final isBusy =

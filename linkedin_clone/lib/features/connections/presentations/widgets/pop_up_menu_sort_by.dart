@@ -19,8 +19,6 @@ class PopUpMenuSortBy extends StatelessWidget {
   }
 
   void _popUpMenuSortBy(BuildContext context) {
-    String selectedFilter = 'Recently added'; // Default selected filter
-
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -111,7 +109,6 @@ class PopUpMenuSortBy extends StatelessWidget {
                                           ),
                                         ),
                                         onSelected: (bool selected) {
-                                          selectedFilter = filter;
                                           connectionsListProvider.setFilter(
                                             filter,
                                           );
@@ -123,7 +120,10 @@ class PopUpMenuSortBy extends StatelessWidget {
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () {
-                              connectionsListProvider.getConnections();
+                              print(
+                                "🤍🤍🤍🤍🤍🤍${connectionsListProvider.selectedFilter},",
+                              );
+                              connectionsListProvider.setActiveFilter();
                               Navigator.pop(context);
                             },
                             style: ElevatedButton.styleFrom(

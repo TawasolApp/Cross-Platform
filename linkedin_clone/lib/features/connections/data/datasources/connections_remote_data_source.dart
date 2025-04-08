@@ -13,7 +13,7 @@ class ConnectionsRemoteDataSource {
   ConnectionsRemoteDataSource({required this.client});
 
   Future<String> initToken() async {
-    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2YyZWExMzBjZmJkYjVlMTlkYjFiYzAiLCJlbWFpbCI6Imhhbms2OEBnbWFpbC5jb20iLCJyb2xlIjoibWFuYWdlciIsImlhdCI6MTc0NDA0MjM2NiwiZXhwIjoxNzQ0MDQ1OTY2fQ.iKcfUNpYFsW4GyKe-23Ry2YKAtogZZ30bTjlIGWpx00";
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y0MTdhODI2Mjk1N2MyZGUzNjA5YjYiLCJlbWFpbCI6Imtlbm5lZHlfZGlja2Vucy10aWxsbWFuQHlhaG9vLmNvbSIsInJvbGUiOiJlbXBsb3llciIsImlhdCI6MTc0NDA5MTk4NywiZXhwIjoxNzQ0MDk1NTg3fQ.o3SMjCcKrJZEgqGFyS5DGtujDxbFe0wkXPtSGblczOQ";
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token not found');
@@ -28,6 +28,7 @@ class ConnectionsRemoteDataSource {
     int sortBy = 1,
   }) async {
     try {
+      final token = await initToken();
       final response = await client
           .get(
             Uri.parse(
@@ -35,7 +36,7 @@ class ConnectionsRemoteDataSource {
             ),
             headers: {
               'Accept': 'application/json',
-              'Authorization': 'Bearer $initToken()',
+              'Authorization': 'Bearer $token',
             },
           )
           .timeout(
@@ -298,13 +299,13 @@ class ConnectionsRemoteDataSource {
   ///////////////////remove connection
   Future<bool> removeConnection(String userId) async {
     try {
+      final token = await initToken();
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/$userId'),
         headers: {
           'Accept': 'application/json',
-          'Authorization': 'Bearer $initToken()',
+          'Authorization': 'Bearer $token',
         },
-        body: jsonEncode({"isAccept": true}),
       );
 
       if (response.statusCode == 204) {

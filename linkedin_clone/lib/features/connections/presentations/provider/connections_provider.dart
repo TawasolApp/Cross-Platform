@@ -68,7 +68,7 @@ class ConnectionsProvider with ChangeNotifier {
     int sortBy = 1;
     if (_activeFilter == 'First name') {
       sortBy = 2;
-    } else if (_activeFilter == 'last name') {
+    } else if (_activeFilter == 'Last name') {
       sortBy = 3;
     }
     _isBusy = true;
@@ -104,9 +104,7 @@ class ConnectionsProvider with ChangeNotifier {
       _errorMain = e.toString();
     } finally {
       _isLoading = false;
-      print('\nConnectionsProvider: getConnections finally $_isLoading\n');
       _isBusy = false;
-
       notifyListeners();
     }
   }
@@ -241,10 +239,17 @@ class ConnectionsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void setActiveFilter() {
+    if (_activeFilter != _selectedFilter) {
+      _activeFilter = _selectedFilter;
+    }
+    getConnections(isInitial: true);
+  }
+
   // Actions with bool returns
   Future<bool> removeConnection(String userId) async {
     final removed = await removeConnectionUseCase.call(userId);
-    if (removed) await getConnections();
+    if (removed) await getConnections(isInitial: true);
     return removed;
   }
 

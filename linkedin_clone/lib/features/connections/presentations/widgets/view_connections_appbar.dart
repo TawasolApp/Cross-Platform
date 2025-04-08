@@ -18,6 +18,7 @@ class ViewConnectionsAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Divider(height: 1, thickness: 1, color: Theme.of(context).dividerColor),
         Row(
           children: [
             Padding(

@@ -40,14 +40,15 @@ class UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      child: Material(
-        color: Theme.of(context).colorScheme.onSecondary,
-
+    return Material(
+      color: Theme.of(context).colorScheme.onSecondary,
+      borderRadius: BorderRadius.zero,
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 80),
+        padding: const EdgeInsets.all(8),
         child: InkWell(
           onTap: () => _goToProfile(context),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.zero,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -57,6 +58,10 @@ class UserCard extends StatelessWidget {
                 isOnline: isOnline,
                 cardType: cardType,
               ),
+
+              const SizedBox(width: 8),
+
+              /// User info (name, headline, time)
               Expanded(
                 child: UserCardInfo(
                   firstName: firstName,
@@ -67,97 +72,86 @@ class UserCard extends StatelessWidget {
                 ),
               ),
 
-              /// Action buttons based on cardType
-              if (cardType == PageType.pending)
-                PendingRequestsActions(
-                  userId: userId,
-                  connectionsProvider: connectionsProvider!,
-                )
-              else if (cardType == PageType.sent)
-                ConfirmableActionButton(
-                  buttonText: "Withdraw",
-                  confirmAction:
-                      () => connectionsProvider!.withdrawConnectionRequest(
-                        userId,
-                      ),
-                  conrifmDialogCancelAction: () async {
-                    Navigator.pop(context);
-                  },
-                  afterConfirmAction: () async {
-                    connectionsProvider!.getSentConnectionRequests(
-                      isInitial: true,
-                    );
-                  },
-                  errorDialogAction: () async {
-                    Navigator.pop(context);
-                  },
-                  confirmDialog: false,
-                  errorTitle: "Couldn't withdraw request",
-                  errorMessage: "Unable to withdraw request. Please try again.",
-                  errorButtonText: "Cancel",
-                )
-              else if (cardType == PageType.following)
-                ConfirmableActionButton(
-                  buttonText: "Following",
-                  confirmAction: () => networksProvider!.unfollowUser(userId),
-                  conrifmDialogCancelAction: () async {
-                    Navigator.pop(context);
-                  },
-                  afterConfirmAction: () async {
-                    networksProvider!.getFollowingList(isInitial: true);
-                  },
-                  errorDialogAction: () async {
-                    Navigator.pop(context);
-                  },
-                  confirmTitle: "Unfollow $firstName $lastName?",
-                  confirmMessage:
-                      "Are you sure you want to unfollow $firstName $lastName?",
-                  confirmButtonText: "Unfollow",
-                  cancelButtonText: "Cancel",
-                  errorTitle: "Couldn't unfollow $firstName $lastName",
-                  errorMessage:
-                      "Unable to unfollow $firstName $lastName. Please try again.",
-                  errorButtonText: "Cancel",
-                )
-              else if (cardType == PageType.followers)
-                SizedBox()
-              ///FIXME: still don't know what to do here
-              else if (cardType == PageType.blocked) //DONEEEEEEEEEEEEEEEEEEE
-                ConfirmableActionButton(
-                  buttonText: "Unblock",
-                  confirmAction: () => networksProvider!.unblockUser(userId),
-                  conrifmDialogCancelAction: () async {
-                    Navigator.pop(context);
-                  },
-                  afterConfirmAction: () async {
-                    networksProvider!.getBlockedList(isInitial: true);
-                  },
-                  errorDialogAction: () async {
-                    Navigator.pop(context);
-                  },
-                  confirmTitle: "Unblock $firstName $lastName?",
-                  confirmMessage:
-                      "Are you sure you want to unblock $firstName $lastName?",
-                  confirmButtonText: "Unblock",
-                  cancelButtonText: "Cancel",
-                  errorTitle: "Couldn't unblock $firstName $lastName",
-                  errorMessage:
-                      "Unable to unblock $firstName $lastName. Please try again.",
-                  errorButtonText: "Cancel",
-                )
-              else if (cardType ==
-                  PageType.connections) //DONEEEEEEEEEEEEEEEEEEEEEE
-                ConnectionsListActions(
-                  userId: userId,
-                  connectionsProvider: connectionsProvider!,
-                  firstName: firstName,
-                  lastName: lastName,
-                ),
+              const SizedBox(width: 8),
+
+              /// Right-side action buttons
+              _buildActions(context),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildActions(BuildContext context) {
+    switch (cardType) {
+      case PageType.pending:
+        return PendingRequestsActions(
+          userId: userId,
+          connectionsProvider: connectionsProvider!,
+        );
+      case PageType.sent:
+        return ConfirmableActionButton(
+          buttonText: "Withdraw",
+          confirmAction:
+              () => connectionsProvider!.withdrawConnectionRequest(userId),
+          conrifmDialogCancelAction: () async => Navigator.pop(context),
+          afterConfirmAction:
+              () async => connectionsProvider!.getSentConnectionRequests(
+                isInitial: true,
+              ),
+          errorDialogAction: () async => Navigator.pop(context),
+          confirmDialog: false,
+          errorTitle: "Couldn't withdraw request",
+          errorMessage: "Unable to withdraw request. Please try again.",
+          errorButtonText: "Cancel",
+        );
+      case PageType.following:
+        return ConfirmableActionButton(
+          buttonText: "Following",
+          confirmAction: () => networksProvider!.unfollowUser(userId),
+          conrifmDialogCancelAction: () async => Navigator.pop(context),
+          afterConfirmAction:
+              () async => networksProvider!.getFollowingList(isInitial: true),
+          errorDialogAction: () async => Navigator.pop(context),
+          confirmTitle: "Unfollow $firstName $lastName?",
+          confirmMessage:
+              "Are you sure you want to unfollow $firstName $lastName?",
+          confirmButtonText: "Unfollow",
+          cancelButtonText: "Cancel",
+          errorTitle: "Couldn't unfollow $firstName $lastName",
+          errorMessage:
+              "Unable to unfollow $firstName $lastName. Please try again.",
+          errorButtonText: "Cancel",
+        );
+      case PageType.followers:
+        return const SizedBox(); // No action yet
+      case PageType.blocked:
+        return ConfirmableActionButton(
+          buttonText: "Unblock",
+          confirmAction: () => networksProvider!.unblockUser(userId),
+          conrifmDialogCancelAction: () async => Navigator.pop(context),
+          afterConfirmAction:
+              () async => networksProvider!.getBlockedList(isInitial: true),
+          errorDialogAction: () async => Navigator.pop(context),
+          confirmTitle: "Unblock $firstName $lastName?",
+          confirmMessage:
+              "Are you sure you want to unblock $firstName $lastName?",
+          confirmButtonText: "Unblock",
+          cancelButtonText: "Cancel",
+          errorTitle: "Couldn't unblock $firstName $lastName",
+          errorMessage:
+              "Unable to unblock $firstName $lastName. Please try again.",
+          errorButtonText: "Cancel",
+        );
+      case PageType.connections:
+        return ConnectionsListActions(
+          userId: userId,
+          connectionsProvider: connectionsProvider!,
+          firstName: firstName,
+          lastName: lastName,
+        );
+    }
   }
 
   void _goToProfile(BuildContext context) {
