@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/errors/exceptions.dart';
 import '../../domain/usecases/create_post_usecase.dart';
 import '../../domain/usecases/get_posts_usecase.dart';
 import '../../domain/entities/post_entity.dart';
@@ -17,6 +18,7 @@ import '../../../profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import '../../domain/usecases/unsave_post_usecase.dart';
 import '../../domain/usecases/get_user_posts_usecase.dart';
+import '../../domain/usecases/delete_comment_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -32,6 +34,7 @@ class FeedProvider extends ChangeNotifier {
   final GetProfileUseCase getProfileUseCase;
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
+  final DeleteCommentUseCase deleteCommentUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -47,6 +50,7 @@ class FeedProvider extends ChangeNotifier {
     required this.getProfileUseCase,
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
+    required this.deleteCommentUseCase,
   });
 
   List<PostEntity> _posts = [];
@@ -67,7 +71,8 @@ class FeedProvider extends ChangeNotifier {
   String _authorName = '';
   String _profileImage = '';
   String _authorTitle = '';
-
+  String _authorId = '';
+  String get authorId => _authorId;
   String get authorName => _authorName;
   String get profileImage => _profileImage;
   String get authorTitle => _authorTitle;
@@ -86,16 +91,16 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /////////
-  final bool useMockData = false;
-  Future<void> fetchProfileData() async {
+  ///////// call it at init in provider
+  Future<void> loadUserProfile() async {
     final result = await getProfileUseCase(NoParams());
-    result.fold((failure) => _handleFailure(failure), (profile) {
-      _authorName = profile.name ?? 'Unknown';
-      _profileImage =
-          profile.profilePicture ?? 'https://via.placeholder.com/150';
-      _authorTitle = profile.headline ?? 'No Title';
-      notifyListeners();
+    result.fold((failure) => print("Failed to get user profile: $failure"), (
+      profile,
+    ) {
+      _authorId = profile.userId;
+      _authorName = profile.name;
+      //_profileImage = profile.profilePicture;
+      //_authorTitle = profile.headline;
     });
   }
 
@@ -217,8 +222,6 @@ class FeedProvider extends ChangeNotifier {
   }
 
   Future<void> deletePost(String postId) async {
-    // _errorMessage = null;
-    // notifyListeners();
     print('Provider: Deleting post with ID: $postId');
     final result = await deletePostUseCase(postId);
     result.fold(
@@ -228,13 +231,11 @@ class FeedProvider extends ChangeNotifier {
       },
       (_) {
         print('Post deleted successfully');
-        //posts = List.from(posts)..removeWhere((post) => post.id == postId);
+
         _posts.removeWhere((post) => post.id == postId);
         notifyListeners();
       },
     );
-
-    //notifyListeners();
   }
 
   Future<void> savePost(String postId) async {
@@ -412,5 +413,32 @@ class FeedProvider extends ChangeNotifier {
       _handleFailure(failure);
       return [];
     }, (reactions) => reactions);
+  }
+
+  Future<void> deleteComment(String postId, String commentId) async {
+    print('Provider: Deleting comment with ID: $commentId from post: $postId');
+    final result = await deleteCommentUseCase(commentId);
+    result.fold(
+      (failure) {
+        print("Provider: Failed to delete comment: $failure");
+        if (failure is NotFoundException) {
+          print("Comment not found.");
+        } else if (failure is UnauthorizedException) {
+          print("Unauthorized access.");
+        } else if (failure is ForbiddenException) {
+          print("Action forbidden.");
+        } else if (failure is ServerException) {
+          print("Server error occurred.");
+        } else {
+          print("Unexpected failure occurred.");
+        }
+      },
+      (_) {
+        comments.removeWhere((comment) => comment.id == commentId);
+        notifyListeners();
+        fetchComments(postId);
+        print("Comment deleted successfully");
+      },
+    );
   }
 }

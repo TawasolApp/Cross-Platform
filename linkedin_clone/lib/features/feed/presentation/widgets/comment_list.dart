@@ -5,7 +5,6 @@ import 'comment_item.dart';
 
 class CommentList extends StatelessWidget {
   final String postId;
-
   const CommentList({super.key, required this.postId});
 
   @override
@@ -43,7 +42,10 @@ class CommentList extends StatelessWidget {
             itemCount: feedProvider.comments.length,
             itemBuilder: (context, index) {
               final comment = feedProvider.comments[index];
-              return CommentItem(comment: comment);
+              return CommentItem(
+                comment: comment,
+                currentUserId: comment.authorId,
+              );
             },
           ),
         );

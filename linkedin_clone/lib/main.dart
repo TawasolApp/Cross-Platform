@@ -82,6 +82,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usec
 import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -136,6 +137,7 @@ void main() {
   final getPostReactionsUseCase = GetPostReactionsUseCase(repository);
   final unsavePostUseCase = UnsavePostUseCase(repository);
   final getUserPostsUseCase = GetUserPostsUseCase(repository);
+  final deleteCommentUseCase = DeleteCommentUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
   runApp(
     MultiProvider(
@@ -224,6 +226,7 @@ void main() {
                 getProfileUseCase: GetProfileUseCase(profileRepository),
                 unsavePostUseCase: unsavePostUseCase,
                 getUserPostsUseCase: getUserPostsUseCase,
+                deleteCommentUseCase: deleteCommentUseCase,
               )..fetchPosts(),
         ),
 

@@ -11,6 +11,10 @@ class ServerFailure extends Failure {
   ]) : super(message: message, errorCode: errorCode);
 }
 
+class UnknownFailure extends Failure {
+  UnknownFailure(String message) : super(message: message, errorCode: 0);
+}
+
 class NetworkFailure extends Failure {
   NetworkFailure([String message = "Network error", int errorCode = 0])
     : super(message: message, errorCode: errorCode);
@@ -35,6 +39,13 @@ class NotFoundFailure extends Failure {
   NotFoundFailure(String message) : super(message: message, errorCode: 404);
 }
 
-class UnknownFailure extends Failure {
-  UnknownFailure(String message) : super(message: message, errorCode: 0);
+class ForbiddenFailure extends Failure {
+  ForbiddenFailure({String message = "Forbidden Access", int errorCode = 403})
+    : super(message: message, errorCode: errorCode);
+}
+
+// Unexpected Failure
+class UnexpectedFailure extends Failure {
+  UnexpectedFailure({String message = "Unexpected Error", int errorCode = 0})
+    : super(message: message, errorCode: errorCode);
 }

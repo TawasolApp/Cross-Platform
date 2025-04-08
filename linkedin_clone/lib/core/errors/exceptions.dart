@@ -45,3 +45,11 @@ class UnknownException implements Exception {
   final String message;
   UnknownException(this.message);
 }
+
+class ForbiddenException implements Exception {
+  final String message;
+  ForbiddenException([this.message = "Forbidden"]);
+
+  @override
+  String toString() => "ForbiddenException: $message";
+}
