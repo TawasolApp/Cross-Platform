@@ -1,13 +1,28 @@
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/failures.dart';
 import '../repositories/feed_repository.dart';
+import '../../data/models/comment_model.dart';
 
 class CommentPostUseCase {
   final FeedRepository repository;
 
   CommentPostUseCase(this.repository);
 
-  Future<Either<Failure, Unit>> call(String postId, String content) async {
-    return await repository.addComment(postId, content);
+  Future<Either<Failure, CommentModel>> call({
+    required String postId,
+    required String content,
+    List<String>? taggedUsers,
+    bool isReply = false,
+  }) async {
+    print(
+      'CommentPostUseCase called with postId: $postId, content: $content, taggedUsers: $taggedUsers, isReply: $isReply',
+    );
+
+    return await repository.addComment(
+      postId: postId,
+      content: content,
+      taggedUsers: taggedUsers,
+      isReply: isReply,
+    );
   }
 }

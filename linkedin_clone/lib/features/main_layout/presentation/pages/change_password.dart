@@ -25,9 +25,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).cardColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           contentPadding: const EdgeInsets.all(16),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -41,8 +39,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     child: Text(
                       'Choose a strong password to protect your account',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -77,10 +75,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           onPressed: () => context.go(RouteNames.signInAndSecurity),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.help_outline), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView( // Wrap the body with SingleChildScrollView

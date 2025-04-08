@@ -8,6 +8,8 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 class CreateCompanyScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
 
+  CreateCompanyScreen({super.key});
+
   void _pickImage(BuildContext context, bool isLogo) async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
@@ -136,6 +138,7 @@ class CreateCompanyScreen extends StatelessWidget {
                               if (value == null || value.isEmpty) {
                                 return null; // No error if the field is empty
                               }
+                              return null;
                             },
                           ),
                           Text(
@@ -388,7 +391,7 @@ class CreateCompanyScreen extends StatelessWidget {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; 
+                            return null;
                           }
 
                           // ✅ Email validation regex pattern
@@ -421,6 +424,7 @@ class CreateCompanyScreen extends StatelessWidget {
                           if (value == null || value.isEmpty) {
                             return null; // No error if the field is empty
                           }
+                          return null;
                         },
                       ),
                       SizedBox(height: 16),
@@ -464,6 +468,7 @@ class CreateCompanyScreen extends StatelessWidget {
                               if (value == null || value.isEmpty) {
                                 return null; // Field is optional, so no validation error
                               }
+                              return null;
                             },
                           ),
                           SizedBox(height: 4),

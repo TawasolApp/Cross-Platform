@@ -20,7 +20,11 @@ class EditCompanyScreen extends StatelessWidget {
     '10000+ Employees',
   ];
 
-  EditCompanyScreen({required this.companyId, required this.company});
+  EditCompanyScreen({
+    super.key,
+    required this.companyId,
+    required this.company,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -66,10 +70,10 @@ class EditCompanyScreen extends StatelessWidget {
     File? logoImage;
     File? bannerImage;
 
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
 
-    Future<void> _pickImage(ImageSource source, bool isLogo) async {
-      final pickedFile = await _picker.pickImage(source: source);
+    Future<void> pickImage(ImageSource source, bool isLogo) async {
+      final pickedFile = await picker.pickImage(source: source);
       if (pickedFile != null) {
         if (isLogo) {
           logoImage = File(pickedFile.path);
@@ -92,21 +96,25 @@ class EditCompanyScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Spacer(),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddAdminScreen(),
-                          ),
-                        );
-                      },
-                        icon: Icon(Icons.person_add, color: Colors.white), // User+ Icon
-                      label: Text('Add Page Admin'),
-                    ),
-                    ]
+                    Row(
+                      children: [
+                        Spacer(),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddAdminScreen(),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                          ), // User+ Icon
+                          label: Text('Add Page Admin'),
+                        ),
+                      ],
                     ),
                     // Company Name Field
                     buildField(
@@ -208,8 +216,7 @@ class EditCompanyScreen extends StatelessWidget {
                                       ),
                                     )
                                     // If no image is picked, show default company logo (if available) or camera icon
-                                    : company.logo != null &&
-                                        company.logo.isNotEmpty
+                                    : company.logo.isNotEmpty
                                     ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
@@ -282,8 +289,7 @@ class EditCompanyScreen extends StatelessWidget {
                                       ),
                                     )
                                     // If no image is picked, show default company banner (if available) or camera icon
-                                    : company.banner != null &&
-                                        company.banner.isNotEmpty
+                                    : company.banner.isNotEmpty
                                     ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(

@@ -6,7 +6,7 @@ import '../providers/company_provider.dart';
 class RecentJobsWidget extends StatelessWidget {
   final String userId;
 
-  const RecentJobsWidget({Key? key, required this.userId}) : super(key: key);
+  const RecentJobsWidget({super.key, required this.userId});
   @override
   Widget build(BuildContext context) {
     return Consumer<CompanyProvider>(
@@ -85,9 +85,9 @@ class RecentJobsWidget extends StatelessWidget {
                               MaterialPageRoute(
                                 builder:
                                     (context) => JobDetailsScreen(
-                                      job: job, 
+                                      job: job,
                                       companyProvider: companyProvider,
-                                      userId: userId, 
+                                      userId: userId,
                                       companyId:
                                           companyProvider.company?.companyId ??
                                           '',

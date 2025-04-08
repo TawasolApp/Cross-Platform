@@ -12,12 +12,28 @@ class CommentList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<FeedProvider>(
       builder: (context, feedProvider, child) {
+        final comments =
+            feedProvider.comments
+                .where((comment) => comment.postId == postId)
+                .toList();
         if (feedProvider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        if (feedProvider.comments.isEmpty) {
-          return const Center(child: Text("No comments yet."));
+        if (feedProvider.errorMessage != null) {
+          return Center(
+            child: Text(
+              feedProvider.errorMessage!,
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+        if (comments.isEmpty) {
+          return const Center(
+            child: Text(
+              'No comments yet',
+              style: TextStyle(color: Colors.grey),
+            ),
+          );
         }
 
         return Container(

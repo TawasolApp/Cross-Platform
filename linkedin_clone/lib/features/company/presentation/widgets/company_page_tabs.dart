@@ -6,7 +6,11 @@ import 'package:linkedin_clone/features/company/presentation/widgets/company_job
 class CompanyTabsWidget extends StatelessWidget {
   final String userId; // Accepting userId as a parameter
   final String companyId;
-  CompanyTabsWidget({required this.userId, required this.companyId});
+  const CompanyTabsWidget({
+    super.key,
+    required this.userId,
+    required this.companyId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,13 +31,14 @@ class CompanyTabsWidget extends StatelessWidget {
             ],
           ),
           SizedBox(
-            height: 500, // TODO:Change this to be make the whole screen scroablle
+            height:
+                500, // TODO:Change this to be make the whole screen scroablle
             child: TabBarView(
               children: [
                 CompanyHomeTab(userId: userId),
                 CompanyAboutWidget(userId),
                 Center(child: Text("Posts Content")),
-                CompanyJobsWidget(userId: userId,companyId: companyId,),
+                CompanyJobsWidget(userId: userId, companyId: companyId),
               ],
             ),
           ),
