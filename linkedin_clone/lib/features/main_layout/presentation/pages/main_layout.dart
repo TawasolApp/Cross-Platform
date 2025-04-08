@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
 
@@ -18,7 +17,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   final List<Widget> _pages = [
     FeedPage(), // Will be replaced by News Feed module
-    ConnectionsPage(), // Will be replaced by Connections module
+    //sss ConnectionsPage(), // Will be replaced by Connections module
     // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompanyProfileScreen(companyId: "elsewedy-electric", title: "Test Company"),
     SettingsPage(), // Will be replaced by Settings module

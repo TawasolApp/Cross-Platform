@@ -10,6 +10,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/home_p
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/login_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_verification_page.dart.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/change_password.dart';
@@ -22,10 +23,8 @@ import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page.dart';
 import '../../features/main_layout/presentation/pages/settings.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/following_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/followers_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -158,20 +157,20 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.connections,
-        builder: (context, state) => ConnectionsPage(),
+        builder: (context, state) => ListPage(type: PageType.connections),
       ),
       GoRoute(
         path: RouteNames.followers,
-        builder: (context, state) => FollowersPage(),
+        builder: (context, state) => ListPage(type: PageType.followers),
       ),
       GoRoute(
         path: RouteNames.following,
-        builder: (context, state) => FollowingPage(),
+        builder: (context, state) => ListPage(type: PageType.following),
       ),
       GoRoute(
         path: RouteNames.invitations,
         builder: (context, state) => InvitationsPage(),
       ),
-    ],
+    ], ////FIXME:
   );
 }

@@ -65,9 +65,10 @@ class RemoveConnectionDialog extends StatelessWidget {
                         context: context,
                         builder:
                             (context) => ErrorDialog(
-                              title: "Error",
-                              message: "Failed to remove connection",
-                              buttonText: "OK",
+                              title: "Couldn't remove connection",
+                              message:
+                                  "Failed to remove connection, Please try again.",
+                              buttonText: "Cancel",
                               onPressed: () {
                                 Navigator.of(context).pop(); // Close dialog
                                 Navigator.pop(

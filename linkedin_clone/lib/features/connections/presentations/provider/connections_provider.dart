@@ -104,6 +104,7 @@ class ConnectionsProvider with ChangeNotifier {
       _errorMain = e.toString();
     } finally {
       _isLoading = false;
+      print('\nConnectionsProvider: getConnections finally $_isLoading\n');
       _isBusy = false;
 
       notifyListeners();

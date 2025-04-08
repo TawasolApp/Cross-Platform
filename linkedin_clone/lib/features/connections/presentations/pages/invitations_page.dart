@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/received_invitations_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/sent_invitations_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/invitations_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:provider/provider.dart';
-import '../provider/connections_provider.dart'; // Ensure this is the correct path
+import '../provider/connections_provider.dart';
 
 class InvitationsPage extends StatefulWidget {
   const InvitationsPage({super.key});
@@ -29,6 +29,8 @@ class _InvitationsPageState extends State<InvitationsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final connectionsProvider = Provider.of<ConnectionsProvider>(context);
+
     return DefaultTabController(
       length: 2,
       initialIndex: 0,
@@ -81,8 +83,14 @@ class _InvitationsPageState extends State<InvitationsPage> {
         ),
         body: TabBarView(
           children: [
-            ReceivedInvitationsBody(),
-            SentInvitationsBody(),
+            InvitationsBody(
+              cardType: PageType.pending,
+              connectionsProvider: connectionsProvider,
+            ),
+            InvitationsBody(
+              cardType: PageType.sent,
+              connectionsProvider: connectionsProvider,
+            ),
           ],
         ),
       ),

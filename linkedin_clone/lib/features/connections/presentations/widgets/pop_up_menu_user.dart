@@ -45,8 +45,14 @@ class PopUpMenuUser extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  width: 40,
-                  height: 6,
+                  width:
+                      MediaQuery.of(context).size.width * 0.3 > 80
+                          ? 80
+                          : MediaQuery.of(context).size.width * 0.3,
+                  height:
+                      MediaQuery.of(context).size.height * 0.03 > 10
+                          ? 10
+                          : MediaQuery.of(context).size.width * 0.03,
                   decoration: BoxDecoration(
                     color: Theme.of(context).textTheme.titleLarge?.color,
                     borderRadius: BorderRadius.circular(10),

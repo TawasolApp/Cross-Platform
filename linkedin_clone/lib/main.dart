@@ -34,12 +34,11 @@ import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignor
 
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/followers_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/following_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
@@ -95,6 +94,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/invitati
 import "../../../features/connections/presentations/pages/connections_page.dart";
 import 'package:linkedin_clone/features/feed/domain/usecases/comment_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usecase.dart';
+import 'features/connections/presentations/widgets/page_type_enum.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -334,7 +334,7 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: const MyNetworkPage(),
+      home: ListPage(type: PageType.connections),
     );
   }
 }
