@@ -275,7 +275,6 @@ class ConnectionsProvider with ChangeNotifier {
   Future<bool> sendConnectionRequest(String userId) async {
     final sent = await sendConnectionRequestUseCase.call(userId);
     print("🤍🤍🤍🤍🤍🤍sent: $sent");
-    if (sent) await getSentConnectionRequests(isInitial: true);
     return sent;
   }
 

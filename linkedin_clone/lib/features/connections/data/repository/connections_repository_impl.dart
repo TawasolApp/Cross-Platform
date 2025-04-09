@@ -132,7 +132,7 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       final sent = await remoteDataSource.sendConnectionRequest(userId);
       return sent;
     } catch (e) {
-      throw Exception('Failed to send connection request');
+      rethrow;
     }
   }
 
