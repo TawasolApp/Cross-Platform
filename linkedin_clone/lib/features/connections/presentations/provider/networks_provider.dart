@@ -174,6 +174,7 @@ class NetworksProvider with ChangeNotifier {
   }
 
   Future<bool> blockUser(String userId) async {
+    print('Block user: $userId');
     try {
       return await unfollowUseCase.call(userId);
     } catch (e) {

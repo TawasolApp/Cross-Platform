@@ -130,8 +130,6 @@ class UserCard extends StatelessWidget {
         return ConfirmableActionButton(
           buttonText: "Unblock",
           confirmAction: () => networksProvider!.unblockUser(userId),
-          afterConfirmAction:
-              () async => networksProvider!.getBlockedList(isInitial: true),
           errorDialogAction: () async => Navigator.pop(context),
           confirmTitle: "Unblock $firstName $lastName?",
           confirmMessage:

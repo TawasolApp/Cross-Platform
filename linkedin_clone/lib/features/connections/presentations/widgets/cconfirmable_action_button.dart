@@ -6,9 +6,9 @@ import 'error_dialog.dart';
 
 class ConfirmableActionButton extends StatelessWidget {
   final String buttonText;
-  final Future<bool> Function()? confirmAction; // like unfollow for example
-  final Future<dynamic> Function()? errorDialogAction; // usually pop dialog
-  final Future<dynamic> Function()? afterConfirmAction; // like refresh the page
+  final Future<bool> Function()? confirmAction;
+  final Future<dynamic> Function()? errorDialogAction;
+  final Future<dynamic> Function()? afterConfirmAction;
   final String? confirmTitle;
   final String? confirmMessage;
   final String? confirmButtonText;
@@ -38,12 +38,12 @@ class ConfirmableActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () async {
+        final parentContext = context;
         bool result = false;
-
         if (confirmDialog) {
-          // Show confirmation dialog and wait for user response
-          await showDialog(
-            context: context,
+          // Step 1: Show confirmation dialog, wait for user response
+          final shouldProceed = await showDialog<bool>(
+            context: parentContext,
             barrierDismissible: true,
             builder:
                 (context) => ConfirmationDialog(
@@ -51,48 +51,19 @@ class ConfirmableActionButton extends StatelessWidget {
                   message: confirmMessage!,
                   confirmButtonText: confirmButtonText!,
                   cancelButtonText: cancelButtonText!,
-                  onConfirm: () async {
-                    // Close the confirmation dialog
-
-                    // Execute the action if provided
-                    if (confirmAction != null) {
-                      result = await confirmAction!();
-
-                      // Handle result after action completes
-                      if (!result) {
-                        // Show error dialog if action failed
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => ErrorDialog(
-                                title: errorTitle,
-                                message: errorMessage,
-                                buttonText: errorButtonText,
-                                onPressed: errorDialogAction,
-                              ),
-                        );
-                      } else if (afterConfirmAction != null) {
-                        // Execute after-action if provided and action succeeded
-                        afterConfirmAction!();
-                      }
-                    }
-                  },
-                  onCancel: () {
-                    // Close the confirmation dialog
-                    //  Navigator.of(context).pop();
+                  onConfirm: () {
+                    return Navigator.of(context).pop(true); // User confirmed
                   },
                 ),
           );
-        } else {
-          // Execute action directly without confirmation
-          if (confirmAction != null) {
+
+          // Step 2: If user confirmed
+          if (shouldProceed == true && confirmAction != null) {
             result = await confirmAction!();
 
-            // Handle result after action completes
             if (!result) {
-              // Show error dialog if action failed
               showDialog(
-                context: context,
+                context: parentContext,
                 builder:
                     (context) => ErrorDialog(
                       title: errorTitle,
@@ -102,7 +73,26 @@ class ConfirmableActionButton extends StatelessWidget {
                     ),
               );
             } else if (afterConfirmAction != null) {
-              // Execute after-action if provided and action succeeded
+              afterConfirmAction!();
+            }
+          }
+        } else {
+          // No confirmation dialog, run action directly
+          if (confirmAction != null) {
+            result = await confirmAction!();
+
+            if (!result) {
+              showDialog(
+                context: parentContext,
+                builder:
+                    (context) => ErrorDialog(
+                      title: errorTitle,
+                      message: errorMessage,
+                      buttonText: errorButtonText,
+                      onPressed: errorDialogAction,
+                    ),
+              );
+            } else if (afterConfirmAction != null) {
               afterConfirmAction!();
             }
           }
