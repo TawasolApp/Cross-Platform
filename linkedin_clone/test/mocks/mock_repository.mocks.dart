@@ -135,4 +135,105 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
             ),
           )
           as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> editPost({
+    required String? postId,
+    required String? content,
+    required List<String>? media,
+    required List<String>? taggedUsers,
+    required String? visibility,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#editPost, [], {
+              #postId: postId,
+              #content: content,
+              #media: media,
+              #taggedUsers: taggedUsers,
+              #visibility: visibility,
+            }),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#editPost, [], {
+                  #postId: postId,
+                  #content: content,
+                  #media: media,
+                  #taggedUsers: taggedUsers,
+                  #visibility: visibility,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> addComment(
+    String? postId,
+    String? content,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#addComment, [postId, content]),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#addComment, [postId, content]),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, List<dynamic>>> fetchComments(
+    String? postId, {
+    int? page = 1,
+    int? limit = 10,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #fetchComments,
+              [postId],
+              {#page: page, #limit: limit},
+            ),
+            returnValue:
+                _i3.Future<_i4.Either<_i5.Failure, List<dynamic>>>.value(
+                  _i7.dummyValue<_i4.Either<_i5.Failure, List<dynamic>>>(
+                    this,
+                    Invocation.method(
+                      #fetchComments,
+                      [postId],
+                      {#page: page, #limit: limit},
+                    ),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, List<dynamic>>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, void>> editComment({
+    required String? commentId,
+    required String? content,
+    List<String>? taggedUsers,
+    bool? isReply,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#editComment, [], {
+              #commentId: commentId,
+              #content: content,
+              #taggedUsers: taggedUsers,
+              #isReply: isReply,
+            }),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, void>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, void>>(
+                this,
+                Invocation.method(#editComment, [], {
+                  #commentId: commentId,
+                  #content: content,
+                  #taggedUsers: taggedUsers,
+                  #isReply: isReply,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, void>>);
 }

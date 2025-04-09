@@ -8,64 +8,101 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   ConnectionsRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<ConnectionsUserEntity>> getConnectionsList(String? token) async {
+  Future<List<ConnectionsUserEntity>> getConnectionsList({
+    int page = 0,
+    int limit = 0,
+    int sortBy = 1,
+  }) async {
     try {
-      final connectionsList = await remoteDataSource.getConnectionsList(token);
+      final connectionsList = await remoteDataSource.getConnectionsList(
+        page: page,
+        limit: limit,
+        sortBy: sortBy,
+      );
       return connectionsList;
     } catch (e) {
-      throw Exception('no connection');
+      rethrow;
     }
   }
 
   @override
-  Future<bool> removeConnection(String userId, String? token) async {
+  Future<bool> removeConnection(String userId) async {
     try {
-      bool removed = await remoteDataSource.removeConnection(userId, token);
+      bool removed = await remoteDataSource.removeConnection(userId);
       return removed;
     } catch (e) {
-      throw Exception('Failed to remove connection');
+      rethrow;
     }
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getReceivedConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
       final pendingList = await remoteDataSource
-          .getReceivedConnectionRequestsList(token);
-      if (pendingList.isEmpty) {
-        throw Exception('No pending connection requests found');
-      }
+          .getReceivedConnectionRequestsList(page: page, limit: limit);
       return pendingList;
     } catch (e) {
-      throw Exception('no connection');
+      rethrow;
     }
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList(
-    String? token,
-  ) async {
+  Future<List<ConnectionsUserEntity>> getFollowersList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final followersList = await remoteDataSource.getFollowersList(
+        page: page,
+        limit: limit,
+      );
+      return followersList;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ConnectionsUserEntity>> getFollowingList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final followingList = await remoteDataSource.getFollowingList(
+        page: page,
+        limit: limit,
+      );
+      return followingList;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ConnectionsUserEntity>> getSentConnectionRequestsList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
       final sentList = await remoteDataSource.getSentConnectionRequestsList(
-        token,
+        page: page,
+        limit: limit,
       );
-      if (sentList.isEmpty) {
-        throw Exception('No sent connection requests found');
-      }
       return sentList;
     } catch (e) {
-      throw Exception('no connection');
+      rethrow;
     }
   }
 
   @override
-  Future<bool> acceptConnectionRequest(String userId, String? token) async {
+  Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept) async {
     try {
-      final accepted = await remoteDataSource.acceptConnectionRequest(
+      final accepted = await remoteDataSource.acceptIgnoreConnectionRequest(
         userId,
-        token,
+        accept,
       );
       return accepted;
     } catch (e) {
@@ -74,25 +111,80 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<bool> ignoreConnectionRequest(String userId, String? token) async {
+  Future<List<ConnectionsUserEntity>> getBlockedList({
+    int page = 0,
+    int limit = 0,
+  }) async {
     try {
-      final ignored = await remoteDataSource.ignoreConnectionRequest(
-        userId,
-        token,
+      final blockedList = await remoteDataSource.getBlockedList(
+        page: page,
+        limit: limit,
       );
-      return ignored;
+      return blockedList;
     } catch (e) {
-      throw Exception('Failed to ignore connection request');
+      rethrow;
     }
   }
 
   @override
-  Future<bool> sendConnectionRequest(String userId, String? token) async {
+  Future<bool> sendConnectionRequest(String userId) async {
     try {
-      final sent = await remoteDataSource.sendConnectionRequest(userId, token);
+      final sent = await remoteDataSource.sendConnectionRequest(userId);
       return sent;
     } catch (e) {
-      throw Exception('Failed to send connection request');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> withdrawConnectionRequest(String userId) async {
+    try {
+      final withdrawn = await remoteDataSource.withdrawConnectionRequest(
+        userId,
+      );
+      return withdrawn;
+    } catch (e) {
+      throw Exception('Failed to withdraw connection request');
+    }
+  }
+
+  @override
+  Future<bool> unfollowUser(String userId) async {
+    try {
+      final unfollowed = await remoteDataSource.unfollowUser(userId);
+      return unfollowed;
+    } catch (e) {
+      throw Exception('Failed to unfollow user');
+    }
+  }
+
+  @override
+  Future<bool> followUser(String userId) async {
+    try {
+      final unfollowed = await remoteDataSource.followUser(userId);
+      return unfollowed;
+    } catch (e) {
+      throw Exception('Failed to unfollow user');
+    }
+  }
+
+  @override
+  Future<bool> blockUser(String userId) async {
+    try {
+      final blocked = await remoteDataSource.blockUser(userId);
+      return blocked;
+    } catch (e) {
+      throw Exception('Failed to block user');
+    }
+  }
+
+  @override
+  Future<bool> unblockUser(String userId) async {
+    try {
+      final unBlocked = await remoteDataSource.unblockUser(userId);
+      return unBlocked;
+    } catch (e) {
+      throw Exception('Failed to block user');
     }
   }
 }

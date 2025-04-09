@@ -35,13 +35,22 @@ import 'package:linkedin_clone/features/company/presentation/providers/related_c
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_followers_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/accept_connection_request_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/ignore_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignore_connection_request_usecase.dart';
+
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
@@ -62,14 +71,12 @@ import '../features/feed/presentation/provider/feed_provider.dart';
 import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
-import 'package:provider/provider.dart';
-import 'package:linkedin_clone/core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
+
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-// import 'package:http/http.dart' as http;
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/update_certification.dart';
@@ -97,12 +104,12 @@ import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_r
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart'; // Ensure this is the correct path
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
-import "../../../features/connections/presentations/pages/connections_page.dart";
 import 'package:linkedin_clone/features/feed/domain/usecases/comment_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
+import 'features/connections/presentations/widgets/page_type_enum.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -167,6 +174,7 @@ void main() {
                 updateEmailUsecase,
                 deleteAccountUsecase,
               ),
+   
         ),
         ChangeNotifierProvider(
           create:
@@ -220,14 +228,7 @@ void main() {
                     ),
                   ),
                 ),
-                AcceptConnectionRequestUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
-                IgnoreConnectionRequestUseCase(
+                AcceptIgnoreConnectionRequestUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
@@ -235,6 +236,46 @@ void main() {
                   ),
                 ),
                 SendConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                WithdrawConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => NetworksProvider(
+                GetFollowingListUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                UnfollowUserUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetFollowersListUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                FollowUserUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
@@ -354,16 +395,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      //theme: ThemeData(primarySwatch: Colors.blue),
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-
-      //routes: {'/create-post': (_) => const PostCreationPage()},
-      routerConfig: AppRouter.router,
+      home: TestPage(),
     );
   }
 }

@@ -3,7 +3,8 @@ import '../../domain/entities/connections_user_entity.dart';
 class ConnectionsUserModel extends ConnectionsUserEntity {
   ConnectionsUserModel({
     required super.userId,
-    required super.userName,
+    required super.firstName,
+    required super.lastName,
     required super.headLine,
     required super.time,
     required super.profilePicture,
@@ -13,10 +14,11 @@ class ConnectionsUserModel extends ConnectionsUserEntity {
   factory ConnectionsUserModel.fromJson(Map<String, dynamic> json) {
     return ConnectionsUserModel(
       userId: json['userId'] ?? '0',
-      userName: json['username'] ?? 'Unknown',
+      firstName: json['firstName'] ?? 'Unknown',
+      lastName: json['lastName'] ?? '',
       profilePicture: json['profilePicture'] ?? 'notavailable',
-      headLine: json['headline'] ?? 'Unknown',
-      time: json['createdAt'] ?? 'Unknown',
+      headLine: json['headline'] ?? '',
+      time: json['createdAt'] ?? '',
       //  isOnline: json['connectionStatus']  ?? false,
     );
   }
