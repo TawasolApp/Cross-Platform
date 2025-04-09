@@ -9,7 +9,7 @@ class DeleteEducationUseCase implements UseCase<void, String> {
   DeleteEducationUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(String education) {
-    return repository.deleteEducation(education);
+  Future<Either<Failure, void>> call(String educationId) {
+    return repository.deleteEducation(educationId);
   }
 }

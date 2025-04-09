@@ -44,9 +44,7 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
         }
 
         if (provider.experiences!.isEmpty) {
-          return const Center(
-            child: Text("No experiences added yet"),
-          );
+          return const Center(child: Text("No experiences added yet"));
         }
 
         return RefreshIndicator(
@@ -70,18 +68,57 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
     int index,
     ProfileProvider provider,
   ) {
+    // Format the employment type for display
+    String formatEmploymentType(String type) {
+      // Convert snake_case to title case with hyphens
+      return type
+          .split('_')
+          .map(
+            (word) =>
+                word.isNotEmpty
+                    ? '${word[0].toUpperCase()}${word.substring(1)}'
+                    : '',
+          )
+          .join('-');
+    }
+
+    // Format the location type for display
+    String formatLocationType(String? type) {
+      if (type == null) return '';
+      // Convert snake_case to title case with hyphens
+      return type
+          .split('_')
+          .map(
+            (word) =>
+                word.isNotEmpty
+                    ? '${word[0].toUpperCase()}${word.substring(1)}'
+                    : '',
+          )
+          .join('-');
+    }
+
+    final String formattedEmploymentType = formatEmploymentType(
+      experience.employmentType,
+    );
+    final String formattedLocationType = formatLocationType(
+      experience.locationType,
+    );
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: experience.companyPicUrl != null
-            ? CircleAvatar(backgroundImage: NetworkImage(experience.companyPicUrl!))
-            : const CircleAvatar(child: Icon(Icons.business)),
+        leading:
+            experience.workExperiencePicture != null
+                ? CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    experience.workExperiencePicture!,
+                  ),
+                )
+                : const CircleAvatar(child: Icon(Icons.business)),
         title: Text(
           experience.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -89,18 +126,52 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(experience.company),
+            // Company with employment type
+            Row(
+              children: [
+                Text(experience.company),
+                const Text(" · ", style: TextStyle(color: Colors.grey)),
+                Text(
+                  formattedEmploymentType,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
+            // Location with location type if available
+            if (experience.location != null && experience.location!.isNotEmpty)
+              Row(
+                children: [
+                  Text(
+                    experience.location!,
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                  if (experience.locationType != null &&
+                      experience.locationType!.isNotEmpty) ...[
+                    const Text(
+                      " · ",
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                    Text(
+                      formattedLocationType,
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ],
+              ),
+            // Date range
             Text(
               experience.endDate != null
                   ? "${experience.startDate} - ${experience.endDate}"
                   : "${experience.startDate} - Present",
               style: const TextStyle(color: Colors.grey),
             ),
-            if (experience.description.isNotEmpty)
+            // Description
+            if (experience.description != null &&
+                experience.description!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
-                  experience.description,
+                  experience.description!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),
@@ -118,13 +189,14 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
           },
           color: Colors.white,
           elevation: 3,
-          itemBuilder: (context) => [
-            const PopupMenuItem(value: "edit", child: Text("Edit")),
-            const PopupMenuItem(
-              value: "delete",
-              child: Text("Delete", style: TextStyle(color: Colors.red)),
-            ),
-          ],
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(value: "edit", child: Text("Edit")),
+                const PopupMenuItem(
+                  value: "delete",
+                  child: Text("Delete", style: TextStyle(color: Colors.red)),
+                ),
+              ],
         ),
         onTap: () => _editExperience(context, experience),
       ),
@@ -134,9 +206,7 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
   Future<void> _addExperience(BuildContext context) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AddExperiencePage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AddExperiencePage()),
     );
 
     if (result == true && mounted) {
@@ -150,13 +220,14 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
     }
   }
 
-  Future<void> _editExperience(BuildContext context, Experience experience) async {
+  Future<void> _editExperience(
+    BuildContext context,
+    Experience experience,
+  ) async {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => EditExperiencePage(
-          experience: experience,
-        ),
+        builder: (context) => EditExperiencePage(experience: experience),
       ),
     );
 
@@ -178,23 +249,26 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Experience"),
-        content: const Text("Are you sure you want to remove this experience?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete Experience"),
+            content: const Text(
+              "Are you sure you want to remove this experience?",
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {

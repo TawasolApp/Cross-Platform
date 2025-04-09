@@ -4,13 +4,26 @@ import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 
-class UpdateExperienceUseCase implements UseCase<void, Experience> {
+class UpdateExperienceUseCase implements UseCase<void, ExperienceUpdateParams> {
   final ProfileRepository repository;
 
   UpdateExperienceUseCase(this.repository);
 
   @override
-  Future<Either<Failure, void>> call(Experience experience) {
-    return repository.updateExperience(experience);
+  Future<Either<Failure, void>> call(ExperienceUpdateParams params) {
+    return repository.updateWorkExperience(
+      params.experienceId,
+      params.experience,
+    );
   }
+}
+
+class ExperienceUpdateParams {
+  final String experienceId;
+  final Experience experience;
+
+  ExperienceUpdateParams({
+    required this.experienceId,
+    required this.experience,
+  });
 }

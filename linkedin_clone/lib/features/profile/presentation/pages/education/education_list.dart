@@ -44,9 +44,7 @@ class _EducationListPageState extends State<EducationListPage> {
         }
 
         if (provider.educations!.isEmpty) {
-          return const Center(
-            child: Text("No education added yet"),
-          );
+          return const Center(child: Text("No education added yet"));
         }
 
         return RefreshIndicator(
@@ -70,102 +68,91 @@ class _EducationListPageState extends State<EducationListPage> {
     int index,
     ProfileProvider provider,
   ) {
+    // Format degree type for display
+    String formatDegreeType(String type) {
+      // Convert to title case with proper formatting
+      return type.trim();
+    }
+
+    final String formattedDegree = formatDegreeType(education.degree);
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => _editEducation(context, education),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  education.schoolPic != null
-                      ? CircleAvatar(
-                          radius: 24,
-                          backgroundImage: NetworkImage(education.schoolPic!),
-                        )
-                      : const CircleAvatar(
-                          radius: 24,
-                          child: Icon(Icons.school, size: 24),
-                        ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          education.school,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          education.degree,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) async {
-                      if (value == "edit") {
-                        await _editEducation(context, education);
-                      } else if (value == "delete") {
-                        await _deleteEducation(context, index, provider);
-                      }
-                    },
-                    color: Colors.white,
-                    elevation: 3,
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(value: "edit", child: Text("Edit")),
-                      const PopupMenuItem(
-                        value: "delete",
-                        child: Text("Delete", style: TextStyle(color: Colors.red)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                education.field,
-                style: const TextStyle(fontWeight: FontWeight.w500),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                education.endDate != null
-                    ? "${education.startDate} - ${education.endDate}"
-                    : "${education.startDate} - Present",
-                style: const TextStyle(color: Colors.grey),
-              ),
-              if (education.grade.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  "Grade: ${education.grade}",
-                  style: const TextStyle(color: Colors.grey),
-                ),
-              ],
-              if (education.description.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  education.description,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ],
-          ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading:
+            education.schoolPic != null
+                ? CircleAvatar(
+                  backgroundImage: NetworkImage(education.schoolPic!),
+                )
+                : const CircleAvatar(child: Icon(Icons.school)),
+        title: Text(
+          education.school,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Degree with field
+            Row(
+              children: [
+                Text(formattedDegree),
+                const Text(" · ", style: TextStyle(color: Colors.grey)),
+                Text(
+                  education.field,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
+            // Date range
+            Text(
+              education.endDate != null
+                  ? "${education.startDate} - ${education.endDate}"
+                  : "${education.startDate} - Present",
+              style: const TextStyle(color: Colors.grey),
+            ),
+            // Grade
+            if (education.grade.isNotEmpty)
+              Text(
+                "Grade: ${education.grade}",
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+            // Description
+            if (education.description.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: Text(
+                  education.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+          ],
+        ),
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) async {
+            if (value == "edit") {
+              await _editEducation(context, education);
+            } else if (value == "delete") {
+              await _deleteEducation(context, index, provider);
+            }
+          },
+          color: Colors.white,
+          elevation: 3,
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(value: "edit", child: Text("Edit")),
+                const PopupMenuItem(
+                  value: "delete",
+                  child: Text("Delete", style: TextStyle(color: Colors.red)),
+                ),
+              ],
+        ),
+        onTap: () => _editEducation(context, education),
       ),
     );
   }
@@ -173,9 +160,7 @@ class _EducationListPageState extends State<EducationListPage> {
   Future<void> _addEducation(BuildContext context) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AddEducationPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AddEducationPage()),
     );
 
     if (result == true && mounted) {
@@ -193,9 +178,7 @@ class _EducationListPageState extends State<EducationListPage> {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => EditEducationPage(
-          education: education,
-        ),
+        builder: (context) => EditEducationPage(education: education),
       ),
     );
 
@@ -217,23 +200,26 @@ class _EducationListPageState extends State<EducationListPage> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Education"),
-        content: const Text("Are you sure you want to remove this education?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete Education"),
+            content: const Text(
+              "Are you sure you want to remove this education?",
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {

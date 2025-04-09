@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
+import 'package:linkedin_clone/core/api/media.dart'; // Add this import for media upload
+import 'package:image_picker/image_picker.dart'; // Add this import for XFile
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
@@ -8,7 +11,6 @@ import 'package:linkedin_clone/features/profile/domain/usecases/experience/add_e
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/update_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/delete_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/add_skill.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/add_education.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/update_education.dart';
@@ -16,19 +18,26 @@ import 'package:linkedin_clone/features/profile/domain/usecases/education/delete
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/update_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_cover_photo.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_profile_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_cover_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_headline.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_industry.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_location.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_first_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_last_name.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_resume.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_resume.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_bio.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_headline.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_location.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_industry.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
 
 class ProfileProvider extends ChangeNotifier {
   // Use cases
@@ -38,16 +47,21 @@ class ProfileProvider extends ChangeNotifier {
   final UpdateCoverPictureUseCase updateCoverPictureUseCase;
   final DeleteCoverPhotoUseCase deleteCoverPhotoUseCase;
   final UpdateHeadlineUseCase updateHeadlineUseCase;
+  final DeleteHeadlineUseCase deleteHeadlineUseCase;
   final UpdateIndustryUseCase updateIndustryUseCase;
+  final DeleteIndustryUseCase deleteIndustryUseCase;
   final UpdateLocationUseCase updateLocationUseCase;
-  final UpdateNameUseCase updateNameUseCase;
+  final DeleteLocationUseCase deleteLocationUseCase;
+  final UpdateFirstNameUseCase updateFirstNameUseCase;
+  final UpdateLastNameUseCase updateLastNameUseCase;
   final UpdateResumeUseCase updateResumeUseCase;
+  final DeleteResumeUseCase deleteResumeUseCase;
   final UpdateBioUseCase updateBioUseCase;
+  final DeleteBioUseCase deleteBioUseCase;
   final AddExperienceUseCase addExperienceUseCase;
   final UpdateExperienceUseCase updateExperienceUseCase;
   final DeleteExperienceUseCase deleteExperienceUseCase;
   final AddSkillUseCase addSkillUseCase;
-  final UpdateSkillUseCase updateSkillUseCase;
   final DeleteSkillUseCase deleteSkillUseCase;
   final AddEducationUseCase addEducationUseCase;
   final UpdateEducationUseCase updateEducationUseCase;
@@ -55,10 +69,12 @@ class ProfileProvider extends ChangeNotifier {
   final AddCertificationUseCase addCertificationUseCase;
   final UpdateCertificationUseCase updateCertificationUseCase;
   final DeleteCertificationUseCase deleteCertificationUseCase;
+  final UpdateSkillUseCase updateSkillUseCase;
 
   // Profile data
   String? _userId;
-  String? _name;
+  String? _firstName;
+  String? _lastName;
   String? _profilePicture;
   String? _coverPhoto;
   String? _resume;
@@ -72,6 +88,7 @@ class ProfileProvider extends ChangeNotifier {
   List<Experience>? _experiences;
   String? _visibility;
   int? _connectionCount;
+  String? _status; // Add status field
 
   // Expansion states
   bool _isExpandedBio = false;
@@ -97,11 +114,17 @@ class ProfileProvider extends ChangeNotifier {
     required this.updateCoverPictureUseCase,
     required this.deleteCoverPhotoUseCase,
     required this.updateHeadlineUseCase,
+    required this.deleteHeadlineUseCase,
     required this.updateIndustryUseCase,
+    required this.deleteIndustryUseCase,
     required this.updateLocationUseCase,
-    required this.updateNameUseCase,
+    required this.deleteLocationUseCase,
+    required this.updateFirstNameUseCase,
+    required this.updateLastNameUseCase,
     required this.updateResumeUseCase,
+    required this.deleteResumeUseCase,
     required this.updateBioUseCase,
+    required this.deleteBioUseCase,
     required this.addExperienceUseCase,
     required this.updateExperienceUseCase,
     required this.deleteExperienceUseCase,
@@ -111,14 +134,16 @@ class ProfileProvider extends ChangeNotifier {
     required this.addCertificationUseCase,
     required this.updateCertificationUseCase,
     required this.deleteCertificationUseCase,
-    required this.addSkillUseCase,
     required this.updateSkillUseCase,
+    required this.addSkillUseCase,
     required this.deleteSkillUseCase,
   });
 
   // Getters
   String? get userId => _userId;
-  String? get name => _name;
+  String? get firstName => _firstName;
+  String? get lastName => _lastName;
+  String get fullName => "${_firstName ?? ''} ${_lastName ?? ''}".trim();
   String? get profilePicture => _profilePicture;
   String? get coverPhoto => _coverPhoto;
   String? get resume => _resume;
@@ -132,6 +157,7 @@ class ProfileProvider extends ChangeNotifier {
   List<Experience>? get experiences => _experiences;
   String? get visibility => _visibility;
   int? get connectionCount => _connectionCount;
+  String? get status => _status; // Add status getter
 
   // Expansion state getters
   bool get isExpandedBio => _isExpandedBio;
@@ -156,8 +182,13 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  set name(String? value) {
-    _name = value;
+  set firstName(String? value) {
+    _firstName = value;
+    notifyListeners();
+  }
+
+  set lastName(String? value) {
+    _lastName = value;
     notifyListeners();
   }
 
@@ -223,6 +254,11 @@ class ProfileProvider extends ChangeNotifier {
 
   set connectionCount(int? value) {
     _connectionCount = value;
+    notifyListeners();
+  }
+
+  set status(String? value) {
+    _status = value;
     notifyListeners();
   }
 
@@ -320,12 +356,48 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Profile methods
+
+  // Profile Data Update Helper
+  void _updateProfileData(dynamic profile) {
+    if (profile == null) return;
+
+    _userId = profile.userId;
+    _firstName = profile.firstName;
+    _lastName = profile.lastName;
+    _profilePicture = profile.profilePicture;
+    _coverPhoto = profile.coverPhoto;
+    _resume = profile.resume;
+    _headline = profile.headline;
+    _bio = profile.bio;
+    _location = profile.location;
+    _industry = profile.industry;
+    _skills = profile.skills;
+    _educations = profile.education;
+    _certifications = profile.certification;
+    _experiences = profile.workExperience;
+    _visibility = profile.visibility;
+    _connectionCount = profile.connectionCount;
+    _status = profile.status;
+
+    // Add necessary null checks and notifyListeners
+    notifyListeners();
+  }
+
+  // Profile methods
   Future<void> fetchProfile() async {
     _setLoading(true);
     _profileError = null;
 
     try {
-      final result = await getProfileUseCase.call(NoParams());
+      _userId = '67f417a8262957c2de3609bb';
+
+      if (_userId == null || _userId!.isEmpty) {
+        _profileError = "User ID is not set or invalid";
+        _setLoading(false);
+        return;
+      }
+
+      final result = await getProfileUseCase.call(_userId!);
 
       result.fold(
         (failure) {
@@ -333,26 +405,13 @@ class ProfileProvider extends ChangeNotifier {
           notifyListeners();
         },
         (profile) {
-          _userId = profile.userId;
-          _name = profile.name;
-          _profilePicture = profile.profilePicture;
-          _coverPhoto = profile.coverPhoto;
-          _resume = profile.resume;
-          _headline = profile.headline;
-          _bio = profile.bio;
-          _location = profile.location;
-          _industry = profile.industry;
-          _skills = profile.skills;
-          _educations = profile.education;
-          _certifications = profile.certifications;
-          _experiences = profile.experience;
-          _visibility = profile.visibility;
-          _connectionCount = profile.connectionCount;
+          _updateProfileData(profile);
           notifyListeners();
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       _profileError = "Unexpected error: ${e.toString()}";
+      debugPrint(stackTrace.toString());
       notifyListeners();
     } finally {
       _setLoading(false);
@@ -360,30 +419,48 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Profile Picture methods
-  Future<void> updateProfilePicture(String imageUrl) async {
+  Future<void> updateProfilePicture(String imagePath) async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await updateProfilePictureUseCase.call(imageUrl);
-    result.fold(
-      (failure) {
-        _profileError = _mapFailureToMessage(failure);
-        notifyListeners();
-      },
-      (_) {
-        _profilePicture = imageUrl;
-        notifyListeners();
-      },
-    );
+    try {
+      // First upload the image using the media API
+      final imageUrl = await uploadImage(XFile(imagePath));
 
-    _setLoading(false);
+      if (_userId == null) {
+        _profileError = "User ID is not set";
+        _setLoading(false);
+        return;
+      }
+
+      // Then update the profile with the returned URL
+      final result = await updateProfilePictureUseCase.call(
+        ProfilePictureParams(userId: _userId!, profilePicture: imageUrl),
+      );
+
+      result.fold(
+        (failure) {
+          _profileError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          _profilePicture = imageUrl;
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _profileError = "Failed to upload image: ${e.toString()}";
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<void> deleteProfilePicture() async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await deleteProfilePictureUseCase.call(_userId ?? '');
+    final result = await deleteProfilePictureUseCase.call(NoParams());
     result.fold(
       (failure) {
         _profileError = _mapFailureToMessage(failure);
@@ -399,30 +476,48 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Cover Photo methods
-  Future<void> updateCoverPhoto(String imageUrl) async {
+  Future<void> updateCoverPhoto(String imagePath) async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await updateCoverPictureUseCase.call(imageUrl);
-    result.fold(
-      (failure) {
-        _profileError = _mapFailureToMessage(failure);
-        notifyListeners();
-      },
-      (_) {
-        _coverPhoto = imageUrl;
-        notifyListeners();
-      },
-    );
+    try {
+      // First upload the image using the media API
+      final imageUrl = await uploadImage(XFile(imagePath));
 
-    _setLoading(false);
+      if (_userId == null) {
+        _profileError = "User ID is not set";
+        _setLoading(false);
+        return;
+      }
+
+      // Then update the profile with the returned URL
+      final result = await updateCoverPictureUseCase.call(
+        CoverPictureParams(userId: _userId!, coverPhoto: imageUrl),
+      );
+
+      result.fold(
+        (failure) {
+          _profileError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          _coverPhoto = imageUrl;
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _profileError = "Failed to upload image: ${e.toString()}";
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
 
   Future<void> deleteCoverPhoto() async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await deleteCoverPhotoUseCase.call(_userId ?? '');
+    final result = await deleteCoverPhotoUseCase.call(NoParams());
     result.fold(
       (failure) {
         _profileError = _mapFailureToMessage(failure);
@@ -442,7 +537,16 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(true);
     _profileError = null;
 
-    final result = await updateHeadlineUseCase.call(headline);
+    if (_userId == null) {
+      _profileError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateHeadlineUseCase.call(
+      HeadlineParams(userId: _userId!, headline: headline),
+    );
+
     result.fold(
       (failure) {
         _profileError = _mapFailureToMessage(failure);
@@ -457,12 +561,40 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> deleteHeadline() async {
+    _setLoading(true);
+    _profileError = null;
+
+    final result = await deleteHeadlineUseCase.call(NoParams());
+    result.fold(
+      (failure) {
+        _profileError = _mapFailureToMessage(failure);
+        notifyListeners();
+      },
+      (_) {
+        _headline = null;
+        notifyListeners();
+      },
+    );
+
+    _setLoading(false);
+  }
+
   // Industry methods
   Future<void> updateIndustry(String industry) async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await updateIndustryUseCase.call(industry);
+    if (_userId == null) {
+      _profileError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateIndustryUseCase.call(
+      IndustryParams(userId: _userId!, industry: industry),
+    );
+
     result.fold(
       (failure) {
         _profileError = _mapFailureToMessage(failure);
@@ -477,12 +609,40 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
+  Future<void> deleteIndustry() async {
+    _setLoading(true);
+    _profileError = null;
+
+    final result = await deleteIndustryUseCase.call(NoParams());
+    result.fold(
+      (failure) {
+        _profileError = _mapFailureToMessage(failure);
+        notifyListeners();
+      },
+      (_) {
+        _industry = null;
+        notifyListeners();
+      },
+    );
+
+    _setLoading(false);
+  }
+
   // Location methods
   Future<void> updateLocation(String location) async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await updateLocationUseCase.call(location);
+    if (_userId == null) {
+      _profileError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateLocationUseCase.call(
+      LocationParams(userId: _userId!, location: location),
+    );
+
     result.fold(
       (failure) {
         _profileError = _mapFailureToMessage(failure);
@@ -497,19 +657,76 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(false);
   }
 
-  // Name methods
-  Future<void> updateName(String name) async {
+  Future<void> deleteLocation() async {
     _setLoading(true);
     _profileError = null;
 
-    final result = await updateNameUseCase.call(name);
+    final result = await deleteLocationUseCase.call(NoParams());
     result.fold(
       (failure) {
         _profileError = _mapFailureToMessage(failure);
         notifyListeners();
       },
       (_) {
-        _name = name;
+        _location = null;
+        notifyListeners();
+      },
+    );
+
+    _setLoading(false);
+  }
+
+  // First Name methods
+  Future<void> updateFirstName(String firstName) async {
+    _setLoading(true);
+    _profileError = null;
+
+    if (_userId == null) {
+      _profileError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateFirstNameUseCase.call(
+      FirstNameParams(userId: _userId!, firstName: firstName),
+    );
+
+    result.fold(
+      (failure) {
+        _profileError = _mapFailureToMessage(failure);
+        notifyListeners();
+      },
+      (_) {
+        _firstName = firstName;
+        notifyListeners();
+      },
+    );
+
+    _setLoading(false);
+  }
+
+  // Last Name methods
+  Future<void> updateLastName(String lastName) async {
+    _setLoading(true);
+    _profileError = null;
+
+    if (_userId == null) {
+      _profileError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateLastNameUseCase.call(
+      LastNameParams(userId: _userId!, lastName: lastName),
+    );
+
+    result.fold(
+      (failure) {
+        _profileError = _mapFailureToMessage(failure);
+        notifyListeners();
+      },
+      (_) {
+        _lastName = lastName;
         notifyListeners();
       },
     );
@@ -520,18 +737,44 @@ class ProfileProvider extends ChangeNotifier {
   // Resume methods
   Future<void> updateResume(String resumeUrl) async {
     _setLoading(true);
-    _resumeError = null; // Clear previous resume errors
+    _resumeError = null;
 
-    final result = await updateResumeUseCase.call(resumeUrl);
+    if (_userId == null) {
+      _resumeError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateResumeUseCase.call(
+      ResumeParams(userId: _userId!, resume: resumeUrl),
+    );
+
     result.fold(
       (failure) {
-        _resumeError = _mapFailureToMessage(
-          failure,
-        ); // Set resume-specific error
+        _resumeError = _mapFailureToMessage(failure);
         notifyListeners();
       },
       (_) {
         _resume = resumeUrl;
+        notifyListeners();
+      },
+    );
+
+    _setLoading(false);
+  }
+
+  Future<void> deleteResume() async {
+    _setLoading(true);
+    _resumeError = null;
+
+    final result = await deleteResumeUseCase.call(NoParams());
+    result.fold(
+      (failure) {
+        _resumeError = _mapFailureToMessage(failure);
+        notifyListeners();
+      },
+      (_) {
+        _resume = null;
         notifyListeners();
       },
     );
@@ -544,7 +787,16 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(true);
     _bioError = null;
 
-    final result = await updateBioUseCase.call(bio);
+    if (_userId == null) {
+      _bioError = "User ID is not set";
+      _setLoading(false);
+      return;
+    }
+
+    final result = await updateBioUseCase.call(
+      BioParams(userId: _userId!, bio: bio),
+    );
+
     result.fold(
       (failure) {
         _bioError = _mapFailureToMessage(failure);
@@ -552,6 +804,25 @@ class ProfileProvider extends ChangeNotifier {
       },
       (_) {
         _bio = bio;
+        notifyListeners();
+      },
+    );
+
+    _setLoading(false);
+  }
+
+  Future<void> deleteBio() async {
+    _setLoading(true);
+    _bioError = null;
+
+    final result = await deleteBioUseCase.call(NoParams());
+    result.fold(
+      (failure) {
+        _bioError = _mapFailureToMessage(failure);
+        notifyListeners();
+      },
+      (_) {
+        _bio = null;
         notifyListeners();
       },
     );
@@ -590,9 +861,14 @@ class ProfileProvider extends ChangeNotifier {
       _setLoading(true);
       _experienceError = null;
 
-      final result = await deleteExperienceUseCase.call(
-        _experiences![index].company,
-      );
+      final experienceId = _experiences![index].workExperienceId;
+      if (experienceId == null) {
+        _experienceError = "Experience ID is missing";
+        _setLoading(false);
+        return;
+      }
+
+      final result = await deleteExperienceUseCase.call(experienceId);
       result.fold(
         (failure) {
           _experienceError = _mapFailureToMessage(failure);
@@ -615,7 +891,13 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(true);
     _experienceError = null;
 
-    final result = await updateExperienceUseCase.call(newExperience);
+    final result = await updateExperienceUseCase.call(
+      ExperienceUpdateParams(
+        experienceId: oldExperience.workExperienceId ?? '',
+        experience: newExperience,
+      ),
+    );
+
     result.fold(
       (failure) {
         _experienceError = _mapFailureToMessage(failure);
@@ -624,9 +906,7 @@ class ProfileProvider extends ChangeNotifier {
       (_) {
         if (_experiences != null) {
           final index = _experiences!.indexWhere(
-            (exp) =>
-                exp.company == oldExperience.company &&
-                exp.title == oldExperience.title,
+            (exp) => exp.workExperienceId == oldExperience.workExperienceId,
           );
           if (index != -1) {
             _experiences![index] = newExperience;
@@ -665,9 +945,14 @@ class ProfileProvider extends ChangeNotifier {
       _setLoading(true);
       _educationError = null;
 
-      final result = await deleteEducationUseCase.call(
-        _educations![index].school,
-      );
+      final educationId = _educations![index].educationId;
+      if (educationId == null) {
+        _educationError = "Education ID is missing";
+        _setLoading(false);
+        return;
+      }
+
+      final result = await deleteEducationUseCase.call(educationId);
       result.fold(
         (failure) {
           _educationError = _mapFailureToMessage(failure);
@@ -690,7 +975,13 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(true);
     _educationError = null;
 
-    final result = await updateEducationUseCase.call(newEducation);
+    final result = await updateEducationUseCase.call(
+      EducationUpdateParams(
+        educationId: oldEducation.educationId ?? '',
+        education: newEducation,
+      ),
+    );
+
     result.fold(
       (failure) {
         _educationError = _mapFailureToMessage(failure);
@@ -699,9 +990,7 @@ class ProfileProvider extends ChangeNotifier {
       (_) {
         if (_educations != null) {
           final index = _educations!.indexWhere(
-            (edu) =>
-                edu.school == oldEducation.school &&
-                edu.degree == oldEducation.degree,
+            (edu) => edu.educationId == oldEducation.educationId,
           );
           if (index != -1) {
             _educations![index] = newEducation;
@@ -742,9 +1031,14 @@ class ProfileProvider extends ChangeNotifier {
       _setLoading(true);
       _certificationError = null;
 
-      final result = await deleteCertificationUseCase.call(
-        _certifications![index].name,
-      );
+      final certificationId = _certifications![index].certificationId;
+      if (certificationId == null) {
+        _certificationError = "Certification ID is missing";
+        _setLoading(false);
+        return;
+      }
+
+      final result = await deleteCertificationUseCase.call(certificationId);
       result.fold(
         (failure) {
           _certificationError = _mapFailureToMessage(failure);
@@ -767,7 +1061,13 @@ class ProfileProvider extends ChangeNotifier {
     _setLoading(true);
     _certificationError = null;
 
-    final result = await updateCertificationUseCase.call(newCertification);
+    final result = await updateCertificationUseCase.call(
+      CertificationUpdateParams(
+        certificationId: oldCertification.certificationId ?? '',
+        certification: newCertification,
+      ),
+    );
+
     result.fold(
       (failure) {
         _certificationError = _mapFailureToMessage(failure);
@@ -776,10 +1076,7 @@ class ProfileProvider extends ChangeNotifier {
       (_) {
         if (_certifications != null) {
           final index = _certifications!.indexWhere(
-            (cert) =>
-                cert.name == oldCertification.name &&
-                cert.issuingOrganization ==
-                    oldCertification.issuingOrganization,
+            (cert) => cert.certificationId == oldCertification.certificationId,
           );
           if (index != -1) {
             _certifications![index] = newCertification;
@@ -818,7 +1115,9 @@ class ProfileProvider extends ChangeNotifier {
       _setLoading(true);
       _skillError = null;
 
-      final result = await deleteSkillUseCase.call(_skills![index].skill);
+      final skillName = _skills![index].skillName;
+      final result = await deleteSkillUseCase.call(skillName);
+
       result.fold(
         (failure) {
           _skillError = _mapFailureToMessage(failure);
@@ -834,28 +1133,47 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateSkill(Skill oldSkill, Skill newSkill) async {
+  // Add method for updating skill position
+  Future<void> updateSkill(int index, Skill updatedSkill) async {
+    if (_skills == null || index < 0 || index >= _skills!.length) {
+      _skillError = "Invalid skill index";
+      notifyListeners();
+      return;
+    }
+
     _setLoading(true);
     _skillError = null;
 
-    final result = await updateSkillUseCase.call(newSkill);
-    result.fold(
-      (failure) {
-        _skillError = _mapFailureToMessage(failure);
-        notifyListeners();
-      },
-      (_) {
-        if (_skills != null) {
-          final index = _skills!.indexWhere((s) => s.skill == oldSkill.skill);
-          if (index != -1) {
-            _skills![index] = newSkill;
-            notifyListeners();
-          }
-        }
-      },
-    );
+    try {
+      final currentSkill = _skills![index];
+      final skillName = currentSkill.skillName;
 
-    _setLoading(false);
+      // Use the proper use case for updating skills
+      final result = await updateSkillUseCase.call(
+        UpdateSkillParams(skillName: skillName, skill: updatedSkill),
+      );
+
+      result.fold(
+        (failure) {
+          _skillError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          // Only position can change, skillName and endorsements stay the same
+          _skills![index] = Skill(
+            skillName: currentSkill.skillName,
+            endorsements: currentSkill.endorsements,
+            position: updatedSkill.position, // This can be null
+          );
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _skillError = "Failed to update skill: ${e.toString()}";
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
   }
 
   // Helper methods

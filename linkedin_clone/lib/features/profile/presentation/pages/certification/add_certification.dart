@@ -14,42 +14,46 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _issuingOrgController = TextEditingController();
-  final _issuingOrgPicController = TextEditingController();
   final _issueDateController = TextEditingController();
-  final _expirationDateController = TextEditingController();
-  
-  bool _doesNotExpire = false;
+  final _expiryDateController = TextEditingController();
+
+  bool _isCurrentlyValid =
+      false; // Renamed from _doesNotExpire to match education pattern
   bool _isSaving = false;
 
   @override
   void dispose() {
     _nameController.dispose();
     _issuingOrgController.dispose();
-    _issuingOrgPicController.dispose();
     _issueDateController.dispose();
-    _expirationDateController.dispose();
+    _expiryDateController.dispose();
     super.dispose();
   }
 
   Future<void> _saveCertification() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isSaving = true);
-    
+
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
+
+      // Make sure to set expiryDate to null when certification doesn't expire
+      String? expiryDate;
+      if (!_isCurrentlyValid) {
+        expiryDate = _expiryDateController.text;
+      }
+
       final newCertification = Certification(
         name: _nameController.text,
-        issuingOrganization: _issuingOrgController.text,
-        issuingOrganizationPic: _issuingOrgPicController.text.isNotEmpty 
-            ? _issuingOrgPicController.text 
-            : null,
+        company: _issuingOrgController.text,
+        certificationPicture: null,
         issueDate: _issueDateController.text,
-        expirationDate: _doesNotExpire ? null : _expirationDateController.text,
+        expiryDate: expiryDate, // Use the correctly processed expiryDate
       );
 
       await provider.addCertification(newCertification);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -75,7 +79,10 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
     }
   }
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+    BuildContext context,
+    TextEditingController controller,
+  ) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -90,16 +97,15 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
               surface: Colors.white,
               onSurface: Colors.black,
             ),
-            dialogTheme: const DialogTheme(
-              backgroundColor: Colors.white,
-            ),
+            dialogTheme: const DialogTheme(backgroundColor: Colors.white),
           ),
           child: child!,
         );
       },
     );
     if (picked != null) {
-      controller.text = "${picked.month.toString().padLeft(2, '0')}/${picked.year}";
+      controller.text =
+          "${picked.year}-${picked.month.toString().padLeft(2, '0')}";
     }
   }
 
@@ -111,13 +117,23 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveCertification,
-            child: _isSaving 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                  )
-                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child:
+                _isSaving
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
           ),
         ],
       ),
@@ -136,7 +152,11 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: const Icon(Icons.verified, size: 40, color: Colors.blueGrey),
+                    child: const Icon(
+                      Icons.verified,
+                      size: 40,
+                      color: Colors.blueGrey,
+                    ),
                   ),
                 ),
               ),
@@ -147,9 +167,14 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(
@@ -157,7 +182,8 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -167,9 +193,14 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _issuingOrgController,
                     decoration: const InputDecoration(
@@ -177,7 +208,8 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
@@ -187,93 +219,110 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
                     controller: _issueDateController,
                     decoration: const InputDecoration(
-                      labelText: "Issue Date* (MM/YYYY)",
+                      labelText: "Issue Date* (YYYY-MM)",
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
                     readOnly: true,
                     onTap: () => _selectDate(context, _issueDateController),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    validator:
+                        (value) => value?.isEmpty ?? true ? "Required" : null,
                   ),
                 ),
               ),
 
-              // Expiration Date
+              // Expiry Date - Updated to match education end date pattern
               Card(
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
-                    controller: _expirationDateController,
-                    decoration: const InputDecoration(
-                      labelText: "Expiration Date (MM/YYYY)",
+                    controller: _expiryDateController,
+                    decoration: InputDecoration(
+                      labelText:
+                          "Expiry Date" +
+                          (_isCurrentlyValid ? " (Present)" : " (YYYY-MM)"),
                       border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                      ),
+                      suffixIcon:
+                          _isCurrentlyValid
+                              ? const Icon(
+                                Icons.lock_outline,
+                                color: Colors.grey,
+                              )
+                              : null,
                     ),
                     readOnly: true,
-                    enabled: !_doesNotExpire,
-                    onTap: () => _selectDate(context, _expirationDateController),
+                    enabled: !_isCurrentlyValid,
+                    onTap:
+                        () =>
+                            _isCurrentlyValid
+                                ? null
+                                : _selectDate(context, _expiryDateController),
                     validator: (value) {
-                      if (!_doesNotExpire && (value?.isEmpty ?? true)) {
-                        return "Required unless certification doesn't expire";
+                      if (!_isCurrentlyValid && (value?.isEmpty ?? true)) {
+                        return "Required unless certificate does not expire";
                       }
                       return null;
                     },
                   ),
                 ),
               ),
-              
+
               Card(
                 color: Colors.white,
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Row(
                     children: [
                       Switch(
-                        value: _doesNotExpire,
+                        value: _isCurrentlyValid,
                         onChanged: (value) {
                           setState(() {
-                            _doesNotExpire = value;
+                            _isCurrentlyValid = value;
+                            // Update expiry date field when switch changes
                             if (value) {
-                              _expirationDateController.clear();
+                              _expiryDateController.clear();
+                              _expiryDateController.text =
+                                  "Present"; // Show "Present" in the UI
+                            } else {
+                              _expiryDateController.clear();
                             }
                           });
                         },
                         activeColor: Theme.of(context).primaryColor,
                       ),
-                      const Text("Does not expire", style: TextStyle(fontWeight: FontWeight.w500)),
+                      const Text(
+                        "This certificate does not expire",
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
                     ],
-                  ),
-                ),
-              ),
-
-              // Organization Picture URL
-              Card(
-                color: Colors.white,
-                elevation: 1,
-                margin: const EdgeInsets.only(bottom: 24),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                  child: TextFormField(
-                    controller: _issuingOrgPicController,
-                    decoration: const InputDecoration(
-                      labelText: "Organization Logo URL (Optional)",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                    ),
                   ),
                 ),
               ),
@@ -285,20 +334,30 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   onPressed: _isSaving ? null : _saveCertification,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 2,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                        )
-                      : const Text(
-                          "Save Certification",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
+                  child:
+                      _isSaving
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
+                              color: Colors.white,
+                            ),
+                          )
+                          : const Text(
+                            "Save Certification",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ),
             ],

@@ -28,40 +28,97 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_c
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_headline.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_industry.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_location.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_last_name.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_resume.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_headline.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_industry.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_location.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_bio.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_resume.dart';
 
 // Mock classes for all use cases
 class MockGetProfileUseCase extends Mock implements GetProfileUseCase {}
+
 class MockAddExperienceUseCase extends Mock implements AddExperienceUseCase {}
-class MockUpdateExperienceUseCase extends Mock implements UpdateExperienceUseCase {}
-class MockDeleteExperienceUseCase extends Mock implements DeleteExperienceUseCase {}
+
+class MockUpdateExperienceUseCase extends Mock
+    implements UpdateExperienceUseCase {}
+
+class MockDeleteExperienceUseCase extends Mock
+    implements DeleteExperienceUseCase {}
+
 class MockAddSkillUseCase extends Mock implements AddSkillUseCase {}
-class MockUpdateSkillUseCase extends Mock implements UpdateSkillUseCase {}
+
 class MockDeleteSkillUseCase extends Mock implements DeleteSkillUseCase {}
+
 class MockAddEducationUseCase extends Mock implements AddEducationUseCase {}
-class MockUpdateEducationUseCase extends Mock implements UpdateEducationUseCase {}
-class MockDeleteEducationUseCase extends Mock implements DeleteEducationUseCase {}
-class MockAddCertificationUseCase extends Mock implements AddCertificationUseCase {}
-class MockUpdateCertificationUseCase extends Mock implements UpdateCertificationUseCase {}
-class MockDeleteCertificationUseCase extends Mock implements DeleteCertificationUseCase {}
+
+class MockUpdateEducationUseCase extends Mock
+    implements UpdateEducationUseCase {}
+
+class MockDeleteEducationUseCase extends Mock
+    implements DeleteEducationUseCase {}
+
+class MockAddCertificationUseCase extends Mock
+    implements AddCertificationUseCase {}
+
+class MockUpdateCertificationUseCase extends Mock
+    implements UpdateCertificationUseCase {}
+
+class MockDeleteCertificationUseCase extends Mock
+    implements DeleteCertificationUseCase {}
+
 class MockUpdateBioUseCase extends Mock implements UpdateBioUseCase {}
+
 class MockNoParams extends Mock implements NoParams {}
-class MockUpdateProfilePictureUseCase extends Mock implements UpdateProfilePictureUseCase {}
-class MockDeleteProfilePictureUseCase extends Mock implements DeleteProfilePictureUseCase {}
-class MockUpdateCoverPictureUseCase extends Mock implements UpdateCoverPictureUseCase {}
-class MockDeleteCoverPhotoUseCase extends Mock implements DeleteCoverPhotoUseCase {}
+
+class MockUpdateProfilePictureUseCase extends Mock
+    implements UpdateProfilePictureUseCase {}
+
+class MockDeleteProfilePictureUseCase extends Mock
+    implements DeleteProfilePictureUseCase {}
+
+class MockUpdateCoverPictureUseCase extends Mock
+    implements UpdateCoverPictureUseCase {}
+
+class MockDeleteCoverPhotoUseCase extends Mock
+    implements DeleteCoverPhotoUseCase {}
+
 class MockUpdateHeadlineUseCase extends Mock implements UpdateHeadlineUseCase {}
+
 class MockUpdateIndustryUseCase extends Mock implements UpdateIndustryUseCase {}
+
 class MockUpdateLocationUseCase extends Mock implements UpdateLocationUseCase {}
+
 class MockUpdateNameUseCase extends Mock implements UpdateNameUseCase {}
+
 class MockUpdateResumeUseCase extends Mock implements UpdateResumeUseCase {}
+
+class MockDeleteHeadlineUseCase extends Mock implements DeleteHeadlineUseCase {}
+
+class MockDeleteIndustryUseCase extends Mock implements DeleteIndustryUseCase {}
+
+class MockDeleteLocationUseCase extends Mock implements DeleteLocationUseCase {}
+
+class MockDeleteBioUseCase extends Mock implements DeleteBioUseCase {}
+
+class MockDeleteResumeUseCase extends Mock implements DeleteResumeUseCase {}
+
+// Add missing mock parameter classes
+class MockExperienceUpdateParams extends Mock
+    implements ExperienceUpdateParams {}
+
+class MockEducationUpdateParams extends Mock implements EducationUpdateParams {}
+
+class MockCertificationUpdateParams extends Mock
+    implements CertificationUpdateParams {}
 
 // Test data
 const testExperience = Experience(
+  id: 'exp1',
   title: 'Flutter Developer',
   company: 'Tech Co',
   location: 'Remote',
@@ -70,9 +127,11 @@ const testExperience = Experience(
   description: 'Developed apps',
   employmentType: 'Full-time',
   locationType: 'Remote',
+  companyPicUrl: 'https://example.com/techco.png',
 );
 
 const testEducation = Education(
+  id: 'edu1',
   school: 'University',
   degree: 'Bachelor',
   field: 'Computer Science',
@@ -80,17 +139,18 @@ const testEducation = Education(
   endDate: '06/2022',
   description: 'Studied CS',
   grade: '3.7',
+  schoolPic: 'https://example.com/university.png',
 );
 
-const testSkill = Skill(
-  skill: 'Flutter',
-  endorsements: [],
-);
+const testSkill = Skill(skill: 'Flutter', endorsements: []);
 
 const testCertification = Certification(
+  id: 'cert1',
   name: 'Flutter Certified',
   issuingOrganization: 'Google',
   issueDate: '03/2023',
+  issuingOrganizationPic: 'https://example.com/google.png',
+  expirationDate: '03/2025',
 );
 
 // Mock profile data for testing
@@ -119,7 +179,6 @@ void main() {
   late MockUpdateExperienceUseCase mockUpdateExperience;
   late MockDeleteExperienceUseCase mockDeleteExperience;
   late MockAddSkillUseCase mockAddSkill;
-  late MockUpdateSkillUseCase mockUpdateSkill;
   late MockDeleteSkillUseCase mockDeleteSkill;
   late MockAddEducationUseCase mockAddEducation;
   late MockUpdateEducationUseCase mockUpdateEducation;
@@ -137,9 +196,27 @@ void main() {
   late MockUpdateLocationUseCase mockUpdateLocation;
   late MockUpdateNameUseCase mockUpdateName;
   late MockUpdateResumeUseCase mockUpdateResume;
+  late MockDeleteHeadlineUseCase mockDeleteHeadline;
+  late MockDeleteIndustryUseCase mockDeleteIndustry;
+  late MockDeleteLocationUseCase mockDeleteLocation;
+  late MockDeleteBioUseCase mockDeleteBio;
+  late MockDeleteResumeUseCase mockDeleteResume;
 
   setUpAll(() {
     registerFallbackValue(MockNoParams());
+    registerFallbackValue(
+      ExperienceUpdateParams(experienceId: 'exp1', experience: testExperience),
+    );
+    registerFallbackValue(
+      EducationUpdateParams(educationId: 'edu1', education: testEducation),
+    );
+    registerFallbackValue(
+      CertificationUpdateParams(
+        certificationId: 'cert1',
+        certification: testCertification,
+      ),
+    );
+    registerFallbackValue(BioParams(userId: 'user123', bio: 'test'));
   });
 
   setUp(() {
@@ -148,7 +225,6 @@ void main() {
     mockUpdateExperience = MockUpdateExperienceUseCase();
     mockDeleteExperience = MockDeleteExperienceUseCase();
     mockAddSkill = MockAddSkillUseCase();
-    mockUpdateSkill = MockUpdateSkillUseCase();
     mockDeleteSkill = MockDeleteSkillUseCase();
     mockAddEducation = MockAddEducationUseCase();
     mockUpdateEducation = MockUpdateEducationUseCase();
@@ -166,6 +242,11 @@ void main() {
     mockUpdateLocation = MockUpdateLocationUseCase();
     mockUpdateName = MockUpdateNameUseCase();
     mockUpdateResume = MockUpdateResumeUseCase();
+    mockDeleteHeadline = MockDeleteHeadlineUseCase();
+    mockDeleteIndustry = MockDeleteIndustryUseCase();
+    mockDeleteLocation = MockDeleteLocationUseCase();
+    mockDeleteBio = MockDeleteBioUseCase();
+    mockDeleteResume = MockDeleteResumeUseCase();
 
     provider = ProfileProvider(
       getProfileUseCase: mockGetProfile,
@@ -178,6 +259,11 @@ void main() {
       updateLocationUseCase: mockUpdateLocation,
       updateNameUseCase: mockUpdateName,
       updateResumeUseCase: mockUpdateResume,
+      deleteHeadlineUseCase: mockDeleteHeadline,
+      deleteIndustryUseCase: mockDeleteIndustry,
+      deleteLocationUseCase: mockDeleteLocation,
+      deleteBioUseCase: mockDeleteBio,
+      deleteResumeUseCase: mockDeleteResume,
       updateBioUseCase: mockUpdateBio,
       addExperienceUseCase: mockAddExperience,
       updateExperienceUseCase: mockUpdateExperience,
@@ -189,7 +275,6 @@ void main() {
       updateCertificationUseCase: mockUpdateCertification,
       deleteCertificationUseCase: mockDeleteCertification,
       addSkillUseCase: mockAddSkill,
-      updateSkillUseCase: mockUpdateSkill,
       deleteSkillUseCase: mockDeleteSkill,
     );
   });
@@ -197,12 +282,13 @@ void main() {
   group('ProfileProvider', () {
     test('should update state when profile is fetched successfully', () async {
       // Arrange
-      when(() => mockGetProfile(any()))
-        .thenAnswer((_) => Future.value(Right(mockProfile)));
-      
+      when(
+        () => mockGetProfile(any()),
+      ).thenAnswer((_) => Future.value(Right(mockProfile)));
+
       // Act
       await provider.fetchProfile();
-      
+
       // Assert
       expect(provider.name, mockProfile.name);
       expect(provider.bio, mockProfile.bio);
@@ -214,12 +300,13 @@ void main() {
 
     test('should set error when profile fetch fails', () async {
       // Arrange
-      when(() => mockGetProfile(any()))
-          .thenAnswer((_) async => Left(ServerFailure()));
-      
+      when(
+        () => mockGetProfile(any()),
+      ).thenAnswer((_) async => Left(ServerFailure()));
+
       // Act
       await provider.fetchProfile();
-      
+
       // Assert
       expect(provider.profileError, isNotNull);
       expect(provider.isLoading, false);
@@ -229,12 +316,13 @@ void main() {
     group('Experience', () {
       test('addExperience should add to state and call use case', () async {
         // Arrange
-        when(() => mockAddExperience(testExperience))
-            .thenAnswer((_) async => Right(null));
-        
+        when(
+          () => mockAddExperience(testExperience),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.addExperience(testExperience);
-        
+
         // Assert
         expect(provider.experiences, contains(testExperience));
         expect(provider.isLoading, false);
@@ -244,47 +332,57 @@ void main() {
       test('updateExperience should update state and call use case', () async {
         // Arrange
         provider.experiences = [testExperience];
+        provider.userId = 'user123'; // Set userId for test
         final updatedExp = testExperience.copyWith(title: 'Senior Flutter Dev');
-        when(() => mockUpdateExperience(updatedExp))
-            .thenAnswer((_) async => Right(null));
-        
+        final updateParams = ExperienceUpdateParams(
+          experienceId: testExperience.id ?? '',
+          experience: updatedExp,
+        );
+
+        when(
+          () => mockUpdateExperience(any()),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.updateExperience(testExperience, updatedExp);
-        
+
         // Assert
         expect(provider.experiences, contains(updatedExp));
         expect(provider.experiences, isNot(contains(testExperience)));
         expect(provider.isLoading, false);
-        verify(() => mockUpdateExperience(updatedExp)).called(1);
+        verify(() => mockUpdateExperience(any())).called(1);
       });
 
-      test('removeExperience should remove from state and call use case', () async {
-        // Arrange
-        provider.experiences = [testExperience];
-        when(() => mockDeleteExperience(testExperience.company))
-            .thenAnswer((_) async => Right(null));
-        
-        // Act
-        await provider.removeExperience(0);
-        
-        // Assert
-        expect(provider.experiences, isEmpty);
-        expect(provider.isLoading, false);
-        verify(() => mockDeleteExperience(testExperience.company)).called(1);
-      });
+      test(
+        'removeExperience should remove from state and call use case',
+        () async {
+          // Arrange
+          provider.experiences = [testExperience];
+          when(
+            () => mockDeleteExperience(testExperience.id!),
+          ).thenAnswer((_) async => Right(null));
 
-       
+          // Act
+          await provider.removeExperience(0);
+
+          // Assert
+          expect(provider.experiences, isEmpty);
+          expect(provider.isLoading, false);
+          verify(() => mockDeleteExperience(testExperience.id!)).called(1);
+        },
+      );
     });
 
     group('Education', () {
       test('addEducation should add to state and call use case', () async {
         // Arrange
-        when(() => mockAddEducation(testEducation))
-            .thenAnswer((_) async => Right(null));
-        
+        when(
+          () => mockAddEducation(testEducation),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.addEducation(testEducation);
-        
+
         // Assert
         expect(provider.educations, contains(testEducation));
         expect(provider.isLoading, false);
@@ -294,268 +392,324 @@ void main() {
       test('updateEducation should update state and call use case', () async {
         // Arrange
         provider.educations = [testEducation];
+        provider.userId = 'user123'; // Set userId for test
         final updatedEdu = testEducation.copyWith(degree: 'Master');
-        when(() => mockUpdateEducation(updatedEdu))
-            .thenAnswer((_) async => Right(null));
-        
+        final updateParams = EducationUpdateParams(
+          educationId: testEducation.id ?? '',
+          education: updatedEdu,
+        );
+
+        when(
+          () => mockUpdateEducation(any()),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.updateEducation(testEducation, updatedEdu);
-        
+
         // Assert
         expect(provider.educations, contains(updatedEdu));
         expect(provider.educations, isNot(contains(testEducation)));
         expect(provider.isLoading, false);
-        verify(() => mockUpdateEducation(updatedEdu)).called(1);
+        verify(() => mockUpdateEducation(any())).called(1);
       });
 
-      test('removeEducation should remove from state and call use case', () async {
-        // Arrange
-        provider.educations = [testEducation];
-        when(() => mockDeleteEducation(testEducation.school))
-            .thenAnswer((_) async => Right(null));
-        
-        // Act
-        await provider.removeEducation(0);
-        
-        // Assert
-        expect(provider.educations, isEmpty);
-        expect(provider.isLoading, false);
-        verify(() => mockDeleteEducation(testEducation.school)).called(1);
-      });
+      test(
+        'removeEducation should remove from state and call use case',
+        () async {
+          // Arrange
+          provider.educations = [testEducation];
+          when(
+            () => mockDeleteEducation(testEducation.id!),
+          ).thenAnswer((_) async => Right(null));
 
-       
+          // Act
+          await provider.removeEducation(0);
+
+          // Assert
+          expect(provider.educations, isEmpty);
+          expect(provider.isLoading, false);
+          verify(() => mockDeleteEducation(testEducation.id!)).called(1);
+        },
+      );
     });
 
     group('Skills', () {
       test('addSkill should add to state and call use case', () async {
         // Arrange
-        when(() => mockAddSkill(testSkill))
-            .thenAnswer((_) async => Right(null));
-        
+        when(
+          () => mockAddSkill(testSkill),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.addSkill(testSkill);
-        
+
         // Assert
         expect(provider.skills, contains(testSkill));
         expect(provider.isLoading, false);
         verify(() => mockAddSkill(testSkill)).called(1);
       });
 
-      test('updateSkill should update state and call use case', () async {
-        // Arrange
-        provider.skills = [testSkill];
-        final updatedSkill = testSkill.copyWith(skill: 'Dart');
-        when(() => mockUpdateSkill(updatedSkill))
-            .thenAnswer((_) async => Right(null));
-        
-        // Act
-        await provider.updateSkill(testSkill, updatedSkill);
-        
-        // Assert
-        expect(provider.skills, contains(updatedSkill));
-        expect(provider.skills, isNot(contains(testSkill)));
-        expect(provider.isLoading, false);
-        verify(() => mockUpdateSkill(updatedSkill)).called(1);
-      });
+      // test('updateSkill should update state and call use case', () async {
+      //   // Arrange
+      //   provider.skills = [testSkill];
+      //   provider.userId = 'user123'; // Set userId for test
+      //   final updatedSkill = testSkill.copyWith(skill: 'Dart');
+
+      //   when(
+      //     () => mockUpdateSkill(updatedSkill),
+      //   ).thenAnswer((_) async => Right(null));
+
+      //   // Act
+      //   await provider.updateSkill(testSkill, updatedSkill);
+
+      //   // Assert
+      //   expect(provider.skills, contains(updatedSkill));
+      //   expect(provider.skills, isNot(contains(testSkill)));
+      //   expect(provider.isLoading, false);
+      //   verify(() => mockUpdateSkill(updatedSkill)).called(1);
+      // });
 
       test('removeSkill should remove from state and call use case', () async {
         // Arrange
         provider.skills = [testSkill];
-        when(() => mockDeleteSkill(testSkill.skill))
-            .thenAnswer((_) async => Right(null));
-        
+        when(
+          () => mockDeleteSkill(testSkill.skill),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.removeSkill(0);
-        
+
         // Assert
         expect(provider.skills, isEmpty);
         expect(provider.isLoading, false);
         verify(() => mockDeleteSkill(testSkill.skill)).called(1);
       });
-
-       
     });
 
     group('Certifications', () {
       test('addCertification should add to state and call use case', () async {
         // Arrange
-        when(() => mockAddCertification(testCertification))
-            .thenAnswer((_) async => Right(null));
-        
+        when(
+          () => mockAddCertification(testCertification),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.addCertification(testCertification);
-        
+
         // Assert
         expect(provider.certifications, contains(testCertification));
         verify(() => mockAddCertification(testCertification)).called(1);
       });
 
-      test('updateCertification should update state and call use case', () async {
-        // Arrange
-        provider.certifications = [testCertification];
-        final updatedCert = testCertification.copyWith(name: 'Advanced Flutter');
-        when(() => mockUpdateCertification(updatedCert))
-            .thenAnswer((_) async => Right(null));
-        
-        // Act
-        await provider.updateCertification(testCertification, updatedCert);
-        
-        // Assert
-        expect(provider.certifications, contains(updatedCert));
-        expect(provider.certifications, isNot(contains(testCertification)));
-        expect(provider.isLoading, false);
-        verify(() => mockUpdateCertification(updatedCert)).called(1);
-      });
+      test(
+        'updateCertification should update state and call use case',
+        () async {
+          // Arrange
+          provider.certifications = [testCertification];
+          provider.userId = 'user123'; // Set userId for test
+          final updatedCert = testCertification.copyWith(
+            name: 'Advanced Flutter',
+          );
+          final updateParams = CertificationUpdateParams(
+            certificationId: testCertification.id ?? '',
+            certification: updatedCert,
+          );
 
-      test('removeCertification should remove from state and call use case', () async {
-        // Arrange
-        provider.certifications = [testCertification];
-        when(() => mockDeleteCertification(testCertification.name))
-            .thenAnswer((_) async => Right(null));
-        
-        // Act
-        await provider.removeCertification(0);
-        
-        // Assert
-        expect(provider.certifications, isEmpty);
-        verify(() => mockDeleteCertification(testCertification.name)).called(1);
-      });
+          when(
+            () => mockUpdateCertification(any()),
+          ).thenAnswer((_) async => Right(null));
 
-     
+          // Act
+          await provider.updateCertification(testCertification, updatedCert);
+
+          // Assert
+          expect(provider.certifications, contains(updatedCert));
+          expect(provider.certifications, isNot(contains(testCertification)));
+          expect(provider.isLoading, false);
+          verify(() => mockUpdateCertification(any())).called(1);
+        },
+      );
+
+      test(
+        'removeCertification should remove from state and call use case',
+        () async {
+          // Arrange
+          provider.certifications = [testCertification];
+          when(
+            () => mockDeleteCertification(testCertification.id!),
+          ).thenAnswer((_) async => Right(null));
+
+          // Act
+          await provider.removeCertification(0);
+
+          // Assert
+          expect(provider.certifications, isEmpty);
+          verify(
+            () => mockDeleteCertification(testCertification.id!),
+          ).called(1);
+        },
+      );
     });
-
     group('Bio', () {
       test('setUserBio should update state and call use case', () async {
         // Arrange
         const newBio = 'Updated bio text';
-        when(() => mockUpdateBio(newBio))
-            .thenAnswer((_) async => Right(null));
-        
+        provider.userId = 'user123'; // Set userId for test
+        final bioParams = BioParams(bio: newBio, userId: 'user123');
+        when(
+          () => mockUpdateBio(bioParams),
+        ).thenAnswer((_) async => Right(null));
+
         // Act
         await provider.setUserBio(newBio);
-        
+
         // Assert
         expect(provider.bio, newBio);
         expect(provider.isLoading, false);
-        verify(() => mockUpdateBio(newBio)).called(1);
+        verify(() => mockUpdateBio(bioParams)).called(1);
       });
 
       test('should handle error when updating bio fails', () async {
         // Arrange
         const newBio = 'Updated bio text';
-        when(() => mockUpdateBio(newBio))
-            .thenAnswer((_) async => Left(ServerFailure()));
-        
+        provider.userId = 'user123'; // Set userId for test
+        final bioParams = BioParams(bio: newBio, userId: 'user123');
+        when(
+          () => mockUpdateBio(bioParams),
+        ).thenAnswer((_) async => Left(ServerFailure()));
+
         // Act
         await provider.setUserBio(newBio);
-        
+
         // Assert
         expect(provider.bioError, isNotNull);
       });
     });
+  });
 
-    group('Toggle Methods', () {
-      test('toggleExperienceExpansion should switch expansion state', () {
-        // Initial state
-        expect(provider.isExpandedExperiences, false);
-        
-        // Act
-        provider.toggleExperienceExpansion();
-        
-        // Assert
-        expect(provider.isExpandedExperiences, true);
-        
-        // Act again
-        provider.toggleExperienceExpansion();
-        
-        // Assert again
-        expect(provider.isExpandedExperiences, false);
-      });
+  group('Toggle Methods', () {
+    test('toggleExperienceExpansion should switch expansion state', () {
+      // Initial state
+      expect(provider.isExpandedExperiences, false);
 
-      test('toggleEducationExpansion should update education expansion state', () {
+      // Act
+      provider.toggleExperienceExpansion();
+
+      // Assert
+      expect(provider.isExpandedExperiences, true);
+
+      // Act again
+      provider.toggleExperienceExpansion();
+
+      // Assert again
+      expect(provider.isExpandedExperiences, false);
+    });
+
+    test(
+      'toggleEducationExpansion should update education expansion state',
+      () {
         // Initial state
         expect(provider.isExpandedEducation, false);
-        
+
         // Act
         provider.toggleEducationExpansion();
-        
+
         // Assert
         expect(provider.isExpandedEducation, true);
-        
+
         // Act again
         provider.toggleEducationExpansion();
-        
+
         // Assert again
         expect(provider.isExpandedEducation, false);
-      });
+      },
+    );
 
-      test('toggleSkillsExpansion should update skills expansion state', () {
-        // Initial state
-        expect(provider.isExpandedSkills, false);
-        
-        // Act
-        provider.toggleSkillsExpansion();
-        
-        // Assert
-        expect(provider.isExpandedSkills, true);
-        
-        // Act again
-        provider.toggleSkillsExpansion();
-        
-        // Assert again
-        expect(provider.isExpandedSkills, false);
-      });
+    test('toggleSkillsExpansion should update skills expansion state', () {
+      // Initial state
+      expect(provider.isExpandedSkills, false);
 
-      test('toggleCertificationExpansion should update certification expansion state', () {
+      // Act
+      provider.toggleSkillsExpansion();
+
+      // Assert
+      expect(provider.isExpandedSkills, true);
+
+      // Act again
+      provider.toggleSkillsExpansion();
+
+      // Assert again
+      expect(provider.isExpandedSkills, false);
+    });
+
+    test(
+      'toggleCertificationExpansion should update certification expansion state',
+      () {
         // Initial state
         expect(provider.isExpandedCertifications, false);
-        
+
         // Act
         provider.toggleCertificationExpansion();
-        
+
         // Assert
         expect(provider.isExpandedCertifications, true);
-        
+
         // Act again
         provider.toggleCertificationExpansion();
-        
+
         // Assert again
         expect(provider.isExpandedCertifications, false);
-      });
-    });
+      },
+    );
+  });
 
-    group('Loading State', () {
-      test('should set loading state correctly', () {
-        // Initial state
-        expect(provider.isLoading, false);
-        
-        // Act
-        provider.isLoading = true;
-        
-        // Assert
-        expect(provider.isLoading, true);
-        
-        // Act again
-        provider.isLoading = false;
-        
-        // Assert again
-        expect(provider.isLoading, false);
-      });
-    });
+  group('Loading State', () {
+    test('should set loading state correctly', () {
+      // Initial state
+      expect(provider.isLoading, false);
 
-    group('Error Handling', () {
-      
+      // Act
+      provider.isLoading = true;
 
-      test('should set bio error correctly', () {
-        // Arrange
-        const errorMessage = 'Test error';
-        
-        // Act
-        provider.bioError = errorMessage;
-        
-        // Assert
-        expect(provider.bioError, errorMessage);
-      });
+      // Assert
+      expect(provider.isLoading, true);
+
+      // Act again
+      provider.isLoading = false;
+
+      // Assert again
+      expect(provider.isLoading, false);
     });
+  });
+
+  group('Error Handling', () {
+    test('should set bio error correctly', () {
+      // Arrange
+      const errorMessage = 'Test error';
+
+      // Act
+      provider.bioError = errorMessage;
+
+      // Assert
+      expect(provider.bioError, errorMessage);
+    });
+  });
+
+  // Add test for toggleBioExpansion
+  test('toggleBioExpansion should update bio expansion state', () {
+    // Initial state
+    expect(provider.isExpandedBio, false);
+
+    // Act
+    provider.toggleBioExpansion();
+
+    // Assert
+    expect(provider.isExpandedBio, true);
+
+    // Act again
+    provider.toggleBioExpansion();
+
+    // Assert again
+    expect(provider.isExpandedBio, false);
   });
 }

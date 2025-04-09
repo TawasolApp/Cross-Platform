@@ -3,67 +3,156 @@ import 'package:linkedin_clone/features/profile/domain/entities/experience.dart'
 
 class ExperienceWidget extends StatelessWidget {
   final Experience experience;
+  final bool showPresent;
 
   const ExperienceWidget({
     super.key,
     required this.experience,
+    this.showPresent = false,
   });
+
+  // Format the employment type for display
+  String _formatEmploymentType(String type) {
+    // Convert snake_case to title case with hyphens
+    return type
+        .split('_')
+        .map(
+          (word) =>
+              word.isNotEmpty
+                  ? '${word[0].toUpperCase()}${word.substring(1)}'
+                  : '',
+        )
+        .join('-');
+  }
+
+  // Format the location type for display
+  String _formatLocationType(String? type) {
+    if (type == null) return '';
+    // Convert snake_case to title case with hyphens
+    return type
+        .split('_')
+        .map(
+          (word) =>
+              word.isNotEmpty
+                  ? '${word[0].toUpperCase()}${word.substring(1)}'
+                  : '',
+        )
+        .join('-');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-      child: Column(
+    final String formattedEmploymentType = _formatEmploymentType(
+      experience.employmentType,
+    );
+    final String formattedLocationType = _formatLocationType(
+      experience.locationType,
+    );
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Square Company Logo with Placeholder
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300], // Placeholder color
-                  borderRadius: BorderRadius.circular(4), // Square with slight rounding
-                  image: experience.companyPicUrl != null && experience.companyPicUrl!.isNotEmpty
-                      ? DecorationImage(
-                          image: NetworkImage(experience.companyPicUrl!),
-                          fit: BoxFit.cover,
-                        )
-                      : null,
+          // Company Logo
+          Container(
+            margin: const EdgeInsets.only(right: 12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child:
+                  experience.workExperiencePicture != null
+                      ? Image.network(
+                        experience.workExperiencePicture!,
+                        width: 54,
+                        height: 54,
+                        fit: BoxFit.cover,
+                      )
+                      : Container(
+                        width: 54,
+                        height: 54,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.business, color: Colors.grey),
+                      ),
+            ),
+          ),
+          // Experience Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  experience.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-                child: experience.companyPicUrl == null || experience.companyPicUrl!.isEmpty
-                    ? const Icon(Icons.business, size: 24, color: Colors.white)
-                    : null,
-              ),
-              const SizedBox(width: 12), // Space between logo and text
-
-              // Job Details
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const SizedBox(height: 2),
+                // Company name with employment type
+                Row(
                   children: [
                     Text(
-                      experience.title,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                      experience.company,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    const Text(
+                      " · ",
+                      style: TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     Text(
-                      "${experience.company} • ${experience.employmentType}",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface),
-                    ),
-                    Text(
-                      "${experience.startDate} - ${experience.endDate ?? 'Present'} • ${experience.location}",
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-                    ),
-                    Text(
-                      experience.locationType,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      formattedEmploymentType,
+                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                     ),
                   ],
                 ),
-              ),
-            ],
+                const SizedBox(height: 2),
+                // Date range
+                Text(
+                  showPresent
+                      ? "${experience.startDate} - Present"
+                      : "${experience.startDate} - ${experience.endDate}",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+                // Location with location type if available
+                if (experience.location != null &&
+                    experience.location!.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        experience.location!,
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                      if (experience.locationType != null &&
+                          experience.locationType!.isNotEmpty) ...[
+                        const Text(
+                          " · ",
+                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
+                        Text(
+                          formattedLocationType,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+                // Description
+                if (experience.description != null &&
+                    experience.description!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    experience.description!,
+                    style: const TextStyle(fontSize: 14),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
           ),
         ],
       ),

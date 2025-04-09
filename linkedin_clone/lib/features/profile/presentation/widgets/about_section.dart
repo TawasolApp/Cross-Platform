@@ -7,13 +7,15 @@ class AboutSection extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggleExpansion;
   final String? errorMessage;
+  final bool isOwner;
 
   const AboutSection({
-    super.key, 
+    super.key,
     this.bio,
     required this.isExpanded,
     required this.onToggleExpansion,
     this.errorMessage,
+    required this.isOwner,
   });
 
   @override
@@ -22,9 +24,10 @@ class AboutSection extends StatelessWidget {
       builder: (context, provider, _) {
         final displayBio = bio ?? provider.bio ?? '';
         final error = errorMessage ?? provider.bioError;
-        final visibleBio = isExpanded || displayBio.length <= 200 
-            ? displayBio 
-            : '${displayBio.substring(0, 200)}...';
+        final visibleBio =
+            isExpanded || displayBio.length <= 200
+                ? displayBio
+                : '${displayBio.substring(0, 200)}...';
 
         return Container(
           color: Colors.white,
@@ -39,12 +42,19 @@ class AboutSection extends StatelessWidget {
                   children: [
                     const Text(
                       'About',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                      onPressed: () => _showEditBioDialog(context, provider),
-                    ),
+                    if (isOwner)
+                      IconButton(
+                        icon: Icon(
+                          Icons.edit,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onPressed: () => _showEditBioDialog(context, provider),
+                      ),
                   ],
                 ),
               ),
@@ -63,8 +73,7 @@ class AboutSection extends StatelessWidget {
                         height: 1.4,
                       ),
                     ),
-                    if (displayBio.length <= 200) 
-                      const SizedBox(height: 16),
+                    if (displayBio.length <= 200) const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -72,7 +81,11 @@ class AboutSection extends StatelessWidget {
               // Show More/Show Less Button
               if (displayBio.length > 200)
                 Padding(
-                  padding: const EdgeInsets.only(left: 16.0, top: 8.0, bottom: 0.0),
+                  padding: const EdgeInsets.only(
+                    left: 16.0,
+                    top: 8.0,
+                    bottom: 0.0,
+                  ),
                   child: TextButton(
                     onPressed: onToggleExpansion,
                     child: Text(isExpanded ? 'Show less' : 'Show more'),
@@ -85,7 +98,22 @@ class AboutSection extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
                   child: Text(
                     error,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+
+              // Show empty state message when no bio and user is owner
+              if (displayBio.isEmpty && isOwner)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'Add information about yourself to help others understand your background.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ),
             ],
@@ -99,14 +127,14 @@ class AboutSection extends StatelessWidget {
     final bioController = TextEditingController(text: provider.bio);
     final maxBioLength = 2000;
     final formKey = GlobalKey<FormState>();
-    
+
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             bool isSubmitting = false;
-            
+
             return AlertDialog(
               contentPadding: const EdgeInsets.all(16),
               shape: RoundedRectangleBorder(
@@ -124,7 +152,7 @@ class AboutSection extends StatelessWidget {
                     TextFormField(
                       controller: bioController,
                       maxLines: 5,
-                      maxLength: maxBioLength, 
+                      maxLength: maxBioLength,
                       buildCounter: (
                         BuildContext context, {
                         required int currentLength,
@@ -134,9 +162,10 @@ class AboutSection extends StatelessWidget {
                         return Text(
                           '$currentLength / $maxLength',
                           style: TextStyle(
-                            color: currentLength == maxLength
-                                ? Colors.red 
-                                : Colors.grey,
+                            color:
+                                currentLength == maxLength
+                                    ? Colors.red
+                                    : Colors.grey,
                             fontSize: 12,
                           ),
                         );
@@ -184,36 +213,38 @@ class AboutSection extends StatelessWidget {
                   ),
                 ),
                 TextButton(
-                  onPressed: isSubmitting 
-                    ? null 
-                    : () async {
-                        if (!formKey.currentState!.validate()) return;
-                        
-                        setDialogState(() => isSubmitting = true);
-                        await provider.setUserBio(bioController.text);
-                        
-                        if (context.mounted) {
-                          if (provider.bioError == null) {
-                            Navigator.pop(context);
-                          } else {
-                            setDialogState(() => isSubmitting = false);
-                          }
-                        }
-                      },
-                  child: isSubmitting 
-                    ? const SizedBox(
-                        width: 20, 
-                        height: 20, 
-                        child: CircularProgressIndicator(strokeWidth: 2)
-                      )
-                    : const Text(
-                        'Save',
-                        style: TextStyle(fontWeight: FontWeight.w600),
-                      ),
+                  onPressed:
+                      isSubmitting
+                          ? null
+                          : () async {
+                            if (!formKey.currentState!.validate()) return;
+
+                            setDialogState(() => isSubmitting = true);
+                            await provider.setUserBio(bioController.text);
+
+                            if (context.mounted) {
+                              if (provider.bioError == null) {
+                                Navigator.pop(context);
+                              } else {
+                                setDialogState(() => isSubmitting = false);
+                              }
+                            }
+                          },
+                  child:
+                      isSubmitting
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text(
+                            'Save',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                 ),
               ],
             );
-          }
+          },
         );
       },
     );

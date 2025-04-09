@@ -3,6 +3,7 @@ import 'package:linkedin_clone/features/profile/domain/entities/certification.da
 import 'package:linkedin_clone/features/profile/presentation/pages/certification/add_certification.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/certification/certification_list.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:linkedin_clone/features/profile/presentation/widgets/certification.dart';
 import 'package:provider/provider.dart';
 
 class CertificationsSection extends StatelessWidget {
@@ -10,6 +11,7 @@ class CertificationsSection extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggleExpansion;
   final String? errorMessage;
+  final bool isOwner;
 
   const CertificationsSection({
     super.key,
@@ -17,6 +19,7 @@ class CertificationsSection extends StatelessWidget {
     required this.isExpanded,
     required this.onToggleExpansion,
     this.errorMessage,
+    required this.isOwner,
   });
 
   @override
@@ -25,7 +28,8 @@ class CertificationsSection extends StatelessWidget {
       builder: (context, provider, _) {
         final certs = certifications ?? provider.certifications ?? [];
         final error = errorMessage ?? provider.certificationError;
-        final visibleCertifications = isExpanded ? certs : certs.take(2).toList();
+        final visibleCertifications =
+            isExpanded ? certs : certs.take(2).toList();
 
         return Container(
           color: Colors.white,
@@ -38,114 +42,70 @@ class CertificationsSection extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: const Text(
+                    const Expanded(
+                      child: Text(
                         'Licenses & Certifications',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.add, color: Theme.of(context).primaryColor),
-                          onPressed: () async {
-                            final result = await Navigator.push<bool>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddCertificationPage(),
-                              ),
-                            );
-                            
-                            if (result == true) {
-                              await provider.fetchProfile();
-                            }
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const CertificationListPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    if (isOwner)
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () async {
+                              final result = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const AddCertificationPage(),
+                                ),
+                              );
+
+                              if (result == true) {
+                                await provider.fetchProfile();
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) =>
+                                          const CertificationListPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
 
               // Certifications List
               Column(
-                children: visibleCertifications.map((cert) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Organization Logo (Optional)
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(4),
-                            image: cert.issuingOrganizationPic != null
-                                ? DecorationImage(
-                                    image: NetworkImage(cert.issuingOrganizationPic!),
-                                    fit: BoxFit.cover,
-                                  )
-                                : null,
+                children:
+                    visibleCertifications
+                        .map(
+                          (cert) => CertificationWidget(
+                            certification: cert,
+                            showPresent: cert.expiryDate == null,
                           ),
-                          child: cert.issuingOrganizationPic == null
-                              ? const Icon(Icons.verified, size: 24, color: Colors.white)
-                              : null,
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Certification Details
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Certification Name (Bold)
-                              Text(
-                                cert.name,
-                                style: const TextStyle(
-                                  fontSize: 16, 
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              // Issuing Organization
-                              Text(
-                                cert.issuingOrganization,
-                                style: const TextStyle(
-                                  fontSize: 14, 
-                                  color: Colors.black87,
-                                ),
-                              ),
-
-                              // Issue and Expiration Dates
-                              Text(
-                                cert.expirationDate != null && cert.expirationDate!.isNotEmpty
-                                    ? "Issued: ${cert.issueDate} • Expires: ${cert.expirationDate}"
-                                    : "Issued: ${cert.issueDate} • No Expiration",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                        )
+                        .toList(),
               ),
 
               // "Show More / Show Less" Button
@@ -157,14 +117,29 @@ class CertificationsSection extends StatelessWidget {
                     child: Text(isExpanded ? 'Show less' : 'Show more'),
                   ),
                 ),
-                
+
               // Error Message
               if (error != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     error,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+
+              // Show empty state message when no certifications and user is owner
+              if (certs.isEmpty && isOwner)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'Add licenses and certifications to showcase your qualifications.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ),
             ],

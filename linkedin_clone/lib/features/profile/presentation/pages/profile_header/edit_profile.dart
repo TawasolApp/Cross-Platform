@@ -11,7 +11,8 @@ class EditProfilePage extends StatefulWidget {
 
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
   final _headlineController = TextEditingController();
   final _locationController = TextEditingController();
   final _industryController = TextEditingController();
@@ -26,7 +27,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     // Load current profile data
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
-      _nameController.text = provider.name ?? '';
+      _firstNameController.text = provider.firstName ?? '';
+      _lastNameController.text = provider.lastName ?? '';
       _headlineController.text = provider.headline ?? '';
       _locationController.text = provider.location ?? '';
       _industryController.text = provider.industry ?? '';
@@ -36,7 +38,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
     _headlineController.dispose();
     _locationController.dispose();
     _industryController.dispose();
@@ -52,9 +55,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
 
-      // Update name if changed
-      if (_nameController.text != provider.name) {
-        await provider.updateName(_nameController.text);
+      // Update first name if changed
+      if (_firstNameController.text != provider.firstName) {
+        await provider.updateFirstName(_firstNameController.text);
+      }
+
+      // Update last name if changed
+      if (_lastNameController.text != provider.lastName) {
+        await provider.updateLastName(_lastNameController.text);
       }
 
       // Update headline if changed
@@ -171,7 +179,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           ),
                         ),
 
-                      // Name Field
+                      // First Name Field
                       Card(
                         color: Colors.white,
                         elevation: 1,
@@ -185,9 +193,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             vertical: 4.0,
                           ),
                           child: TextFormField(
-                            controller: _nameController,
+                            controller: _firstNameController,
                             decoration: const InputDecoration(
-                              labelText: "Name*",
+                              labelText: "First Name*",
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                            ),
+                            validator:
+                                (value) =>
+                                    value?.isEmpty ?? true ? "Required" : null,
+                          ),
+                        ),
+                      ),
+
+                      // Last Name Field
+                      Card(
+                        color: Colors.white,
+                        elevation: 1,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 4.0,
+                          ),
+                          child: TextFormField(
+                            controller: _lastNameController,
+                            decoration: const InputDecoration(
+                              labelText: "Last Name*",
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                 horizontal: 8.0,

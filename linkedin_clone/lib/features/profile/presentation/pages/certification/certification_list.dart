@@ -44,9 +44,7 @@ class _CertificationListPageState extends State<CertificationListPage> {
         }
 
         if (provider.certifications!.isEmpty) {
-          return const Center(
-            child: Text("No certifications added yet"),
-          );
+          return const Center(child: Text("No certifications added yet"));
         }
 
         return RefreshIndicator(
@@ -56,7 +54,12 @@ class _CertificationListPageState extends State<CertificationListPage> {
             itemCount: provider.certifications!.length,
             itemBuilder: (context, index) {
               final certification = provider.certifications![index];
-              return _buildCertificationCard(context, certification, index, provider);
+              return _buildCertificationCard(
+                context,
+                certification,
+                index,
+                provider,
+              );
             },
           ),
         );
@@ -74,78 +77,64 @@ class _CertificationListPageState extends State<CertificationListPage> {
       margin: const EdgeInsets.symmetric(vertical: 8),
       color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => _editCertification(context, certification),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  certification.issuingOrganizationPic != null
-                      ? CircleAvatar(
-                          radius: 24,
-                          backgroundImage: NetworkImage(certification.issuingOrganizationPic!),
-                        )
-                      : const CircleAvatar(
-                          radius: 24,
-                          child: Icon(Icons.verified, size: 24),
-                        ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          certification.name,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          certification.issuingOrganization,
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading:
+            certification.certificationPicture != null
+                ? CircleAvatar(
+                  backgroundImage: NetworkImage(
+                    certification.certificationPicture!,
                   ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) async {
-                      if (value == "edit") {
-                        await _editCertification(context, certification);
-                      } else if (value == "delete") {
-                        await _deleteCertification(context, index, provider);
-                      }
-                    },
-                    color: Colors.white,
-                    elevation: 3,
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(value: "edit", child: Text("Edit")),
-                      const PopupMenuItem(
-                        value: "delete",
-                        child: Text("Delete", style: TextStyle(color: Colors.red)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                certification.expirationDate != null
-                    ? "Issued: ${certification.issueDate} - Expires: ${certification.expirationDate}"
-                    : "Issued: ${certification.issueDate} - No Expiration",
-                style: const TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
+                  backgroundColor: Colors.grey[200],
+                  onBackgroundImageError: (_, __) {
+                    return;
+                  },
+                )
+                : CircleAvatar(
+                  backgroundColor: Colors.grey[200],
+                  child: const Icon(Icons.verified, color: Colors.blue),
+                ),
+        title: Text(
+          certification.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Issuing Organization
+            Text(certification.company),
+            const SizedBox(height: 2),
+
+            // Date range - similar to education format
+            Text(
+              certification.expiryDate != null
+                  ? "${certification.issueDate} - ${certification.expiryDate}"
+                  : "${certification.issueDate} - Present",
+              style: const TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) async {
+            if (value == "edit") {
+              await _editCertification(context, certification);
+            } else if (value == "delete") {
+              await _deleteCertification(context, index, provider);
+            }
+          },
+          color: Colors.white,
+          elevation: 3,
+          itemBuilder:
+              (context) => [
+                const PopupMenuItem(value: "edit", child: Text("Edit")),
+                const PopupMenuItem(
+                  value: "delete",
+                  child: Text("Delete", style: TextStyle(color: Colors.red)),
+                ),
+              ],
+        ),
+        onTap: () => _editCertification(context, certification),
       ),
     );
   }
@@ -153,9 +142,7 @@ class _CertificationListPageState extends State<CertificationListPage> {
   Future<void> _addCertification(BuildContext context) async {
     final result = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AddCertificationPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const AddCertificationPage()),
     );
 
     if (result == true && mounted) {
@@ -169,13 +156,15 @@ class _CertificationListPageState extends State<CertificationListPage> {
     }
   }
 
-  Future<void> _editCertification(BuildContext context, Certification certification) async {
+  Future<void> _editCertification(
+    BuildContext context,
+    Certification certification,
+  ) async {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (context) => EditCertificationPage(
-          certification: certification,
-        ),
+        builder:
+            (context) => EditCertificationPage(certification: certification),
       ),
     );
 
@@ -197,23 +186,26 @@ class _CertificationListPageState extends State<CertificationListPage> {
   ) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Delete Certification"),
-        content: const Text("Are you sure you want to remove this certification?"),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text("Cancel"),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text(
-              "Delete",
-              style: TextStyle(color: Colors.red),
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete Certification"),
+            content: const Text(
+              "Are you sure you want to remove this certification?",
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("Cancel"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  "Delete",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
 
     if (confirmed == true && context.mounted) {

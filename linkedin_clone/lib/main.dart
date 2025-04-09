@@ -71,10 +71,8 @@ import '../features/feed/presentation/provider/feed_provider.dart';
 import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
-import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
-
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
-// import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
+import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/add_certification.dart';
@@ -87,17 +85,24 @@ import 'package:linkedin_clone/features/profile/domain/usecases/experience/add_e
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/delete_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/update_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/add_skill.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_cover_photo.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_profile_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_cover_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_headline.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_industry.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_location.dart';
-import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_first_name.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_last_name.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_resume.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_headline.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_industry.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_location.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_bio.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_resume.dart';
+
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
@@ -113,7 +118,8 @@ import 'features/connections/presentations/widgets/page_type_enum.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
-  final internetConnection = InternetConnection();
+  // final internetConnection = InternetConnection();
+
 
   // Initialize data source and repository
   // final ProfileRemoteDataSourceImpl dataSource = ProfileRemoteDataSourceImpl(
@@ -128,12 +134,15 @@ void main() {
   );
   final jobrepos = JobRepositoryImpl(remoteDataSource: jobRemoteDataSource);
   final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
-  final MockProfileRemoteDataSource dataSourceProfile =
-      MockProfileRemoteDataSource();
+
+  // Initialize data source and repository
+  final ProfileRemoteDataSourceImpl dataSourceProfile = ProfileRemoteDataSourceImpl(
+    baseUrl: 'https://tawasolapp.me/api',
+  );
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
-    connectionChecker: ConnectionCheckerImpl(internetConnection),
+    // connectionChecker: ConnectionCheckerImpl(internetConnection),
   );
   final useMock = false;
   // ignore: dead_code
@@ -301,11 +310,17 @@ void main() {
                   profileRepository,
                 ),
                 updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
+                deleteHeadlineUseCase: DeleteHeadlineUseCase(profileRepository),
                 updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
+                deleteIndustryUseCase: DeleteIndustryUseCase(profileRepository),
                 updateLocationUseCase: UpdateLocationUseCase(profileRepository),
-                updateNameUseCase: UpdateNameUseCase(profileRepository),
+                deleteLocationUseCase: DeleteLocationUseCase(profileRepository),
+                updateFirstNameUseCase: UpdateFirstNameUseCase(profileRepository),
+                updateLastNameUseCase: UpdateLastNameUseCase(profileRepository),
                 updateResumeUseCase: UpdateResumeUseCase(profileRepository),
+                deleteResumeUseCase: DeleteResumeUseCase(profileRepository),
                 updateBioUseCase: UpdateBioUseCase(profileRepository),
+                deleteBioUseCase: DeleteBioUseCase(profileRepository),
                 addExperienceUseCase: AddExperienceUseCase(profileRepository),
                 updateExperienceUseCase: UpdateExperienceUseCase(
                   profileRepository,
@@ -384,6 +399,7 @@ void main() {
                 ),
               ),
         ),
+
       ],
       child: const MyApp(),
     ),

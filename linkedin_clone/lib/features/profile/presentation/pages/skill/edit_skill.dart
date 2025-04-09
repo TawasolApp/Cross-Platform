@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
-import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:provider/provider.dart';
 
 class EditSkillPage extends StatefulWidget {
-  final Skill? skill;
+  final Skill skill;
+  final int index;
 
-  const EditSkillPage({
-    super.key, 
-    this.skill,
-  });
+  const EditSkillPage({super.key, required this.skill, required this.index});
 
   @override
   State<EditSkillPage> createState() => _EditSkillPageState();
@@ -18,51 +15,53 @@ class EditSkillPage extends StatefulWidget {
 
 class _EditSkillPageState extends State<EditSkillPage> {
   final _formKey = GlobalKey<FormState>();
-  final _skillController = TextEditingController();
-  List<String>? _endorsements;
+  final _skillNameController = TextEditingController(); // Read-only
+  final _positionController = TextEditingController();
   bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-
-    final skill = widget.skill;
-    
-    _skillController.text = skill?.skill ?? "";
-    _endorsements = skill?.endorsements?.map((e) => e.userId).toList();
+    _skillNameController.text = widget.skill.skillName;
+    _positionController.text = widget.skill.position ?? '';
   }
 
   @override
   void dispose() {
-    _skillController.dispose();
+    _skillNameController.dispose();
+    _positionController.dispose();
     super.dispose();
   }
 
   Future<void> _saveSkill() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     setState(() => _isSaving = true);
-    
+
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
-      final skill = Skill(
-        skill: _skillController.text,
-        endorsements: _endorsements?.map((userId) => Endorsement(userId: userId)).toList(),
+
+      // Create updated skill with new position
+      final updatedSkill = Skill(
+        skillName: _skillNameController.text,
+        position:
+            _positionController.text.isEmpty ? null : _positionController.text,
+        endorsements: widget.skill.endorsements,
       );
 
-      if (widget.skill != null) {
-        await provider.updateSkill(widget.skill!, skill);
-      } else {
-        await provider.addSkill(skill);
-      }
-      
+      // Update the skill position
+      await provider.updateSkill(widget.index, updatedSkill);
+
       if (mounted) {
         Navigator.pop(context, true); // Return success flag
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save skill: ${e.toString()}')),
+          SnackBar(
+            content: Text('Failed to update skill position: ${e.toString()}'),
+            duration: const Duration(seconds: 2),
+          ),
         );
       }
     } finally {
@@ -76,17 +75,27 @@ class _EditSkillPageState extends State<EditSkillPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.skill != null ? "Edit Skill" : "Add Skill"),
+        title: const Text("Edit Skill"),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _saveSkill,
-            child: _isSaving 
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                  )
-                : const Text("Save", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            child:
+                _isSaving
+                    ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.0,
+                        color: Colors.white,
+                      ),
+                    )
+                    : const Text(
+                      "Save",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
           ),
         ],
       ),
@@ -105,53 +114,98 @@ class _EditSkillPageState extends State<EditSkillPage> {
                   child: CircleAvatar(
                     radius: 40,
                     backgroundColor: Colors.white,
-                    child: const Icon(Icons.code, size: 40, color: Colors.blueGrey),
+                    child: const Icon(
+                      Icons.code,
+                      size: 40,
+                      color: Colors.blueGrey,
+                    ),
                   ),
                 ),
               ),
               const SizedBox(height: 24),
 
-              // Skill Name
+              // Skill Name (Read-only)
+              Card(
+                color: Colors.grey.shade100,
+                elevation: 1,
+                margin: const EdgeInsets.only(bottom: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
+                  child: TextFormField(
+                    controller: _skillNameController,
+                    readOnly: true,
+                    enabled: false, // Makes it clearly non-editable
+                    decoration: const InputDecoration(
+                      labelText: "Skill Name (Not Editable)",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
+                    ),
+                  ),
+                ),
+              ),
+
+              // Position (Where Used) - Editable, but optional
               Card(
                 color: Colors.white,
                 elevation: 1,
                 margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8.0,
+                    vertical: 4.0,
+                  ),
                   child: TextFormField(
-                    controller: _skillController,
+                    controller: _positionController,
                     decoration: const InputDecoration(
-                      labelText: "Skill Name*",
+                      labelText: "Where did you use this skill? (Optional)",
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
                     ),
-                    validator: (value) => value?.isEmpty ?? true ? "Required" : null,
+                    // No validator since it's optional
                   ),
                 ),
               ),
 
               // Endorsements count (read-only display)
-              if (widget.skill != null && _endorsements != null)
+              if (widget.skill.endorsements != null &&
+                  widget.skill.endorsements!.isNotEmpty)
                 Card(
                   color: Colors.white,
                   elevation: 1,
                   margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 12.0,
+                    ),
                     child: Row(
                       children: [
                         const Icon(Icons.thumb_up, color: Colors.blueGrey),
                         const SizedBox(width: 12),
-                        Text(
-                          "${_endorsements!.length} endorsements",
-                          style: const TextStyle(fontSize: 16),
+                        Expanded(
+                          child: Text(
+                            "${widget.skill.endorsements!.length} ${widget.skill.endorsements!.length == 1 ? 'endorsement' : 'endorsements'}",
+                            style: const TextStyle(fontSize: 16),
+                          ),
                         ),
                       ],
                     ),
                   ),
                 ),
+
+              const SizedBox(height: 8),
 
               // Save Button
               SizedBox(
@@ -160,20 +214,30 @@ class _EditSkillPageState extends State<EditSkillPage> {
                   onPressed: _isSaving ? null : _saveSkill,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 2,
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  child: _isSaving
-                      ? const SizedBox(
-                          width: 20, 
-                          height: 20, 
-                          child: CircularProgressIndicator(strokeWidth: 2.0, color: Colors.white),
-                        )
-                      : const Text(
-                          "Save Skill", 
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                        ),
+                  child:
+                      _isSaving
+                          ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.0,
+                              color: Colors.white,
+                            ),
+                          )
+                          : const Text(
+                            "Save Skill",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                 ),
               ),
             ],

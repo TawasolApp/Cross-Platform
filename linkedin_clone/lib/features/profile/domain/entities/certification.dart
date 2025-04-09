@@ -1,42 +1,48 @@
 import 'package:equatable/equatable.dart';
 
 class Certification extends Equatable {
+  final String? certificationId; // Added ID field
   final String name;
-  final String issuingOrganization;
-  final String? issuingOrganizationPic; // Nullable field
+  final String company;
+  final String? certificationPicture;
   final String issueDate;
-  final String? expirationDate;
+  final String? expiryDate;
 
   const Certification({
+    this.certificationId, // Added as optional
     required this.name,
-    required this.issuingOrganization,
-    this.issuingOrganizationPic, // Now nullable
+    required this.company,
+    this.certificationPicture,
     required this.issueDate,
-    this.expirationDate,
+    this.expiryDate,
   });
 
   Certification copyWith({
+    String? certificationId,
     String? name,
-    String? issuingOrganization,
-    String? issuingOrganizationPic,
+    String? company,
+    String? certificationPicture,
     String? issueDate,
-    String? expirationDate,
+    String? expiryDate,
   }) {
     return Certification(
+      certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
-      issuingOrganization: issuingOrganization ?? this.issuingOrganization,
-      issuingOrganizationPic: issuingOrganizationPic ?? this.issuingOrganizationPic,
+      company: company ?? this.company,
+      certificationPicture:
+          certificationPicture ?? this.certificationPicture,
       issueDate: issueDate ?? this.issueDate,
-      expirationDate: expirationDate ?? this.expirationDate,
+      expiryDate: expiryDate ?? this.expiryDate,
     );
   }
 
   @override
   List<Object?> get props => [
-        name,
-        issuingOrganization,
-        issuingOrganizationPic, // Nullable in props
-        issueDate,
-        expirationDate,
-      ];
+    certificationId,
+    name,
+    company,
+    certificationPicture,
+    issueDate,
+    expiryDate,
+  ];
 }
