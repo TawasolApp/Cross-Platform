@@ -1,7 +1,5 @@
-// data/models/post_model.dart
-import 'package:linkedin_clone/features/feed/data/models/repost_detail_model.dart';
-
 import '../../domain/entities/post_entity.dart';
+import 'repost_detail_model.dart';
 
 class PostModel extends PostEntity {
   const PostModel({
@@ -12,19 +10,15 @@ class PostModel extends PostEntity {
     required super.authorBio,
     required super.content,
     super.media,
-    super.reactions,
-    super.reactCounts,
-    //super.likes = 0,
+    super.likes = 0,
     super.comments = 0,
     super.shares = 0,
     super.taggedUsers,
     required super.visibility,
     required super.authorType,
-    required super.reactType,
-    //required super.isLiked,
+    required super.isLiked,
     required super.timestamp,
-    //super.repostDetails,
-    super.isSaved = false,
+    super.repostDetails,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -32,42 +26,48 @@ class PostModel extends PostEntity {
       id: json['id'],
       authorId: json['authorId'],
       authorName: json['authorName'],
-      authorPicture: json['authorPicture'],
+      authorPicture: json['authorPicture'] ?? "https://default.image/url.png",
       authorBio: json['authorBio'],
       content: json['content'],
-      media: List<String>.from(json['media'] ?? []),
-      reactCounts: Map<String, int>.from(json['reactCounts'] ?? {}),
+      media:
+          (json['media'] as List<dynamic>?)?.cast<String>() ??
+          [], // ✅ Handle null
+      likes: json['likes'] ?? 0,
       comments: json['comments'] ?? 0,
       shares: json['shares'] ?? 0,
-      taggedUsers: List<String>.from(json['taggedUsers'] ?? []),
-      visibility: json['visibility'] ?? 'Public',
-      authorType: json['authorType'] ?? 'User',
-      reactType: json['reactType'] ?? 'None',
+      taggedUsers: (json['taggedUsers'] as List<dynamic>?)?.cast<String>(),
+      visibility: json['visibility'],
+      authorType: json['authorType'],
+      isLiked: json['reactType'] == "Like",
       timestamp: DateTime.parse(json['timestamp']),
-      isSaved: json['isSaved'] ?? false,
+      repostDetails:
+          json['repostDetails'] != null
+              ? RepostDetailsModel.fromJson(json['repostDetails'])
+              : null,
     );
   }
 
-  // Convert PostModel to PostEntity
-  PostEntity toEntity() {
-    return PostEntity(
-      id: id,
-      authorId: authorId,
-      authorName: authorName,
-      authorPicture: authorPicture,
-      authorBio: authorBio,
-      content: content,
-      media: media,
-      reactions: reactions,
-      reactCounts: reactCounts,
-      comments: comments,
-      shares: shares,
-      taggedUsers: taggedUsers,
-      visibility: visibility,
-      authorType: authorType,
-      reactType: reactType,
-      timestamp: timestamp,
-      isSaved: isSaved,
-    );
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'authorId': authorId,
+      'authorName': authorName,
+      'authorPicture': authorPicture,
+      'authorBio': authorBio,
+      'content': content,
+      'media': media,
+      'likes': likes,
+      'comments': comments,
+      'shares': shares,
+      'taggedUsers': taggedUsers,
+      'visibility': visibility,
+      'authorType': authorType,
+      'reactType': isLiked ? "Like" : null,
+      'timestamp': timestamp.toIso8601String(),
+      'repostDetails':
+          repostDetails != null
+              ? (repostDetails as RepostDetailsModel).toJson()
+              : null,
+    };
   }
 }

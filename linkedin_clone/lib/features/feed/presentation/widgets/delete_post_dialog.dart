@@ -6,7 +6,7 @@ Future<void> showDeletePostDialog({
 }) async {
   return showDialog(
     context: context,
-    builder: (dialogContext) {
+    builder: (context) {
       return AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         title: const Text(
@@ -18,7 +18,7 @@ Future<void> showDeletePostDialog({
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => Navigator.pop(context),
             child: const Text(
               'Cancel',
               style: TextStyle(color: Colors.black87),
@@ -26,7 +26,7 @@ Future<void> showDeletePostDialog({
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(dialogContext); // Close the dialog
+              Navigator.pop(context); // Close the dialog
               onDelete(); // Trigger delete action
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),

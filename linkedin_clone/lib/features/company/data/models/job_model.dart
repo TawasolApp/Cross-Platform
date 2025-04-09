@@ -2,19 +2,32 @@ import 'package:linkedin_clone/features/company/domain/entities/job.dart';
 
 class JobModel extends Job {
   JobModel({
-    required super.id,
-    required super.position,
-    required super.company,
-    required super.industry,
-    required super.description,
-    required super.location,
-    required super.salary,
-    required super.experienceLevel,
-    required super.locationType,
-    required super.employmentType,
-    required super.postedDate,
-    required super.applicantCount,
-  });
+    required String id,
+    required String position,
+    required String company,
+    required String industry,
+    required String description,
+    required String location,
+    required double salary,
+    required String experienceLevel,
+    required String locationType,
+    required String employmentType,
+    required DateTime postedDate,
+    required int applicantCount,
+  }) : super(
+          id: id,
+          position: position,
+          company: company,
+          industry: industry,
+          description: description,
+          location: location,
+          salary: salary,
+          experienceLevel: experienceLevel,
+          locationType: locationType,
+          employmentType: employmentType,
+          postedDate: postedDate,
+          applicantCount: applicantCount,
+        );
 
   factory JobModel.fromJson(Map<String, dynamic> json) {
     return JobModel(

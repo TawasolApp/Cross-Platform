@@ -11,12 +11,15 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/forgot_pa
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/login_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/register_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_email_usecase.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
@@ -27,8 +30,6 @@ import 'package:linkedin_clone/features/connections/domain/usecases/accept_conne
 import 'package:linkedin_clone/features/connections/domain/usecases/ignore_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
-import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
-import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
@@ -48,6 +49,10 @@ import '../features/feed/presentation/provider/feed_provider.dart';
 import 'core/themes/app_theme.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
+import 'package:provider/provider.dart';
+import 'package:linkedin_clone/core/themes/app_theme.dart';
+import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
@@ -76,12 +81,12 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_r
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
-// Ensure this is the correct path
+import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart'; // Ensure this is the correct path
+import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+import "../../../features/connections/presentations/pages/connections_page.dart";
 import 'package:linkedin_clone/features/feed/domain/usecases/comment_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usecase.dart';
-import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecase.dart';
-import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
-import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -131,11 +136,6 @@ void main() {
   final editPostUseCase = EditPostUseCase(repository);
   final commentPostUseCase = CommentPostUseCase(repository);
   final fetchCommentsUseCase = FetchCommentsUseCase(repository);
-  final reactToPostUseCase = ReactToPostUseCase(repository);
-  final editCommentUseCase = EditCommentUseCase(repository);
-  final getPostReactionsUseCase = GetPostReactionsUseCase(repository);
-  final unsavePostUseCase = UnsavePostUseCase(repository);
-  final getUserPostsUseCase = GetUserPostsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
   runApp(
     MultiProvider(
@@ -144,12 +144,7 @@ void main() {
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
         ChangeNotifierProvider(
-          create:
-              (_) => SettingsProvider(
-                changePasswordUseCase,
-                updateEmailUsecase,
-                deleteAccountUsecase,
-              ),
+          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
         ),
         ChangeNotifierProvider(
           create:
@@ -158,56 +153,7 @@ void main() {
                 resendEmailUsecase: resendEmailUsecase,
               ),
         ),
-        ChangeNotifierProvider(
-          create:
-              (_) => ProfileProvider(
-                getProfileUseCase: GetProfileUseCase(profileRepository),
-                updateProfilePictureUseCase: UpdateProfilePictureUseCase(
-                  profileRepository,
-                ),
-                deleteProfilePictureUseCase: DeleteProfilePictureUseCase(
-                  profileRepository,
-                ),
-                updateCoverPictureUseCase: UpdateCoverPictureUseCase(
-                  profileRepository,
-                ),
-                deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(
-                  profileRepository,
-                ),
-                updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
-                updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
-                updateLocationUseCase: UpdateLocationUseCase(profileRepository),
-                updateNameUseCase: UpdateNameUseCase(profileRepository),
-                updateResumeUseCase: UpdateResumeUseCase(profileRepository),
-                updateBioUseCase: UpdateBioUseCase(profileRepository),
-                addExperienceUseCase: AddExperienceUseCase(profileRepository),
-                updateExperienceUseCase: UpdateExperienceUseCase(
-                  profileRepository,
-                ),
-                deleteExperienceUseCase: DeleteExperienceUseCase(
-                  profileRepository,
-                ),
-                addEducationUseCase: AddEducationUseCase(profileRepository),
-                updateEducationUseCase: UpdateEducationUseCase(
-                  profileRepository,
-                ),
-                deleteEducationUseCase: DeleteEducationUseCase(
-                  profileRepository,
-                ),
-                addCertificationUseCase: AddCertificationUseCase(
-                  profileRepository,
-                ),
-                updateCertificationUseCase: UpdateCertificationUseCase(
-                  profileRepository,
-                ),
-                deleteCertificationUseCase: DeleteCertificationUseCase(
-                  profileRepository,
-                ),
-                addSkillUseCase: AddSkillUseCase(profileRepository),
-                updateSkillUseCase: UpdateSkillUseCase(profileRepository),
-                deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
-              ),
-        ),
+
         ChangeNotifierProvider(
           create:
               (_) => FeedProvider(
@@ -218,15 +164,9 @@ void main() {
                 editPostUseCase: editPostUseCase,
                 commentPostUseCase: commentPostUseCase,
                 fetchCommentsUseCase: fetchCommentsUseCase,
-                reactToPostUseCase: reactToPostUseCase,
-                editCommentUseCase: editCommentUseCase,
-                getPostReactionsUseCase: getPostReactionsUseCase,
-                getProfileUseCase: GetProfileUseCase(profileRepository),
-                unsavePostUseCase: unsavePostUseCase,
-                getUserPostsUseCase: getUserPostsUseCase,
+                //reactToPostUseCase: reactToPostUseCase,
               )..fetchPosts(),
         ),
-
         ChangeNotifierProvider(
           create:
               (_) => ConnectionsProvider(
@@ -281,6 +221,34 @@ void main() {
                 ),
               ),
         ),
+       ChangeNotifierProvider(
+  create: (_) => ProfileProvider(
+    getProfileUseCase: GetProfileUseCase(profileRepository),
+    updateProfilePictureUseCase: UpdateProfilePictureUseCase(profileRepository),
+    deleteProfilePictureUseCase: DeleteProfilePictureUseCase(profileRepository),
+    updateCoverPictureUseCase: UpdateCoverPictureUseCase(profileRepository),
+    deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(profileRepository),
+    updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
+    updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
+    updateLocationUseCase: UpdateLocationUseCase(profileRepository),
+    updateNameUseCase: UpdateNameUseCase(profileRepository),
+    updateResumeUseCase: UpdateResumeUseCase(profileRepository),
+    updateBioUseCase: UpdateBioUseCase(profileRepository),
+    addExperienceUseCase: AddExperienceUseCase(profileRepository),
+    updateExperienceUseCase: UpdateExperienceUseCase(profileRepository),
+    deleteExperienceUseCase: DeleteExperienceUseCase(profileRepository),
+    addEducationUseCase: AddEducationUseCase(profileRepository),
+    updateEducationUseCase: UpdateEducationUseCase(profileRepository),
+    deleteEducationUseCase: DeleteEducationUseCase(profileRepository),
+    addCertificationUseCase: AddCertificationUseCase(profileRepository),
+    updateCertificationUseCase: UpdateCertificationUseCase(profileRepository),
+    deleteCertificationUseCase: DeleteCertificationUseCase(profileRepository),
+    addSkillUseCase: AddSkillUseCase(profileRepository),
+    updateSkillUseCase: UpdateSkillUseCase(profileRepository),
+    deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
+  ),
+),
+
       ],
       child: const MyApp(),
     ),

@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class CompanyAboutWidget extends StatelessWidget {
   final String userID;
-  const CompanyAboutWidget(this.userID, {super.key});
+  CompanyAboutWidget(this.userID);
   @override
   Widget build(BuildContext context) {
     final companyProvider = context.watch<CompanyProvider>();
@@ -22,8 +22,7 @@ class CompanyAboutWidget extends StatelessWidget {
           Text("Overview", style: Theme.of(context).textTheme.titleLarge),
           SizedBox(height: 8),
           Text(
-            context.read<CompanyProvider>().company!.overview ??
-                'No overview available',
+            context.read<CompanyProvider>().company!.overview ?? 'No overview available',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           SizedBox(height: 16),
@@ -55,8 +54,7 @@ class CompanyAboutWidget extends StatelessWidget {
           SizedBox(height: 4),
           Text('Headquarters', style: Theme.of(context).textTheme.bodyLarge),
           Text(
-            context.read<CompanyProvider>().company!.address ??
-                'No address available',
+            context.read<CompanyProvider>().company!.address ?? 'No address available',
             style: Theme.of(context).textTheme.bodySmall,
           ),
           SizedBox(height: 4),

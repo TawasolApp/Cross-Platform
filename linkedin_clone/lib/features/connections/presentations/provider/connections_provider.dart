@@ -6,6 +6,7 @@ import '../../domain/usecases/remove_connection_usecase.dart';
 import '../../domain/usecases/get_received_connection_requests_usecase.dart';
 import '../../domain/usecases/get_sent_connection_requests_usecase.dart';
 import '../../domain/usecases/accept_connection_request_usecase.dart';
+import '../../domain/usecases/accept_connection_request_usecase.dart';
 import '../../domain/usecases/ignore_connection_request_usecase.dart';
 import '../../domain/usecases/send_connection_request_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';

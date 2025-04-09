@@ -11,8 +11,8 @@ class ReactToPostUseCase {
     required String postId,
     required Map<String, bool> reactions,
     required String postType,
-  }) async {
-    return await repository.reactToPost(
+  }) {
+    return repository.reactToPost(
       postId: postId,
       reactions: reactions,
       postType: postType,

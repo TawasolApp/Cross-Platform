@@ -1,76 +1,90 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
-import 'reaction_icon.dart';
-import '../../../../core/utils/reaction_type.dart';
 
-class ReactionSummaryBar extends StatelessWidget {
+class ReactionBar extends StatefulWidget {
   final PostEntity post;
+  final void Function(String) onReact;
 
-  const ReactionSummaryBar({super.key, required this.post});
+  const ReactionBar({super.key, required this.post, required this.onReact});
+
+  @override
+  State<ReactionBar> createState() => _ReactionBarState();
+}
+
+class _ReactionBarState extends State<ReactionBar> {
+  // ignore: unused_field
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  // void _showReactions(Offset globalPosition) {
+  //   _overlayEntry = OverlayEntry(
+  //     builder:
+  //         // (context) => ReactionPopup(
+  //         //   onSelect: (reactionName) {
+  //         //     widget.onReact(reactionName);
+  //         //     _hidePopup();
+  //         //   },
+  //         //   targetPosition: globalPosition,
+  //         // ),
+  //   );
+  //   Overlay.of(context).insert(_overlayEntry!);
+  // }
+
+  // ignore: unused_element
+  void _hidePopup() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    int totalReactions =
-        post.reactCounts?.values.fold(0, (sum, count) => sum! + count) ?? 0;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Reactions and count display
-          if (totalReactions > 0)
-            Row(
-              children: [
-                // Grouped Reaction Icons
-                Row(
-                  children:
-                      post.reactCounts!.entries
-                          .where((entry) => entry.value > 0)
-                          .take(3) // Limit to 3 reactions for compact view
-                          .map(
-                            (entry) => Padding(
-                              padding: const EdgeInsets.only(right: 2),
-                              child: CircleAvatar(
-                                radius: 9,
-                                backgroundColor: Colors.white,
-                                child: Icon(
-                                  getReactionIcon(entry.key),
-                                  color: getReactionColor(entry.key),
-                                  size: 15,
-                                ),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "$totalReactions",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                ),
-              ],
-            ),
-          // Comments and Shares aligned to the right
-          Row(
+    return Row(
+      children: [
+        GestureDetector(
+          onTap: () {
+            widget.onReact('Like');
+          },
+          onLongPressStart: (details) {
+            // _showReactions(details.globalPosition);
+          },
+          child: Row(
             children: [
-              if (post.comments > 0) ...[
-                Text(
-                  "${post.comments} comments",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              Icon(
+                widget.post.isLiked ? Icons.thumb_up : Icons.thumb_up_off_alt,
+                color:
+                    widget.post.isLiked
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                "Like",
+                style: TextStyle(
+                  color:
+                      widget.post.isLiked
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey,
                 ),
-                const SizedBox(width: 8),
-              ],
-              if (post.shares > 0)
-                Text(
-                  "${post.shares} reposts",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
+              ),
             ],
           ),
-        ],
-      ),
+        ),
+        const SizedBox(width: 16),
+        Text(
+          "${widget.post.likes} Likes",
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          "${widget.post.comments} Comments",
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        const SizedBox(width: 8),
+        Text(
+          "${widget.post.shares} Shares",
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
     );
   }
 }

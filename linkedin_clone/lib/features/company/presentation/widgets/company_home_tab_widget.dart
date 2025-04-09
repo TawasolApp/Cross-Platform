@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 class CompanyHomeTab extends StatefulWidget {
   final String userId; // Accept userId as a parameter
 
-  const CompanyHomeTab({super.key, required this.userId});
+  const CompanyHomeTab({Key? key, required this.userId}) : super(key: key);
   @override
   _CompanyHomeTabState createState() => _CompanyHomeTabState();
 }
@@ -282,27 +282,27 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                       ),
             ),
 
-            Center(
-              child: SizedBox(
-                width: double.infinity, // Take full width
-                child: TextButton(
-                  onPressed: () {
-                    // TODO: Navigate to  posts tab
-                  },
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Show all posts",
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      SizedBox(width: 5),
-                      Icon(Icons.arrow_forward, color: Colors.grey[700]),
-                    ],
+              Center(
+                child: SizedBox(
+                  width: double.infinity, // Take full width
+                  child: TextButton(
+                    onPressed: () {
+                      // TODO: Navigate to  posts tab
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "Show all posts",
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        SizedBox(width: 5),
+                        Icon(Icons.arrow_forward, color: Colors.grey[700]),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

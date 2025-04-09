@@ -4,7 +4,7 @@ import 'package:file_picker/file_picker.dart';
 
 class ApplyForJobWidget extends StatelessWidget {
   final String companyName;
-  ApplyForJobWidget({super.key, required this.companyName});
+  ApplyForJobWidget({required this.companyName});
 
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
@@ -22,9 +22,7 @@ class ApplyForJobWidget extends StatelessWidget {
         backgroundColor: Colors.white, // White app bar
         title: Text(
           'Apply for $companyName',
-          style: TextStyle(
-            color: const Color.fromARGB(255, 21, 98, 161),
-          ), // Title text in blue
+          style: TextStyle(color: const Color.fromARGB(255, 21, 98, 161)), // Title text in blue
         ),
         iconTheme: IconThemeData(color: Colors.black), // Back button color
         elevation: 0, // Remove shadow

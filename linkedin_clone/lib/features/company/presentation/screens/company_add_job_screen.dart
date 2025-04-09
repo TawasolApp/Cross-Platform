@@ -18,8 +18,6 @@ class AddJobScreen extends StatelessWidget {
   final TextEditingController _employmentTypeController =
       TextEditingController();
 
-  AddJobScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     // For responsive padding
@@ -183,10 +181,9 @@ class AddJobScreen extends StatelessWidget {
       industry: _industryController.text.trim(),
       location: _locationController.text.trim(),
       description: _descriptionController.text.trim(),
-      salary:
-          _salaryController.text.trim().isNotEmpty
-              ? double.tryParse(_salaryController.text.trim()) ?? 0.0
-              : 0.0,
+      salary: _salaryController.text.trim().isNotEmpty
+          ? double.tryParse(_salaryController.text.trim()) ?? 0.0
+          : 0.0,
       experienceLevel: _experienceLevelController.text.trim(),
       locationType: _locationTypeController.text.trim(),
       employmentType: _employmentTypeController.text.trim(),

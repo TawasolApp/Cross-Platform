@@ -4,12 +4,8 @@ import '../provider/feed_provider.dart';
 
 class AddCommentField extends StatefulWidget {
   final String postId;
-  final bool isReply;
-  const AddCommentField({
-    super.key,
-    required this.postId,
-    this.isReply = false,
-  });
+
+  const AddCommentField({super.key, required this.postId});
 
   @override
   _AddCommentFieldState createState() => _AddCommentFieldState();
@@ -19,34 +15,14 @@ class _AddCommentFieldState extends State<AddCommentField> {
   final TextEditingController _controller = TextEditingController();
   bool _isTyping = false;
 
-  void _addComment(BuildContext context) async {
+  void _addComment(BuildContext context) {
     final content = _controller.text.trim();
     if (content.isNotEmpty) {
-      try {
-        await context.read<FeedProvider>().addComment(
-          widget.postId,
-          content,
-          widget.isReply,
-        );
-        _controller.clear();
-        setState(() {
-          _isTyping = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Comment added successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } catch (e) {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to add comment: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      context.read<FeedProvider>().addComment(widget.postId, content);
+      _controller.clear();
+      setState(() {
+        _isTyping = false;
+      });
     }
   }
 
@@ -62,7 +38,7 @@ class _AddCommentFieldState extends State<AddCommentField> {
             child: CircleAvatar(
               radius: 18,
               backgroundImage: NetworkImage(
-                "https://example.com/profile-picture.jpg",
+                "https://example.com/profile-picture.jpg", // Replace with actual profile image URL
               ),
             ),
           ),

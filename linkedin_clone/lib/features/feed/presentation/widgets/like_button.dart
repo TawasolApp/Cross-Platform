@@ -1,34 +1,29 @@
 import 'package:flutter/material.dart';
-import 'reaction_popup.dart';
 
 class LikeButton extends StatelessWidget {
   final bool isLiked;
-  final String postId;
+  final VoidCallback onTap;
 
-  const LikeButton({super.key, required this.isLiked, required this.postId});
-
-  void _showReactionPopup(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder:
-          (_) => ReactionPopup(postId: postId, onReactionSelected: (String) {}),
-    );
-  }
+  const LikeButton({super.key, required this.isLiked, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showReactionPopup(context),
+      onTap: onTap,
       child: Row(
         children: [
           Icon(
             isLiked ? Icons.thumb_up : Icons.thumb_up_off_alt,
-            color: isLiked ? Colors.blue : Colors.grey,
+            color:
+                isLiked ? Theme.of(context).colorScheme.primary : Colors.grey,
           ),
           const SizedBox(width: 4),
           Text(
             "Like",
-            style: TextStyle(color: isLiked ? Colors.blue : Colors.grey),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color:
+                  isLiked ? Theme.of(context).colorScheme.primary : Colors.grey,
+            ),
           ),
         ],
       ),

@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/invitation_card.dart';
 import 'no_internet_connection.dart';
-import '../../../../core/utils/time_formatter.dart';
+import '../../../../\core/utils/time_formatter.dart';
 
 class ReceivedInvitationsBody extends StatelessWidget {
   @override

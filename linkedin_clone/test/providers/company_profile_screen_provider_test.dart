@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart'
+    show Post;
 
 class FakeCompanyProvider extends CompanyProvider {
   Company? _fakeCompany;
@@ -53,18 +55,8 @@ class FakeCompanyProvider extends CompanyProvider {
     );
 
     _fakeFriendsFollowing = [
-      User(
-        userId: "u1",
-        username: "Alice",
-        profilePicture: "url1",
-        headline: 'SWE',
-      ),
-      User(
-        userId: "u2",
-        username: "Bob",
-        profilePicture: "url2",
-        headline: 'SWE',
-      ),
+      User(userId: "u1", username: "Alice", profilePicture: "url1",headline: 'SWE'),
+      User(userId: "u2", username: "Bob", profilePicture: "url2",headline: 'SWE'),
     ];
 
     _fakeRelatedCompanies = [

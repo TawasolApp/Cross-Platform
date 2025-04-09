@@ -11,31 +11,32 @@ class CompanyRemoteDataSource {
       "https://tawasolapp.me/api"; // Updated to use the provided base URL
   Future<CompanyModel> getCompanyDetails(String companyId) async {
     // TODO: Replace this mock api call with an API request once the backend is ready
-    //   // API Endpoint Example: GET /companies/{companyId}/
+  //   // API Endpoint Example: GET /companies/{companyId}/
 
-    //   final token = await TokenService.getToken();
-    //   print("Token: $token");
-    //   if (token == null) {
-    //     throw Exception('Token is missing');
-    //   }
-    //   final response = await http.get(
-    //     Uri.parse('$baseUrl/companies/$companyId/'),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': 'Bearer $token', // Use actual access token if needed
-    //     },
-    //   );
-    //   print(response.body);
-    //   if (response.statusCode == 200) {
-    //     return CompanyModel.fromJson(jsonDecode(response.body));
-    //   } else if (response.statusCode == 404) {
-    //     throw Exception('Company details not found');
-    //   } else {
-    //     throw Exception('Failed to load company details');
-    //   }
-    // }
+  //   final token = await TokenService.getToken();
+  //   print("Token: $token");
+  //   if (token == null) {
+  //     throw Exception('Token is missing');
+  //   }
+  //   final response = await http.get(
+  //     Uri.parse('$baseUrl/companies/$companyId/'),
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       'Authorization': 'Bearer $token', // Use actual access token if needed
+  //     },
+  //   );
+  //   print(response.body);
+  //   if (response.statusCode == 200) {
+  //     return CompanyModel.fromJson(jsonDecode(response.body));
+  //   } else if (response.statusCode == 404) {
+  //     throw Exception('Company details not found');
+  //   } else {
+  //     throw Exception('Failed to load company details');
+  //   }
+  // }
 
-    final response = await http.get(
+
+final response = await http.get(
       Uri.parse(
         'http://192.168.1.6:3000/companies?companyId=elsewedy-electric',
       ),
@@ -47,37 +48,42 @@ class CompanyRemoteDataSource {
       throw Exception('Failed to load company details');
     }
 
-    // await Future.delayed(Duration(seconds: 1)); // Simulate network delay
 
-    // return CompanyModel(
-    //   companyId: companyId,
-    //   name: "Elsewedy Electric",
-    //   isFollowing: true,
-    //   isVerified: true,
-    //   logo:
-    //       "https://media.licdn.com/dms/image/v2/C560BAQF2a3ilv6hXXw/company-logo_200_200/company-logo_200_200/0/1631303609923?e=1747872000&v=beta&t=M9wVeJt_Zk6nNOEnz5X6PQVoUzb8wzaSFYK9JeRNA60",
-    //   description:
-    //       "Manufacturer of Cables & Electrical Products and Integrated Infrastructure Provider",
-    //   companySize: "201-500 Employees",
-    //   followers: 1000,
-    //   companyType: "Public Company",
-    //   industry: "Appliances, Electrical and Electronics",
-    //   overview:
-    //       "A global leader that has evolved from a local manufacturer of electrical products into an integrated infrastructure solutions provider" *
-    //       10,
-    //   founded: '1955',
-    //   website: "https://elsewedyelectric.com/en/default",
-    //   address: "New Cairo, Cairo",
-    //   location: "https://maps.app.goo.gl/fEh4pBYt6LvTFxQE8",
-    //   email: "user@example.com",
-    //   contactNumber: "19159",
-    //   banner:
-    //       'https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png',
-    //   specialities: "Cables & Accessories",
-    //   isAdmin: true,
-    // );
+
+
+
+
+
+  // await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+
+  // return CompanyModel(
+  //   companyId: companyId,
+  //   name: "Elsewedy Electric",
+  //   isFollowing: true,
+  //   isVerified: true,
+  //   logo:
+  //       "https://media.licdn.com/dms/image/v2/C560BAQF2a3ilv6hXXw/company-logo_200_200/company-logo_200_200/0/1631303609923?e=1747872000&v=beta&t=M9wVeJt_Zk6nNOEnz5X6PQVoUzb8wzaSFYK9JeRNA60",
+  //   description:
+  //       "Manufacturer of Cables & Electrical Products and Integrated Infrastructure Provider",
+  //   companySize: "201-500 Employees",
+  //   followers: 1000,
+  //   companyType: "Public Company",
+  //   industry: "Appliances, Electrical and Electronics",
+  //   overview:
+  //       "A global leader that has evolved from a local manufacturer of electrical products into an integrated infrastructure solutions provider" *
+  //       10,
+  //   founded: '1955',
+  //   website: "https://elsewedyelectric.com/en/default",
+  //   address: "New Cairo, Cairo",
+  //   location: "https://maps.app.goo.gl/fEh4pBYt6LvTFxQE8",
+  //   email: "user@example.com",
+  //   contactNumber: "19159",
+  //   banner:
+  //       'https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png',
+  //   specialities: "Cables & Accessories",
+  //   isAdmin: true,
+  // );
   }
-
   Future<List<UserModel>> fetchCompanyFollowers(String companyId) async {
     // TODO: Replace this mock api call with an API request once the backend is ready
     // Simulate API call delay
@@ -209,7 +215,7 @@ class CompanyRemoteDataSource {
 
     // Corrected URL to directly access the company entry
     final url = Uri.parse(
-      'http://192.168.1.6:3000/companies?companyId=$companyId',
+      'http://192.168.1.6:3000/companies?companyId=${companyId}',
     );
 
     // Fetch the existing company details
@@ -222,20 +228,27 @@ class CompanyRemoteDataSource {
       Map<String, dynamic> existingCompany = jsonDecode(response.body);
 
       // Merge only non-null fields from UpdateCompanyModel
-      existingCompany['name'] = company.name;
-      existingCompany['companySize'] = company.companySize;
-      existingCompany['logo'] = company.logo;
-      existingCompany['description'] = company.description;
-      existingCompany['overview'] = company.overview;
-      existingCompany['founded'] = company.founded;
-      existingCompany['website'] = company.website;
-      existingCompany['address'] = company.address;
-      existingCompany['location'] = company.location;
-      existingCompany['email'] = company.email;
-      existingCompany['contactNumber'] = company.contactNumber;
-      existingCompany['banner'] = company.banner;
-      existingCompany['companyType'] = company.companyType;
-      existingCompany['industry'] = company.industry;
+      if (company.name != null) existingCompany['name'] = company.name;
+      if (company.companySize != null)
+        existingCompany['companySize'] = company.companySize;
+      if (company.logo != null) existingCompany['logo'] = company.logo;
+      if (company.description != null)
+        existingCompany['description'] = company.description;
+      if (company.overview != null)
+        existingCompany['overview'] = company.overview;
+      if (company.founded != null) existingCompany['founded'] = company.founded;
+      if (company.website != null) existingCompany['website'] = company.website;
+      if (company.address != null) existingCompany['address'] = company.address;
+      if (company.location != null)
+        existingCompany['location'] = company.location;
+      if (company.email != null) existingCompany['email'] = company.email;
+      if (company.contactNumber != null)
+        existingCompany['contactNumber'] = company.contactNumber;
+      if (company.banner != null) existingCompany['banner'] = company.banner;
+      if (company.companyType != null)
+        existingCompany['companyType'] = company.companyType;
+      if (company.industry != null)
+        existingCompany['industry'] = company.industry;
 
       // Set isVerified explicitly to true
       existingCompany['isVerified'] = true;

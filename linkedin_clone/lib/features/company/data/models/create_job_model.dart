@@ -2,15 +2,24 @@ import 'package:linkedin_clone/features/company/domain/entities/create_job.dart'
 
 class CreateJobModel extends CreateJobEntity {
   CreateJobModel({
-    required super.position,
-    required super.industry,
-    required super.description,
-    required super.location,
-    required super.salary,
-    required super.experienceLevel,
-    required super.locationType,
-    required super.employmentType,
-  });
+    required String position,
+    required String industry,
+    required String description,
+    required String location,
+    required double salary,
+    required String experienceLevel,
+    required String locationType,
+    required String employmentType,
+  }) : super(
+          position: position,
+          industry: industry,
+          description: description,
+          location: location,
+          salary: salary,
+          experienceLevel: experienceLevel,
+          locationType: locationType,
+          employmentType: employmentType,
+        );
 
   // Factory method to create a model from a JSON map
   factory CreateJobModel.fromMap(Map<String, dynamic> map) {

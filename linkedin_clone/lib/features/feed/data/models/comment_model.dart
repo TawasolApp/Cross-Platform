@@ -2,36 +2,47 @@ import '../../domain/entities/comment_entity.dart';
 
 class CommentModel extends CommentEntity {
   CommentModel({
-    required super.id,
-    required super.postId,
-    required super.authorId,
-    required super.authorName,
-    required super.authorPicture,
-    required super.authorBio,
-    required super.content,
-    required super.taggedUsers,
-    required super.replies,
-    required super.reactCount,
-    required super.timestamp,
-  });
+    required String id,
+    required String postId,
+    required String authorId,
+    required String authorName,
+    required String authorPicture,
+    required String authorBio,
+    required String content,
+    required List<String> taggedUsers,
+    required List<CommentEntity> replies,
+    required int reactCount,
+    required DateTime timestamp,
+  }) : super(
+         id: id,
+         postId: postId,
+         authorId: authorId,
+         authorName: authorName,
+         authorPicture: authorPicture,
+         authorBio: authorBio,
+         content: content,
+         taggedUsers: taggedUsers,
+         replies: replies,
+         reactCount: reactCount,
+         timestamp: timestamp,
+       );
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
-      id: json['id'] ?? '',
-      postId: json['postId'] ?? '',
-      authorId: json['authorId'] ?? '',
-      authorName: json['authorName'] ?? '',
-      authorPicture: json['authorPicture'] ?? '',
-      authorBio: json['authorBio'] ?? '',
-      content: json['content'] ?? '',
-      taggedUsers: List<String>.from(json['taggedUsers'] ?? []), // Fix here
+      id: json['id'],
+      postId: json['postId'],
+      authorId: json['authorId'],
+      authorName: json['authorName'],
+      authorPicture: json['authorPicture'],
+      authorBio: json['authorBio'],
+      content: json['content'],
+      taggedUsers: List<String>.from(json['taggedUsers']),
       replies:
-          (json['replies'] as List<dynamic>?)
-              ?.map((x) => CommentModel.fromJson(x))
-              .toList() ??
-          [], // Fix here
-      reactCount: json['reactCount'] ?? 0,
-      timestamp: DateTime.tryParse(json['timestamp']) ?? DateTime.now(),
+          (json['replies'] as List)
+              .map((x) => CommentModel.fromJson(x))
+              .toList(),
+      reactCount: json['reactCount'],
+      timestamp: DateTime.parse(json['timestamp']),
     );
   }
 

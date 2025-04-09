@@ -1,27 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
-import 'create_post_page.dart';
 
-class FeedPage extends StatefulWidget {
+class FeedPage extends StatelessWidget {
   const FeedPage({super.key});
-
-  @override
-  _FeedPageState createState() => _FeedPageState();
-}
-
-class _FeedPageState extends State<FeedPage> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-      if (feedProvider.posts.isEmpty) {
-        feedProvider.fetchPosts();
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,31 +22,25 @@ class _FeedPageState extends State<FeedPage> {
       body:
           feedProvider.isLoading
               ? const Center(child: CircularProgressIndicator())
+              : feedProvider.errorMessage != null
+              ? Center(child: Text(feedProvider.errorMessage!))
               : ListView.builder(
                 padding: const EdgeInsets.only(top: 10),
                 itemCount: feedProvider.posts.length,
                 itemBuilder: (context, index) {
                   final post = feedProvider.posts[index];
+
                   return PostCard(post: post);
                 },
               ),
+      //Floating Action Button to Create Post
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const PostCreationPage()),
-          );
-          if (result == true) {
-            final feedProvider = Provider.of<FeedProvider>(
-              context,
-              listen: false,
-            );
-            await feedProvider.fetchPosts();
-          }
+        onPressed: () {
+          context.go(RouteNames.createPost);
         },
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.blue,
         tooltip: 'Create Post',
-        child: const Icon(Icons.add, color: Colors.blue),
+        child: const Icon(Icons.add),
       ),
     );
   }

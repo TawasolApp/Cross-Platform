@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({super.key});
+  const EditProfilePage({Key? key}) : super(key: key);
 
   @override
   State<EditProfilePage> createState() => _EditProfilePageState();

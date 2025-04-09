@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/feed/presentation/widgets/comment_actions_bottom_sheet.dart';
 import 'package:lucide_icons/lucide_icons.dart'; // For three dots icon
 import '../../domain/entities/comment_entity.dart';
+import '../widgets/comment_actions_bottom_sheet.dart';
 
 class CommentItem extends StatelessWidget {
   final CommentEntity comment;

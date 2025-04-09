@@ -20,7 +20,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email": email, "password": password}),
+      body: jsonEncode({
+        "email": email,
+        "password": password,
+      }),
     );
 
     if (response.statusCode == 201) {
@@ -88,13 +91,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(
-    String firstName,
-    String lastName,
-    String email,
-    String password,
-    String captchaToken,
-  ) async {
+  Future<UserModel> register(String firstName, String lastName, String email, String password, String captchaToken) async {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
@@ -106,14 +103,12 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "captchaToken": captchaToken,
       }),
     );
-    UserModel userModel = UserModel(token: "test-token");
+    UserModel userModel = new UserModel(token: "test-token");
     if (response.statusCode == 201) {
       print("[SUCCESS] Registration successful: ${response.body}");
       return userModel;
     } else {
-      print(
-        "[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}",
-      );
+      print("[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}");
       throw Exception("Failed to register: ${response.body}");
     }
   }
@@ -175,7 +170,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await http.delete(
       Uri.parse('https://tawasolapp.me/api/users/delete-account'),
       headers: await _getHeaders(),
-      body: jsonEncode({"email": email, "password": password}),
+      body: jsonEncode({
+        "email": email,
+        "password": password,
+      }),
     );
 
     if (response.statusCode == 200) {

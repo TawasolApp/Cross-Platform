@@ -8,18 +8,16 @@ class PostEntity {
   final String authorBio;
   final String content;
   final List<String>? media;
-  final Map<String, bool>? reactions; // For reacting to a post
-  final Map<String, int>? reactCounts; // For fetching reactions
+  final int likes;
   final int comments;
   final int shares;
   final List<String>? taggedUsers;
   final String visibility;
   final String authorType;
-  final String reactType;
-  //final RepostDetails? repostDetails;
+  final bool isLiked;
+  final RepostDetails? repostDetails;
   final DateTime timestamp;
   final bool isSaved;
-
   const PostEntity({
     required this.id,
     required this.authorId,
@@ -28,19 +26,17 @@ class PostEntity {
     required this.authorBio,
     required this.content,
     this.media,
-    this.reactions,
-    this.reactCounts,
+    this.likes = 0,
     this.comments = 0,
     this.shares = 0,
     this.taggedUsers,
     required this.visibility,
     required this.authorType,
-    required this.reactType,
+    required this.isLiked,
     required this.timestamp,
-    //this.repostDetails,
+    this.repostDetails,
     this.isSaved = false,
   });
-
   PostEntity copyWith({
     String? id,
     String? authorId,
@@ -49,13 +45,13 @@ class PostEntity {
     String? authorBio,
     String? content,
     List<String>? media,
-    Map<String, bool>? reactions,
-    Map<String, int>? reactCounts,
+    int? likes,
     int? comments,
     int? shares,
     List<String>? taggedUsers,
     String? visibility,
     String? authorType,
+    bool? isLiked,
     DateTime? timestamp,
     RepostDetails? repostDetails,
     bool? isSaved,
@@ -68,18 +64,15 @@ class PostEntity {
       authorBio: authorBio ?? this.authorBio,
       content: content ?? this.content,
       media: media ?? this.media,
-      reactions: reactions ?? this.reactions,
-      reactCounts: reactCounts ?? this.reactCounts,
-      //likes: likes ?? this.likes,
+      likes: likes ?? this.likes,
       comments: comments ?? this.comments,
       shares: shares ?? this.shares,
       taggedUsers: taggedUsers ?? this.taggedUsers,
       visibility: visibility ?? this.visibility,
       authorType: authorType ?? this.authorType,
-      reactType: reactType ?? this.reactType,
-      //isLiked: isLiked ?? this.isLiked,
+      isLiked: isLiked ?? this.isLiked,
       timestamp: timestamp ?? this.timestamp,
-      //repostDetails: repostDetails ?? this.repostDetails,
+      repostDetails: repostDetails ?? this.repostDetails,
       isSaved: isSaved ?? this.isSaved,
     );
   }

@@ -1,5 +1,9 @@
+
+
+
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
+import 'package:linkedin_clone/features/authentication/Domain/Entities/user_entity.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Repository/auth_repository.dart';
 
 class ChangePasswordUseCase {
@@ -7,10 +11,8 @@ class ChangePasswordUseCase {
 
   ChangePasswordUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(
-    String currentPassword,
-    String newPassword,
-  ) async {
+  Future<Either<Failure, void>> call(String currentPassword, String newPassword) async {
     return await repository.changePassword(currentPassword, newPassword);
   }
+
 }

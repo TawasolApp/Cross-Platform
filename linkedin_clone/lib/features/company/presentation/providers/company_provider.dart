@@ -42,7 +42,7 @@ class CompanyProvider with ChangeNotifier {
   List<User> _friendsFollowing = [];
   List<Company> _relatedCompanies = [];
   bool _isLoading = false;
-  final Map<String, bool> _followStatus = {};
+  Map<String, bool> _followStatus = {};
   List<Post> _posts = [];
   List<Job> _jobs = [];
   bool _isLoadingJobs = false;
@@ -50,6 +50,7 @@ class CompanyProvider with ChangeNotifier {
   bool _disposed = false;
   bool isViewingAsUser = false;
 
+ 
   // Safe disposal
   @override
   void dispose() {
@@ -149,12 +150,10 @@ class CompanyProvider with ChangeNotifier {
 
     safeNotify();
   }
-
-  void toggleViewMode() {
+ void toggleViewMode() {
     isViewingAsUser = !isViewingAsUser;
     notifyListeners();
   }
-
   Future<List<User>> fetchFriendsFollowingCompany(
     String userId,
     String companyId,
@@ -236,8 +235,8 @@ class CompanyProvider with ChangeNotifier {
     try {
       _isLoadingJobs = true;
       safeNotify();
-      await _createJob.execute(job);
-      await fetchRecentJobs();
+      await _createJob.execute(job); 
+      await fetchRecentJobs(); 
       _isLoadingJobs = false;
       safeNotify();
     } catch (e) {
