@@ -21,7 +21,9 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
     print("Posts length: ${provider.posts.length}");
     print('Jobs length: ${provider.jobs.length}');
     String fullText =
-        provider.company?.description ?? "No description available.";
+        provider.company?.overview?.isNotEmpty ?? false
+            ? provider.company!.overview!
+            : "No Overview available.";
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -96,7 +98,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                 ),
               ),
             SizedBox(height: 10),
-            if (provider.company?.website != null)
+            if (provider.company?.website?.isNotEmpty ?? false)
               ListTile(
                 leading: Icon(Icons.link, color: Colors.grey[700]),
                 title: FittedBox(
@@ -282,27 +284,27 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                       ),
             ),
 
-              Center(
-                child: SizedBox(
-                  width: double.infinity, // Take full width
-                  child: TextButton(
-                    onPressed: () {
-                      // TODO: Navigate to  posts tab
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "Show all posts",
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        SizedBox(width: 5),
-                        Icon(Icons.arrow_forward, color: Colors.grey[700]),
-                      ],
-                    ),
+            Center(
+              child: SizedBox(
+                width: double.infinity, // Take full width
+                child: TextButton(
+                  onPressed: () {
+                    // TODO: Navigate to  posts tab
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Show all posts",
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      SizedBox(width: 5),
+                      Icon(Icons.arrow_forward, color: Colors.grey[700]),
+                    ],
                   ),
                 ),
               ),
+            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

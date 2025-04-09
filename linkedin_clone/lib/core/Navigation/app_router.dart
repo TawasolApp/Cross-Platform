@@ -9,6 +9,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/home_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/login_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_verification_page.dart.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
@@ -67,7 +68,7 @@ class AppRouter {
         path: RouteNames.companyPage,
         builder:
             (context, state) =>
-                CompanyProfileScreen(companyId: "Company", title: "Test"),
+                CompaniesListScreen(),
       ),
       GoRoute(
         path: RouteNames.profile,
@@ -85,7 +86,7 @@ class AppRouter {
       GoRoute(path: RouteNames.main, builder: (context, state) => MainNavigationPage()),
       GoRoute(path: RouteNames.createPost,builder: (context, state) => PostCreationPage() ),
       GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
-      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompanyProfileScreen(companyId: "elsewedy-electric", title: "Test") ),
+      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompaniesListScreen() ),
       GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
       GoRoute(path: RouteNames.settings, builder: (context, state) => SettingsPage()),
       GoRoute(path: RouteNames.deleteAccount, builder: (context, state) => DeleteAccountPage(

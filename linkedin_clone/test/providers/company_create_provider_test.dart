@@ -55,7 +55,7 @@ void main() {
         companyType: "Tech",
         industry: provider.companyIndustry ?? "",
         overview: "Overview of TechCorp",
-        founded: "2020",
+        founded: 2020,
         website: provider.companyWebsite!,
         address: "123 Tech Street",
         location: provider.companyLocation!,

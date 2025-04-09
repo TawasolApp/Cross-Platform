@@ -19,7 +19,15 @@ class EditCompanyScreen extends StatelessWidget {
     '1001-10000 Employees',
     '10000+ Employees',
   ];
-
+  final List<String> companyTypeOptions = [
+    "Public Company",
+    "Self Employed",
+    "Government Agency",
+    "Non Profit",
+    "Sole Proprietorship",
+    "Privately Held",
+    "Partnership",
+  ];
   EditCompanyScreen({required this.companyId, required this.company});
 
   @override
@@ -50,7 +58,7 @@ class EditCompanyScreen extends StatelessWidget {
       text: company.overview,
     );
     final TextEditingController foundedController = TextEditingController(
-      text: company.founded,
+      text: company.founded.toString(),
     );
     final TextEditingController websiteController = TextEditingController(
       text: company.website,
@@ -92,21 +100,27 @@ class EditCompanyScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(children: [
-                      Spacer(),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AddAdminScreen(),
-                          ),
-                        );
-                      },
-                        icon: Icon(Icons.person_add, color: Colors.white), // User+ Icon
-                      label: Text('Add Page Admin'),
-                    ),
-                    ]
+                    Row(
+                      children: [
+                        Spacer(),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) =>
+                                        AddAdminScreen(companyId: companyId),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.person_add,
+                            color: Colors.white,
+                          ), // User+ Icon
+                          label: Text('Add Page Admin'),
+                        ),
+                      ],
                     ),
                     // Company Name Field
                     buildField(
@@ -119,7 +133,6 @@ class EditCompanyScreen extends StatelessWidget {
                       'Description',
                       descriptionController,
                       maxLines: 3,
-                      validator: requiredValidator,
                     ),
                     // Company Size Dropdown Field
                     buildDropdownField(
@@ -141,16 +154,19 @@ class EditCompanyScreen extends StatelessWidget {
                       validator: emailValidator,
                     ),
                     // Company Type Field
-                    buildField('Company Type', companyTypeController),
+                    buildDropdownField(
+                      'Company Type',
+                      companyTypeController,
+                      companyTypeOptions,
+                    ),
                     // Industry Field
-                    buildField('Industry', industryController),
-                    // Overview Field
                     buildField(
-                      'Overview',
-                      overviewController,
-                      maxLines: 4,
+                      'Industry',
+                      industryController,
                       validator: requiredValidator,
                     ),
+                    // Overview Field
+                    buildField('Overview', overviewController, maxLines: 4),
                     // Founded Year Field
                     buildField('Founded Year', foundedController),
                     // Website Field
@@ -343,7 +359,9 @@ class EditCompanyScreen extends StatelessWidget {
                                     companyType: companyTypeController.text,
                                     industry: industryController.text,
                                     overview: overviewController.text,
-                                    founded: foundedController.text,
+                                    founded:
+                                        int.tryParse(foundedController.text) ??
+                                        2000,
                                     website: websiteController.text,
                                     address: addressController.text,
                                     contactNumber: contactNumberController.text,
@@ -356,7 +374,10 @@ class EditCompanyScreen extends StatelessWidget {
                                             .banner, // Use selected image path
                                     isVerified: company.isVerified,
                                   );
-                                  await provider.updateDetails(updatedCompany);
+                                  await provider.updateDetails(
+                                    updatedCompany,
+                                    companyId,
+                                  );
                                   if (provider.errorMessage.isEmpty) {
                                     Navigator.pop(context, true);
                                   }
@@ -463,7 +484,7 @@ class EditCompanyScreen extends StatelessWidget {
   String? emailValidator(String? value) {
     final emailPattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
     if (value == null || value.isEmpty) {
-      return 'This field is required';
+      return null;
     }
     if (!RegExp(emailPattern).hasMatch(value)) {
       return 'Enter a valid email address';
@@ -473,9 +494,8 @@ class EditCompanyScreen extends StatelessWidget {
 
   String? urlValidator(String? value) {
     final urlPattern = r"^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$";
-    if (value == null || value.isEmpty) {
-      return 'This field is required';
-    }
+  if (value == null || value.isEmpty) return null;
+
     if (!RegExp(urlPattern).hasMatch(value)) {
       return 'Enter a valid URL';
     }

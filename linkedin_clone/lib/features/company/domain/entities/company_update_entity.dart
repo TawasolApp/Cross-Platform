@@ -1,4 +1,3 @@
-import 'package:linkedin_clone/features/company/data/models/company_edit_model.dart';
 
 class UpdateCompanyEntity {
   final String name;
@@ -10,7 +9,7 @@ class UpdateCompanyEntity {
   final String companyType;
   final String industry;
   final String overview;
-  final String founded;
+  final int founded;
   final String website;
   final String address;
   final String location;
@@ -36,45 +35,4 @@ class UpdateCompanyEntity {
     required this.contactNumber,
   });
 
-  // Method to convert UpdateCompanyDto to UpdateCompanyEntity
-  factory UpdateCompanyEntity.fromDto(UpdateCompanyModel dto) {
-    return UpdateCompanyEntity(
-      name: dto.name,
-      isVerified: dto.isVerified,
-      logo: dto.logo,
-      banner: dto.banner,
-      description: dto.description,
-      companySize: dto.companySize,
-      companyType: dto.companyType,
-      industry: dto.industry,
-      overview: dto.overview,
-      founded: dto.founded,
-      website: dto.website,
-      address: dto.address,
-      location: dto.location,
-      email: dto.email,
-      contactNumber: dto.contactNumber,
-    );
-  }
-
-  // Method to convert UpdateCompanyEntity to UpdateCompanyDto
-  UpdateCompanyModel toDto() {
-    return UpdateCompanyModel(
-      name: name,
-      isVerified: isVerified,
-      logo: logo,
-      banner:banner,
-      description: description,
-      companySize: companySize,
-      companyType: companyType,
-      industry: industry,
-      overview: overview,
-      founded: founded,
-      website: website,
-      address: address,
-      location: location,
-      email: email,
-      contactNumber: contactNumber,
-    );
-  }
 }

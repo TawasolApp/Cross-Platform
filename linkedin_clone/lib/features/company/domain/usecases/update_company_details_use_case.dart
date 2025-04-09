@@ -5,7 +5,7 @@ class UpdateCompanyDetails {
 
   UpdateCompanyDetails({required this.companyRepository});
 
-  Future<void> execute(UpdateCompanyEntity updatedCompany) async {
-    await companyRepository.updateCompanyDetails(updatedCompany);
+  Future<void> execute(UpdateCompanyEntity updatedCompany,String companyId) async {
+    await companyRepository.updateCompanyDetails(updatedCompany,companyId);
   }
 }

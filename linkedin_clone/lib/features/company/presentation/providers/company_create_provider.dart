@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:linkedin_clone/features/company/domain/entities/company.dart';
+import 'package:linkedin_clone/features/company/data/models/company_create_model.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 
 class CompanyCreateProvider with ChangeNotifier {
   final CompanyRepositoryImpl _companyRepository;
+  final UploadImageUseCase _uploadImageUseCase;
 
-  CompanyCreateProvider({required CompanyRepositoryImpl companyRepository})
-    : _companyRepository = companyRepository;
+  CompanyCreateProvider({
+    required CompanyRepositoryImpl companyRepository,
+    required UploadImageUseCase uploadImageUseCase,
+  }) : _companyRepository = companyRepository,
+       _uploadImageUseCase = uploadImageUseCase;
 
   // ✅ Create Company Form Fields
   String? _companyName;
@@ -16,7 +22,7 @@ class CompanyCreateProvider with ChangeNotifier {
   String? _companyType;
   String? _companyIndustry;
   String? _companyOverview;
-  String? _companyFounded;
+  int? _companyFounded;
   String? _companyAddress;
   String? _companyLocation;
   String? _companyEmail;
@@ -35,7 +41,7 @@ class CompanyCreateProvider with ChangeNotifier {
   String? get companyType => _companyType;
   String? get companyIndustry => _companyIndustry;
   String? get companyOverview => _companyOverview;
-  String? get companyFounded => _companyFounded;
+  int? get companyFounded => _companyFounded;
   String? get companyAddress => _companyAddress;
   String? get companyLocation => _companyLocation;
   String? get companyEmail => _companyEmail;
@@ -78,7 +84,7 @@ class CompanyCreateProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setCompanyFounded(String value) {
+  void setCompanyFounded(int value) {
     _companyFounded = value;
     notifyListeners();
   }
@@ -129,7 +135,7 @@ class CompanyCreateProvider with ChangeNotifier {
   }
 
   /// ✅ Creates a new company
-  Future<Company?> createCompany() async {
+  Future<CompanyCreateEntity?> createCompany() async {
     if (_companyName == null ||
         _companySize == null ||
         _companyType == null ||
@@ -140,29 +146,27 @@ class CompanyCreateProvider with ChangeNotifier {
 
     _isLoading = true;
     notifyListeners();
+    String? logoUrl =
+        _companyLogo != null ? await _uploadImageUseCase.execute(_companyLogo!) : null;
+    String? bannerUrl =
+        _companyBanner != null ? await _uploadImageUseCase.execute(_companyBanner!) : null;
 
     // ✅ Create Company instance
-    final newCompany = Company(
-      companyId: "", // The backend should generate an ID
+    final newCompany = CompanyCreateModel(
       name: _companyName!,
-      isFollowing: false,
-      isVerified: false,
-      isAdmin: true,
-      logo: _companyLogo?.path ?? "",
+      logo: logoUrl ?? "",
       description: _companyDescription ?? "",
       companySize: _companySize ?? "",
-      followers: 0,
       companyType: _companyType ?? "",
       industry: _companyIndustry ?? "",
       overview: _companyOverview ?? "",
-      founded: _companyFounded ?? "",
+      founded: _companyFounded ?? 0,
       website: _companyWebsite ?? "",
       address: _companyAddress ?? "",
       location: _companyLocation ?? "",
       email: _companyEmail ?? "",
       contactNumber: _companyContactNumber ?? "",
-      banner: _companyBanner?.path ?? "",
-      specialities: _companySpecialities ?? "",
+      banner: bannerUrl ?? "",
     );
 
     try {

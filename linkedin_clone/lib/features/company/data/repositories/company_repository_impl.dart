@@ -1,8 +1,9 @@
+import 'package:linkedin_clone/features/company/data/models/company_create_model.dart';
 import 'package:linkedin_clone/features/company/data/models/company_edit_model.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/repositories/company_repository.dart';
-import 'package:linkedin_clone/features/company/data/models/company_model.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import '../../domain/entities/user.dart';
 
@@ -28,7 +29,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
       location: companyModel.location,
       isFollowing: companyModel.isFollowing,
       isVerified: companyModel.isVerified,
-      isAdmin: companyModel.isAdmin,
+      isManager: companyModel.isManager,
       companyType: companyModel.companyType,
       overview: companyModel.overview,
       founded: companyModel.founded,
@@ -39,17 +40,13 @@ class CompanyRepositoryImpl implements CompanyRepository {
     );
   }
 
-  @override
-  Future<List<User>> getCompanyFollowers(String companyId) async {
-    // TODO: Implement error handling for API call failures.
-    return await remoteDataSource.fetchCompanyFollowers(companyId);
-  }
+  
 
   @override
-  Future<List<Company>> getRelatedCompanies(String companyId) async {
+  Future<List<Company>> getRelatedCompanies(String companyId,{int page = 1, int limit = 4}) async {
     // TODO: Implement error handling for API call failures.
     final relatedCompaniesModel = await remoteDataSource.getRelatedCompanies(
-      companyId,
+      companyId, page : page, limit :limit
     );
     return relatedCompaniesModel
         .map(
@@ -79,40 +76,22 @@ class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   @override
-  Future<void> createCompany(Company company) async {
-    await remoteDataSource.createCompany(
-      CompanyModel(
-        companyId: company.companyId,
-        name: company.name,
-        description: company.description,
-        website: company.website,
-        banner: company.banner,
-        logo: company.logo,
-        industry: company.industry,
-        followers: company.followers,
-        companySize: company.companySize,
-        location: company.location,
-        isFollowing: company.isFollowing,
-        isVerified: company.isVerified,
-        companyType: company.companyType,
-        overview: company.overview,
-        founded: company.founded,
-        address: company.address,
-        email: company.email,
-        contactNumber: company.contactNumber,
-        specialities: company.specialities,
-      ),
-    );
+  Future<void> createCompany(CompanyCreateEntity company) async {
+    await remoteDataSource.createCompany(company as CompanyCreateModel);
   }
+
   @override
-  Future<void> updateCompanyDetails(UpdateCompanyEntity updatedCompany) async {
+  Future<void> updateCompanyDetails(
+    UpdateCompanyEntity updatedCompany,
+    String companyId,
+  ) async {
     await remoteDataSource.updateCompanyDetails(
       UpdateCompanyModel(
         name: updatedCompany.name,
         description: updatedCompany.description,
         website: updatedCompany.website,
         logo: updatedCompany.logo,
-        banner:updatedCompany.banner,
+        banner: updatedCompany.banner,
         industry: updatedCompany.industry,
         companySize: updatedCompany.companySize,
         location: updatedCompany.location,
@@ -124,6 +103,22 @@ class CompanyRepositoryImpl implements CompanyRepository {
         isVerified: updatedCompany.isVerified,
         companyType: updatedCompany.companyType,
       ),
+      companyId,
     );
+  }
+
+  @override
+  Future<List<Company>> getAllCompanies(String query, {int page = 1, int limit = 10}) async {
+  return await remoteDataSource.getAllCompanies(query, page: page, limit: limit);
+}
+
+  Future<List<User>> getCompanyAdmins(String companyId,{int page = 1, int limit = 3}) async {
+    // Fetch data from the service
+    return await remoteDataSource.fetchCompanyAdmins(companyId,page:page,limit:limit);
+  }
+
+  @override
+  Future<List<User>> getFollowers(String companyId,{int page = 1, int limit = 4}) async {
+    return await remoteDataSource.getFollowers(companyId,page: page,limit: limit);
   }
 }

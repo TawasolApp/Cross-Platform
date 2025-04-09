@@ -15,11 +15,23 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/onboar
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
+import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
+import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/geta_all_company_admins.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/search_users_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_admins_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_edit_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/company_list_companies_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/providers/related_companies_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
@@ -34,6 +46,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.d
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_all_companies.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -87,6 +100,9 @@ import 'package:linkedin_clone/features/connections/presentations/pages/invitati
 import "../../../features/connections/presentations/pages/connections_page.dart";
 import 'package:linkedin_clone/features/feed/domain/usecases/comment_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usecase.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -97,12 +113,13 @@ void main() {
   //   client: http.Client(),
   //   baseUrl: 'https://your-api-url.com',
   // );
-  final companyRemoteDataSource =
-      CompanyRemoteDataSource(); // Make sure this is initialized
+  final companyRemoteDataSource = CompanyRemoteDataSource();
+  final jobRemoteDataSource = JobRemoteDataSource();
   final userRemoteDataSource = UserRemoteDataSource();
   final companyrepos = CompanyRepositoryImpl(
     remoteDataSource: companyRemoteDataSource,
   );
+  final jobrepos = JobRepositoryImpl(remoteDataSource: jobRemoteDataSource);
   final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
   final MockProfileRemoteDataSource dataSourceProfile =
       MockProfileRemoteDataSource();
@@ -144,7 +161,12 @@ void main() {
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
+          create:
+              (_) => SettingsProvider(
+                changePasswordUseCase,
+                updateEmailUsecase,
+                deleteAccountUsecase,
+              ),
         ),
         ChangeNotifierProvider(
           create:
@@ -221,34 +243,106 @@ void main() {
                 ),
               ),
         ),
-       ChangeNotifierProvider(
-  create: (_) => ProfileProvider(
-    getProfileUseCase: GetProfileUseCase(profileRepository),
-    updateProfilePictureUseCase: UpdateProfilePictureUseCase(profileRepository),
-    deleteProfilePictureUseCase: DeleteProfilePictureUseCase(profileRepository),
-    updateCoverPictureUseCase: UpdateCoverPictureUseCase(profileRepository),
-    deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(profileRepository),
-    updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
-    updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
-    updateLocationUseCase: UpdateLocationUseCase(profileRepository),
-    updateNameUseCase: UpdateNameUseCase(profileRepository),
-    updateResumeUseCase: UpdateResumeUseCase(profileRepository),
-    updateBioUseCase: UpdateBioUseCase(profileRepository),
-    addExperienceUseCase: AddExperienceUseCase(profileRepository),
-    updateExperienceUseCase: UpdateExperienceUseCase(profileRepository),
-    deleteExperienceUseCase: DeleteExperienceUseCase(profileRepository),
-    addEducationUseCase: AddEducationUseCase(profileRepository),
-    updateEducationUseCase: UpdateEducationUseCase(profileRepository),
-    deleteEducationUseCase: DeleteEducationUseCase(profileRepository),
-    addCertificationUseCase: AddCertificationUseCase(profileRepository),
-    updateCertificationUseCase: UpdateCertificationUseCase(profileRepository),
-    deleteCertificationUseCase: DeleteCertificationUseCase(profileRepository),
-    addSkillUseCase: AddSkillUseCase(profileRepository),
-    updateSkillUseCase: UpdateSkillUseCase(profileRepository),
-    deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
-  ),
-),
+        ChangeNotifierProvider(
+          create:
+              (_) => ProfileProvider(
+                getProfileUseCase: GetProfileUseCase(profileRepository),
+                updateProfilePictureUseCase: UpdateProfilePictureUseCase(
+                  profileRepository,
+                ),
+                deleteProfilePictureUseCase: DeleteProfilePictureUseCase(
+                  profileRepository,
+                ),
+                updateCoverPictureUseCase: UpdateCoverPictureUseCase(
+                  profileRepository,
+                ),
+                deleteCoverPhotoUseCase: DeleteCoverPhotoUseCase(
+                  profileRepository,
+                ),
+                updateHeadlineUseCase: UpdateHeadlineUseCase(profileRepository),
+                updateIndustryUseCase: UpdateIndustryUseCase(profileRepository),
+                updateLocationUseCase: UpdateLocationUseCase(profileRepository),
+                updateNameUseCase: UpdateNameUseCase(profileRepository),
+                updateResumeUseCase: UpdateResumeUseCase(profileRepository),
+                updateBioUseCase: UpdateBioUseCase(profileRepository),
+                addExperienceUseCase: AddExperienceUseCase(profileRepository),
+                updateExperienceUseCase: UpdateExperienceUseCase(
+                  profileRepository,
+                ),
+                deleteExperienceUseCase: DeleteExperienceUseCase(
+                  profileRepository,
+                ),
+                addEducationUseCase: AddEducationUseCase(profileRepository),
+                updateEducationUseCase: UpdateEducationUseCase(
+                  profileRepository,
+                ),
+                deleteEducationUseCase: DeleteEducationUseCase(
+                  profileRepository,
+                ),
+                addCertificationUseCase: AddCertificationUseCase(
+                  profileRepository,
+                ),
+                updateCertificationUseCase: UpdateCertificationUseCase(
+                  profileRepository,
+                ),
+                deleteCertificationUseCase: DeleteCertificationUseCase(
+                  profileRepository,
+                ),
+                addSkillUseCase: AddSkillUseCase(profileRepository),
+                updateSkillUseCase: UpdateSkillUseCase(profileRepository),
+                deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => EditCompanyDetailsProvider(
+                updateCompanyDetails: UpdateCompanyDetails(
+                  companyRepository:
+                      companyrepos, // Using the existing repository here
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(create: (_) => CompanyProvider()),
+        ChangeNotifierProvider(
+          create:
+              (_) => CompanyAdminsProvider(
+                fetchAdminsUseCase: FetchCompanyAdminsUseCase(
+                  companyRepository: companyrepos,
+                ),
+                addAdminUseCase: AddAdminUseCase(repository: userRepos),
+                searchUsersUseCase: SearchUsersUseCase(userRemoteDataSource: userRemoteDataSource)
+              ),
+        ),
 
+        ChangeNotifierProvider(
+          create:
+              (_) => CompanyListProvider(
+                getAllCompaniesUseCase: GetAllCompaniesUseCase(
+                  repository: companyrepos,
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => RelatedCompaniesProvider(
+                getRelatedCompaniesUseCase: GetRelatedCompanies(
+                  repository: companyrepos,
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => CompanyCreateProvider(
+                companyRepository: CompanyRepositoryImpl(
+                  remoteDataSource: CompanyRemoteDataSource(),
+                ),
+                uploadImageUseCase: UploadImageUseCase(
+                  mediaRepository: MediaRepository(
+                    mediaRemoteDataSource: MediaRemoteDataSource(),
+                  ),
+                ),
+              ),
+        ),
       ],
       child: const MyApp(),
     ),

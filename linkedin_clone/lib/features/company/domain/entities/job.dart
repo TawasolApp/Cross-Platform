@@ -11,6 +11,7 @@ class Job {
   final String employmentType;
   final DateTime postedDate;
   final int applicantCount;
+  final bool isOpen;
 
   Job({
     required this.id,
@@ -25,5 +26,6 @@ class Job {
     required this.employmentType,
     required this.postedDate,
     required this.applicantCount,
+    required this.isOpen,
   });
 }

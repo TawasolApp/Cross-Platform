@@ -13,7 +13,7 @@ class UpdateCompanyModel extends UpdateCompanyEntity {
     required String companyType,
     required String industry,
     required String overview,
-    required String founded,
+    required int founded,
     required String website,
     required String address,
     required String location,
@@ -59,7 +59,6 @@ class UpdateCompanyModel extends UpdateCompanyEntity {
   }
 
   // Method to convert the model to a Map (used for sending data to an API)
-  @override
   Map<String, dynamic> toJson() {
     return {
       'name': name,
