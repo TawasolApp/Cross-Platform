@@ -231,9 +231,9 @@ class MockSendConnectionRequestUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<bool> call(String? token, String? userID) =>
+  _i4.Future<bool> call(String? userID) =>
       (super.noSuchMethod(
-            Invocation.method(#call, [token, userID]),
+            Invocation.method(#call, [userID]),
             returnValue: _i4.Future<bool>.value(false),
           )
           as _i4.Future<bool>);

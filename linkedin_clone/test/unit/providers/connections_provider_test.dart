@@ -146,7 +146,7 @@ void main() {
   });
 
   test('sendConnectionRequest returns true on success', () async {
-    when(mockSendRequest.call('', '123')).thenAnswer((_) async => true);
+    when(mockSendRequest.call('123')).thenAnswer((_) async => true);
 
     final result = await provider.sendConnectionRequest('123');
     expect(result, true);

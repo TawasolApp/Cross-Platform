@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/linkedin_iconic_button.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/user_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart'; // Ensure this is the correct path
 import 'page_type_enum.dart';
@@ -57,15 +58,13 @@ class TestPage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-          child: UserCard(
-            userId: "dddd",
-            firstName: "John",
-            lastName: "Doe",
-            headLine: "Software Engineer",
-            profilePicture:
-                "https://media.licdn.com/dms/image/v2/D4D35AQH1S3JD3cDFFA/profile-framedphoto-shrink_200_200/profile-framedphoto-shrink_200_200/0/1729799729935?e=1744682400&v=beta&t=RPxvWcRkLixNa4PCzSP47Dj-s59Yjamc3XZRHtlj8hU",
-            cardType: PageType.connections,
-            connectionsProvider: connectionsProvider,
+          child: LinkedInIconicButton(
+            onPressed: () async {
+              await connectionsProvider.sendConnectionRequest(
+                "67f4d0637688af2ed794d196",
+              );
+            },
+            label: 'Test Send Connection Request',
           ),
         ),
       ),

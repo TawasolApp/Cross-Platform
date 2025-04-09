@@ -190,6 +190,7 @@ class ConnectionsProvider with ChangeNotifier {
   }
 
   Future<void> getSentConnectionRequests({bool isInitial = false}) async {
+    print('getSentConnectionRequests called');
     if (_isBusy) return;
     _isBusy = true;
     try {
@@ -272,7 +273,8 @@ class ConnectionsProvider with ChangeNotifier {
   }
 
   Future<bool> sendConnectionRequest(String userId) async {
-    final sent = await sendConnectionRequestUseCase.call("", userId);
+    final sent = await sendConnectionRequestUseCase.call(userId);
+    print("🤍🤍🤍🤍🤍🤍sent: $sent");
     if (sent) await getSentConnectionRequests(isInitial: true);
     return sent;
   }

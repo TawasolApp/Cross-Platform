@@ -13,7 +13,7 @@ class ConnectionsRemoteDataSource {
   ConnectionsRemoteDataSource({required this.client});
 
   Future<String> initToken() async {
-    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y0MTdhODI2Mjk1N2MyZGUzNjA5YjYiLCJlbWFpbCI6Imtlbm5lZHlfZGlja2Vucy10aWxsbWFuQHlhaG9vLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0MTA3MjAyLCJleHAiOjE3NDQxMTA4MDJ9.PisSejzEtw6wAdZmYAkwugBkfxtTEAlr2-1IlL2B-aE";
+    return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2N2Y0MTdhODI2Mjk1N2MyZGUzNjA5YjYiLCJlbWFpbCI6Imtlbm5lZHlfZGlja2Vucy10aWxsbWFuQHlhaG9vLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzQ0MjA2Njg5LCJleHAiOjE3NDQyMTAyODl9.ghAOGMtH7qYg4E_ZvTbkzb0WmLNyCyesyK_NPYaZzzE";
     final token = await TokenService.getToken();
     if (token == null) {
       throw Exception('Token not found');
@@ -440,11 +440,14 @@ class ConnectionsRemoteDataSource {
     try {
       final token = await initToken();
       final response = await client.post(
-        Uri.parse('${baseUrl}connections/'),
-        headers: {'Authorization': 'Bearer $token'},
+        Uri.parse('${baseUrl}connections'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: jsonEncode({'userId': userId}),
       );
-
+      print('response: ${response.body}');
       if (response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
