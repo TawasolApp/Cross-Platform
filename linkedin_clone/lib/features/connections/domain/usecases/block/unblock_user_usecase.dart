@@ -1,9 +1,9 @@
-import '../repository/connections_repository.dart';
+import '../../repository/connections_repository.dart';
 
-class unblockUserUseCase {
+class UnblockUserUseCase {
   final ConnectionsRepository repository;
 
-  unblockUserUseCase(this.repository);
+  UnblockUserUseCase(this.repository);
 
   Future<bool> call(String userId) async {
     return await repository.unblockUser(userId);

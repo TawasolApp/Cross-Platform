@@ -13,6 +13,7 @@ import 'user_card_info.dart';
 import 'pending_requests_actions.dart';
 import 'connections_list_actions.dart';
 import 'page_type_enum.dart';
+import '../widgets/routing_functions.dart';
 
 class UserCard extends StatelessWidget {
   final String userId;
@@ -48,7 +49,7 @@ class UserCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: InkWell(
-          onTap: () => _goToProfile(context),
+          onTap: () => goToProfile(context, userId: userId),
           borderRadius: BorderRadius.zero,
           child: Row(
             mainAxisSize: MainAxisSize.max,
@@ -148,10 +149,8 @@ class UserCard extends StatelessWidget {
           firstName: firstName,
           lastName: lastName,
         );
+      default:
+        return const SizedBox(); // No action yet
     }
-  }
-
-  void _goToProfile(BuildContext context) {
-    GoRouter.of(context).go(RouteNames.profile);
   }
 }

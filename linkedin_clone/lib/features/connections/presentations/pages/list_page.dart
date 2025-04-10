@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/list_page_appbar.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/people_you_may_know_body.dart';
 
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
@@ -110,6 +112,8 @@ class _ListPageState extends State<ListPage> {
               ? 'Followers'
               : widget.type == PageType.following
               ? 'People I Follow'
+              : widget.type == PageType.manageMyNetwork
+              ? 'Manage My Network'
               : 'Blocked',
           style: Theme.of(context).textTheme.titleLarge,
         ),
@@ -216,6 +220,20 @@ class _ListPageState extends State<ListPage> {
 
   Widget _buildBody(BuildContext context) {
     final list = _getList();
+
+    if (widget.type == PageType.manageMyNetwork) {
+      // Using FutureBuilder to handle the async operation
+      return FutureBuilder<String?>(
+        future: connectionsProvider?.getMyUserId(),
+        builder: (context, snapshot) {
+          return ManageMyNetworkBody(
+            networksProvider: networksProvider,
+            connectionsProvider: connectionsProvider,
+            userId: snapshot.data,
+          );
+        },
+      );
+    }
 
     return RefreshIndicator(
       color: Theme.of(context).primaryColor,

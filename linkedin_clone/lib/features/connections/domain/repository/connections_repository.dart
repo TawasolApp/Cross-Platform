@@ -1,7 +1,10 @@
+import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
+
 import '../entities/connections_user_entity.dart';
 
 abstract class ConnectionsRepository {
   Future<List<ConnectionsUserEntity>> getConnectionsList({
+    String? userId,
     int page = 0,
     int limit = 0,
     int sortBy = 1,
@@ -31,6 +34,10 @@ abstract class ConnectionsRepository {
   Future<bool> blockUser(String userId);
   Future<bool> unblockUser(String userId);
   Future<List<ConnectionsUserEntity>> getBlockedList({
+    int page = 0,
+    int limit = 0,
+  });
+  Future<List<PeopleYouMayKnowUserEntity>> getPeopleYouMayKnowList({
     int page = 0,
     int limit = 0,
   });

@@ -1,4 +1,6 @@
+import 'package:linkedin_clone/features/connections/data/models/people_you_may_know_user_model.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
 import '../datasources/connections_remote_data_source.dart';
 import '../../domain/repository/connections_repository.dart';
 
@@ -9,12 +11,14 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
 
   @override
   Future<List<ConnectionsUserEntity>> getConnectionsList({
+    String? userId,
     int page = 0,
     int limit = 0,
     int sortBy = 1,
   }) async {
     try {
       final connectionsList = await remoteDataSource.getConnectionsList(
+        userId: userId,
         page: page,
         limit: limit,
         sortBy: sortBy,
@@ -185,6 +189,20 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       return unBlocked;
     } catch (e) {
       throw Exception('Failed to block user');
+    }
+  }
+
+  @override
+  Future<List<PeopleYouMayKnowUserEntity>> getPeopleYouMayKnowList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final peopleYouMayKnowList = await remoteDataSource
+          .getPeopleYouMayKnowList(page: page, limit: limit);
+      return peopleYouMayKnowList;
+    } catch (e) {
+      rethrow;
     }
   }
 }

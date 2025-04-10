@@ -1,4 +1,4 @@
-import '../repository/connections_repository.dart';
+import '../../repository/connections_repository.dart';
 
 class BlockUserUseCase {
   final ConnectionsRepository repository;

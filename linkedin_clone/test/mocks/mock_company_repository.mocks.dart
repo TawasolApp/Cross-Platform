@@ -11,11 +11,12 @@ import 'package:linkedin_clone/features/company/data/repositories/company_reposi
     as _i4;
 import 'package:linkedin_clone/features/company/domain/entities/company.dart'
     as _i3;
+import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart'
+    as _i6;
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart'
     as _i7;
-import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart' as _i3;
 import 'package:linkedin_clone/features/company/domain/entities/user.dart'
-    as _i6;
+    as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -77,23 +78,23 @@ class MockCompanyRepositoryImpl extends _i1.Mock
           as _i5.Future<_i3.Company>);
 
   @override
-  _i5.Future<List<_i6.User>> getCompanyFollowers(String? companyId) =>
+  _i5.Future<List<_i3.Company>> getRelatedCompanies(
+    String? companyId, {
+    int? page = 1,
+    int? limit = 4,
+  }) =>
       (super.noSuchMethod(
-            Invocation.method(#getCompanyFollowers, [companyId]),
-            returnValue: _i5.Future<List<_i6.User>>.value(<_i6.User>[]),
-          )
-          as _i5.Future<List<_i6.User>>);
-
-  @override
-  _i5.Future<List<_i3.Company>> getRelatedCompanies(String? companyId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getRelatedCompanies, [companyId]),
+            Invocation.method(
+              #getRelatedCompanies,
+              [companyId],
+              {#page: page, #limit: limit},
+            ),
             returnValue: _i5.Future<List<_i3.Company>>.value(<_i3.Company>[]),
           )
           as _i5.Future<List<_i3.Company>>);
 
   @override
-  _i5.Future<void> createCompany(_i3.CompanyCreateEntity? company) =>
+  _i5.Future<void> createCompany(_i6.CompanyCreateEntity? company) =>
       (super.noSuchMethod(
             Invocation.method(#createCompany, [company]),
             returnValue: _i5.Future<void>.value(),
@@ -104,11 +105,63 @@ class MockCompanyRepositoryImpl extends _i1.Mock
   @override
   _i5.Future<void> updateCompanyDetails(
     _i7.UpdateCompanyEntity? updatedCompany,
+    String? companyId,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#updateCompanyDetails, [updatedCompany]),
+            Invocation.method(#updateCompanyDetails, [
+              updatedCompany,
+              companyId,
+            ]),
             returnValue: _i5.Future<void>.value(),
             returnValueForMissingStub: _i5.Future<void>.value(),
           )
           as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i3.Company>> getAllCompanies(
+    String? query, {
+    int? page = 1,
+    int? limit = 10,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getAllCompanies,
+              [query],
+              {#page: page, #limit: limit},
+            ),
+            returnValue: _i5.Future<List<_i3.Company>>.value(<_i3.Company>[]),
+          )
+          as _i5.Future<List<_i3.Company>>);
+
+  @override
+  _i5.Future<List<_i8.User>> getCompanyAdmins(
+    String? companyId, {
+    int? page = 1,
+    int? limit = 3,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getCompanyAdmins,
+              [companyId],
+              {#page: page, #limit: limit},
+            ),
+            returnValue: _i5.Future<List<_i8.User>>.value(<_i8.User>[]),
+          )
+          as _i5.Future<List<_i8.User>>);
+
+  @override
+  _i5.Future<List<_i8.User>> getFollowers(
+    String? companyId, {
+    int? page = 1,
+    int? limit = 4,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getFollowers,
+              [companyId],
+              {#page: page, #limit: limit},
+            ),
+            returnValue: _i5.Future<List<_i8.User>>.value(<_i8.User>[]),
+          )
+          as _i5.Future<List<_i8.User>>);
 }

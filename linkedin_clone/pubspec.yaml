@@ -55,6 +55,7 @@ flutter:
     - assets/images/linkedin_logo.png
     - assets/images/onboarding_illustration.jpg
     - assets/html/recaptcha.html
+    - assets/images/profile_placeholder.jpg
     - assets/images/profile.png  #TODO: remove this line after connecting to API
   fonts:
     - family: SourceSansPro

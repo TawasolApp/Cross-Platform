@@ -21,11 +21,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    FeedPage(),      // Will be replaced by News Feed module
-    InvitationsPage(), // Will be replaced by Connections module
-     // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
+    FeedPage(), // Will be replaced by News Feed module
+    MyNetworkPage(), // Will be replaced by Connections module
+    // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompaniesListScreen(),
-    SettingsPage(),   // Will be replaced by Settings module
+    SettingsPage(), // Will be replaced by Settings module
   ];
 
   void _onItemTapped(int index) {

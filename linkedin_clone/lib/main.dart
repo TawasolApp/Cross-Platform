@@ -33,18 +33,22 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:linkedin_clone/features/company/presentation/providers/related_companies_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_followers_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/follow_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignore_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/remove_connection_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_received_connection_requests_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_sent_connection_requests_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/accept_ignore_connection_request_usecase.dart';
 
-import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/send_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
@@ -125,7 +129,6 @@ void main() {
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
 
-
   // Initialize data source and repository
   // final ProfileRemoteDataSourceImpl dataSource = ProfileRemoteDataSourceImpl(
   //   client: http.Client(),
@@ -141,9 +144,8 @@ void main() {
   final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
 
   // Initialize data source and repository
-  final ProfileRemoteDataSourceImpl dataSourceProfile = ProfileRemoteDataSourceImpl(
-    baseUrl: 'https://tawasolapp.me/api',
-  );
+  final ProfileRemoteDataSourceImpl dataSourceProfile =
+      ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -188,7 +190,12 @@ void main() {
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
+          create:
+              (_) => SettingsProvider(
+                changePasswordUseCase,
+                updateEmailUsecase,
+                deleteAccountUsecase,
+              ),
         ),
         ChangeNotifierProvider(
           create:
@@ -303,6 +310,34 @@ void main() {
                     ),
                   ),
                 ),
+                GetBlockedListUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                BlockUserUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                UnblockUserUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetPeopleYouMayKnowUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
               ),
         ),
         ChangeNotifierProvider(
@@ -327,7 +362,9 @@ void main() {
                 deleteIndustryUseCase: DeleteIndustryUseCase(profileRepository),
                 updateLocationUseCase: UpdateLocationUseCase(profileRepository),
                 deleteLocationUseCase: DeleteLocationUseCase(profileRepository),
-                updateFirstNameUseCase: UpdateFirstNameUseCase(profileRepository),
+                updateFirstNameUseCase: UpdateFirstNameUseCase(
+                  profileRepository,
+                ),
                 updateLastNameUseCase: UpdateLastNameUseCase(profileRepository),
                 updateResumeUseCase: UpdateResumeUseCase(profileRepository),
                 deleteResumeUseCase: DeleteResumeUseCase(profileRepository),
@@ -378,7 +415,9 @@ void main() {
                   companyRepository: companyrepos,
                 ),
                 addAdminUseCase: AddAdminUseCase(repository: userRepos),
-                searchUsersUseCase: SearchUsersUseCase(userRemoteDataSource: userRemoteDataSource)
+                searchUsersUseCase: SearchUsersUseCase(
+                  userRemoteDataSource: userRemoteDataSource,
+                ),
               ),
         ),
 
@@ -411,7 +450,6 @@ void main() {
                 ),
               ),
         ),
-
       ],
       child: const MyApp(),
     ),
@@ -433,3 +471,13 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListPage(type: type)
+//   }
+// }

@@ -1,5 +1,5 @@
-import '../repository/connections_repository.dart';
-import '../entities/connections_user_entity.dart';
+import '../../repository/connections_repository.dart';
+import '../../entities/connections_user_entity.dart';
 
 class GetFollowingListUseCase {
   final ConnectionsRepository repository;
