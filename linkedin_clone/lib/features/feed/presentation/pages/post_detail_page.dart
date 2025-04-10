@@ -34,6 +34,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     );
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Post Details"),
         backgroundColor: Colors.white,
@@ -64,10 +65,6 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                           return Center(
                             child: Text(feedProvider.errorMessage!),
                           );
-                        }
-
-                        if (feedProvider.comments.isEmpty) {
-                          return const Center(child: Text("No comments yet."));
                         }
 
                         return CommentList(postId: widget.postId);

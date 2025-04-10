@@ -77,6 +77,51 @@ class AppRouter {
         path: RouteNames.profile,
         builder: (context, state) => UserProfile(),
       ),
+      GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
+      GoRoute(
+        path: RouteNames.addName,
+        builder: (context, state) => AddNamePage(),
+      ),
+      GoRoute(
+        path: RouteNames.addEmail,
+        builder: (context, state) => AddEmailPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.verifyEmail,
+        builder: (context, state) => EmailVerificationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        builder: (context, state) => ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.checkemail,
+        builder: (context, state) => ForgotPasswordCheckEmailPage(),
+      ),
+      GoRoute(
+        path: RouteNames.main,
+        builder: (context, state) => MainNavigationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.createPost,
+        builder: (context, state) => PostCreationPage(),
+      ),
+      GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
+      GoRoute(
+        path: RouteNames.companyPage,
+        builder:
+            (context, state) => CompanyProfileScreen(
+              companyId: "elsewedy-electric",
+              title: "Test",
+            ),
+      ),
+      // GoRoute(
+      //   path: RouteNames.profile,
+      //   builder: (context, state) {
+      //     final userId = state.extra as String;
+      //     return UserProfile(userId);
+      //   },
+      // ),
       GoRoute(
         path: RouteNames.home,
          builder: (context, state) => HomePage(),

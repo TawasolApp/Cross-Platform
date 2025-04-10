@@ -1,57 +1,64 @@
 import 'package:fpdart/fpdart.dart';
+import 'package:linkedin_clone/features/feed/data/models/comment_model.dart';
 import '../../domain/repositories/feed_repository.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/post_entity.dart';
 import '../data_sources/feed_remote_data_source.dart';
 import '../../../../core/errors/exceptions.dart';
-import '../../domain/entities/comment_entity.dart';
-//import 'package:dartz/dartz.dart';
+import '../../data/models/post_model.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
   final FeedRemoteDataSource remoteDataSource;
 
   FeedRepositoryImpl({required this.remoteDataSource});
 
-  // Get Newsfeed
   @override
   Future<Either<Failure, List<PostEntity>>> getPosts({
     int? page,
     int limit = 10,
   }) async {
     try {
-      final posts = await remoteDataSource.getPosts(page: page, limit: limit);
-      return Right(posts);
+      final result = await remoteDataSource.getPosts(page: page, limit: limit);
+
+      return result.fold((failure) => Left(failure), (posts) {
+        final entities = posts.map((post) => post.toEntity()).toList();
+        return Right(entities);
+      });
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure('Failed to load posts'));
     }
   }
 
-  // Create a Post
   @override
   Future<Either<Failure, PostEntity>> createPost({
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
     required String visibility,
+    String? parentPostId,
+    bool isSilentRepost = false,
   }) async {
-    try {
-      final post = await remoteDataSource.createPost(
-        content: content,
-        media: media,
-        taggedUsers: taggedUsers,
-        visibility: visibility,
-      );
-      return Right(post);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
-    }
+    final result = await remoteDataSource.createPost(
+      content: content,
+      media: media,
+      taggedUsers: taggedUsers,
+      visibility: visibility,
+      parentPostId: parentPostId,
+      isSilentRepost: isSilentRepost,
+    );
+
+    return result.fold(
+      (failure) => Left(failure),
+      (postModel) => Right(postModel.toEntity()),
+    );
   }
 
+  // Delete a Post
   @override
-  Future<Either<Failure, void>> deletePost(String postId) async {
+  Future<Either<Failure, Unit>> deletePost(String postId) async {
     try {
       await remoteDataSource.deletePost(postId);
-      return const Right(null);
+      return const Right(unit);
     } on ServerException {
       return Left(ServerFailure("Failed to delete post"));
     } catch (e) {
@@ -59,15 +66,29 @@ class FeedRepositoryImpl implements FeedRepository {
     }
   }
 
+  // Save a Post
   @override
   Future<Either<Failure, Unit>> savePost(String postId) async {
     try {
+      print("Repository: Saving post with ID: $postId");
       await remoteDataSource.savePost(postId);
-      return const Right(unit); // ✅ correct way to return Unit
+      return const Right(unit);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
       return Left(NetworkFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> unsavePost(String postId) async {
+    try {
+      print("Repository: Deleting saved post with ID: $postId");
+      await remoteDataSource.unsavePost(postId);
+      return const Right(unit);
+    } catch (e) {
+      print("Repository Error deleting saved post: $e");
+      return Left(ServerFailure("Failed to delete saved post"));
     }
   }
 
@@ -84,58 +105,82 @@ class FeedRepositoryImpl implements FeedRepository {
         postType: postType,
       );
       return const Right(unit);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
-    } catch (e) {
-      return Left(NetworkFailure(e.toString()));
+    } on ServerException {
+      return Left(ServerFailure());
+    } catch (_) {
+      return Left(UnexpectedFailure());
     }
   }
 
   @override
-  Future<Either<Failure, Unit>> editPost({
-    required String postId,
-    required String content,
-    required List<String> media,
-    required List<String> taggedUsers,
-    required String visibility,
-  }) async {
-    try {
-      await remoteDataSource.editPost(
-        postId: postId,
-        content: content,
-        media: media,
-        taggedUsers: taggedUsers,
-        visibility: visibility,
-      );
-      return right(unit);
-    } on ServerException catch (e) {
-      return left(
-        ServerFailure(e.message, 500),
-      ); // Or extract status if you have it
-    } on ValidationException catch (e) {
-      return left(ValidationFailure(e.message, 400));
-    } on NetworkException catch (e) {
-      return left(NetworkFailure(e.message, 0));
-    } catch (e) {
-      return left(ServerFailure("Unexpected error occurred", 500));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Unit>> addComment(
+  Future<Either<Failure, List<Map<String, dynamic>>>> getPostReactions(
     String postId,
-    String content,
   ) async {
     try {
-      await remoteDataSource.addComment(postId, content);
-      return const Right(unit);
+      final reactions = await remoteDataSource.getPostReactions(postId);
+      return Right(reactions);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
 
+  // Edit a Post
   @override
-  Future<Either<Failure, List<dynamic>>> fetchComments(
+  Future<Either<Failure, Unit>> editPost({
+    required String postId,
+    required String content,
+    required List<String>? media,
+    required List<String>? taggedUsers,
+    required String visibility,
+  }) async {
+    try {
+      print(
+        'Repository: Sending request to remote data source with post ID: $postId',
+      );
+
+      await remoteDataSource.editPost(
+        postId: postId,
+        content: content,
+        media: media ?? [],
+        taggedUsers: taggedUsers ?? [],
+        visibility: visibility,
+      );
+      print('Repository: Post edit request sent');
+      return const Right(unit);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } on ValidationException catch (e) {
+      return Left(ValidationFailure(e.message));
+    } on NetworkException catch (e) {
+      return Left(NetworkFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure("Unexpected error occurred"));
+    }
+  }
+
+  // Add a Comment
+  @override
+  Future<Either<Failure, CommentModel>> addComment({
+    required String postId,
+    required String content,
+    List<String>? taggedUsers,
+    bool isReply = false,
+  }) async {
+    print("Repository: Adding comment to post with ID: $postId");
+    final comment = await remoteDataSource.addComment(
+      postId: postId,
+      content: content,
+      isReply: isReply,
+    );
+    return comment.fold(
+      (failure) => Left(failure),
+      (postModel) => Right(postModel),
+    );
+  }
+
+  // Fetch Comments
+  @override
+  Future<Either<Failure, List<CommentModel>>> fetchComments(
     String postId, {
     int page = 1,
     int limit = 10,
@@ -147,139 +192,78 @@ class FeedRepositoryImpl implements FeedRepository {
         limit: limit,
       );
       return Right(comments);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(NetworkFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, void>> editComment({
+  Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
-    List<String>? taggedUsers,
+    List<String>? tagged,
     bool isReply = false,
   }) async {
     try {
       await remoteDataSource.editComment(
         commentId: commentId,
         content: content,
-        taggedUsers: taggedUsers ?? [],
+        tagged: tagged ?? [],
         isReply: isReply,
       );
-      return const Right(null);
+      return const Right(unit);
+    } on UnauthorizedException {
+      return Left(UnauthorizedFailure("Unauthorized access"));
+    } on ForbiddenException {
+      return Left(ForbiddenFailure());
+    } on NotFoundException {
+      return Left(NotFoundFailure("Resource not found"));
+    } on ServerException {
+      return Left(ServerFailure());
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(UnexpectedFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> getUserPosts(
+    String userId, {
+    int? page,
+    int limit = 10,
+  }) async {
+    try {
+      final result = await remoteDataSource.getUserPosts(
+        userId,
+        page: page,
+        limit: limit,
+      );
+
+      return result.fold((failure) => Left(failure), (posts) {
+        final entities = posts.map((post) => post.toEntity()).toList();
+        return Right(entities);
+      });
+    } catch (e) {
+      return Left(ServerFailure('Failed to load posts'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteComment(String commentId) async {
+    try {
+      await remoteDataSource.deleteComment(commentId);
+      return const Right(unit);
+    } on UnauthorizedException {
+      return Left(UnauthorizedFailure("Unauthorized access"));
+    } on ForbiddenException {
+      return Left(ForbiddenFailure());
+    } on NotFoundException {
+      return Left(NotFoundFailure("Resource not found"));
+    } on ServerException {
+      return Left(ServerFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure());
     }
   }
 }
-
-//   // Like a Post
-//   @override
-//   Future<Either<Failure, void>> likePost(String postId) async {
-//     return _handlePostRequest('posts/$postId/like');
-//   }
-
-//   // Unlike a Post
-//   @override
-//   Future<Either<Failure, void>> unlikePost(String postId) async {
-//     return _handlePostRequest('posts/$postId/unlike');
-//   }
-
-//   // Comment on a Post
-//   @override
-//   Future<Either<Failure, void>> commentOnPost({
-//     required String postId,
-//     required String content,
-//     List<String>? taggedUsers,
-//   }) async {
-//     return _handlePostRequest(
-//       'posts/$postId/comment',
-//       data: {"content": content, "taggedUsers": taggedUsers ?? []},
-//     );
-//   }
-
-//   // Delete a Comment
-//   @override
-//   Future<Either<Failure, void>> deleteComment(String commentId) async {
-//     return _handleDeleteRequest('comments/$commentId');
-//   }
-
-//   // Repost a Post
-//   @override
-//   Future<Either<Failure, void>> repostPost({
-//     required String authorId,
-//     required String postId,
-//     required String content,
-//     List<String>? taggedUsers,
-//     required String visibility,
-//     required String authorType,
-//   }) async {
-//     return _handlePostRequest(
-//       'posts/$postId/repost',
-//       data: {
-//         "authorId": authorId,
-//         "postId": postId,
-//         "content": content,
-//         "taggedUsers": taggedUsers ?? [],
-//         "visibility": visibility,
-//         "authorType": authorType,
-//       },
-//     );
-//   }
-
-//   // Delete a Post
-//   @override
-//   Future<Either<Failure, void>> deletePost(String postId) async {
-//     return _handleDeleteRequest('posts/$postId');
-//   }
-
-//   // 🔹 Helper for POST requests
-//   Future<Either<Failure, void>> _handlePostRequest(
-//     String path, {
-//     Map<String, dynamic>? data,
-//   }) async {
-//     try {
-//       final response = await dio.post(
-//         'https://api.example.com/$path',
-//         data: data,
-//       );
-//       return _validateResponse(response);
-//     } on DioException catch (e) {
-//       return left(_handleDioError(e));
-//     } catch (e) {
-//       return left(UnknownFailure(e.toString()));
-//     }
-//   }
-
-//   // 🔹 Helper for DELETE requests
-//   Future<Either<Failure, void>> _handleDeleteRequest(String path) async {
-//     try {
-//       final response = await dio.delete('https://api.example.com/$path');
-//       return _validateResponse(response);
-//     } on DioException catch (e) {
-//       return left(_handleDioError(e));
-//     } catch (e) {
-//       return left(UnknownFailure(e.toString()));
-//     }
-//   }
-
-//   // 🔹 Validate API response
-//   Either<Failure, void> _validateResponse(Response response) {
-//     if (response.statusCode == 200) {
-//       return right(null);
-//     }
-//     return left(ServerFailure());
-//   }
-
-//   // 🔹 Handle Dio-specific errors
-//   Failure _handleDioError(DioException e) {
-//     if (e.type == DioExceptionType.connectionTimeout ||
-//         e.type == DioExceptionType.receiveTimeout) {
-//       return NetworkFailure();
-//     } else if (e.response != null && e.response!.statusCode == 404) {
-//       return NotFoundFailure();
-//     } else {
-//       return ServerFailure();
-//     }
-//   }
-// }

@@ -11,7 +11,6 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/forgot_pa
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/login_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/register_usecase.dart';
 import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_email_usecase.dart';
-import 'package:linkedin_clone/features/authentication/Presentation/Pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
@@ -51,6 +50,8 @@ import 'package:linkedin_clone/features/connections/presentations/pages/list_pag
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
@@ -115,6 +116,10 @@ import 'package:linkedin_clone/features/company/domain/entities/company_update_e
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
 import 'features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
 
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
@@ -169,6 +174,12 @@ void main() {
   final editPostUseCase = EditPostUseCase(repository);
   final commentPostUseCase = CommentPostUseCase(repository);
   final fetchCommentsUseCase = FetchCommentsUseCase(repository);
+  final reactToPostUseCase = ReactToPostUseCase(repository);
+  final editCommentUseCase = EditCommentUseCase(repository);
+  final getPostReactionsUseCase = GetPostReactionsUseCase(repository);
+  final unsavePostUseCase = UnsavePostUseCase(repository);
+  final getUserPostsUseCase = GetUserPostsUseCase(repository);
+  final deleteCommentUseCase = DeleteCommentUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
   runApp(
     MultiProvider(
@@ -177,13 +188,7 @@ void main() {
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
         ChangeNotifierProvider(
-          create:
-              (_) => SettingsProvider(
-                changePasswordUseCase,
-                updateEmailUsecase,
-                deleteAccountUsecase,
-              ),
-   
+          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
         ),
         ChangeNotifierProvider(
           create:
@@ -203,9 +208,16 @@ void main() {
                 editPostUseCase: editPostUseCase,
                 commentPostUseCase: commentPostUseCase,
                 fetchCommentsUseCase: fetchCommentsUseCase,
-                //reactToPostUseCase: reactToPostUseCase,
+                reactToPostUseCase: reactToPostUseCase,
+                editCommentUseCase: editCommentUseCase,
+                getPostReactionsUseCase: getPostReactionsUseCase,
+                getProfileUseCase: GetProfileUseCase(profileRepository),
+                unsavePostUseCase: unsavePostUseCase,
+                getUserPostsUseCase: getUserPostsUseCase,
+                deleteCommentUseCase: deleteCommentUseCase,
               )..fetchPosts(),
         ),
+
         ChangeNotifierProvider(
           create:
               (_) => ConnectionsProvider(
@@ -411,13 +423,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
-      home: TestPage(),
+      routerConfig: AppRouter.router,
     );
   }
 }
