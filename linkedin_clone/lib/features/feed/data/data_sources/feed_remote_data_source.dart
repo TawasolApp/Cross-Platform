@@ -151,7 +151,6 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         "isSilentRepost": isSilentRepost,
       };
 
-      // Only add parentPostId if it is not null
       if (parentPostId != null) {
         data["parentPostId"] = parentPostId;
       }

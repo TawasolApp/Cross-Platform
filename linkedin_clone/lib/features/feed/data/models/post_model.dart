@@ -4,7 +4,7 @@ import 'package:linkedin_clone/features/feed/data/models/repost_detail_model.dar
 import '../../domain/entities/post_entity.dart';
 
 class PostModel extends PostEntity {
-  const PostModel({
+  PostModel({
     required super.id,
     required super.authorId,
     required super.authorName,
@@ -36,6 +36,11 @@ class PostModel extends PostEntity {
       authorBio: json['authorBio'],
       content: json['content'],
       media: List<String>.from(json['media'] ?? []),
+      reactions:
+          json['reactions'] != null
+              ? Map<String, bool>.from(json['reactions'])
+              : <String, bool>{},
+
       reactCounts: Map<String, int>.from(json['reactCounts'] ?? {}),
       comments: json['comments'] ?? 0,
       shares: json['shares'] ?? 0,

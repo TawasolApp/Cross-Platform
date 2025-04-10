@@ -1,35 +1,48 @@
 import 'package:flutter/material.dart';
 import 'reaction_popup.dart';
+import 'package:linkedin_clone/features/feed/domain/entities/post_entity.dart';
+import '../../../../core/utils/reaction_type.dart';
 
 class LikeButton extends StatelessWidget {
-  final bool isLiked;
-  final String postId;
+  final PostEntity post;
 
-  const LikeButton({super.key, required this.isLiked, required this.postId});
+  const LikeButton({super.key, required this.post});
 
   void _showReactionPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder:
-          (_) => ReactionPopup(postId: postId, onReactionSelected: (String) {}),
+          (_) =>
+              ReactionPopup(postId: post.id, onReactionSelected: (String) {}),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentReaction =
+        post.reactions?.entries
+            .firstWhere(
+              (e) => e.value == true,
+              orElse: () => const MapEntry('', false),
+            )
+            .key;
+
+    final hasReacted = currentReaction != null && currentReaction.isNotEmpty;
+    final reactionType = getReactionTypeFromName(currentReaction ?? '');
+
+    final icon = hasReacted ? reactionType.icon : Icons.thumb_up_off_alt;
+
+    final color = hasReacted ? reactionType.color : Colors.grey;
+
+    final label = hasReacted ? reactionType.name : "Like";
+
     return GestureDetector(
       onTap: () => _showReactionPopup(context),
       child: Row(
         children: [
-          Icon(
-            isLiked ? Icons.thumb_up : Icons.thumb_up_off_alt,
-            color: isLiked ? Colors.blue : Colors.grey,
-          ),
+          Icon(icon, color: color),
           const SizedBox(width: 4),
-          Text(
-            "Like",
-            style: TextStyle(color: isLiked ? Colors.blue : Colors.grey),
-          ),
+          Text(label, style: TextStyle(color: color)),
         ],
       ),
     );

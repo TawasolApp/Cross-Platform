@@ -17,7 +17,10 @@ import '../../../profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import '../../domain/usecases/unsave_post_usecase.dart';
 import '../../domain/usecases/get_user_posts_usecase.dart';
+import 'package:collection/collection.dart';
+import 'package:linkedin_clone/core/utils/reaction_type.dart';
 
+//import '../../domain/usecases/';
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
   final CreatePostUseCase createPostUseCase;
@@ -32,6 +35,7 @@ class FeedProvider extends ChangeNotifier {
   final GetProfileUseCase getProfileUseCase;
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
+  //final DeleteCommentUseCase deleteCommentUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -47,11 +51,25 @@ class FeedProvider extends ChangeNotifier {
     required this.getProfileUseCase,
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
+    // required this.deleteCommentUseCase,
   });
+  Map<String, bool> buildReactionsFromReactType(String? reactType) {
+    const allReactions = [
+      'Like',
+      'Celebrate',
+      'Love',
+      'Insightful',
+      'Funny',
+      'Support',
+    ];
+    return {for (var r in allReactions) r: r == reactType};
+  }
 
   List<PostEntity> _posts = [];
   List<PostEntity> get posts => _posts;
 
+  List<PostEntity> _userPosts = [];
+  List<PostEntity> get userPosts => _userPosts;
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
 
@@ -123,6 +141,8 @@ class FeedProvider extends ChangeNotifier {
         },
         (posts) {
           _posts = List<PostEntity>.from(posts);
+
+          ///
           print("Posts fetched successfully, count: ${_posts.length}");
           _isLoading = false;
           notifyListeners();
@@ -138,7 +158,11 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchUserPosts(userId, {int page = 1, int limit = 10}) async {
+  Future<void> fetchUserPosts(
+    String userId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
     if (_isLoading) {
       print("Fetch already in progress, skipping...");
       print("fetchPosts called from: ${StackTrace.current}");
@@ -165,8 +189,8 @@ class FeedProvider extends ChangeNotifier {
           notifyListeners();
         },
         (posts) {
-          _posts = List<PostEntity>.from(posts);
-          print("Posts fetched successfully, count: ${_posts.length}");
+          _userPosts = List<PostEntity>.from(posts);
+          print("Posts fetched successfully, count: ${_userPosts.length}");
           _isLoading = false;
           notifyListeners();
         },
@@ -233,8 +257,6 @@ class FeedProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
-
-    //notifyListeners();
   }
 
   Future<void> savePost(String postId) async {
@@ -333,8 +355,12 @@ class FeedProvider extends ChangeNotifier {
         print("Failed to add comment: $failure");
       },
       (comment) async {
-        comments.add(comment); // Directly add the comment model
+        comments.add(comment);
         print("Provider: Comment added successfully: ${comment.content}");
+        final postIndex = _posts.indexWhere((post) => post.id == postId);
+        if (postIndex != -1) {
+          _posts[postIndex].comments += 1;
+        }
         notifyListeners();
       },
     );
@@ -397,11 +423,75 @@ class FeedProvider extends ChangeNotifier {
       reactions: reactions,
       postType: postType,
     );
+    print("prov: $reactions");
     result.fold((failure) => _handleFailure(failure), (_) {
       final index = _posts.indexWhere((post) => post.id == postId);
       if (index != -1) {
-        _posts[index] = _posts[index].copyWith(reactions: reactions);
+        final post = _posts[index];
+        print("prov: Reacting to post: ${post.id}");
+        final rawReactions =
+            post.reactions?.isNotEmpty == true
+                ? post.reactions!
+                : {
+                  for (var r in ReactionType.values.map((e) => e.name))
+                    r: r == post.reactType,
+                };
+
+        final previousReaction =
+            post.reactType.isNotEmpty ? post.reactType : null;
+        print("🧠 Previous reaction: $previousReaction");
+
+        final selectedReaction =
+            reactions.entries
+                .firstWhere(
+                  (e) => e.value == true,
+                  orElse: () => const MapEntry('', false),
+                )
+                .key;
+
+        print("🧠 Previous reaction: $previousReaction");
+        print("👍 New selected reaction: $selectedReaction");
+
+        final updatedCounts = Map<String, int>.from(post.reactCounts ?? {});
+
+        if (previousReaction != null &&
+            previousReaction.isNotEmpty &&
+            previousReaction != selectedReaction) {
+          updatedCounts[previousReaction] =
+              (updatedCounts[previousReaction] ?? 1) - 1;
+          print(
+            "➖ Decreased count of '$previousReaction' to ${updatedCounts[previousReaction]}",
+          );
+          if (updatedCounts[previousReaction]! <= 0) {
+            updatedCounts.remove(previousReaction);
+            print("🗑 Removed '$previousReaction' from counts");
+          }
+        }
+
+        if (selectedReaction.isNotEmpty &&
+            previousReaction != selectedReaction) {
+          updatedCounts[selectedReaction] =
+              (updatedCounts[selectedReaction] ?? 0) + 1;
+          print(
+            "➕ Increased count of '$selectedReaction' to ${updatedCounts[selectedReaction]}",
+          );
+        }
+
+        final newReactionMap = <String, bool>{};
+        if (selectedReaction.isNotEmpty) {
+          newReactionMap[selectedReaction] = true;
+        }
+
+        print("🧩 Updated reactions map: $newReactionMap");
+
+        _posts[index] = post.copyWith(
+          reactCounts: updatedCounts,
+          reactions: newReactionMap,
+          reactType: selectedReaction,
+        );
+
         notifyListeners();
+        print("✅ Reaction applied and UI notified.");
       }
     });
   }

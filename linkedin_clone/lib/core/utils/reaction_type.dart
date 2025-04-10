@@ -62,4 +62,38 @@ extension ReactionTypeExtension on ReactionType {
         return Colors.grey;
     }
   }
+
+  /// ✅ You were missing this one!
+  String get label {
+    switch (this) {
+      case ReactionType.like:
+        return 'Like';
+      case ReactionType.celebrate:
+        return 'Celebrate';
+      case ReactionType.love:
+        return 'Love';
+      case ReactionType.insightful:
+        return 'Insightful';
+      case ReactionType.funny:
+        return 'Funny';
+      case ReactionType.support:
+        return 'Support';
+      case ReactionType.none:
+      default:
+        return '';
+    }
+  }
 }
+
+ReactionType getReactionTypeFromName(String name) {
+  return ReactionType.values.firstWhere(
+    (r) => r.name.toLowerCase() == name.toLowerCase(),
+    orElse: () => ReactionType.none,
+  );
+}
+
+IconData getReactionIcon(String name) => getReactionTypeFromName(name).icon;
+
+Color getReactionColor(String name) => getReactionTypeFromName(name).color;
+
+String getReactionLabel(String name) => getReactionTypeFromName(name).label;

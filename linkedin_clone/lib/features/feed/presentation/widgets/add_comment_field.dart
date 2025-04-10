@@ -32,6 +32,8 @@ class _AddCommentFieldState extends State<AddCommentField> {
         setState(() {
           _isTyping = false;
         });
+        FocusScope.of(context).unfocus(); // 🟢 Close keyboard
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Comment added successfully!'),
@@ -76,7 +78,7 @@ class _AddCommentFieldState extends State<AddCommentField> {
                   _isTyping = value.isNotEmpty;
                 });
               },
-              onSubmitted: (_) => _addComment(context),
+              //onSubmitted: (_) => _addComment(context),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,

@@ -10,7 +10,7 @@ class PostEntity {
   final List<String>? media;
   final Map<String, bool>? reactions; // For reacting to a post
   final Map<String, int>? reactCounts; // For fetching reactions
-  final int comments;
+  int comments;
   final int shares;
   final List<String>? taggedUsers;
   final String visibility;
@@ -20,7 +20,7 @@ class PostEntity {
   final DateTime timestamp;
   final bool isSaved;
 
-  const PostEntity({
+  PostEntity({
     required this.id,
     required this.authorId,
     required this.authorName,
@@ -28,7 +28,7 @@ class PostEntity {
     required this.authorBio,
     required this.content,
     this.media,
-    this.reactions,
+    this.reactions = const {},
     this.reactCounts,
     this.comments = 0,
     this.shares = 0,
@@ -57,6 +57,7 @@ class PostEntity {
     String? visibility,
     String? authorType,
     DateTime? timestamp,
+    String? reactType,
     RepostDetails? repostDetails,
     bool? isSaved,
   }) {

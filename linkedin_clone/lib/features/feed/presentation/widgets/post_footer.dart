@@ -21,26 +21,15 @@ class PostFooter extends StatefulWidget {
   _PostFooterState createState() => _PostFooterState();
 }
 
-ReactionType getReactionTypeByName(String name) {
-  return ReactionType.values.firstWhere(
-    (reaction) => reaction.name.toLowerCase() == name.toLowerCase(),
-    orElse: () => ReactionType.like, // Default to "Like" if not found
-  );
-}
-
 class _PostFooterState extends State<PostFooter> {
-  String currentReactionName = 'Like';
-
   void _showReactionPopup(BuildContext context) {
     showDialog(
       context: context,
       builder:
           (_) => ReactionPopup(
             postId: widget.post.id,
-            onReactionSelected: (reactionName) {
-              setState(() {
-                currentReactionName = reactionName;
-              });
+            onReactionSelected: (_) {
+              setState(() {}); // Rebuild to reflect new reaction
             },
           ),
     );
@@ -48,8 +37,14 @@ class _PostFooterState extends State<PostFooter> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current reaction type based on the name
-    ReactionType currentReaction = getReactionTypeByName(currentReactionName);
+    final hasReacted =
+        widget.post.reactType.isNotEmpty &&
+        widget.post.reactType.toLowerCase() != 'none';
+    final reaction = getReactionTypeFromName(widget.post.reactType);
+
+    final icon = hasReacted ? reaction.icon : Icons.thumb_up_off_alt;
+    final color = hasReacted ? reaction.color : Colors.grey;
+    final label = hasReacted ? reaction.name : 'React';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -57,25 +52,14 @@ class _PostFooterState extends State<PostFooter> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           GestureDetector(
-            onTap: () {
-              setState(() {
-                currentReactionName = 'Like';
-              });
-            },
+            onTap: () => _showReactionPopup(context),
             onLongPress: () => _showReactionPopup(context),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  currentReaction.icon,
-                  size: 22,
-                  color: currentReaction.color,
-                ),
+                Icon(icon, size: 22, color: color),
                 const SizedBox(height: 2),
-                Text(
-                  currentReaction.name,
-                  style: TextStyle(color: currentReaction.color, fontSize: 12),
-                ),
+                Text(label, style: TextStyle(color: color, fontSize: 12)),
               ],
             ),
           ),
@@ -83,7 +67,6 @@ class _PostFooterState extends State<PostFooter> {
             onTap:
                 () =>
                     context.push(RouteNames.postDetails, extra: widget.post.id),
-
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
