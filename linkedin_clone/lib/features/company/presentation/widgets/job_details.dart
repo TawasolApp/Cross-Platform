@@ -13,12 +13,12 @@ class JobDetailsScreen extends StatefulWidget {
   final String companyId;
 
   const JobDetailsScreen({
-    super.key,
+    Key? key,
     required this.job,
     required this.companyProvider,
     required this.userId,
     required this.companyId,
-  });
+  }) : super(key: key);
 
   @override
   _JobDetailsScreenState createState() => _JobDetailsScreenState();
@@ -49,9 +49,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   }
 
   void _onScroll() {
-    if (!mounted) {
+    if (!mounted)
       return; // Check if the widget is still mounted before calling setState
-    }
     if (_scrollController.offset > 300 && !showBottomNav) {
       setState(() {
         showBottomNav = true;
@@ -172,12 +171,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (context) => ApplyForJobWidget(
-                                  companyName:
-                                      widget.companyProvider.company?.name ??
-                                      'Unknown Company',
-                                ),
+                            builder: (context) => ApplyForJobWidget(companyName: widget.companyProvider.company?.name ?? 'Unknown Company'),
                           ),
                         );
                       },

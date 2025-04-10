@@ -18,6 +18,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/certifications/u
 import 'package:linkedin_clone/features/profile/domain/usecases/certifications/delete_certification.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_bio.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_profile.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_cover_photo.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_profile_picture.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/update_cover_picture.dart';

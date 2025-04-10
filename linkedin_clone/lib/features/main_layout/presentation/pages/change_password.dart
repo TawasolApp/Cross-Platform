@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -25,7 +26,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).cardColor,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
           contentPadding: const EdgeInsets.all(16),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -39,8 +42,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     child: Text(
                       'Choose a strong password to protect your account',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                   ),
                   IconButton(
@@ -67,9 +70,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     final theme = Theme.of(context);
     String currentPassword = '';
     String newPassword = '';
-    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(
-      context,
-    );
+    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -79,7 +80,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           onPressed: () => context.go(RouteNames.signInAndSecurity),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.help_outline), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () {},
+          ),
         ],
       ),
       body: Padding(
@@ -105,33 +109,23 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               ),
             ),
             const SizedBox(height: 20),
-            _buildPasswordField(
-              'Type your current password',
-              _showCurrentPassword,
-              (value) {
-                setState(() {
-                  _showCurrentPassword = value;
-                });
-              },
-            ),
+            _buildPasswordField('Type your current password', _showCurrentPassword, (value) {
+              setState(() {
+                _showCurrentPassword = value;
+              });
+            }),
             const SizedBox(height: 10),
-            _buildPasswordField('Type your new password', _showNewPassword, (
-              value,
-            ) {
+            _buildPasswordField('Type your new password', _showNewPassword, (value) {
               setState(() {
                 _showNewPassword = value;
               });
             }),
             const SizedBox(height: 10),
-            _buildPasswordField(
-              'Retype your new password',
-              _showConfirmPassword,
-              (value) {
-                setState(() {
-                  _showConfirmPassword = value;
-                });
-              },
-            ),
+            _buildPasswordField('Retype your new password', _showConfirmPassword, (value) {
+              setState(() {
+                _showConfirmPassword = value;
+              });
+            }),
             const SizedBox(height: 20),
             CheckboxListTile(
               title: const Text(
@@ -146,38 +140,29 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             ),
             const SizedBox(height: 20),
             PrimaryButton(
-              text: "Save Changes",
-              onPressed: () async {
-                final success = await settingsProvider.changePassword(
-                  currentPassword,
-                  newPassword,
-                );
-                if (!context.mounted) return;
+                text: "Save Changes",
+                onPressed: () async {
+                  final success = await settingsProvider.changePassword(currentPassword, newPassword);
+                  if (!context.mounted) return;
 
-                if (success) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Password updated successfully'),
-                    ),
-                  );
-                  //context.go(RouteNames.signInAndSecurity);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to update Password')),
-                  );
-                }
-              },
-            ),
+                  if (success) {
+                    
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Password updated successfully')),
+                    );
+                    //context.go(RouteNames.signInAndSecurity);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to update Password')),
+                    );
+                  } 
+                },
+              ),
             const SizedBox(height: 20),
             GestureDetector(
               onTap: () {
                 // Navigate to forgot password page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ForgotPasswordPage(),
-                  ),
-                );
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordPage()));
               },
               child: const Text(
                 'Forgot Password',
@@ -190,11 +175,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Widget _buildPasswordField(
-    String hint,
-    bool showText,
-    ValueChanged<bool> onToggle,
-  ) {
+  Widget _buildPasswordField(String hint, bool showText, ValueChanged<bool> onToggle) {
     return TextField(
       obscureText: !showText,
       decoration: InputDecoration(

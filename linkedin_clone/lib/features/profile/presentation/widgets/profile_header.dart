@@ -23,7 +23,7 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               // Cover Photo section with further reduced height
-              SizedBox(
+              Container(
                 height: coverPhotoHeight + 40, // Further reduced from 40
                 child: Stack(
                   clipBehavior: Clip.none,

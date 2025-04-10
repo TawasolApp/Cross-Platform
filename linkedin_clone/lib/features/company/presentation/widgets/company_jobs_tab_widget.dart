@@ -13,12 +13,12 @@ class CompanyJobsWidget extends StatelessWidget {
   final VoidCallback? onAnalyticsPressed;
 
   const CompanyJobsWidget({
-    super.key,
+    Key? key,
     required this.userId,
     required this.companyId,
     this.onEditPressed,
     this.onAnalyticsPressed,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
