@@ -4,7 +4,9 @@ import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
 
