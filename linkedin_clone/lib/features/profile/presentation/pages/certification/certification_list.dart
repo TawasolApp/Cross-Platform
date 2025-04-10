@@ -81,10 +81,10 @@ class _CertificationListPageState extends State<CertificationListPage> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading:
-            certification.certificationPicture != null
+            certification.companyLogo != null
                 ? CircleAvatar(
                   backgroundImage: NetworkImage(
-                    certification.certificationPicture!,
+                    certification.companyLogo!,
                   ),
                   backgroundColor: Colors.grey[200],
                   onBackgroundImageError: (_, __) {

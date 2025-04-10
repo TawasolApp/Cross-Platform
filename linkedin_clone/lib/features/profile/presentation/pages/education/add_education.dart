@@ -62,6 +62,8 @@ class _AddEducationPageState extends State<AddEducationPage> {
 
       final newEducation = Education(
         school: _schoolController.text,
+        companyLogo: null,
+        companyId: "", // Assuming you will set this later
         degree: _degreeType,
         field: _fieldController.text,
         startDate: _startDateController.text,

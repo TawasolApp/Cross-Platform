@@ -21,7 +21,8 @@ class DateUtils {
 class EducationModel extends Equatable {
   final String? educationId;
   final String school;
-  final String? schoolPic;
+  final String? companyLogo;
+  final String companyId;
   final String degree;
   final String field;
   final String startDate;
@@ -32,7 +33,8 @@ class EducationModel extends Equatable {
   const EducationModel({
     this.educationId,
     required this.school,
-    this.schoolPic,
+    this.companyLogo,
+    required this.companyId,
     required this.degree,
     required this.field,
     required this.startDate,
@@ -46,7 +48,8 @@ class EducationModel extends Equatable {
     return Education(
       educationId: educationId,
       school: school,
-      schoolPic: schoolPic,
+      companyLogo: companyLogo,
+      companyId: companyId,
       degree: degree,
       field: field,
       startDate: startDate,
@@ -61,7 +64,8 @@ class EducationModel extends Equatable {
     return EducationModel(
       educationId: entity.educationId,
       school: entity.school,
-      schoolPic: entity.schoolPic,
+      companyLogo: entity.companyLogo,
+      companyId: entity.companyId,
       degree: entity.degree,
       field: entity.field,
       startDate: entity.startDate,
@@ -76,7 +80,8 @@ class EducationModel extends Equatable {
     return EducationModel(
       educationId: json['_id'] as String? ?? '',
       school: json['school'] as String,
-      schoolPic: json['schoolPic'] as String?,
+      companyLogo: json['companyLogo'] as String?,
+      companyId: json['companyId'] as String? ?? '', 
       degree: json['degree'] as String,
       field: json['field'] as String,
       startDate: DateUtils.formatToYearMonth(json['startDate'] as String),
@@ -93,7 +98,8 @@ class EducationModel extends Equatable {
     return {
       '_id': educationId,
       'school': school,
-      'schoolPic': schoolPic,
+      'companyLogo': companyLogo,
+      'companyId': companyId,
       'degree': degree,
       'field': field,
       'startDate': startDate,
@@ -107,7 +113,8 @@ class EducationModel extends Equatable {
   EducationModel copyWith({
     String? educationId,
     String? school,
-    String? schoolPic,
+    String? companyLogo,
+    String? companyId,
     String? degree,
     String? field,
     String? startDate,
@@ -118,7 +125,8 @@ class EducationModel extends Equatable {
     return EducationModel(
       educationId: educationId ?? this.educationId,
       school: school ?? this.school,
-      schoolPic: schoolPic ?? this.schoolPic,
+      companyLogo: companyLogo ?? this.companyLogo,
+      companyId: companyId ?? this.companyId,
       degree: degree ?? this.degree,
       field: field ?? this.field,
       startDate: startDate ?? this.startDate,
@@ -132,7 +140,8 @@ class EducationModel extends Equatable {
   List<Object?> get props => [
         educationId,
         school,
-        schoolPic,
+        companyLogo,
+        companyId,
         degree,
         field,
         startDate,
