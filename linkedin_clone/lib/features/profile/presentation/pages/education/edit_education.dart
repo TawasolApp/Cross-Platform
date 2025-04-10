@@ -87,6 +87,8 @@ class _EditEducationPageState extends State<EditEducationPage> {
 
       final education = Education(
         school: _schoolController.text,
+        companyLogo: null, // Placeholder for logo
+        companyId: "", // Placeholder for company ID
         degree: _degreeController.text,
         field: _fieldController.text,
         startDate: _startDateController.text,

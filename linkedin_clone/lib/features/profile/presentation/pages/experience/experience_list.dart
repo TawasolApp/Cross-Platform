@@ -112,11 +112,9 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading:
-            experience.workExperiencePicture != null
+            experience.companyLogo != null
                 ? CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    experience.workExperiencePicture!,
-                  ),
+                  backgroundImage: NetworkImage(experience.companyLogo!),
                 )
                 : const CircleAvatar(child: Icon(Icons.business)),
         title: Text(

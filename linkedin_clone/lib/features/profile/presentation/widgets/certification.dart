@@ -27,9 +27,9 @@ class CertificationWidget extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child:
-                  certification.certificationPicture != null
+                  certification.companyLogo != null
                       ? Image.network(
-                        certification.certificationPicture!,
+                        certification.companyLogo!,
                         width: 54,
                         height: 54,
                         fit: BoxFit.cover,

@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
-import 'endorsement_model.dart';
 
 class SkillModel extends Equatable {
   final String skillName;

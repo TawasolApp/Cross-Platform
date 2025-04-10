@@ -74,7 +74,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 : null,
         employmentType: _employmentType.toLowerCase().replaceAll('-', '_'),
         locationType: _locationType.toLowerCase().replaceAll('-', '_'),
-        workExperiencePicture: null,
+        companyLogo: null,
       );
 
       await provider.addExperience(newExperience);

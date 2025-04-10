@@ -65,7 +65,8 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
       final certification = Certification(
         name: _nameController.text,
         company: _issuingOrgController.text,
-        certificationPicture: widget.certification?.certificationPicture,
+        companyLogo: widget.certification?.companyLogo,
+        companyId: widget.certification?.companyId ?? '', // Default to empty string if null
         issueDate: _issueDateController.text,
         expiryDate: expiryDate, // Use the correctly processed expiryDate
       );

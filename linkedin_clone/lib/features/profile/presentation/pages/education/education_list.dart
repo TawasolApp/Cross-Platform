@@ -84,9 +84,9 @@ class _EducationListPageState extends State<EducationListPage> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading:
-            education.schoolPic != null
+            education.companyLogo != null
                 ? CircleAvatar(
-                  backgroundImage: NetworkImage(education.schoolPic!),
+                  backgroundImage: NetworkImage(education.companyLogo!),
                 )
                 : const CircleAvatar(child: Icon(Icons.school)),
         title: Text(

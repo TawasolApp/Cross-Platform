@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/core/api/media.dart'; // Add this import for media upload
@@ -36,7 +35,6 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_h
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_location.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_industry.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
-import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/update_skill.dart';
 
 class ProfileProvider extends ChangeNotifier {
@@ -389,7 +387,8 @@ class ProfileProvider extends ChangeNotifier {
     _profileError = null;
 
     try {
-      _userId = '67f417a8262957c2de3609bb';
+      // _userId = '67f417a8262957c2de3609bb';
+      _userId = '67f417a8262957c2de3609c8';
 
       if (_userId == null || _userId!.isEmpty) {
         _profileError = "User ID is not set or invalid";

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart'
     as entity;
-import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 
 class SkillWidget extends StatelessWidget {
   final entity.Skill skill;

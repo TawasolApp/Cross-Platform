@@ -47,7 +47,8 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
       final newCertification = Certification(
         name: _nameController.text,
         company: _issuingOrgController.text,
-        certificationPicture: null,
+        companyLogo: null,
+        companyId: '', // Assuming you don't have a company ID yet
         issueDate: _issueDateController.text,
         expiryDate: expiryDate, // Use the correctly processed expiryDate
       );

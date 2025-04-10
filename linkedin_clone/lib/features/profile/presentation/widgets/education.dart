@@ -32,9 +32,9 @@ class EducationWidget extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child:
-                  education.schoolPic != null
+                  education.companyLogo != null
                       ? Image.network(
-                        education.schoolPic!,
+                        education.companyLogo!,
                         width: 54,
                         height: 54,
                         fit: BoxFit.cover,

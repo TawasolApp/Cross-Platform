@@ -4,7 +4,8 @@ class Certification extends Equatable {
   final String? certificationId; // Added ID field
   final String name;
   final String company;
-  final String? certificationPicture;
+  final String? companyLogo;
+  final String companyId;
   final String issueDate;
   final String? expiryDate;
 
@@ -12,7 +13,8 @@ class Certification extends Equatable {
     this.certificationId, // Added as optional
     required this.name,
     required this.company,
-    this.certificationPicture,
+    this.companyLogo,
+    required this.companyId,
     required this.issueDate,
     this.expiryDate,
   });
@@ -21,7 +23,8 @@ class Certification extends Equatable {
     String? certificationId,
     String? name,
     String? company,
-    String? certificationPicture,
+    String? companyLogo,
+    String? companyId,
     String? issueDate,
     String? expiryDate,
   }) {
@@ -29,8 +32,9 @@ class Certification extends Equatable {
       certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
       company: company ?? this.company,
-      certificationPicture:
-          certificationPicture ?? this.certificationPicture,
+      companyLogo:
+          companyLogo ?? this.companyLogo,
+      companyId: companyId ?? this.companyId,
       issueDate: issueDate ?? this.issueDate,
       expiryDate: expiryDate ?? this.expiryDate,
     );
@@ -41,7 +45,8 @@ class Certification extends Equatable {
     certificationId,
     name,
     company,
-    certificationPicture,
+    companyLogo,
+    companyId,
     issueDate,
     expiryDate,
   ];

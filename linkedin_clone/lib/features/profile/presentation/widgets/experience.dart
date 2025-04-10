@@ -60,9 +60,9 @@ class ExperienceWidget extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child:
-                  experience.workExperiencePicture != null
+                  experience.companyLogo != null
                       ? Image.network(
-                        experience.workExperiencePicture!,
+                        experience.companyLogo!,
                         width: 54,
                         height: 54,
                         fit: BoxFit.cover,

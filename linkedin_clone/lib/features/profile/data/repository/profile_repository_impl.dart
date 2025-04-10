@@ -1,7 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/errors/exceptions.dart';
-import 'package:linkedin_clone/core/network/connection_checker.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';

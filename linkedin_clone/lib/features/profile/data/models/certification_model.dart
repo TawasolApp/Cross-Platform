@@ -22,7 +22,8 @@ class CertificationModel extends Equatable {
   final String? certificationId;
   final String name;
   final String company;
-  final String? certificationPicture;
+  final String? companyLogo;
+  final String companyId;
   final String issueDate;
   final String? expiryDate;
 
@@ -30,7 +31,8 @@ class CertificationModel extends Equatable {
     this.certificationId,
     required this.name,
     required this.company,
-    this.certificationPicture,
+    this.companyLogo,
+    this.companyId = '',
     required this.issueDate,
     this.expiryDate,
   });
@@ -41,7 +43,8 @@ class CertificationModel extends Equatable {
       certificationId: certificationId,
       name: name,
       company: company,
-      certificationPicture: certificationPicture,
+      companyLogo: companyLogo,
+      companyId: companyId,
       issueDate: issueDate,
       expiryDate: expiryDate,
     );
@@ -53,7 +56,8 @@ class CertificationModel extends Equatable {
       certificationId: entity.certificationId ?? '',// Providing default empty string if null
       name: entity.name,
       company: entity.company,
-      certificationPicture: entity.certificationPicture,
+      companyLogo: entity.companyLogo,
+      companyId: entity.companyId ?? '', // Providing default empty string if null
       issueDate: entity.issueDate,
       expiryDate: entity.expiryDate,
     );
@@ -65,7 +69,8 @@ class CertificationModel extends Equatable {
       certificationId: json['_id'] as String? ?? '',
       name: json['name'] as String,
       company: json['company'] as String,
-      certificationPicture: json['certificationPicture'] as String?,
+      companyLogo: json['companyLogo'] as String?,
+      companyId: json['companyId'] as String? ?? '', // Providing default empty string if null
       issueDate: DateUtils.formatToYearMonth(json['issueDate'] as String),
       expiryDate: json['expiryDate'] != null
           ? DateUtils.formatToYearMonth(json['expiryDate'] as String)
@@ -79,16 +84,19 @@ class CertificationModel extends Equatable {
       '_id': certificationId,
       'name': name,
       'company': company,
-      'certificationPicture': certificationPicture,
+      'companyLogo': companyLogo,
+      'companyId': companyId,
       'issueDate': issueDate,
       'expiryDate': expiryDate,
     };
   }
 
   CertificationModel copyWith({
+    String? certificationId,
     String? name,
-    String? issuingOrganization,
-    String? issuingOrganizationPic,
+    String? company,
+    String? companyLogo,
+    String? companyId,
     String? issueDate,
     String? expiryDate,
   }) {
@@ -96,7 +104,8 @@ class CertificationModel extends Equatable {
       certificationId: certificationId ?? this.certificationId,
       name: name ?? this.name,
       company: company ?? this.company,
-      certificationPicture: certificationPicture ?? this.certificationPicture,
+      companyLogo: companyLogo ?? this.companyLogo,
+      companyId: companyId ?? this.companyId,
       issueDate: issueDate ?? this.issueDate,
       expiryDate: expiryDate ?? this.expiryDate,
     );
@@ -106,7 +115,8 @@ class CertificationModel extends Equatable {
   List<Object?> get props => [
         name,
         company,
-        certificationPicture,
+        companyLogo,
+        companyId,
         issueDate,
         expiryDate,
       ];

@@ -111,7 +111,9 @@ class _EditExperiencePageState extends State<EditExperiencePage> {
                 : null,
         employmentType: _employmentType.toLowerCase().replaceAll('-', '_'),
         locationType: _locationType.toLowerCase().replaceAll('-', '_'),
-        workExperiencePicture: widget.experience?.workExperiencePicture,
+        companyLogo: widget.experience?.companyLogo,
+        companyId: widget.experience?.companyId,
+        workExperienceId: widget.experience?.workExperienceId,
       );
 
       if (widget.experience != null) {
