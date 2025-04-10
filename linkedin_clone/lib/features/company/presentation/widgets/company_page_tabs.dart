@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_about_tab_widget.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_home_tab_widget.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_jobs_tab_widget.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_posts_tab.dart';
 
 class CompanyTabsWidget extends StatelessWidget {
-  final String userId; // Accepting userId as a parameter
   final String companyId;
-  CompanyTabsWidget({required this.userId, required this.companyId});
+  CompanyTabsWidget({required this.companyId});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +17,8 @@ class CompanyTabsWidget extends StatelessWidget {
           TabBar(
             unselectedLabelColor: Colors.grey,
             labelColor: Theme.of(context).colorScheme.primary,
-            labelPadding: EdgeInsets.symmetric(horizontal: 0), // Adjust spacing
-            indicatorColor: Colors.blue, // Customize as needed
+            labelPadding: EdgeInsets.symmetric(horizontal: 0), 
+            indicatorColor: Colors.blue, 
             tabs: [
               Tab(text: "Home"),
               Tab(text: "About"),
@@ -30,10 +30,10 @@ class CompanyTabsWidget extends StatelessWidget {
             height: 500, // TODO:Change this to be make the whole screen scroablle
             child: TabBarView(
               children: [
-                CompanyHomeTab(userId: userId),
+                CompanyHomeTab(companyId: companyId),
                 CompanyAboutWidget(companyId),
-                Center(child: Text("Posts Content")),
-                CompanyJobsWidget(userId: userId,companyId: companyId,),
+                PostsTabWidget(companyId: companyId),
+                CompanyJobsWidget(companyId: companyId),
               ],
             ),
           ),

@@ -14,7 +14,6 @@ class CompanyRepositoryImpl implements CompanyRepository {
 
   @override
   Future<Company> getCompanyDetails(String companyId) async {
-    // TODO: Implement error handling for API call failures.
     final companyModel = await remoteDataSource.getCompanyDetails(companyId);
     return Company(
       companyId: companyModel.companyId,
@@ -44,7 +43,6 @@ class CompanyRepositoryImpl implements CompanyRepository {
 
   @override
   Future<List<Company>> getRelatedCompanies(String companyId,{int page = 1, int limit = 4}) async {
-    // TODO: Implement error handling for API call failures.
     final relatedCompaniesModel = await remoteDataSource.getRelatedCompanies(
       companyId, page : page, limit :limit
     );

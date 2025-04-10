@@ -697,7 +697,7 @@ packages:
     source: hosted
     version: "0.257.0"
   matcher:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: matcher
       sha256: dc58c723c3c24bf8d3e2d3ad3f2f9d7bd9cf43ec6feaa64181775e60190153f2
@@ -1046,7 +1046,7 @@ packages:
     source: hosted
     version: "1.2.2"
   test:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: test
       sha256: "301b213cd241ca982e9ba50266bd3f5bd1ea33f1455554c5abb85d1be0e2d87e"

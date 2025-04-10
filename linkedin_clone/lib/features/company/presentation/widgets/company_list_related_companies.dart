@@ -6,12 +6,10 @@ import 'package:linkedin_clone/features/company/presentation/providers/related_c
 class FullRelatedCompaniesScreen extends StatelessWidget {
   final String companyId;
 
-  // Constructor to accept companyId
   const FullRelatedCompaniesScreen({required this.companyId});
 
   @override
   Widget build(BuildContext context) {
-    // Set the companyId for the provider when the screen is built
     Future.delayed(Duration.zero, () {
       Provider.of<RelatedCompaniesProvider>(
         context,
@@ -41,7 +39,7 @@ class FullRelatedCompaniesScreen extends StatelessWidget {
               padding: EdgeInsets.all(16),
               itemCount:
                   provider.relatedCompanies.length +
-                  1, // +1 for "Load More" button
+                  1, 
               separatorBuilder: (_, __) => Divider(thickness: 1),
               itemBuilder: (context, index) {
                 if (index < provider.relatedCompanies.length) {
@@ -73,7 +71,6 @@ class FullRelatedCompaniesScreen extends StatelessWidget {
                     },
                   );
                 } else if (provider.isAllLoaded) {
-                  // If all companies are loaded, show "No more companies"
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     child: Center(

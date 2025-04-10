@@ -219,11 +219,10 @@ class EditCompanyScreen extends StatelessWidget {
                                             0.25,
                                         height:
                                             MediaQuery.of(context).size.width *
-                                            0.25, // Maintain aspect ratio
+                                            0.25, 
                                         fit: BoxFit.cover,
                                       ),
                                     )
-                                    // If no image is picked, show default company logo (if available) or camera icon
                                     : company.logo != null &&
                                         company.logo.isNotEmpty
                                     ? ClipRRect(
@@ -278,11 +277,10 @@ class EditCompanyScreen extends StatelessWidget {
                                 () => provider.pickImage(
                                   ImageSource.gallery,
                                   false,
-                                ), // false for banner
+                                ), 
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
-                                // If banner image is available, display it
                                 provider.bannerImage != null
                                     ? ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
@@ -293,11 +291,10 @@ class EditCompanyScreen extends StatelessWidget {
                                             0.75,
                                         height:
                                             MediaQuery.of(context).size.width *
-                                            0.25, // Maintain aspect ratio
+                                            0.25, 
                                         fit: BoxFit.cover,
                                       ),
                                     )
-                                    // If no image is picked, show default company banner (if available) or camera icon
                                     : company.banner != null &&
                                         company.banner.isNotEmpty
                                     ? ClipRRect(
@@ -367,11 +364,11 @@ class EditCompanyScreen extends StatelessWidget {
                                     contactNumber: contactNumberController.text,
                                     logo:
                                         logoImage?.path ??
-                                        company.logo, // Use selected image path
+                                        company.logo, 
                                     banner:
                                         bannerImage?.path ??
                                         company
-                                            .banner, // Use selected image path
+                                            .banner, 
                                     isVerified: company.isVerified,
                                   );
                                   await provider.updateDetails(
@@ -493,8 +490,9 @@ class EditCompanyScreen extends StatelessWidget {
   }
 
   String? urlValidator(String? value) {
-    final urlPattern = r"^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$";
-  if (value == null || value.isEmpty) return null;
+    final urlPattern =
+        r'^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,}(\S*)?$';
+    if (value == null || value.isEmpty) return null;
 
     if (!RegExp(urlPattern).hasMatch(value)) {
       return 'Enter a valid URL';

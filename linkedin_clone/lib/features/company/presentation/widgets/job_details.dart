@@ -8,14 +8,12 @@ import 'package:linkedin_clone/features/company/presentation/widgets/job_apply_w
 class JobDetailsScreen extends StatefulWidget {
   final Job job;
   final CompanyProvider companyProvider;
-  final String userId;
   final String companyId;
 
   const JobDetailsScreen({
     Key? key,
     required this.job,
     required this.companyProvider,
-    required this.userId,
     required this.companyId,
   }) : super(key: key);
 

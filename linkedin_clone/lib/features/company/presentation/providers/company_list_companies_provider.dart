@@ -25,11 +25,9 @@ class CompanyListProvider extends ChangeNotifier {
   }) async {
     print('Fetching companies (Page: $page)...');
     if (isAllLoaded) return;
-    // Set loading state to true
     _isLoading = true;
     _error = null;
 
-    // Notify listeners after initiating the loading phase
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
@@ -58,7 +56,6 @@ class CompanyListProvider extends ChangeNotifier {
     // Set loading state to false
     _isLoading = false;
 
-    // Notify listeners after data fetch is complete
     WidgetsBinding.instance.addPostFrameCallback((_) {
       notifyListeners();
     });
@@ -71,7 +68,7 @@ class CompanyListProvider extends ChangeNotifier {
     }
     _isLoading = true;
     notifyListeners();
-    _currentPage++; // Increment page number
+    _currentPage++; 
     await fetchCompanies(
       query,
       page: _currentPage,
@@ -81,7 +78,7 @@ class CompanyListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Reset the provider (clear companies, page, etc.)
+  // Reset the provider 
   void resetProvider() {
     _companies.clear();
     _currentPage = 1;

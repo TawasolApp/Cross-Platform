@@ -55,13 +55,13 @@ class FeedProvider extends ChangeNotifier {
 
   List<PostEntity> _posts = [];
   List<PostEntity> get posts => _posts;
-
+  List<PostEntity> _userPosts = [];
+  List<PostEntity> get userPosts => _userPosts;
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -170,8 +170,8 @@ class FeedProvider extends ChangeNotifier {
           notifyListeners();
         },
         (posts) {
-          _posts = List<PostEntity>.from(posts);
-          print("Posts fetched successfully, count: ${_posts.length}");
+          _userPosts = List<PostEntity>.from(posts);
+          print("User posts fetched successfully, count: ${_userPosts.length}");
           _isLoading = false;
           notifyListeners();
         },

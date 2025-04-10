@@ -15,27 +15,6 @@ import 'package:linkedin_clone/features/company/data/datasources/job_remote_data
 import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/entities/job.dart';
 
-class Post {
-  final String username;
-  final String profileImage;
-  final String text;
-  final String? imageUrl;
-  final int likes;
-  final int comments;
-  final int shares;
-  final int followers;
-
-  Post({
-    required this.username,
-    required this.profileImage,
-    required this.text,
-    this.imageUrl,
-    required this.likes,
-    required this.comments,
-    required this.shares,
-    required this.followers,
-  });
-}
 
 class CompanyProvider with ChangeNotifier {
   Company? _company;
@@ -43,7 +22,6 @@ class CompanyProvider with ChangeNotifier {
   List<Company> _relatedCompanies = [];
   bool _isLoading = false;
   Map<String, bool> _followStatus = {};
-  List<Post> _posts = [];
   List<Job> _jobs = [];
   bool _isLoadingJobs = false;
   bool isManager = false;
@@ -78,7 +56,6 @@ class CompanyProvider with ChangeNotifier {
   List<User> get friendsFollowing => _friendsFollowing;
   List<Company> get relatedCompanies => _relatedCompanies;
   bool get isLoading => _isLoading;
-  List<Post> get posts => _posts;
   List<Job> get jobs => _jobs;
   bool get isLoadingJobs => _isLoadingJobs;
   bool get isLoadingFollowers => _isLoadingFollowers;
@@ -120,7 +97,7 @@ class CompanyProvider with ChangeNotifier {
 
   get currentJobsPage => _currentJobsPage;
 
-  Future<void> fetchCompanyDetails(String companyId, String userId) async {
+  Future<void> fetchCompanyDetails(String companyId) async {
     _isLoading = true;
     safeNotify();
     print('CompanyID is:$companyId');
@@ -128,10 +105,8 @@ class CompanyProvider with ChangeNotifier {
 
     await fetchFollowStatus(companyId);
     _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      userId,
       companyId,
     );
-    _posts = await fetchPosts();
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
     _isLoading = false;
@@ -165,7 +140,6 @@ class CompanyProvider with ChangeNotifier {
     _isLoading = false;
     await fetchFollowStatus(companyId);
     _followStatus[companyId] = !currentStatus;
-    print('STATUS IS: ${_company?.isFollowing}');
     print('STATUS ISSS: ${_followStatus[companyId]}');
 
     safeNotify();
@@ -177,47 +151,18 @@ class CompanyProvider with ChangeNotifier {
   }
 
   Future<List<User>> fetchFriendsFollowingCompany(
-    String userId,
     String companyId,
   ) async {
     _isLoading = true;
     safeNotify();
 
     _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      userId,
       companyId,
     );
 
     _isLoading = false;
     safeNotify();
     return _friendsFollowing;
-  }
-
-  Future<List<Post>> fetchPosts() async {
-    await Future.delayed(Duration(seconds: 2));
-    return [
-      Post(
-        username: "Tech Corp",
-        profileImage: company?.logo ?? 'default_logo_url',
-        text: "Exciting news! We just launched a new AI-powered tool.",
-        imageUrl:
-            "https://connect-assets.prosple.com/cdn/ff/7jtyuAO15E0OYPTLcxUXQhK5MpVI7gEfDSjKrRKjL0A/1645287092/public/2022-02/P%26G-banner.png",
-        likes: 120,
-        comments: 30,
-        shares: 15,
-        followers: 5000,
-      ),
-      Post(
-        username: "DevHub",
-        profileImage: company?.logo ?? 'default_logo_url',
-        text: "Join us for our next developer conference!",
-        imageUrl: null,
-        likes: 85,
-        comments: 20,
-        shares: 10,
-        followers: 3200,
-      ),
-    ];
   }
 
   Future<List<Job>> fetchRecentJobs(
@@ -250,10 +195,8 @@ class CompanyProvider with ChangeNotifier {
       // Return the fetched jobs
       return jobList;
     } catch (e) {
-      // Handle error gracefully
       print("Error fetching jobs: $e");
 
-      // Return an empty list if there's an error
       return [];
     } finally {
       // Set the loading state to false
@@ -263,14 +206,11 @@ class CompanyProvider with ChangeNotifier {
   }
 
   Future<void> loadMoreJobs(String companyId) async {
-    // Check if jobs are already loading or all jobs are already loaded
     if (_isLoadingJobs || _isAllJobsLoaded) return;
 
-    // Set the loading state to true to prevent multiple simultaneous requests
     _isLoadingJobs = true;
     safeNotify();
 
-    // Increment the current page to load the next set of jobs
     _currentJobsPage++;
 
     try {
@@ -279,7 +219,6 @@ class CompanyProvider with ChangeNotifier {
         page: _currentJobsPage,
       );
 
-      // If no new jobs are returned, mark that all jobs are loaded
       if (newJobs.isEmpty) {
         _isAllJobsLoaded = true;
       } else {}
@@ -300,7 +239,6 @@ class CompanyProvider with ChangeNotifier {
 
       // Attempt to add the job
       final response = await _createJob.execute(job, companyId);
-      print('hellloooooooooo');
       resetJobs();
       print(jobs);
       await fetchRecentJobs(companyId);
@@ -308,14 +246,12 @@ class CompanyProvider with ChangeNotifier {
       _isLoadingJobs = false;
       safeNotify();
 
-      // Return true if job was added successfully
       return true;
     } catch (e) {
       print("Error adding job: $e");
       _isLoadingJobs = false;
       safeNotify();
 
-      // Return false if there was an error
       return false;
     }
   }
@@ -325,53 +261,42 @@ class CompanyProvider with ChangeNotifier {
     int page = 1,
     int limit = 2,
   }) async {
-    // Start the loading process
     _isLoadingFollowers = true;
     safeNotify();
 
     try {
-      // Fetch the followers using the API
       List<User> followersList = await _getCompanyFollowersUseCase.execute(
         companyId,
         page: page,
         limit: limit,
       );
 
-      // If no followers were fetched, and it's the first request, we mark all followers as loaded
       if (followersList.isEmpty) {
         _isAllFollowersLoaded = true;
         return [];
       }
 
-      // If followers are fetched, add them to the existing list
       if (followersList.isNotEmpty) {
         _followers.addAll(
           followersList,
-        ); // Add new followers to the existing list
+        ); 
       } else {
         _isAllFollowersLoaded = true;
       }
 
-      // Return the fetched followers
       return followersList;
     } catch (e) {
-      // Handle error gracefully
       print("Error fetching followers: $e");
 
-      // Return an empty list if there's an error
       return [];
     } finally {
-      // Set the loading state to false
       _isLoadingFollowers = false;
       safeNotify();
     }
   }
 
   Future<void> loadMoreFollowers(String companyId) async {
-    // Check if followers are already loading or all followers are already loaded
     if (_isLoadingFollowers || _isAllFollowersLoaded) return;
-    print('loadinggggggggggggggggggggggggggggggg');
-    // Set the loading state to true to prevent multiple simultaneous requests
     _isLoadingFollowers = true;
     safeNotify();
 
@@ -379,18 +304,15 @@ class CompanyProvider with ChangeNotifier {
       final nextPage = _currentFollowersPage + 1; // Don't increment yet
 
       List<User> newFollowers = await fetchFollowers(companyId, page: nextPage);
-      // If no new followers are returned, mark that all followers are loaded
       if (newFollowers.isEmpty) {
         _isAllFollowersLoaded = true;
       } else {
-        // Add the newly fetched followers to the existing followers list
 
         _currentFollowersPage = nextPage;
       }
     } catch (e) {
       print("Error loading more followers: $e");
     } finally {
-      // Reset the loading state and notify listeners
       _isLoadingFollowers = false;
       safeNotify();
     }

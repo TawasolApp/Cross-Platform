@@ -16,15 +16,15 @@ class ApplyForJobWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Set screen background to white
+      backgroundColor: Colors.white, 
       appBar: AppBar(
-        backgroundColor: Colors.white, // White app bar
+        backgroundColor: Colors.white, 
         title: Text(
           'Apply for $companyName',
-          style: TextStyle(color: const Color.fromARGB(255, 21, 98, 161)), // Title text in blue
+          style: TextStyle(color: const Color.fromARGB(255, 21, 98, 161)), 
         ),
-        iconTheme: IconThemeData(color: Colors.black), // Back button color
-        elevation: 0, // Remove shadow
+        iconTheme: IconThemeData(color: Colors.black), 
+        elevation: 0, 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

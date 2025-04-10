@@ -40,7 +40,6 @@ class CompanyRemoteDataSource {
     int page = 1,
     int limit = 4,
   }) async {
-    // TODO: Replace this mock data with an API request once the backend is ready
     print('Fetching related companies...');
     final token = await TokenService.getToken();
     try {
