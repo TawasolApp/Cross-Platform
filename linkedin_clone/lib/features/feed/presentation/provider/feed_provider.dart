@@ -19,8 +19,8 @@ import '../../domain/usecases/unsave_post_usecase.dart';
 import '../../domain/usecases/get_user_posts_usecase.dart';
 import 'package:collection/collection.dart';
 import 'package:linkedin_clone/core/utils/reaction_type.dart';
+import '../../domain/usecases/delete_comment_usecase.dart';
 
-//import '../../domain/usecases/';
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
   final CreatePostUseCase createPostUseCase;
@@ -35,7 +35,7 @@ class FeedProvider extends ChangeNotifier {
   final GetProfileUseCase getProfileUseCase;
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
-  //final DeleteCommentUseCase deleteCommentUseCase;
+  final DeleteCommentUseCase deleteCommentUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -51,7 +51,7 @@ class FeedProvider extends ChangeNotifier {
     required this.getProfileUseCase,
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
-    // required this.deleteCommentUseCase,
+    required this.deleteCommentUseCase,
   });
   Map<String, bool> buildReactionsFromReactType(String? reactType) {
     const allReactions = [
@@ -502,5 +502,32 @@ class FeedProvider extends ChangeNotifier {
       _handleFailure(failure);
       return [];
     }, (reactions) => reactions);
+  }
+
+  Future<void> deleteComment(String postId, String commentId) async {
+    print('Provider: Deleting comment with ID: $commentId from post: $postId');
+    final result = await deleteCommentUseCase(commentId);
+    result.fold(
+      (failure) {
+        print("Provider: Failed to delete comment: $failure");
+        if (failure is NotFoundFailure) {
+          print("Comment not found.");
+        } else if (failure is UnauthorizedFailure) {
+          print("Unauthorized access.");
+        } else if (failure is ForbiddenFailure) {
+          print("Action forbidden.");
+        } else if (failure is ServerFailure) {
+          print("Server error occurred.");
+        } else {
+          print("Unexpected failure occurred.");
+        }
+      },
+      (_) {
+        comments.removeWhere((comment) => comment.id == commentId);
+        notifyListeners();
+        fetchComments(postId);
+        print("Comment deleted successfully");
+      },
+    );
   }
 }

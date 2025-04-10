@@ -57,6 +57,7 @@ abstract class FeedRemoteDataSource {
     int? page,
     int limit,
   });
+  Future<void> deleteComment(String commentId);
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -515,6 +516,27 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
     } catch (e) {
       return Left(NetworkFailure('Failed to connect to server: $e'));
+    }
+  }
+
+  @override
+  Future<void> deleteComment(String commentId) async {
+    final token = await _getToken();
+    final response = await dio.delete(
+      'https://tawasolapp.me/api/posts/comment/$commentId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    if (response.statusCode == 204) {
+      return;
+    } else if (response.statusCode == 401) {
+      throw UnauthorizedException("Unauthorized access");
+    } else if (response.statusCode == 403) {
+      throw ForbiddenException();
+    } else if (response.statusCode == 404) {
+      throw NotFoundException("Comment not found");
+    } else {
+      throw ServerException("A server error occurred");
     }
   }
 }

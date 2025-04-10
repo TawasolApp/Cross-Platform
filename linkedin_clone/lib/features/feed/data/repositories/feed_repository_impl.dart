@@ -242,4 +242,22 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(ServerFailure('Failed to load posts'));
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> deleteComment(String commentId) async {
+    try {
+      await remoteDataSource.deleteComment(commentId);
+      return const Right(unit);
+    } on UnauthorizedException {
+      return Left(UnauthorizedFailure("Unauthorized access"));
+    } on ForbiddenException {
+      return Left(ForbiddenFailure());
+    } on NotFoundException {
+      return Left(NotFoundFailure("Resource not found"));
+    } on ServerException {
+      return Left(ServerFailure());
+    } catch (e) {
+      return Left(UnexpectedFailure());
+    }
+  }
 }

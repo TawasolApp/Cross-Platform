@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/feed/presentation/widgets/comment_actions_bottom_sheet.dart';
+import 'package:linkedin_clone/features/feed/presentation/widgets/comment_actions_footer.dart';
 import 'package:lucide_icons/lucide_icons.dart'; // For three dots icon
 import '../../domain/entities/comment_entity.dart';
 
@@ -30,10 +30,11 @@ class CommentItem extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder:
-          (_) => CommentActionsBottomSheet(
+          (_) => CommentActionsFooter(
             commentId: comment.id,
             postId: comment.postId,
-            commentContent: comment.content,
+            authorId: comment.authorId,
+            //currentUserId: comment.currentUserId,
           ),
     );
   }

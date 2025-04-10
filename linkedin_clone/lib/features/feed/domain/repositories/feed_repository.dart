@@ -54,4 +54,5 @@ abstract class FeedRepository {
     List<String>? tagged,
     bool isReply,
   });
+  Future<Either<Failure, Unit>> deleteComment(String commentId);
 }
