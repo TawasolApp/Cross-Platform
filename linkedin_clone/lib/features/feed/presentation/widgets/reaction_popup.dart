@@ -14,12 +14,14 @@ class ReactionPopup extends StatelessWidget {
     required this.onReactionSelected,
   }) : super(key: key);
 
-  void _handleReaction(BuildContext context, ReactionType reaction) {
+  void _handleReaction(BuildContext context, ReactionType selectedReaction) {
     final provider = Provider.of<FeedProvider>(context, listen: false);
-    provider.reactToPost(postId, {reaction.name: true}, "Post");
-    onReactionSelected(
-      reaction.name,
-    ); // Pass reaction name instead of the entire object
+    final reactions = {
+      for (var r in ReactionType.values.where((r) => r != ReactionType.none))
+        r.name: r == selectedReaction,
+    };
+    provider.reactToPost(postId, reactions, "Post");
+    onReactionSelected(selectedReaction.name);
     Navigator.pop(context);
   }
 
@@ -36,6 +38,7 @@ class ReactionPopup extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
+                // ignore: deprecated_member_use
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 4),

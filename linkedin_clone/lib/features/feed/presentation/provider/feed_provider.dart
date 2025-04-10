@@ -309,7 +309,7 @@ class FeedProvider extends ChangeNotifier {
         print('${postId}');
       },
       (_) {
-        print('Post edited successfully');
+        print('Provider: Post edited successfully with id $postId');
         final index = posts.indexWhere((post) => post.id == postId);
         if (index != -1) {
           posts[index] = posts[index].copyWith(
@@ -369,22 +369,24 @@ class FeedProvider extends ChangeNotifier {
 
   Future<void> editComment({
     required String commentId,
-    required String content,
+    required String updatedContent,
     List<String>? taggedUsers,
     bool isReply = false,
   }) async {
     final result = await editCommentUseCase(
       commentId: commentId,
-      content: content,
-      tagged: taggedUsers,
+      content: updatedContent,
+      tagged: taggedUsers ?? [],
       isReply: isReply,
     );
     result.fold((failure) => _handleFailure(failure), (_) {
       final index = _comments.indexWhere((c) => c.id == commentId);
       if (index != -1) {
-        _comments[index] = _comments[index].copyWith(content: content);
+        _comments[index] = _comments[index].copyWith(content: updatedContent);
         notifyListeners();
       }
+      fetchComments(_comments[index].postId);
+      print("Comment edited successfully: $updatedContent");
     });
   }
 
@@ -398,13 +400,27 @@ class FeedProvider extends ChangeNotifier {
       reactions: reactions,
       postType: postType,
     );
-    result.fold((failure) => _handleFailure(failure), (_) {
-      final index = _posts.indexWhere((post) => post.id == postId);
-      if (index != -1) {
-        _posts[index] = _posts[index].copyWith(reactions: reactions);
-        notifyListeners();
-      }
-    });
+    result.fold(
+      (failure) {
+        print("Provider: Failed to react to post: $failure");
+        _handleFailure(failure);
+      },
+      (_) {
+        print("Provider: Reaction updated successfully");
+        final index = _posts.indexWhere((post) => post.id == postId);
+        if (index != -1) {
+          final currentPost = _posts[index];
+          final selected = reactions.entries.firstWhere((e) => e.value).key;
+          final updatedPost = currentPost.copyWith(
+            reactType: selected,
+            reactCounts: Map<String, int>.from(currentPost.reactCounts ?? {})
+              ..update(selected, (value) => value + 1, ifAbsent: () => 1),
+          );
+          _posts[index] = updatedPost;
+          notifyListeners();
+        }
+      },
+    );
   }
 
   Future<List<Map<String, dynamic>>> getPostReactions(String postId) async {

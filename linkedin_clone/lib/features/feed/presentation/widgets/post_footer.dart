@@ -24,7 +24,7 @@ class PostFooter extends StatefulWidget {
 ReactionType getReactionTypeByName(String name) {
   return ReactionType.values.firstWhere(
     (reaction) => reaction.name.toLowerCase() == name.toLowerCase(),
-    orElse: () => ReactionType.like, // Default to "Like" if not found
+    orElse: () => ReactionType.like,
   );
 }
 

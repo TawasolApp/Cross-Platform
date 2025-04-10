@@ -111,10 +111,13 @@ class AppRouter {
               title: "Test",
             ),
       ),
-      GoRoute(
-        path: RouteNames.profile,
-        builder: (context, state) => UserProfile(),
-      ),
+      // GoRoute(
+      //   path: RouteNames.profile,
+      //   builder: (context, state) {
+      //     final userId = state.extra as String;
+      //     return UserProfile(userId);
+      //   },
+      // ),
       GoRoute(
         path: RouteNames.settings,
         builder: (context, state) => SettingsPage(),

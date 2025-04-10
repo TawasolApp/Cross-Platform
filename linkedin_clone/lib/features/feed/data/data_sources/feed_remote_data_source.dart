@@ -45,7 +45,7 @@ abstract class FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
-  Future<void> editComment({
+  Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
     required List<String> tagged,
@@ -361,7 +361,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<void> editComment({
+  Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
     required List<String> tagged,
@@ -370,14 +370,29 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.patch(
-        'https://tawasolapp.me/api/posts/comments/$commentId',
+        'https://tawasolapp.me/api/posts/comment/$commentId',
         data: {'content': content, 'tagged': tagged, 'isReply': isReply},
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
       );
-
-      _validateResponse(response);
+      if (response.statusCode == 200) {
+        return const Right(unit);
+      } else if (response.statusCode == 401) {
+        return Left(UnauthorizedFailure("Unauthorized access"));
+      } else if (response.statusCode == 403) {
+        return Left(ForbiddenFailure());
+      } else if (response.statusCode == 404) {
+        return Left(NotFoundFailure("Comment not found"));
+      } else {
+        return Left(ServerFailure());
+      }
     } catch (e) {
-      throw ServerException("Failed to edit comment");
+      print("editComment error: $e");
+      return Left(UnexpectedFailure());
     }
   }
 

@@ -41,7 +41,7 @@ class CommentItem extends StatelessWidget {
             postId: comment.postId,
             authorId: comment.authorId,
             currentUserId: currentUserId ?? "",
-            // commentContent: comment.content,
+            commentContent: comment.content,
           ),
     );
   }
@@ -106,6 +106,7 @@ class CommentItem extends StatelessWidget {
                     postId: comment.postId,
                     authorId: comment.authorId,
                     currentUserId: currentUserId,
+                    commentContent: comment.content,
                   ),
                 ],
               ),

@@ -92,7 +92,6 @@ class FeedRepositoryImpl implements FeedRepository {
     }
   }
 
-  // React to a Post
   @override
   Future<Either<Failure, Unit>> reactToPost({
     required String postId,
@@ -106,8 +105,10 @@ class FeedRepositoryImpl implements FeedRepository {
         postType: postType,
       );
       return const Right(unit);
-    } catch (e) {
-      return Left(ServerFailure(e.toString()));
+    } on ServerException {
+      return Left(ServerFailure());
+    } catch (_) {
+      return Left(UnexpectedFailure());
     }
   }
 
@@ -198,12 +199,11 @@ class FeedRepositoryImpl implements FeedRepository {
     }
   }
 
-  // Edit a Comment
   @override
   Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
-    List<String>? tagged, // Changed to match API
+    List<String>? tagged,
     bool isReply = false,
   }) async {
     try {
@@ -214,10 +214,16 @@ class FeedRepositoryImpl implements FeedRepository {
         isReply: isReply,
       );
       return const Right(unit);
-    } on ServerException catch (e) {
-      return Left(ServerFailure(e.message));
+    } on UnauthorizedException {
+      return Left(UnauthorizedFailure("Unauthorized access"));
+    } on ForbiddenException {
+      return Left(ForbiddenFailure());
+    } on NotFoundException {
+      return Left(NotFoundFailure("Resource not found"));
+    } on ServerException {
+      return Left(ServerFailure());
     } catch (e) {
-      return Left(NetworkFailure(e.toString()));
+      return Left(UnexpectedFailure());
     }
   }
 

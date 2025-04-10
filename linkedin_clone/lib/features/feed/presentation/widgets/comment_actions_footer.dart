@@ -7,6 +7,7 @@ class CommentActionsFooter extends StatelessWidget {
   final String postId;
   final String authorId;
   final String currentUserId;
+  final String commentContent;
 
   const CommentActionsFooter({
     super.key,
@@ -14,10 +15,12 @@ class CommentActionsFooter extends StatelessWidget {
     required this.postId,
     required this.authorId,
     required this.currentUserId,
+    required this.commentContent,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool isOwner = (authorId == currentUserId);
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
       child: Row(
@@ -30,9 +33,15 @@ class CommentActionsFooter extends StatelessWidget {
           _buildActionText(context, "Reply", () {
             // Reply functionality
           }),
-          // if (authorId == currentUserId)
+          //if (isOwner)
           _buildSeparator(),
-          //if (authorId == currentUserId)
+          //if (isOwner)
+          _buildActionText(context, "Edit", () {
+            _showEditDialog(context);
+          }),
+          // if (isOwner)
+          _buildSeparator(),
+          //if (isOwner)
           _buildActionText(context, "Delete", () async {
             await Provider.of<FeedProvider>(
               context,
@@ -69,6 +78,59 @@ class CommentActionsFooter extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.symmetric(horizontal: 8.0),
       child: Text('|', style: TextStyle(fontSize: 12, color: Colors.grey)),
+    );
+  }
+
+  void _showEditDialog(BuildContext context) {
+    final controller = TextEditingController(text: commentContent);
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text("Edit Comment"),
+          content: TextField(
+            controller: controller,
+            maxLines: null,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Update your comment",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                final updatedText = controller.text.trim();
+                if (updatedText.isNotEmpty && updatedText != commentContent) {
+                  await Provider.of<FeedProvider>(
+                    context,
+                    listen: false,
+                  ).editComment(
+                    commentId: commentId,
+                    updatedContent: updatedText,
+                    isReply: false,
+                  );
+
+                  Navigator.pop(context);
+
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(
+                  //     content: Text("Comment updated successfully"),
+                  //   ),
+                  // );
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
