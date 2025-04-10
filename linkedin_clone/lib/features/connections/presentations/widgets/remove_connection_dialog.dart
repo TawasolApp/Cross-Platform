@@ -61,7 +61,6 @@ class RemoveConnectionDialog extends StatelessWidget {
                       Navigator.pop(context); // Close remove connection dialog
                       Navigator.pop(context); // Close pop-up menu
                     } else {
-                      Navigator.pop(context); // Close remove connection dialog
                       showDialog(
                         context: context,
                         builder:
@@ -72,6 +71,7 @@ class RemoveConnectionDialog extends StatelessWidget {
                               buttonText: "Cancel",
                               onPressed: () {
                                 Navigator.of(context).pop(); // Close dialog
+                                Navigator.pop(context);
                               },
                             ),
                       );

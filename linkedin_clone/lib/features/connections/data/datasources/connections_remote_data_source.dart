@@ -85,6 +85,7 @@ class ConnectionsRemoteDataSource {
       print('page: $page');
       print('limit: $limit');
       final token = await initToken();
+      print(token);
       final response = await client
           .get(
             Uri.parse('${baseUrl}connections/pending?page=$page&limit=$limit'),
@@ -398,13 +399,16 @@ class ConnectionsRemoteDataSource {
     print('userId: $userId');
     try {
       final token = await initToken();
-      final response = await client.post(
+      final response = await client.patch(
         Uri.parse('${baseUrl}connections/$userId'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
         body: jsonEncode({"isAccept": accept}),
       );
 
-      if (response.statusCode == 204) {
+      if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(

@@ -23,7 +23,7 @@ class ManageMyNetworkBody extends StatelessWidget {
       color: Theme.of(context).colorScheme.onSecondary,
       borderRadius: BorderRadius.zero,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
         child: Column(
           children: [
             ///Connecitons

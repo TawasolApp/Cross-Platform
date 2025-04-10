@@ -100,7 +100,10 @@ class _ListPageState extends State<ListPage> {
     final isWide = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.onSecondary,
+      backgroundColor:
+          widget.type == PageType.manageMyNetwork
+              ? Theme.of(context).scaffoldBackgroundColor
+              : Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
         surfaceTintColor: Theme.of(context).colorScheme.onSecondary,
         elevation: 0,
