@@ -45,7 +45,7 @@ abstract class FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
-  Future<void> editComment({
+  Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
     required List<String> tagged,
@@ -360,7 +360,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<void> editComment({
+  Future<Either<Failure, Unit>> editComment({
     required String commentId,
     required String content,
     required List<String> tagged,
@@ -369,14 +369,24 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.patch(
-        'https://tawasolapp.me/api/posts/comments/$commentId',
+        'https://tawasolapp.me/api/posts/comment/$commentId',
         data: {'content': content, 'tagged': tagged, 'isReply': isReply},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
       _validateResponse(response);
+
+      return right(unit); // Success
+    } on UnauthorizedException catch (e) {
+      return left(UnauthorizedFailure(e.message));
+    } on ForbiddenException catch (e) {
+      return left(ForbiddenFailure(e.message));
+    } on NotFoundException catch (e) {
+      return left(NotFoundFailure(e.message));
+    } on ServerException catch (e) {
+      return left(ServerFailure(e.message));
     } catch (e) {
-      throw ServerException("Failed to edit comment");
+      return left(UnexpectedFailure(e.toString()));
     }
   }
 

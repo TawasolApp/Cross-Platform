@@ -4,6 +4,8 @@ import '../../domain/entities/post_entity.dart';
 import 'reaction_popup.dart';
 import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import 'package:go_router/go_router.dart';
+import '../provider/feed_provider.dart';
+import 'package:provider/provider.dart';
 
 class PostFooter extends StatefulWidget {
   final PostEntity post;
@@ -28,11 +30,24 @@ class _PostFooterState extends State<PostFooter> {
       builder:
           (_) => ReactionPopup(
             postId: widget.post.id,
-            onReactionSelected: (_) {
-              setState(() {}); // Rebuild to reflect new reaction
+            onReactionSelected: (reaction) {
+              setState(() {});
             },
           ),
     );
+  }
+
+  void _handleTapReaction(BuildContext context) {
+    final hasReacted =
+        widget.post.reactType.isNotEmpty &&
+        widget.post.reactType.toLowerCase() != 'none';
+
+    final provider = Provider.of<FeedProvider>(context, listen: false);
+    final reactionToSend = hasReacted ? 'none' : 'Like';
+
+    provider.reactToPost(widget.post.id, {reactionToSend: true}, "Post");
+
+    setState(() {});
   }
 
   @override
@@ -52,7 +67,7 @@ class _PostFooterState extends State<PostFooter> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           GestureDetector(
-            onTap: () => _showReactionPopup(context),
+            onTap: () => _handleTapReaction(context),
             onLongPress: () => _showReactionPopup(context),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

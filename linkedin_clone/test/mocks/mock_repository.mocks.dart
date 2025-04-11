@@ -7,6 +7,8 @@ import 'dart:async' as _i3;
 
 import 'package:fpdart/fpdart.dart' as _i4;
 import 'package:linkedin_clone/core/errors/failures.dart' as _i5;
+import 'package:linkedin_clone/features/feed/data/models/comment_model.dart'
+    as _i8;
 import 'package:linkedin_clone/features/feed/domain/entities/post_entity.dart'
     as _i6;
 import 'package:linkedin_clone/features/feed/domain/repositories/feed_repository.dart'
@@ -39,7 +41,7 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
   @override
   _i3.Future<_i4.Either<_i5.Failure, List<_i6.PostEntity>>> getPosts({
     int? page,
-    int? limit = 10,
+    int? limit,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#getPosts, [], {#page: page, #limit: limit}),
@@ -56,47 +58,79 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
           )
           as _i3.Future<_i4.Either<_i5.Failure, List<_i6.PostEntity>>>);
 
-  // @override
-  // _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>> createPost({
-  //   required String? content,
-  //   List<String>? media,
-  //   List<String>? taggedUsers,
-  //   required String? visibility,
-  // }) =>
-  //     (super.noSuchMethod(
-  //           Invocation.method(#createPost, [], {
-  //             #content: content,
-  //             #media: media,
-  //             #taggedUsers: taggedUsers,
-  //             #visibility: visibility,
-  //           }),
-  //           returnValue:
-  //               _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>.value(
-  //                 _i7.dummyValue<_i4.Either<_i5.Failure, _i6.PostEntity>>(
-  //                   this,
-  //                   Invocation.method(#createPost, [], {
-  //                     #content: content,
-  //                     #media: media,
-  //                     #taggedUsers: taggedUsers,
-  //                     #visibility: visibility,
-  //                   }),
-  //                 ),
-  //               ),
-  //         )
-  //         as _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>);
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, List<_i6.PostEntity>>> getUserPosts(
+    String? userId, {
+    int? page = 1,
+    int? limit = 10,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #getUserPosts,
+              [userId],
+              {#page: page, #limit: limit},
+            ),
+            returnValue:
+                _i3.Future<_i4.Either<_i5.Failure, List<_i6.PostEntity>>>.value(
+                  _i7.dummyValue<_i4.Either<_i5.Failure, List<_i6.PostEntity>>>(
+                    this,
+                    Invocation.method(
+                      #getUserPosts,
+                      [userId],
+                      {#page: page, #limit: limit},
+                    ),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, List<_i6.PostEntity>>>);
 
-  // @override
-  // _i3.Future<_i4.Either<_i5.Failure, void>> deletePost(String? postId) =>
-  //     (super.noSuchMethod(
-  //           Invocation.method(#deletePost, [postId]),
-  //           returnValue: _i3.Future<_i4.Either<_i5.Failure, void>>.value(
-  //             _i7.dummyValue<_i4.Either<_i5.Failure, void>>(
-  //               this,
-  //               Invocation.method(#deletePost, [postId]),
-  //             ),
-  //           ),
-  //         )
-  //         as _i3.Future<_i4.Either<_i5.Failure, void>>);
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>> createPost({
+    required String? content,
+    List<String>? media,
+    List<String>? taggedUsers,
+    required String? visibility,
+    String? parentPostId,
+    bool? isSilentRepost = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#createPost, [], {
+              #content: content,
+              #media: media,
+              #taggedUsers: taggedUsers,
+              #visibility: visibility,
+              #parentPostId: parentPostId,
+              #isSilentRepost: isSilentRepost,
+            }),
+            returnValue:
+                _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>.value(
+                  _i7.dummyValue<_i4.Either<_i5.Failure, _i6.PostEntity>>(
+                    this,
+                    Invocation.method(#createPost, [], {
+                      #content: content,
+                      #media: media,
+                      #taggedUsers: taggedUsers,
+                      #visibility: visibility,
+                      #parentPostId: parentPostId,
+                      #isSilentRepost: isSilentRepost,
+                    }),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i6.PostEntity>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> deletePost(String? postId) =>
+      (super.noSuchMethod(
+            Invocation.method(#deletePost, [postId]),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#deletePost, [postId]),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
 
   @override
   _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> savePost(String? postId) =>
@@ -111,29 +145,186 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
           )
           as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
 
-  //   @override
-  //   _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> reactToPost({
-  //     required String? postId,
-  //     required Map<String, bool>? reactions,
-  //     required String? postType,
-  //   }) =>
-  //       (super.noSuchMethod(
-  //             Invocation.method(#reactToPost, [], {
-  //               #postId: postId,
-  //               #reactions: reactions,
-  //               #postType: postType,
-  //             }),
-  //             returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
-  //               _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
-  //                 this,
-  //                 Invocation.method(#reactToPost, [], {
-  //                   #postId: postId,
-  //                   #reactions: reactions,
-  //                   #postType: postType,
-  //                 }),
-  //               ),
-  //             ),
-  //           )
-  //           as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
-  // }
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> unsavePost(String? postId) =>
+      (super.noSuchMethod(
+            Invocation.method(#unsavePost, [postId]),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#unsavePost, [postId]),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> reactToPost({
+    required String? postId,
+    required Map<String, bool>? reactions,
+    required String? postType,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#reactToPost, [], {
+              #postId: postId,
+              #reactions: reactions,
+              #postType: postType,
+            }),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#reactToPost, [], {
+                  #postId: postId,
+                  #reactions: reactions,
+                  #postType: postType,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, List<Map<String, dynamic>>>>
+  getPostReactions(String? postId) =>
+      (super.noSuchMethod(
+            Invocation.method(#getPostReactions, [postId]),
+            returnValue: _i3.Future<
+              _i4.Either<_i5.Failure, List<Map<String, dynamic>>>
+            >.value(
+              _i7.dummyValue<
+                _i4.Either<_i5.Failure, List<Map<String, dynamic>>>
+              >(this, Invocation.method(#getPostReactions, [postId])),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, List<Map<String, dynamic>>>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> editPost({
+    required String? postId,
+    required String? content,
+    required List<String>? media,
+    required List<String>? taggedUsers,
+    required String? visibility,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#editPost, [], {
+              #postId: postId,
+              #content: content,
+              #media: media,
+              #taggedUsers: taggedUsers,
+              #visibility: visibility,
+            }),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#editPost, [], {
+                  #postId: postId,
+                  #content: content,
+                  #media: media,
+                  #taggedUsers: taggedUsers,
+                  #visibility: visibility,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i8.CommentModel>> addComment({
+    required String? postId,
+    required String? content,
+    List<String>? taggedUsers,
+    bool? isReply = false,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#addComment, [], {
+              #postId: postId,
+              #content: content,
+              #taggedUsers: taggedUsers,
+              #isReply: isReply,
+            }),
+            returnValue:
+                _i3.Future<_i4.Either<_i5.Failure, _i8.CommentModel>>.value(
+                  _i7.dummyValue<_i4.Either<_i5.Failure, _i8.CommentModel>>(
+                    this,
+                    Invocation.method(#addComment, [], {
+                      #postId: postId,
+                      #content: content,
+                      #taggedUsers: taggedUsers,
+                      #isReply: isReply,
+                    }),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i8.CommentModel>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, List<_i8.CommentModel>>> fetchComments(
+    String? postId, {
+    int? page = 1,
+    int? limit = 10,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(
+              #fetchComments,
+              [postId],
+              {#page: page, #limit: limit},
+            ),
+            returnValue: _i3.Future<
+              _i4.Either<_i5.Failure, List<_i8.CommentModel>>
+            >.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, List<_i8.CommentModel>>>(
+                this,
+                Invocation.method(
+                  #fetchComments,
+                  [postId],
+                  {#page: page, #limit: limit},
+                ),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, List<_i8.CommentModel>>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> editComment({
+    required String? commentId,
+    required String? content,
+    List<String>? tagged,
+    bool? isReply,
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#editComment, [], {
+              #commentId: commentId,
+              #content: content,
+              #tagged: tagged,
+              #isReply: isReply,
+            }),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#editComment, [], {
+                  #commentId: commentId,
+                  #content: content,
+                  #tagged: tagged,
+                  #isReply: isReply,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
+
+  @override
+  _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> deleteComment(
+    String? commentId,
+  ) =>
+      (super.noSuchMethod(
+            Invocation.method(#deleteComment, [commentId]),
+            returnValue: _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>.value(
+              _i7.dummyValue<_i4.Either<_i5.Failure, _i4.Unit>>(
+                this,
+                Invocation.method(#deleteComment, [commentId]),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
 }

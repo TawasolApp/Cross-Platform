@@ -19,6 +19,10 @@ class PostEntity {
   //final RepostDetails? repostDetails;
   final DateTime timestamp;
   final bool isSaved;
+  final bool isFollowing;
+  final bool isConnected;
+  final bool isEdited;
+  final bool isSilentRepost;
 
   PostEntity({
     required this.id,
@@ -39,6 +43,10 @@ class PostEntity {
     required this.timestamp,
     //this.repostDetails,
     this.isSaved = false,
+    this.isFollowing = false,
+    this.isConnected = false,
+    this.isEdited = false,
+    this.isSilentRepost = false,
   });
 
   PostEntity copyWith({
@@ -60,6 +68,10 @@ class PostEntity {
     String? reactType,
     RepostDetails? repostDetails,
     bool? isSaved,
+    bool? isFollowing,
+    bool? isConnected,
+    bool? isEdited,
+    bool? isSilentRepost,
   }) {
     return PostEntity(
       id: id ?? this.id,
@@ -82,6 +94,10 @@ class PostEntity {
       timestamp: timestamp ?? this.timestamp,
       //repostDetails: repostDetails ?? this.repostDetails,
       isSaved: isSaved ?? this.isSaved,
+      isFollowing: isFollowing ?? this.isFollowing,
+      isConnected: isConnected ?? this.isConnected,
+      isEdited: isEdited ?? this.isEdited,
+      isSilentRepost: isSilentRepost ?? this.isSilentRepost,
     );
   }
 }

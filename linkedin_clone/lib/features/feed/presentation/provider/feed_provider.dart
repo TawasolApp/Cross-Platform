@@ -32,7 +32,6 @@ class FeedProvider extends ChangeNotifier {
   final EditCommentUseCase editCommentUseCase;
   final ReactToPostUseCase reactToPostUseCase;
   final GetPostReactionsUseCase getPostReactionsUseCase;
-  final GetProfileUseCase getProfileUseCase;
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
   final DeleteCommentUseCase deleteCommentUseCase;
@@ -48,23 +47,12 @@ class FeedProvider extends ChangeNotifier {
     required this.editCommentUseCase,
     required this.reactToPostUseCase,
     required this.getPostReactionsUseCase,
-    required this.getProfileUseCase,
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
     required this.deleteCommentUseCase,
   });
-  Map<String, bool> buildReactionsFromReactType(String? reactType) {
-    const allReactions = [
-      'Like',
-      'Celebrate',
-      'Love',
-      'Insightful',
-      'Funny',
-      'Support',
-    ];
-    return {for (var r in allReactions) r: r == reactType};
-  }
 
+  //String _currentUserId;
   List<PostEntity> _posts = [];
   List<PostEntity> get posts => _posts;
 
@@ -102,19 +90,6 @@ class FeedProvider extends ChangeNotifier {
     _errorMessage = failure.message;
     _isLoading = false;
     notifyListeners();
-  }
-
-  /////////
-  final bool useMockData = false;
-  Future<void> fetchProfileData() async {
-    final result = await getProfileUseCase(NoParams());
-    result.fold((failure) => _handleFailure(failure), (profile) {
-      _authorName = profile.name ?? 'Unknown';
-      _profileImage =
-          profile.profilePicture ?? 'https://via.placeholder.com/150';
-      _authorTitle = profile.headline ?? 'No Title';
-      notifyListeners();
-    });
   }
 
   Future<void> fetchPosts({int page = 1, int limit = 10}) async {
@@ -394,22 +369,24 @@ class FeedProvider extends ChangeNotifier {
 
   Future<void> editComment({
     required String commentId,
-    required String content,
+    required String updatedContent,
     List<String>? taggedUsers,
     bool isReply = false,
   }) async {
     final result = await editCommentUseCase(
       commentId: commentId,
-      content: content,
+      content: updatedContent,
       tagged: taggedUsers,
       isReply: isReply,
     );
     result.fold((failure) => _handleFailure(failure), (_) {
       final index = _comments.indexWhere((c) => c.id == commentId);
       if (index != -1) {
-        _comments[index] = _comments[index].copyWith(content: content);
+        _comments[index] = _comments[index].copyWith(content: updatedContent);
         notifyListeners();
       }
+      fetchComments(_comments[index].postId);
+      print("Comment edited successfully: $updatedContent");
     });
   }
 
@@ -429,16 +406,10 @@ class FeedProvider extends ChangeNotifier {
       if (index != -1) {
         final post = _posts[index];
         print("prov: Reacting to post: ${post.id}");
-        final rawReactions =
-            post.reactions?.isNotEmpty == true
-                ? post.reactions!
-                : {
-                  for (var r in ReactionType.values.map((e) => e.name))
-                    r: r == post.reactType,
-                };
 
         final previousReaction =
             post.reactType.isNotEmpty ? post.reactType : null;
+
         print("🧠 Previous reaction: $previousReaction");
 
         final selectedReaction =
@@ -457,8 +428,9 @@ class FeedProvider extends ChangeNotifier {
         if (previousReaction != null &&
             previousReaction.isNotEmpty &&
             previousReaction != selectedReaction) {
+          final currCount = (updatedCounts[previousReaction] ?? 1);
           updatedCounts[previousReaction] =
-              (updatedCounts[previousReaction] ?? 1) - 1;
+              (currCount - 1).clamp(0, double.infinity).toInt();
           print(
             "➖ Decreased count of '$previousReaction' to ${updatedCounts[previousReaction]}",
           );

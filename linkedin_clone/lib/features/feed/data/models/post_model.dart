@@ -25,6 +25,10 @@ class PostModel extends PostEntity {
     required super.timestamp,
     //super.repostDetails,
     super.isSaved = false,
+    super.isFollowing = false,
+    super.isConnected = false,
+    super.isEdited = false,
+    super.isSilentRepost = false,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +54,10 @@ class PostModel extends PostEntity {
       reactType: json['reactType'] ?? 'None',
       timestamp: DateTime.parse(json['timestamp']),
       isSaved: json['isSaved'] ?? false,
+      isFollowing: json['isFollowing'] ?? false,
+      isConnected: json['isConnected'] ?? false,
+      isEdited: json['isEdited'] ?? false,
+      isSilentRepost: json['isSilentRepost'] ?? false,
     );
   }
 
@@ -73,6 +81,10 @@ class PostModel extends PostEntity {
       reactType: reactType,
       timestamp: timestamp,
       isSaved: isSaved,
+      isFollowing: isFollowing,
+      isConnected: isConnected,
+      isEdited: isEdited,
+      isSilentRepost: isSilentRepost,
     );
   }
 }
