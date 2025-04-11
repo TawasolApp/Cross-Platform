@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
-import 'package:linkedin_clone/core/api/media.dart'; // Add this import for media upload
-import 'package:image_picker/image_picker.dart'; // Add this import for XFile
+import 'package:linkedin_clone/core/api/media.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
@@ -11,6 +11,8 @@ import 'package:linkedin_clone/features/profile/domain/usecases/experience/updat
 import 'package:linkedin_clone/features/profile/domain/usecases/experience/delete_experience.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/add_skill.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/skills/delete_skill.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/skills/get_skill_endorsements.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/add_education.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/update_education.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/education/delete_education.dart';
@@ -68,6 +70,7 @@ class ProfileProvider extends ChangeNotifier {
   final UpdateCertificationUseCase updateCertificationUseCase;
   final DeleteCertificationUseCase deleteCertificationUseCase;
   final UpdateSkillUseCase updateSkillUseCase;
+  final GetSkillEndorsements getSkillEndorsementsUseCase;
 
   // Profile data
   String? _userId;
@@ -104,6 +107,9 @@ class ProfileProvider extends ChangeNotifier {
   String? _bioError;
   String? _profileError;
   String? _resumeError; // Add resume error state
+  String? _endorsementsError;
+  List<Endorsement>? _currentEndorsements;
+  bool _isLoadingEndorsements = false;
   bool _isLoading = false;
 
   ProfileProvider({
@@ -136,6 +142,7 @@ class ProfileProvider extends ChangeNotifier {
     required this.updateSkillUseCase,
     required this.addSkillUseCase,
     required this.deleteSkillUseCase,
+    required this.getSkillEndorsementsUseCase,
   });
 
   // Getters
@@ -158,6 +165,9 @@ class ProfileProvider extends ChangeNotifier {
   int? get connectionCount => _connectionCount;
   String? get connectStatus => _connectStatus; // Changed from status
   String? get followStatus => _followStatus; // Added followStatus getter
+  List<Endorsement>? get currentEndorsements => _currentEndorsements;
+  String? get endorsementsError => _endorsementsError;
+  bool get isLoadingEndorsements => _isLoadingEndorsements;
 
   // Expansion state getters
   bool get isExpandedBio => _isExpandedBio;
@@ -390,22 +400,21 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Profile methods
-  Future<void> fetchProfile() async {
+  Future<void> fetchProfile([String? userId]) async {
     _setLoading(true);
     _profileError = null;
 
     try {
-      // Remove hardcoded user IDs
-      _userId = '67f7206a5268518585c585e0';
-      // _userId = '67f7206a5268518585c585e4';
+      // Use passed userId if provided, otherwise use default '67f7206a5268518585c585e4'
+      final targetUserId = userId ?? "";
 
-      if (_userId == null || _userId!.isEmpty) {
-        _profileError = "User ID is not set or invalid";
-        _setLoading(false);
-        return;
-      }
+      // if (targetUserId.isEmpty) {
+      //   _profileError = "User ID is not set or invalid";
+      //   _setLoading(false);
+      //   return;
+      // }
 
-      final result = await getProfileUseCase.call(_userId!);
+      final result = await getProfileUseCase.call(targetUserId);
 
       result.fold(
         (failure) {
@@ -1185,6 +1194,46 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  // Method to fetch endorsements for a specific skill
+  Future<void> getSkillEndorsements(String skillName) async {
+    if (_userId == null) {
+      _endorsementsError = "User ID is not set";
+      notifyListeners();
+      return;
+    }
+
+    _isLoadingEndorsements = true;
+    _endorsementsError = null;
+    _currentEndorsements = null;
+    notifyListeners();
+
+    try {
+      final params = GetSkillEndorsementsParams(
+        userId: _userId!,
+        skillName: skillName,
+      );
+
+      final result = await getSkillEndorsementsUseCase.call(params);
+
+      result.fold(
+        (failure) {
+          _endorsementsError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (endorsements) {
+          _currentEndorsements = endorsements;
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _endorsementsError = "Failed to fetch endorsements: ${e.toString()}";
+      notifyListeners();
+    } finally {
+      _isLoadingEndorsements = false;
+      notifyListeners();
+    }
+  }
+
   // Helper methods
   void _setLoading(bool loading) {
     _isLoading = loading;
@@ -1198,6 +1247,12 @@ class ProfileProvider extends ChangeNotifier {
     _certificationError = null;
     _bioError = null;
     _resumeError = null; // Include resumeError in clearErrors
+    _endorsementsError = null;
+    notifyListeners();
+  }
+
+  void clearEndorsementsError() {
+    _endorsementsError = null;
     notifyListeners();
   }
 

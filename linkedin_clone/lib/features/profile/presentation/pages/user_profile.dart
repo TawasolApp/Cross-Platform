@@ -14,7 +14,9 @@ import 'package:linkedin_clone/features/connections/presentations/provider/conne
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart'; // Add this import
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({super.key});
+  final String? userId;
+
+  const UserProfile({super.key, this.userId});
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -35,7 +37,7 @@ class _UserProfileState extends State<UserProfile> {
   Future<void> _loadProfileData() async {
     try {
       final profileProvider = context.read<ProfileProvider>();
-      await profileProvider.fetchProfile();
+      await profileProvider.fetchProfile(widget.userId);
       if (profileProvider.profileError != null) {
         setState(() => _error = profileProvider.profileError);
       }
@@ -258,6 +260,60 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
+  Widget _buildShowAllPostsButton(BuildContext context, String userId) {
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 4.0, bottom: 12.0),
+            child: Text(
+              "Activity",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Divider(thickness: 1, color: Colors.grey[300]),
+          OutlinedButton(
+            onPressed: () {
+              // Navigate to user posts page with the userId
+              // context.push('${RouteNames.userPosts}/$userId');
+            },
+            style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.grey[700],
+                backgroundColor: Colors.white, // Background color
+                side: BorderSide.none, // Remove border
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.article_outlined, size: 20, color: Colors.grey[700]),
+                const SizedBox(width: 8),
+                Text(
+                  'Show all posts',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = context.watch<ProfileProvider>();
@@ -353,16 +409,21 @@ class _UserProfileState extends State<UserProfile> {
                         const SizedBox(height: 10),
 
                       // Resume section (only visible to owner)
-                      if (isOwner)
-                        Container(
-                          color: Colors.white,
-                          child: ResumeSection(
-                            resumeUrl: profileProvider.resume,
-                            isCurrentUser: isOwner,
-                            errorMessage: profileProvider.resumeError,
-                          ),
+                      Container(
+                        color: Colors.white,
+                        child: ResumeSection(
+                          resumeUrl: profileProvider.resume,
+                          isCurrentUser: isOwner,
+                          errorMessage: profileProvider.resumeError,
                         ),
-                      if (isOwner) const SizedBox(height: 10),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Show All Posts button - add at the end
+                      if (!showPrivateMessage && profileProvider.userId != null)
+                        _buildShowAllPostsButton(context, profileProvider.userId!),
+
+                      const SizedBox(height: 10),
 
                       // Experience section
                       Container(

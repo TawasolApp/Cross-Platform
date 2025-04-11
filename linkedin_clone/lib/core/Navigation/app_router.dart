@@ -69,9 +69,7 @@ class AppRouter {
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
-        builder:
-            (context, state) =>
-                CompaniesListScreen(),
+        builder: (context, state) => CompaniesListScreen(),
       ),
       GoRoute(
         path: RouteNames.profile,
@@ -115,42 +113,87 @@ class AppRouter {
               title: "Test",
             ),
       ),
-      // GoRoute(
-      //   path: RouteNames.profile,
-      //   builder: (context, state) {
-      //     final userId = state.extra as String;
-      //     return UserProfile(userId);
-      //   },
-      // ),
       GoRoute(
-        path: RouteNames.home,
-         builder: (context, state) => HomePage(),
-      ), 
-      GoRoute(path: RouteNames.addName, builder: (context, state) => AddNamePage()),
-      GoRoute(path: RouteNames.addEmail, builder: (context, state) => AddEmailPasswordPage()),
-      GoRoute(path: RouteNames.verifyEmail, builder: (context, state) => EmailVerificationPage()),
-      GoRoute(path: RouteNames.forgotPassword, builder: (context, state) => ForgotPasswordPage()),
-      GoRoute(path: RouteNames.checkemail, builder: (context, state) => ForgotPasswordCheckEmailPage()),
-      GoRoute(path: RouteNames.main, builder: (context, state) => MainNavigationPage()),
-      GoRoute(path: RouteNames.createPost,builder: (context, state) => PostCreationPage() ),
-      GoRoute(path: RouteNames.feed,builder: (context, state) => FeedPage()),
-      GoRoute(path: RouteNames.companyPage,builder: (context, state) =>CompaniesListScreen() ),
-      GoRoute(path: RouteNames.profile,builder: (context, state) => UserProfile()),
-      GoRoute(path: RouteNames.settings, builder: (context, state) => SettingsPage()),
-      GoRoute(path: RouteNames.deleteAccount, builder: (context, state) => DeleteAccountPage(
-        userName: "Omar Kaddah",
-        connectionName: "Shikabala",
-        connectionRole: "Greatest of all time",
-        connectionCount: 100,
-      )),
-      GoRoute(path: RouteNames.signInAndSecurity, builder: (context, state) => SignInSecurityPage()),
-      GoRoute(path: RouteNames.changePassword, builder: (context, state) => ChangePasswordPage()),
-      GoRoute(path: RouteNames.updateEmail, builder: (context, state) => UpdateEmailPage()),
-      GoRoute(path: RouteNames.updateInfo, builder: (context, state) => UpdateInfoPage()),
-      GoRoute(path: RouteNames.postDetails,
-              builder: (context, state) {
-                final postId = state.extra as String;
-                return PostDetailsPage(postId: postId);
+        path: RouteNames.profile,
+        builder: (context, state) {
+          // Extract userId from state.extra if available
+          final userId = state.extra as String?;
+          return UserProfile(userId: userId);
+        },
+      ),
+      GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
+      GoRoute(
+        path: RouteNames.addName,
+        builder: (context, state) => AddNamePage(),
+      ),
+      GoRoute(
+        path: RouteNames.addEmail,
+        builder: (context, state) => AddEmailPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.verifyEmail,
+        builder: (context, state) => EmailVerificationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.forgotPassword,
+        builder: (context, state) => ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.checkemail,
+        builder: (context, state) => ForgotPasswordCheckEmailPage(),
+      ),
+      GoRoute(
+        path: RouteNames.main,
+        builder: (context, state) => MainNavigationPage(),
+      ),
+      GoRoute(
+        path: RouteNames.createPost,
+        builder: (context, state) => PostCreationPage(),
+      ),
+      GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
+      GoRoute(
+        path: RouteNames.companyPage,
+        builder: (context, state) => CompaniesListScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.profile,
+        builder: (context, state) => UserProfile(),
+      ),
+      GoRoute(
+        path: RouteNames.settings,
+        builder: (context, state) => SettingsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.deleteAccount,
+        builder:
+            (context, state) => DeleteAccountPage(
+              userName: "Omar Kaddah",
+              connectionName: "Shikabala",
+              connectionRole: "Greatest of all time",
+              connectionCount: 100,
+            ),
+      ),
+      GoRoute(
+        path: RouteNames.signInAndSecurity,
+        builder: (context, state) => SignInSecurityPage(),
+      ),
+      GoRoute(
+        path: RouteNames.changePassword,
+        builder: (context, state) => ChangePasswordPage(),
+      ),
+      GoRoute(
+        path: RouteNames.updateEmail,
+        builder: (context, state) => UpdateEmailPage(),
+      ),
+      GoRoute(
+        path: RouteNames.updateInfo,
+        builder: (context, state) => UpdateInfoPage(),
+      ),
+      GoRoute(
+        path: RouteNames.postDetails,
+        builder: (context, state) {
+          final postId = state.extra as String;
+          return PostDetailsPage(postId: postId);
         },
       ),
       GoRoute(

@@ -4,6 +4,7 @@ import 'package:linkedin_clone/core/errors/exceptions.dart';
 import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/profile/data/models/certification_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/education_model.dart';
+import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
@@ -32,13 +33,17 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<ProfileModel> getProfile(String id) async {
     final headers = await _getAuthHeaders();
+    final Uri uri = id==""
+      ? Uri.parse('$baseUrl/profile')
+      : Uri.parse('$baseUrl/profile/$id');
+      
     final response = await http.get(
-      Uri.parse('$baseUrl/profile/$id'),
+      uri,
       headers: headers,
     );
+    
     if (response.statusCode == 200) {
       final profileJson = json.decode(response.body);
-
       return ProfileModel.fromJson(profileJson);
     } else {
       throw ServerException('Failed to load profile');
@@ -347,6 +352,28 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       return json.decode(response.body);
     } else {
       throw ServerException('Failed to get posts');
+    }
+  }
+
+  // Endorsements
+  @override
+  Future<List<EndorsementModel>> getSkillEndorsements(
+    String userId,
+    String skillName,
+  ) async {
+    final headers = await _getAuthHeaders();
+    final response = await http.get(
+      Uri.parse('$baseUrl/profile/skill-endorsements/$userId?skill=$skillName'),
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> endorsementJson = json.decode(response.body);
+      return endorsementJson
+          .map((json) => EndorsementModel.fromJson(json))
+          .toList();
+    } else {
+      throw ServerException('Failed to get skill endorsements');
     }
   }
 }

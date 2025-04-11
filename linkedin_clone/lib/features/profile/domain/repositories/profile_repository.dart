@@ -3,6 +3,7 @@ import '../entities/experience.dart';
 import '../entities/education.dart';
 import '../entities/skill.dart';
 import '../entities/certification.dart';
+import '../entities/endorsement.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -53,4 +54,10 @@ abstract interface class ProfileRepository {
   /// Additional profile features
   Future<Either<Failure, List<dynamic>>> getFollowedCompanies(String userId);
   Future<Either<Failure, List<dynamic>>> getPosts(String userId);
+
+  /// Endorsements
+  Future<Either<Failure, List<Endorsement>>> getSkillEndorsements(
+    String userId,
+    String skillName,
+  );
 }

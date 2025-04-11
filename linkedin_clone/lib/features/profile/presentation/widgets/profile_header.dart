@@ -302,12 +302,12 @@ class ProfileHeader extends StatelessWidget {
                             color: Theme.of(context).primaryColor,
                           ),
                         ),
-                        const SizedBox(height: 16),
+                        // const SizedBox(height: 16),
                       ],
 
                       // Action buttons based on connectStatus
                       if (isOwner) ...[
-                        _buildOwnerButtons(context),
+                        // _buildOwnerButtons(context),
                       ] else if (isConnection) ...[
                         _buildConnectionButtons(context, provider),
                       ] else if (isPending) ...[
@@ -339,76 +339,76 @@ class ProfileHeader extends StatelessWidget {
     );
   }
 
-  // No changes needed for _buildOwnerButtons
-  Widget _buildOwnerButtons(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: 36,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                textStyle: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontSize: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-              ),
-              child: const Text('Open to'),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: SizedBox(
-            height: 36,
-            child: ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: Theme.of(context).primaryColor,
-                textStyle: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontSize: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(
-                    color: Theme.of(context).primaryColor,
-                    width: 1.5,
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-              ),
-              child: const Text('Add section'),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Container(
-          height: 36,
-          width: 36,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: Theme.of(context).colorScheme.onSurface,
-              width: 1.5,
-            ),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.more_horiz, size: 18),
-            onPressed: () {},
-            color: Theme.of(context).colorScheme.onSurface,
-            padding: EdgeInsets.zero,
-          ),
-        ),
-      ],
-    );
-  }
+  // // No changes needed for _buildOwnerButtons
+  // Widget _buildOwnerButtons(BuildContext context) {
+  //   return Row(
+  //     children: [
+  //       Expanded(
+  //         child: SizedBox(
+  //           height: 36,
+  //           child: ElevatedButton(
+  //             onPressed: () {},
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Theme.of(context).primaryColor,
+  //               foregroundColor: Colors.white,
+  //               textStyle: Theme.of(
+  //                 context,
+  //               ).textTheme.labelLarge?.copyWith(fontSize: 14),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(24),
+  //               ),
+  //               padding: const EdgeInsets.symmetric(vertical: 8),
+  //             ),
+  //             child: const Text('Open to'),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(width: 8),
+  //       Expanded(
+  //         child: SizedBox(
+  //           height: 36,
+  //           child: ElevatedButton(
+  //             onPressed: () {},
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.white,
+  //               foregroundColor: Theme.of(context).primaryColor,
+  //               textStyle: Theme.of(
+  //                 context,
+  //               ).textTheme.labelLarge?.copyWith(fontSize: 14),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(24),
+  //                 side: BorderSide(
+  //                   color: Theme.of(context).primaryColor,
+  //                   width: 1.5,
+  //                 ),
+  //               ),
+  //               padding: const EdgeInsets.symmetric(vertical: 8),
+  //             ),
+  //             child: const Text('Add section'),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(width: 8),
+  //       Container(
+  //         height: 36,
+  //         width: 36,
+  //         decoration: BoxDecoration(
+  //           shape: BoxShape.circle,
+  //           border: Border.all(
+  //             color: Theme.of(context).colorScheme.onSurface,
+  //             width: 1.5,
+  //           ),
+  //         ),
+  //         child: IconButton(
+  //           icon: const Icon(Icons.more_horiz, size: 18),
+  //           onPressed: () {},
+  //           color: Theme.of(context).colorScheme.onSurface,
+  //           padding: EdgeInsets.zero,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildConnectionButtons(
     BuildContext context,
