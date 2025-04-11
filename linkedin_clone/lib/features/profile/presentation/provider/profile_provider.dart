@@ -86,7 +86,8 @@ class ProfileProvider extends ChangeNotifier {
   List<Experience>? _experiences;
   String? _visibility;
   int? _connectionCount;
-  String? _status; // Add status field
+  String? _connectStatus; // Changed from _status
+  String? _followStatus; // Added followStatus field
 
   // Expansion states
   bool _isExpandedBio = false;
@@ -155,7 +156,8 @@ class ProfileProvider extends ChangeNotifier {
   List<Experience>? get experiences => _experiences;
   String? get visibility => _visibility;
   int? get connectionCount => _connectionCount;
-  String? get status => _status; // Add status getter
+  String? get connectStatus => _connectStatus; // Changed from status
+  String? get followStatus => _followStatus; // Added followStatus getter
 
   // Expansion state getters
   bool get isExpandedBio => _isExpandedBio;
@@ -255,8 +257,13 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  set status(String? value) {
-    _status = value;
+  set connectStatus(String? value) {
+    _connectStatus = value;
+    notifyListeners();
+  }
+
+  set followStatus(String? value) {
+    _followStatus = value;
     notifyListeners();
   }
 
@@ -375,7 +382,8 @@ class ProfileProvider extends ChangeNotifier {
     _experiences = profile.workExperience;
     _visibility = profile.visibility;
     _connectionCount = profile.connectionCount;
-    _status = profile.status;
+    _connectStatus = profile.connectStatus;
+    _followStatus = profile.followStatus;
 
     // Add necessary null checks and notifyListeners
     notifyListeners();
@@ -387,8 +395,9 @@ class ProfileProvider extends ChangeNotifier {
     _profileError = null;
 
     try {
-      // _userId = '67f417a8262957c2de3609bb';
+      // Remove hardcoded user IDs
       _userId = '67f7206a5268518585c585e0';
+      // _userId = '67f7206a5268518585c585e4';
 
       if (_userId == null || _userId!.isEmpty) {
         _profileError = "User ID is not set or invalid";
@@ -410,6 +419,7 @@ class ProfileProvider extends ChangeNotifier {
       );
     } catch (e, stackTrace) {
       _profileError = "Unexpected error: ${e.toString()}";
+      debugPrint("Profile fetch error: ${e.toString()}");
       debugPrint(stackTrace.toString());
       notifyListeners();
     } finally {

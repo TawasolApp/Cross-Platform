@@ -10,6 +10,8 @@ import 'package:linkedin_clone/features/profile/presentation/widgets/education_s
 import 'package:linkedin_clone/features/profile/presentation/widgets/certifications_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/resume_section.dart';
 import 'package:provider/provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart'; // Add this import
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart'; // Add this import
 
 class UserProfile extends StatefulWidget {
   const UserProfile({super.key});
@@ -50,6 +52,13 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget _buildPrivateProfileMessage(BuildContext context) {
+    final profileProvider = context.read<ProfileProvider>();
+    final isFollowing = profileProvider.followStatus == 'Following';
+    final networksProvider = Provider.of<NetworksProvider>(
+      context,
+      listen: false,
+    );
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(24),
@@ -100,8 +109,52 @@ class _UserProfileState extends State<UserProfile> {
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onPressed: () {
-                      // Handle connect action
+                    onPressed: () async {
+                      // Get the connections provider
+                      final connectionsProvider =
+                          Provider.of<ConnectionsProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                      // Verify we have a user ID
+                      if (profileProvider.userId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Cannot connect: User ID is missing'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Show loading indicator
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Sending connection request...'),
+                        ),
+                      );
+
+                      // Send connection request
+                      final success = await connectionsProvider
+                          .sendConnectionRequest(profileProvider.userId!);
+
+                      // Show result
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            success
+                                ? 'Connection request sent successfully'
+                                : 'Failed to send connection request',
+                          ),
+                          backgroundColor: success ? Colors.green : Colors.red,
+                        ),
+                      );
+
+                      // Refresh profile to get updated status
+                      if (success) {
+                        await profileProvider.fetchProfile();
+                      }
                     },
                     child: const Text(
                       'Connect',
@@ -119,26 +172,81 @@ class _UserProfileState extends State<UserProfile> {
                   height: 42,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Theme.of(context).primaryColor,
+                      backgroundColor:
+                          isFollowing ? Colors.grey[200] : Colors.white,
+                      foregroundColor:
+                          isFollowing
+                              ? Colors.black87
+                              : Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                         side: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                          color:
+                              isFollowing
+                                  ? Colors.transparent
+                                  : Theme.of(context).primaryColor,
                           width: 1.5,
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onPressed: () {
-                      // Handle follow action
+                    onPressed: () async {
+                      if (profileProvider.userId == null) return;
+
+                      bool success;
+                      if (isFollowing) {
+                        // Unfollow action using NetworksProvider directly
+                        success = await networksProvider.unfollowUser(
+                          profileProvider.userId!,
+                        );
+                      } else {
+                        // Follow action using NetworksProvider directly
+                        success = await networksProvider.followUser(
+                          profileProvider.userId!,
+                        );
+                      }
+
+                      if (success) {
+                        // Refresh profile to update UI state
+                        await profileProvider.fetchProfile();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFollowing
+                                  ? 'Unfollowed successfully'
+                                  : 'Following successfully',
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFollowing
+                                  ? 'Failed to unfollow'
+                                  : 'Failed to follow',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
-                    child: const Text(
-                      'Follow',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          isFollowing ? 'Following' : 'Follow',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        if (isFollowing) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.check, size: 16),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -155,17 +263,14 @@ class _UserProfileState extends State<UserProfile> {
     final profileProvider = context.watch<ProfileProvider>();
     final isLoading = _isLoading || profileProvider.isLoading;
 
-    // Use 'Owner' consistently (already correct in this file)
-    final isOwner = profileProvider.status == 'Owner';
-    final isConnection = profileProvider.status == 'Connection';
+    // Update status checks to use connectStatus and followStatus
+    final isOwner = profileProvider.connectStatus == 'Owner';
+    final isConnection = profileProvider.connectStatus == 'Connection';
     final isPrivateProfile = profileProvider.visibility == 'private';
     final isConnectionsOnly = profileProvider.visibility == 'connections_only';
     final isPublicProfile = profileProvider.visibility == 'public';
 
     // Determine if we should show private profile message:
-    // - If private profile AND NOT owner -> show private message
-    // - If connections_only profile AND neither owner nor connection -> show private message
-    // - If public OR if owner OR if connection with connections_only -> show full profile
     final showPrivateMessage =
         (isPrivateProfile && !isOwner) ||
         (isConnectionsOnly && !isOwner && !isConnection);
