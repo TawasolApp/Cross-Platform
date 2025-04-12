@@ -24,7 +24,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
       final profile = Provider.of<ProfileProvider>(context, listen: false);
-      profile.fetchProfile();
+      profile.fetchProfile("");
       feedProvider.fetchComments(widget.postId);
     });
   }
