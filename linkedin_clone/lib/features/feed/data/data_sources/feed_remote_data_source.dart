@@ -525,8 +525,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       } else {
         return Left(
           UnexpectedFailure(
-            message:
-                'Unexpected error: ${response.statusCode} - ${response.statusMessage}',
+            'Unexpected error: ${response.statusCode} - ${response.statusMessage}',
           ),
         );
       }

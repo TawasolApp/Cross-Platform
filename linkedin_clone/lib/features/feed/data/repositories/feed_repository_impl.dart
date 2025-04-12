@@ -217,7 +217,7 @@ class FeedRepositoryImpl implements FeedRepository {
     } on UnauthorizedException {
       return Left(UnauthorizedFailure("Unauthorized access"));
     } on ForbiddenException {
-      return Left(ForbiddenFailure());
+      return Left(ForbiddenFailure("Forbidden access"));
     } on NotFoundException {
       return Left(NotFoundFailure("Resource not found"));
     } on ServerException {
@@ -257,7 +257,7 @@ class FeedRepositoryImpl implements FeedRepository {
     } on UnauthorizedException {
       return Left(UnauthorizedFailure("Unauthorized access"));
     } on ForbiddenException {
-      return Left(ForbiddenFailure());
+      return Left(ForbiddenFailure("Forbidden access"));
     } on NotFoundException {
       return Left(NotFoundFailure("Resource not found"));
     } on ServerException {

@@ -74,7 +74,6 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                         final myId = profile.userId;
                         print("myId: $myId");
                         print("${profile.profilePicture}");
-                        print("${profile.name}");
 
                         return CommentList(
                           postId: widget.postId,

@@ -40,19 +40,11 @@ class NotFoundFailure extends Failure {
 }
 
 class ForbiddenFailure extends Failure {
-  ForbiddenFailure({String message = "Forbidden Access", int errorCode = 403})
-    : super(message: message, errorCode: errorCode);
-}
-
-// Unexpected Failure
-class UnexpectedFailure extends Failure {
-  UnexpectedFailure({String message = "Unexpected Error", int errorCode = 0})
-    : super(message: message, errorCode: errorCode);
-}
-
-class ForbiddenFailure extends Failure {
-  ForbiddenFailure([String message = 'Access forbidden', int errorCode = 403])
-    : super(message: message, errorCode: errorCode);
+  ForbiddenFailure(
+    String message, {
+    String defaultMessage = "Forbidden Access",
+    super.errorCode = 403,
+  }) : super(message: message.isEmpty ? defaultMessage : message);
 }
 
 class UnexpectedFailure extends Failure {
