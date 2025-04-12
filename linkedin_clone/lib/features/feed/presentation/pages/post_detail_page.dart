@@ -5,6 +5,7 @@ import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
 import '../widgets/add_comment_field.dart';
 import '../widgets/comment_list.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;
@@ -19,9 +20,11 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch comments when the page is initialized
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
+      final profile = Provider.of<ProfileProvider>(context, listen: false);
+      profile.fetchProfile("");
       feedProvider.fetchComments(widget.postId);
     });
   }
@@ -29,20 +32,31 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
+    final profile = Provider.of<ProfileProvider>(context);
     final post = feedProvider.posts.firstWhereOrNull(
       (p) => p.id == widget.postId,
     );
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("Post Details"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: isDarkMode ? Colors.black : Colors.blue,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         elevation: 0.5,
       ),
       body:
           post == null
-              ? const Center(child: Text("Post not found"))
+              ? Center(
+                child: Text(
+                  "Post not found",
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+              )
               : Column(
                 children: [
                   // Display the post using PostCard
@@ -65,18 +79,20 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                             child: Text(feedProvider.errorMessage!),
                           );
                         }
+                        final myId = profile.userId;
+                        print("myId: $myId");
+                        print("${profile.profilePicture}");
 
-                        if (feedProvider.comments.isEmpty) {
-                          return const Center(child: Text("No comments yet."));
-                        }
-
-                        return CommentList(postId: widget.postId);
+                        return CommentList(
+                          postId: widget.postId,
+                          currentUserId: profile.userId ?? '',
+                        );
                       },
                     ),
                   ),
 
                   // Add Comment Field
-                  AddCommentField(postId: widget.postId),
+                  SafeArea(child: AddCommentField(postId: widget.postId)),
                 ],
               ),
     );

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/profile_header/edit_profile.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String? errorMessage;
@@ -17,19 +20,38 @@ class ProfileHeader extends StatelessWidget {
         final error = errorMessage ?? provider.profileError;
         final coverPhotoHeight = MediaQuery.of(context).size.width * 0.25;
 
+        // Use the new status fields with their specific values
+        final isOwner = provider.connectStatus == 'Owner';
+        final isConnection = provider.connectStatus == 'Connection';
+        final isPending = provider.connectStatus == 'Pending';
+        final isRequest = provider.connectStatus == 'Request';
+        final isNoConnection = provider.connectStatus == 'No Connection';
+
+        final isFollowing = provider.followStatus == 'Following';
+        final isNotFollowing = provider.followStatus == 'No Connection';
+
+        final isPrivateProfile = provider.visibility == 'private';
+        final isConnectionsOnly = provider.visibility == 'connections_only';
+        final isPublicProfile = provider.visibility == 'public';
+
+        // Determine if we should show limited information
+        final showLimitedInfo =
+            (isPrivateProfile && !isOwner) ||
+            (isConnectionsOnly && !isOwner && !isConnection);
+
         return Container(
           color: Colors.white,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Cover Photo section with further reduced height
+              // Cover Photo section
               Container(
-                height: coverPhotoHeight + 40, // Further reduced from 40
+                height: coverPhotoHeight + 40,
                 child: Stack(
                   clipBehavior: Clip.none,
-                  fit: StackFit.expand, // Changed to expand
+                  fit: StackFit.expand,
                   children: [
-                    // Cover Photo
+                    // Cover Photo - always visible
                     Positioned(
                       top: 0,
                       left: 0,
@@ -37,11 +59,13 @@ class ProfileHeader extends StatelessWidget {
                       height: coverPhotoHeight,
                       child: GestureDetector(
                         onTap:
-                            () => _viewFullImage(
-                              context,
-                              provider.coverPhoto,
-                              'Cover Photo',
-                            ),
+                            showLimitedInfo
+                                ? null
+                                : () => _viewFullImage(
+                                  context,
+                                  provider.coverPhoto,
+                                  'Cover Photo',
+                                ),
                         child: Container(
                           color: Colors.grey[200],
                           child:
@@ -59,41 +83,42 @@ class ProfileHeader extends StatelessWidget {
                       ),
                     ),
 
-                    // Camera button for cover photo
-                    Positioned(
-                      top: 8,
-                      right: 16,
-                      child: Container(
-                        width: 30,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            Icons.camera_alt,
-                            color: Theme.of(context).primaryColor,
-                            size: 16,
-                          ),
-                          padding: EdgeInsets.zero,
-                          onPressed:
-                              () => _showCoverPhotoPickerDialog(
-                                context,
-                                provider,
+                    // Camera button for cover photo - only for owner
+                    if (isOwner)
+                      Positioned(
+                        top: 8,
+                        right: 16,
+                        child: Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                                offset: const Offset(0, 2),
                               ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: Theme.of(context).primaryColor,
+                              size: 16,
+                            ),
+                            padding: EdgeInsets.zero,
+                            onPressed:
+                                () => _showCoverPhotoPickerDialog(
+                                  context,
+                                  provider,
+                                ),
+                          ),
                         ),
                       ),
-                    ),
 
-                    // Profile picture - moved to a higher z-index
+                    // Profile picture
                     Positioned(
                       left: 16,
                       top: coverPhotoHeight - 50,
@@ -104,12 +129,14 @@ class ProfileHeader extends StatelessWidget {
                         child: InkWell(
                           customBorder: CircleBorder(),
                           onTap:
-                              onProfilePictureTap ??
-                              () => _viewFullImage(
-                                context,
-                                provider.profilePicture,
-                                'Profile Picture',
-                              ),
+                              showLimitedInfo
+                                  ? null
+                                  : onProfilePictureTap ??
+                                      () => _viewFullImage(
+                                        context,
+                                        provider.profilePicture,
+                                        'Profile Picture',
+                                      ),
                           child: Container(
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
@@ -140,210 +167,167 @@ class ProfileHeader extends StatelessWidget {
                       ),
                     ),
 
-                    // Camera button - placed on top of everything
-                    Positioned(
-                      left: 90,
-                      top: coverPhotoHeight + 15,
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          customBorder: CircleBorder(),
-                          onTap:
-                              () => _showProfilePicturePickerDialog(
-                                context,
-                                provider,
+                    // Camera button for profile picture - only for owner
+                    if (isOwner)
+                      Positioned(
+                        left: 90,
+                        top: coverPhotoHeight + 15,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            customBorder: CircleBorder(),
+                            onTap:
+                                () => _showProfilePicturePickerDialog(
+                                  context,
+                                  provider,
+                                ),
+                            child: Container(
+                              width: 30,
+                              height: 30,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.grey[300]!,
+                                  width: 1,
+                                ),
                               ),
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.grey[300]!,
-                                width: 1,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Theme.of(context).primaryColor,
-                                size: 14,
+                              child: Center(
+                                child: Icon(
+                                  Icons.camera_alt,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 14,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
 
-              // Edit profile button with negative margin to pull it up
-              Transform.translate(
-                offset: const Offset(0, -35), // Negative margin to pull up
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.edit,
-                        color: Theme.of(context).primaryColor,
+              // Edit profile button - only for owner
+              if (isOwner)
+                Transform.translate(
+                  offset: const Offset(0, -35),
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.edit,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const EditProfilePage(),
+                            ),
+                          ).then((updated) {
+                            if (updated == true) {
+                              Provider.of<ProfileProvider>(
+                                context,
+                                listen: false,
+                              ).fetchProfile(provider.userId);
+                            }
+                          });
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                       ),
-                      onPressed: () {
-                        // Navigate to edit profile page
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const EditProfilePage(),
-                          ),
-                        ).then((updated) {
-                          if (updated == true) {
-                            // Refresh profile data if changes were made
-                            Provider.of<ProfileProvider>(
-                              context,
-                              listen: false,
-                            ).fetchProfile();
-                          }
-                        });
-                      },
-                      padding: EdgeInsets.zero, // Remove padding
-                      constraints: const BoxConstraints(
-                        minWidth: 32,
-                        minHeight: 32,
-                      ), // Smaller constraints
                     ),
                   ),
                 ),
-              ),
 
-              // Content section with more negative margin to pull it up further
+              // Content section
               Transform.translate(
-                offset: const Offset(0, -30),
+                offset: Offset(
+                  0,
+                  isOwner ? -30 : -10,
+                ), // Removed const, using conditional offset
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                  padding: EdgeInsets.fromLTRB(
+                    16,
+                    isOwner
+                        ? 10
+                        : 30, // Removed from const, using conditional padding
+                    16,
+                    0,
+                  ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min, // Use minimum space needed
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        provider.name ?? 'No name provided',
+                        showLimitedInfo
+                            ? 'LinkedIn Member'
+                            : provider.fullName.isNotEmpty
+                            ? provider.fullName
+                            : 'No name provided',
                         style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      const SizedBox(height: 4), // Reduced from 4
-
-                      Text(
-                        provider.headline ?? 'No headline provided',
-                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       const SizedBox(height: 4),
 
-                      if (provider.educations?.isNotEmpty ?? false)
+                      if (!showLimitedInfo) ...[
                         Text(
-                          provider.educations!.first.school,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          provider.headline ?? 'No headline provided',
+                          style: Theme.of(context).textTheme.bodyLarge,
                         ),
+                        const SizedBox(height: 4),
 
-                      Text(
-                        provider.location ?? 'No location provided',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: const Color(0xFF6E6E6E),
+                        if (provider.educations?.isNotEmpty ?? false)
+                          Text(
+                            provider.educations!.first.school,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+
+                        Text(
+                          provider.location ?? 'No location provided',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: const Color(0xFF6E6E6E)),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-
-                      Text(
-                        '${provider.connectionCount ?? 0} connections',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 36,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  foregroundColor: Colors.white,
-                                  textStyle: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(fontSize: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                ),
-                                child: const Text('Open to'),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap:
+                              () => goToConnections(
+                                context,
+                                userId: provider.userId,
                               ),
+                          child: Text(
+                            '${provider.connectionCount ?? 0} connections',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColor,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: SizedBox(
-                              height: 36,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor:
-                                      Theme.of(context).primaryColor,
-                                  textStyle: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge
-                                      ?.copyWith(fontSize: 14),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(24),
-                                    side: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8,
-                                  ),
-                                ),
-                                child: const Text('Add section'),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            height: 36,
-                            width: 36,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: IconButton(
-                              icon: const Icon(Icons.more_horiz, size: 18),
-                              onPressed: () {},
-                              color: Theme.of(context).colorScheme.onSurface,
-                              padding: EdgeInsets.zero,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        // const SizedBox(height: 16),
+                      ],
 
-                      // If there's an error message, show it without any padding
+                      // Action buttons based on connectStatus
+                      if (isOwner) ...[
+                        // _buildOwnerButtons(context),
+                      ] else if (isConnection) ...[
+                        _buildConnectionButtons(context, provider),
+                      ] else if (isPending) ...[
+                        _buildPendingButtons(context, provider),
+                      ] else if (isRequest) ...[
+                        _buildRequestButtons(context, provider),
+                      ] else if (isNoConnection || showLimitedInfo) ...[
+                        _buildNoConnectionButtons(context, provider),
+                      ],
+
                       if (error != null)
                         Padding(
-                          padding: const EdgeInsets.only(
-                            top: 0.0,
-                          ), // Reduced from 16.0
+                          padding: const EdgeInsets.only(top: 0.0),
                           child: Text(
                             error,
                             style: TextStyle(
@@ -359,6 +343,833 @@ class ProfileHeader extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  // // No changes needed for _buildOwnerButtons
+  // Widget _buildOwnerButtons(BuildContext context) {
+  //   return Row(
+  //     children: [
+  //       Expanded(
+  //         child: SizedBox(
+  //           height: 36,
+  //           child: ElevatedButton(
+  //             onPressed: () {},
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Theme.of(context).primaryColor,
+  //               foregroundColor: Colors.white,
+  //               textStyle: Theme.of(
+  //                 context,
+  //               ).textTheme.labelLarge?.copyWith(fontSize: 14),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(24),
+  //               ),
+  //               padding: const EdgeInsets.symmetric(vertical: 8),
+  //             ),
+  //             child: const Text('Open to'),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(width: 8),
+  //       Expanded(
+  //         child: SizedBox(
+  //           height: 36,
+  //           child: ElevatedButton(
+  //             onPressed: () {},
+  //             style: ElevatedButton.styleFrom(
+  //               backgroundColor: Colors.white,
+  //               foregroundColor: Theme.of(context).primaryColor,
+  //               textStyle: Theme.of(
+  //                 context,
+  //               ).textTheme.labelLarge?.copyWith(fontSize: 14),
+  //               shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.circular(24),
+  //                 side: BorderSide(
+  //                   color: Theme.of(context).primaryColor,
+  //                   width: 1.5,
+  //                 ),
+  //               ),
+  //               padding: const EdgeInsets.symmetric(vertical: 8),
+  //             ),
+  //             child: const Text('Add section'),
+  //           ),
+  //         ),
+  //       ),
+  //       const SizedBox(width: 8),
+  //       Container(
+  //         height: 36,
+  //         width: 36,
+  //         decoration: BoxDecoration(
+  //           shape: BoxShape.circle,
+  //           border: Border.all(
+  //             color: Theme.of(context).colorScheme.onSurface,
+  //             width: 1.5,
+  //           ),
+  //         ),
+  //         child: IconButton(
+  //           icon: const Icon(Icons.more_horiz, size: 18),
+  //           onPressed: () {},
+  //           color: Theme.of(context).colorScheme.onSurface,
+  //           padding: EdgeInsets.zero,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  Widget _buildConnectionButtons(
+    BuildContext context,
+    ProfileProvider provider,
+  ) {
+    final isFollowing = provider.followStatus == 'Following';
+    final networksProvider = Provider.of<NetworksProvider>(
+      context,
+      listen: false,
+    );
+
+    return Row(
+      children: [
+        // Message button (primary action for connections)
+        Expanded(
+          child: SizedBox(
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () {}, // Message action
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+              child: const Text('Message'),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        // Follow/Following button for connections based on followStatus
+        Expanded(
+          child: SizedBox(
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () async {
+                // Toggle follow status using NetworksProvider directly
+                if (provider.userId == null) return;
+
+                bool success;
+                if (isFollowing) {
+                  // Unfollow action
+                  success = await networksProvider.unfollowUser(
+                    provider.userId!,
+                  );
+                } else {
+                  // Follow action
+                  success = await networksProvider.followUser(provider.userId!);
+                }
+
+                if (success) {
+                  // Refresh the profile to get updated status
+                  await provider.fetchProfile(provider.userId);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isFollowing
+                            ? 'Unfollowed successfully'
+                            : 'Following successfully',
+                      ),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isFollowing ? 'Failed to unfollow' : 'Failed to follow',
+                      ),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isFollowing ? Colors.grey[200] : Colors.white,
+                foregroundColor:
+                    isFollowing
+                        ? Colors.black87
+                        : Theme.of(context).primaryColor,
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(
+                    color:
+                        isFollowing
+                            ? Colors.transparent
+                            : Theme.of(context).primaryColor,
+                    width: 1.5,
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(isFollowing ? 'Following' : 'Follow'),
+                  if (isFollowing) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPendingButtons(BuildContext context, ProfileProvider provider) {
+    final isFollowing = provider.followStatus == 'Following';
+    final networksProvider = Provider.of<NetworksProvider>(
+      context,
+      listen: false,
+    );
+    final connectionsProvider = Provider.of<ConnectionsProvider>(
+      context,
+      listen: false,
+    );
+
+    return Row(
+      children: [
+        // Pending button - now clickable to withdraw request
+        Expanded(
+          child: SizedBox(
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () async {
+                // Withdraw connection request
+                if (provider.userId == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Cannot withdraw request: User ID is missing',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                // Show confirmation dialog
+                final shouldWithdraw = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text('Withdraw Connection Request'),
+                        content: const Text(
+                          'Are you sure you want to withdraw your connection request?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('CANCEL'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              'WITHDRAW',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (shouldWithdraw == true) {
+                  // Show loading indicator
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Withdrawing connection request...'),
+                    ),
+                  );
+
+                  // Call the withdraw connection request function
+                  final success = await connectionsProvider
+                      .withdrawConnectionRequest(provider.userId!);
+
+                  // Show result
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Connection request withdrawn'
+                            : 'Failed to withdraw connection request',
+                      ),
+                      backgroundColor: success ? Colors.green : Colors.red,
+                    ),
+                  );
+
+                  // Refresh profile if successful
+                  if (success) {
+                    await provider.fetchProfile(provider.userId);
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[200],
+                foregroundColor: Colors.black87,
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Pending'),
+                  SizedBox(width: 4),
+                  Icon(Icons.hourglass_top, size: 16),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        // Follow/Following button for pending connections
+        Expanded(
+          child: SizedBox(
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () async {
+                if (provider.userId == null) return;
+
+                if (isFollowing) {
+                  // Unfollow action
+                  final success = await networksProvider.unfollowUser(
+                    provider.userId!,
+                  );
+                  if (!success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to unfollow'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                } else {
+                  // Follow action
+                  final success = await networksProvider.followUser(
+                    provider.userId!,
+                  );
+                  if (!success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Failed to follow'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+                await provider.fetchProfile(provider.userId);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isFollowing ? Colors.grey[200] : Colors.white,
+                foregroundColor:
+                    isFollowing
+                        ? Colors.black87
+                        : Theme.of(context).primaryColor,
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(
+                    color:
+                        isFollowing
+                            ? Colors.transparent
+                            : Theme.of(context).primaryColor,
+                    width: 1.5,
+                  ),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(isFollowing ? 'Following' : 'Follow'),
+                  if (isFollowing) ...[
+                    const SizedBox(width: 4),
+                    const Icon(Icons.check, size: 16),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRequestButtons(BuildContext context, ProfileProvider provider) {
+    final isFollowing = provider.followStatus == 'Following';
+    final connectionsProvider = Provider.of<ConnectionsProvider>(
+      context,
+      listen: false,
+    );
+    final networksProvider = Provider.of<NetworksProvider>(
+      context,
+      listen: false,
+    );
+
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () async {
+                // Accept connection request
+                if (provider.userId == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Cannot accept request: User ID is missing',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                // Show loading indicator
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Accepting connection request...'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+
+                // Accept the connection request
+                final success = await connectionsProvider
+                    .acceptConnectionRequest(provider.userId!);
+
+                // Show result after a short delay to allow snackbar visibility
+                Future.delayed(const Duration(milliseconds: 1200), () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Connection request accepted'
+                            : 'Failed to accept connection request',
+                      ),
+                      backgroundColor: success ? Colors.green : Colors.red,
+                    ),
+                  );
+                });
+
+                // Refresh profile if successful
+                if (success) {
+                  await provider.fetchProfile(provider.userId);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+              child: const Text('Accept'),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: SizedBox(
+            height: 36,
+            child: ElevatedButton(
+              onPressed: () async {
+                // Ignore connection request with confirmation
+                if (provider.userId == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Cannot ignore request: User ID is missing',
+                      ),
+                    ),
+                  );
+                  return;
+                }
+
+                // Show confirmation dialog
+                final shouldIgnore = await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text('Ignore Connection Request'),
+                        content: const Text(
+                          'Are you sure you want to ignore this connection request?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('CANCEL'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              'IGNORE',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
+                      ),
+                );
+
+                if (shouldIgnore == true) {
+                  // Show loading indicator
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Ignoring connection request...'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+
+                  // Ignore the connection request
+                  final success = await connectionsProvider
+                      .ignoreConnectionRequest(provider.userId!);
+
+                  // Show result after a short delay
+                  Future.delayed(const Duration(milliseconds: 1200), () {
+                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success
+                              ? 'Connection request ignored'
+                              : 'Failed to ignore connection request',
+                        ),
+                        backgroundColor: success ? Colors.green : Colors.red,
+                      ),
+                    );
+                  });
+
+                  // Refresh profile if successful
+                  if (success) {
+                    await provider.fetchProfile(provider.userId);
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Colors.black87,
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(color: Colors.grey[400]!, width: 1.5),
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+              ),
+              child: const Text('Ignore'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLimitedAccessMessage(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 8),
+
+        // Enhanced private profile message with card and icon
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey[300]!),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.lock_outline, color: Colors.grey[600], size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'This profile is private',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Connect with this person to see their full profile',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // // Action buttons
+        // Row(
+        //   children: [
+        //     Expanded(
+        //       child: SizedBox(
+        //         height: 36,
+        //         child: ElevatedButton(
+        //           onPressed: () {}, // Connect action
+        //           style: ElevatedButton.styleFrom(
+        //             backgroundColor: Theme.of(context).primaryColor,
+        //             foregroundColor: Colors.white,
+        //             textStyle: Theme.of(
+        //               context,
+        //             ).textTheme.labelLarge?.copyWith(fontSize: 14),
+        //             shape: RoundedRectangleBorder(
+        //               borderRadius: BorderRadius.circular(24),
+        //             ),
+        //             padding: const EdgeInsets.symmetric(vertical: 8),
+        //           ),
+        //           child: const Text('Connect'),
+        //         ),
+        //       ),
+        //     ),
+        //     const SizedBox(width: 8),
+        //     Expanded(
+        //       child: SizedBox(
+        //         height: 36,
+        //         child: ElevatedButton(
+        //           onPressed: () {}, // Follow action
+        //           style: ElevatedButton.styleFrom(
+        //             backgroundColor: Colors.white,
+        //             foregroundColor: Theme.of(context).primaryColor,
+        //             textStyle: Theme.of(
+        //               context,
+        //             ).textTheme.labelLarge?.copyWith(fontSize: 14),
+        //             shape: RoundedRectangleBorder(
+        //               borderRadius: BorderRadius.circular(24),
+        //               side: BorderSide(
+        //                 color: Theme.of(context).primaryColor,
+        //                 width: 1.5,
+        //               ),
+        //             ),
+        //             padding: const EdgeInsets.symmetric(vertical: 8),
+        //           ),
+        //           child: const Text('Follow'),
+        //         ),
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  Widget _buildNoConnectionButtons(
+    BuildContext context,
+    ProfileProvider provider,
+  ) {
+    final isPrivateProfile =
+        provider.visibility == 'private' ||
+        provider.visibility == 'connections_only';
+    final isNoConnection = provider.connectStatus == 'No Connection';
+    final isFollowing = provider.followStatus == 'Following';
+    final networksProvider = Provider.of<NetworksProvider>(
+      context,
+      listen: false,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 4), // Add consistent spacing
+        // Only show connection buttons if the profile is not private OR user has a connection
+        if (!isPrivateProfile || !isNoConnection)
+          Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      // Get the connections provider
+                      final connectionsProvider =
+                          Provider.of<ConnectionsProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                      // Verify we have a user ID
+                      if (provider.userId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Cannot connect: User ID is missing'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      // Show loading indicator
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Sending connection request...'),
+                        ),
+                      );
+
+                      // Send connection request
+                      final success = await connectionsProvider
+                          .sendConnectionRequest(provider.userId!);
+
+                      // Show result
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            success
+                                ? 'Connection request sent successfully'
+                                : 'Failed to send connection request',
+                          ),
+                          backgroundColor: success ? Colors.green : Colors.red,
+                        ),
+                      );
+
+                      // Refresh the profile to get updated status from server
+                      if (success) {
+                        await provider.fetchProfile(provider.userId);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      foregroundColor: Colors.white,
+                      textStyle: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: const Text('Connect'),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: SizedBox(
+                  height: 36,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (provider.userId == null) return;
+
+                      bool success;
+                      if (isFollowing) {
+                        // Unfollow action
+                        success = await networksProvider.unfollowUser(
+                          provider.userId!,
+                        );
+                      } else {
+                        // Follow action
+                        success = await networksProvider.followUser(
+                          provider.userId!,
+                        );
+                      }
+
+                      if (success) {
+                        // Refresh to update UI
+                        await provider.fetchProfile(provider.userId);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFollowing
+                                  ? 'Unfollowed successfully'
+                                  : 'Following successfully',
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFollowing
+                                  ? 'Failed to unfollow'
+                                  : 'Failed to follow',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          isFollowing ? Colors.grey[200] : Colors.white,
+                      foregroundColor:
+                          isFollowing
+                              ? Colors.black87
+                              : Theme.of(context).primaryColor,
+                      textStyle: Theme.of(
+                        context,
+                      ).textTheme.labelLarge?.copyWith(fontSize: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(24),
+                        side: BorderSide(
+                          color:
+                              isFollowing
+                                  ? Colors.transparent
+                                  : Theme.of(context).primaryColor,
+                          width: 1.5,
+                        ),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(isFollowing ? 'Following' : 'Follow'),
+                        if (isFollowing) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.check, size: 16),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+        // If private profile with no connection, show privacy message instead of buttons
+        if (isPrivateProfile && isNoConnection)
+          _buildLimitedAccessMessage(context),
+        const SizedBox(height: 8), // Add bottom padding for visual balance
+      ],
     );
   }
 
@@ -514,7 +1325,6 @@ class ProfileHeader extends StatelessWidget {
     }
   }
 
-  // Updated method for profile picture picker dialog
   Future<void> _showProfilePicturePickerDialog(
     BuildContext context,
     ProfileProvider provider,

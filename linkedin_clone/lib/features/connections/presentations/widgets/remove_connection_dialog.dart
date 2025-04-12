@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import '../provider/connections_provider.dart';
+import "error_dialog.dart";
 
 class RemoveConnectionDialog extends StatelessWidget {
   final String userId;
@@ -54,11 +57,25 @@ class RemoveConnectionDialog extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
-                    await connectionsProvider.removeConnection(
-                      userId,
-                    ); //TODO: Implement  Lw failed hy3mel eh
-                    Navigator.pop(context); // Close dialog
-                    Navigator.pop(context); // Close pop-up menu
+                    if (await connectionsProvider.removeConnection(userId)) {
+                      Navigator.pop(context); // Close remove connection dialog
+                      Navigator.pop(context); // Close pop-up menu
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => ErrorDialog(
+                              title: "Couldn't remove connection",
+                              message:
+                                  "Failed to remove connection, Please try again.",
+                              buttonText: "Cancel",
+                              onPressed: () {
+                                Navigator.of(context).pop(); // Close dialog
+                                Navigator.pop(context);
+                              },
+                            ),
+                      );
+                    }
                   },
                   child: Text(
                     "Remove",

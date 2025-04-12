@@ -8,6 +8,9 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   // Helper function to get headers with authorization
   Future<Map<String, String>> _getHeaders() async {
     final token = await TokenService.getToken();
+    print(
+      "TOKEN AHO $token******8",
+    ); // Replace with actual token retrieval logic
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
@@ -19,13 +22,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "email": email,
-        "password": password,
-      }),
+      body: jsonEncode({"email": email, "password": password}),
     );
 
     if (response.statusCode == 201) {
+      print(UserModel.fromJson(json.decode(response.body)).token);
       return UserModel.fromJson(json.decode(response.body));
     } else {
       throw Exception("Invalid credentials: ${response.body}");
@@ -34,25 +35,28 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> forgotPassword(String email) async {
+    print("Email: $email");
+    print("Sending password reset request...");
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/forgot-password'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email": email}),
+      body: jsonEncode({"email": email, "isAndroid": true}),
     );
 
     if (response.statusCode == 200) {
       print("Password reset link sent to your email");
     } else {
+      print("Failed to send password reset request: ${response.body}");
       throw Exception("Failed to reset password: ${response.body}");
     }
   }
 
   @override
-  Future<void> resendVerificationEmail(String email) async {
+  Future<void> resendVerificationEmail(String email, String type) async {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/resend-confirmation'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email": email}),
+      body: jsonEncode({"email": email, "type": type}),
     );
 
     if (response.statusCode == 200) {
@@ -83,7 +87,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String firstName, String lastName, String email, String password, String captchaToken) async {
+  Future<UserModel> register(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+    String captchaToken,
+  ) async {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
@@ -100,61 +110,77 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       print("[SUCCESS] Registration successful: ${response.body}");
       return userModel;
     } else {
-      print("[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}");
+      print(
+        "[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}",
+      );
       throw Exception("Failed to register: ${response.body}");
     }
   }
 
   @override
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    print("Current Password: $currentPassword");
+    print("New Password: $newPassword");
     final response = await http.patch(
       Uri.parse('https://tawasolapp.me/api/users/update-password'),
       headers: await _getHeaders(),
       body: jsonEncode({
-        "currentpassword": currentPassword,
-        "newpassword": newPassword,
+        "currentPassword": currentPassword,
+        "newPassword": newPassword,
       }),
     );
 
     if (response.statusCode == 200) {
       print("Password changed successfully");
     } else {
+      print("Failed to change password: ${response.body}");
       throw Exception("Failed to change password: ${response.body}");
     }
   }
 
   @override
   Future<void> updateEmail(String newEmail, String password) async {
+    String? token = await TokenService.getToken();
+    print("TOKEN NAFSO AHO   $token");
+    print("NEW EMAIL AHO  $newEmail");
+
+    final headers = await _getHeaders();
+    print("HEADERS AHO   $headers");
     final response = await http.patch(
       Uri.parse('https://tawasolapp.me/api/users/request-email-update'),
-      headers: await _getHeaders(),
-      body: jsonEncode({
-        "newemail": newEmail,
-        "password": password,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({"newEmail": newEmail, "password": password}),
     );
 
     if (response.statusCode == 200) {
       print("Email changed successfully");
     } else {
+      print("Failed to change email: ${response.body}");
       throw Exception("Failed to update email: ${response.body}");
     }
   }
 
   @override
   Future<void> deleteAccount(String email, String password) async {
+    print("Email: $email");
+    print("Password: $password");
+    print("Deleting account...");
     final response = await http.delete(
       Uri.parse('https://tawasolapp.me/api/users/delete-account'),
       headers: await _getHeaders(),
-      body: jsonEncode({
-        "email": email,
-        "password": password,
-      }),
+      body: jsonEncode({"email": email, "password": password}),
     );
 
     if (response.statusCode == 200) {
       print("Account deleted successfully");
     } else {
+      print("Failed to delete account: ${response.body}");
       throw Exception("Failed to delete account: ${response.body}");
     }
   }

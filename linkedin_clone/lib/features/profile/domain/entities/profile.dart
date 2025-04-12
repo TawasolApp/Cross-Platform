@@ -6,7 +6,8 @@ import 'experience.dart';
 
 class Profile extends Equatable {
   final String userId;
-  final String name;
+  final String firstName;
+  final String lastName;
   final String? profilePicture;
   final String? coverPhoto;
   final String? resume;
@@ -16,16 +17,17 @@ class Profile extends Equatable {
   final String? industry;
   final List<Skill> skills;
   final List<Education> education;
-  final List<Certification> certifications;
-  final List<Experience> experience;
+  final List<Certification> certification;
+  final List<Experience> workExperience;
   final String visibility;
   final int? connectionCount;
-  // final PlanDetails? planDetails;
-  // final PlanStatistics planStatistics;
+  final String connectStatus;
+  final String followStatus;
 
   const Profile({
     required this.userId,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     this.profilePicture,
     this.coverPhoto,
     this.resume,
@@ -35,17 +37,21 @@ class Profile extends Equatable {
     this.industry,
     this.skills = const [],
     this.education = const [],
-    this.certifications = const [],
-    this.experience = const [],
+    this.certification = const [],
+    this.workExperience = const [],
     this.visibility = "public",
     this.connectionCount,
-    // this.planDetails,
-    // required this.planStatistics,
+    this.connectStatus = "Owner",
+    this.followStatus = "Owner",
   });
+
+  // Get full name
+  String get fullName => "$firstName $lastName";
 
   Profile copyWith({
     String? userId,
-    String? name,
+    String? firstName,
+    String? lastName,
     String? profilePicture,
     String? coverPhoto,
     String? resume,
@@ -55,14 +61,17 @@ class Profile extends Equatable {
     String? industry,
     List<Skill>? skills,
     List<Education>? education,
-    List<Certification>? certifications,
-    List<Experience>? experience,
+    List<Certification>? certification,
+    List<Experience>? workExperience,
     String? visibility,
     int? connectionCount,
+    String? connectStatus,
+    String? followStatus,
   }) {
     return Profile(
       userId: userId ?? this.userId,
-      name: name ?? this.name,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
       profilePicture: profilePicture ?? this.profilePicture,
       coverPhoto: coverPhoto ?? this.coverPhoto,
       resume: resume ?? this.resume,
@@ -72,31 +81,34 @@ class Profile extends Equatable {
       industry: industry ?? this.industry,
       skills: skills ?? this.skills,
       education: education ?? this.education,
-      certifications: certifications ?? this.certifications,
-      experience: experience ?? this.experience,
+      certification: certification ?? this.certification,
+      workExperience: workExperience ?? this.workExperience,
       visibility: visibility ?? this.visibility,
       connectionCount: connectionCount ?? this.connectionCount,
+      connectStatus: connectStatus ?? this.connectStatus,
+      followStatus: followStatus ?? this.followStatus,
     );
   }
 
   @override
   List<Object?> get props => [
-        userId,
-        name,
-        profilePicture,
-        coverPhoto,
-        resume,
-        headline,
-        bio,
-        location,
-        industry,
-        skills,
-        education,
-        certifications,
-        experience,
-        visibility,
-        connectionCount,
-        // planDetails,
-        // planStatistics,
-      ];
+    userId,
+    firstName,
+    lastName,
+    profilePicture,
+    coverPhoto,
+    resume,
+    headline,
+    bio,
+    location,
+    industry,
+    skills,
+    education,
+    certification,
+    workExperience,
+    visibility,
+    connectionCount,
+    connectStatus,
+    followStatus,
+  ];
 }

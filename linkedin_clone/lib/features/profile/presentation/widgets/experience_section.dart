@@ -11,6 +11,7 @@ class ExperienceSection extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggleExpansion;
   final String? errorMessage;
+  final bool isOwner;
 
   const ExperienceSection({
     super.key,
@@ -18,6 +19,7 @@ class ExperienceSection extends StatelessWidget {
     required this.isExpanded,
     required this.onToggleExpansion,
     this.errorMessage,
+    required this.isOwner,
   });
 
   @override
@@ -41,47 +43,67 @@ class ExperienceSection extends StatelessWidget {
                   children: [
                     const Text(
                       'Experience',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.add, color: Theme.of(context).primaryColor),
-                          onPressed: () async {
-                            final result = await Navigator.push<bool>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddExperiencePage(),
-                              ),
-                            );
-                            
-                            if (result == true) {
-                              await provider.fetchProfile();
-                            }
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const ExperienceListPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    if (isOwner)
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () async {
+                              final result = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const AddExperiencePage(),
+                                ),
+                              );
+
+                              if (result == true) {
+                                await provider.fetchProfile(provider.userId);
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const ExperienceListPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
 
               // Experience List
               Column(
-                children: visibleExperiences.map((exp) => ExperienceWidget(
-                  experience: exp,
-                )).toList(),
+                children:
+                    visibleExperiences
+                        .map(
+                          (exp) => ExperienceWidget(
+                            experience: exp,
+                            showPresent:
+                                exp.endDate ==
+                                null, // This part already handles showing "Present" correctly
+                          ),
+                        )
+                        .toList(),
               ),
 
               // Show More/Show Less Button
@@ -100,7 +122,22 @@ class ExperienceSection extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     error,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+
+              // Show empty state message when no experiences and user is owner
+              if (exps.isEmpty && isOwner)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'Add your work experience to showcase your professional journey.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ),
             ],

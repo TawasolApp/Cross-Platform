@@ -1,53 +1,58 @@
 import 'package:linkedin_clone/features/profile/data/models/certification_model.dart';
-import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/education_model.dart';
-// import 'package:linkedin_clone/features/profile/data/models/plan_details_model.dart';
+import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
+import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
 
 abstract class ProfileRemoteDataSource {
   /// Profile Management
-  Future<ProfileModel> getProfile();
-  Future<void> updateProfile({
-    String? name,
-    String? profilePictureUrl,
-    String? coverPhoto,
-    String? resume,
-    String? headline,
-    String? bio,
-    String? location,
-    String? industry,
-  });
+  Future<ProfileModel> getProfile(String id);
   Future<void> createProfile(ProfileModel profile);
-  // Future<void> deleteProfile(String userId);
+  Future<void> updateProfile(ProfileModel profile);
 
-  /// Profile Picture Management
+  /// Profile components deletion
   Future<void> deleteProfilePicture();
-
-  /// Cover Photo Management
   Future<void> deleteCoverPhoto();
-
-  /// Experience Management
-  // Future<List<ExperienceModel>> getExperiences(String userId);
-  Future<void> addExperience(ExperienceModel experience);
-  Future<void> updateExperience(ExperienceModel experience);
-  Future<void> deleteExperience(String experienceId);
-
-  /// Education Management
-  // Future<List<EducationModel>> getEducation(String userId);
-  Future<void> addEducation(EducationModel education);
-  Future<void> updateEducation(EducationModel education);
-  Future<void> deleteEducation(String educationId);
+  Future<void> deleteResume();
+  Future<void> deleteHeadline();
+  Future<void> deleteBio();
+  Future<void> deleteLocation();
+  Future<void> deleteIndustry();
 
   /// Skills Management
-  // Future<List<SkillModel>> getSkills(String userId);
   Future<void> addSkill(SkillModel skill);
-  Future<void> updateSkill(SkillModel skill);
-  Future<void> deleteSkill(String skillId);
+  Future<void> updateSkill(String skillName, SkillModel skill);
+  Future<void> deleteSkill(String skillName);
+
+  /// Education Management
+  Future<void> addEducation(EducationModel education);
+  Future<void> updateEducation(String educationId, EducationModel education);
+  Future<void> deleteEducation(String educationId);
 
   /// Certification Management
-  // Future<List<CertificationModel>> getCertifications(String userId);
   Future<void> addCertification(CertificationModel certification);
-  Future<void> updateCertification(CertificationModel certification);
+  Future<void> updateCertification(
+    String certificationId,
+    CertificationModel certification,
+  );
   Future<void> deleteCertification(String certificationId);
+
+  /// Work Experience Management
+  Future<void> addWorkExperience(ExperienceModel experience);
+  Future<void> updateWorkExperience(
+    String workExperienceId,
+    ExperienceModel experience,
+  );
+  Future<void> deleteWorkExperience(String workExperienceId);
+
+  /// Endorsements
+  Future<List<EndorsementModel>> getSkillEndorsements(
+    String userId,
+    String skillName,
+  );
+
+  /// Additional profile features
+  Future<List<dynamic>> getFollowedCompanies(String userId);
+  Future<List<dynamic>> getPosts(String userId);
 }

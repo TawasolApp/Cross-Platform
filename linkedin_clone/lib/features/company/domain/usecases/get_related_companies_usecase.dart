@@ -5,7 +5,7 @@ class GetRelatedCompanies {
 
   GetRelatedCompanies({required this.repository});
 
-  Future<List<Company>> execute(String companyId) async {
-    return repository.getRelatedCompanies(companyId);
+  Future<List<Company>> execute(String companyId , {int page = 1, int limit = 4}) async {
+    return repository.getRelatedCompanies(companyId,page: page, limit: limit);
   }
 }

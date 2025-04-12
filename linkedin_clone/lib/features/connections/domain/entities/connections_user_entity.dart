@@ -1,6 +1,7 @@
 class ConnectionsUserEntity {
   final String userId;
-  final String userName;
+  final String firstName;
+  final String lastName;
   final String headLine;
   final String time;
   final String profilePicture;
@@ -8,7 +9,8 @@ class ConnectionsUserEntity {
 
   ConnectionsUserEntity({
     required this.userId,
-    required this.userName,
+    required this.firstName,
+    required this.lastName,
     required this.headLine,
     required this.time,
     required this.profilePicture,
@@ -18,7 +20,8 @@ class ConnectionsUserEntity {
   factory ConnectionsUserEntity.fromJson(Map<String, dynamic> json) {
     return ConnectionsUserEntity(
       userId: json['userId'],
-      userName: json['username'],
+      firstName: json['firstName'],
+      lastName: json['lastName'],
       headLine: json['headline'],
       profilePicture: json['profilePicture'],
       time: json['createdAt'],

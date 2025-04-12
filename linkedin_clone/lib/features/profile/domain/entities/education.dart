@@ -1,29 +1,35 @@
 import 'package:equatable/equatable.dart';
 
 class Education extends Equatable {
+  final String? educationId;
   final String school;
-  final String? schoolPic; // Nullable field for institution image URL
-  final String degree;
-  final String field;
-  final String startDate;
-  final String? endDate; // Optional if still studying
-  final String description;
-  final String grade;
+  final String? companyLogo;
+  final String? companyId;
+  final String? degree;
+  final String? field;
+  final String? startDate;
+  final String? endDate;
+  final String? grade;
+  final String? description;
 
   const Education({
+    this.educationId,
     required this.school,
-    this.schoolPic, // Nullable
-    required this.degree,
-    required this.field,
-    required this.startDate,
-    this.endDate, // Nullable
-    required this.description,
-    required this.grade,
+    this.companyLogo,
+    this.companyId,
+    this.degree,
+    this.field,
+    this.startDate,
+    this.endDate,
+    this.grade,
+    this.description,
   });
 
   Education copyWith({
+    String? educationId,
     String? school,
-    String? schoolPic,
+    String? companyLogo,
+    String? companyId,
     String? degree,
     String? field,
     String? startDate,
@@ -32,8 +38,10 @@ class Education extends Equatable {
     String? grade,
   }) {
     return Education(
+      educationId: educationId ?? this.educationId,
       school: school ?? this.school,
-      schoolPic: schoolPic ?? this.schoolPic,
+      companyLogo: companyLogo ?? this.companyLogo,
+      companyId: companyId ?? this.companyId,
       degree: degree ?? this.degree,
       field: field ?? this.field,
       startDate: startDate ?? this.startDate,
@@ -45,13 +53,15 @@ class Education extends Equatable {
 
   @override
   List<Object?> get props => [
-        school,
-        schoolPic, // Include in props for comparison
-        degree,
-        field,
-        startDate,
-        endDate,
-        description,
-        grade,
-      ];
+    educationId,
+    school,
+    companyLogo,
+    companyId,
+    degree,
+    field,
+    startDate,
+    endDate,
+    description,
+    grade,
+  ];
 }

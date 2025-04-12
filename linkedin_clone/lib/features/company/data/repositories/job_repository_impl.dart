@@ -1,4 +1,5 @@
-import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
+import 'package:linkedin_clone/features/company/data/models/create_job_model.dart';
+import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
 
 import '../../domain/repositories/job_repository.dart';
 import '../../domain/entities/job.dart';
@@ -10,11 +11,26 @@ class JobRepositoryImpl implements JobRepository {
   JobRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Job>> getRecentJobs() async {
-    return await remoteDataSource.getRecentJobs();
+  Future<List<Job>> getRecentJobs(String companyId,{int page = 1, int limit = 4}) async {
+    List<Job> jobs = await remoteDataSource.getRecentJobs(companyId,page: page,limit: limit);
+    print('Jobs at repository: ${jobs}');
+    return jobs;
   }
+
   @override
-  Future<void> addJob(CreateJobEntity job) async {
-    await remoteDataSource.addJob(job);
+  Future<bool> addJob(CreateJobEntity job, String companyId) async {
+   return await remoteDataSource.addJob(
+      CreateJobModel(
+        position: job.position,
+        industry: job.industry,
+        description: job.description,
+        location: job.location,
+        salary: job.salary,
+        experienceLevel: job.experienceLevel,
+        locationType: job.locationType,
+        employmentType: job.employmentType,
+      ),
+      companyId,
+    );
   }
 }

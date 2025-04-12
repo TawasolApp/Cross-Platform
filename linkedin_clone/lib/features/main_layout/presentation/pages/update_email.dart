@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/primary_button.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
@@ -12,11 +13,11 @@ class UpdateEmailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final settingsProvider = Provider.of<SettingsProvider>(context);
 
-    String currentEmail = '';
-    String newEmail = '';
-    String password = '';
-    final SettingsProvider settingsProvider = Provider.of<SettingsProvider>(context);
+    final registerProvider = Provider.of<RegisterProvider>(
+      context,
+    ); // Define registerProvider
 
     return Scaffold(
       appBar: AppBar(
@@ -26,10 +27,7 @@ class UpdateEmailPage extends StatelessWidget {
           onPressed: () => context.go(RouteNames.signInAndSecurity),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.help_outline), onPressed: () {}),
         ],
       ),
       body: Padding(
@@ -40,47 +38,92 @@ class UpdateEmailPage extends StatelessWidget {
             const Text('Update your email address'),
             CustomTextField(
               keyboardType: TextInputType.emailAddress,
-              hintText: 'Current Email',
-              onChanged: (value) => currentEmail = value,
-            ),
-            CustomTextField(
-              keyboardType: TextInputType.emailAddress,
               hintText: 'New Email',
-              onChanged: (value) => newEmail = value,
+              onChanged:
+                  settingsProvider.setEmail, // Directly update the provider
             ),
             const SizedBox(height: 10),
             CustomTextField(
               keyboardType: TextInputType.visiblePassword,
               hintText: 'Password',
               isPassword: true,
-              onChanged: (value) => password = value,
+              onChanged:
+                  settingsProvider.setPassword, // Directly update the provider
             ),
             const SizedBox(height: 20),
-              PrimaryButton(
-                text: "Save Changes",
-                onPressed: () async {
-                  final success = await settingsProvider.updateEmail(newEmail, password);
-                  if (!context.mounted) return;
+            PrimaryButton(
+              text: "Save Changes",
+              onPressed: () async {
+                final success = await settingsProvider.updateEmail(
+                  settingsProvider.newEmailValue,
+                  settingsProvider.passwordValue,
+                );
 
-                  if (success) {
-                    
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Email updated successfully')),
-                    );
-                    //context.go(RouteNames.signInAndSecurity);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to update email')),
-                    );
-                  } 
-                },
-              ),
+                if (!context.mounted) return;
+
+                if (success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Check your email to confirm update'),
+                    ),
+                  );
+                  context.go(RouteNames.signInAndSecurity);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Failed to update email: ${settingsProvider.errorMessage}',
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Didn\'t receive the email?',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    final success = await registerProvider
+                        .resendVerificationEmail(
+                          settingsProvider.newEmailValue,
+                          "verifyEmail",
+                        );
+
+                    if (!context.mounted) return;
+
+                    if (success) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Confirmation email resent successfully',
+                          ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Failed to resend email: ${settingsProvider.errorMessage}',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text('Resend Email'),
+                ),
+              ],
+            ),
           ],
         ),
       ),
     );
   }
-
-
-  
 }

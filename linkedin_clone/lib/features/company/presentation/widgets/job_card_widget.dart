@@ -7,9 +7,8 @@ import 'package:linkedin_clone/core/utils/time_ago.dart';
 
 class JobCard extends StatefulWidget {
   final Job job;
-  final String userId;
   final String companyId;
-  JobCard({required this.job, required this.userId, required this.companyId});
+  JobCard({required this.job, required this.companyId});
 
   @override
   _JobCardState createState() => _JobCardState();
@@ -26,7 +25,7 @@ class _JobCardState extends State<JobCard> {
     );
 
     return Material(
-      color: Colors.white, // Color to something visible for ripple effect
+      color: Colors.white, 
       child: InkWell(
         onTap: () {
           print("Tapped on job: ${widget.job.id}");
@@ -37,7 +36,6 @@ class _JobCardState extends State<JobCard> {
                   (context) => JobDetailsScreen(
                     job: widget.job,
                     companyProvider: companyProvider,
-                    userId: widget.userId,
                     companyId: widget.companyId,
                   ),
             ),
@@ -52,24 +50,46 @@ class _JobCardState extends State<JobCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Company Logo
-                  Container(
-                    width:
-                        MediaQuery.of(context).size.width *
-                        0.1, // Responsive width
-                    height:
-                        MediaQuery.of(context).size.width *
-                        0.1, // Responsive height
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(6),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                          companyProvider.company!.logo ??
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png', // Default LinkedIn logo
+                  (companyProvider.hasValidLogo)
+                      ? Container(
+                        width:
+                            MediaQuery.of(context).size.width *
+                            0.1, 
+                        height:
+                            MediaQuery.of(context).size.width *
+                            0.1, 
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              companyProvider.company!.logo ??
+                                  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png', // Default LinkedIn logo
+                            ),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        fit: BoxFit.cover,
+                      )
+                      : Container(
+                        width:
+                            MediaQuery.of(context).size.width *
+                            0.1,
+                        height:
+                            MediaQuery.of(context).size.width *
+                            0.1, 
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          color:
+                              Colors.grey[300], 
+                        ),
+                        child: Icon(
+                          Icons.business,
+                          color: Colors.black, 
+                          size:
+                              MediaQuery.of(context).size.width *
+                              0.1, 
+                        ),
                       ),
-                    ),
-                  ),
+                  SizedBox(width: 10),
                   SizedBox(width: 10),
                   // Job Title and Company Info
                   Expanded(
@@ -84,7 +104,7 @@ class _JobCardState extends State<JobCard> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          widget.job.company,
+                          widget.job.industry,
                           style: Theme.of(context).textTheme.bodyMedium,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -141,7 +161,7 @@ class _JobCardState extends State<JobCard> {
                 style: TextStyle(color: Colors.green[500], fontSize: 12),
               ),
               SizedBox(height: 10),
-              Divider(), // Adds a subtle divider between job listings
+              Divider(), 
             ],
           ),
         ),

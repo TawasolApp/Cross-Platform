@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/skill/add_skill.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/skill/skill_list.dart';
-import 'package:linkedin_clone/features/profile/presentation/widgets/skill.dart' as skill_widget;
+import 'package:linkedin_clone/features/profile/presentation/widgets/skill.dart'
+    as skill_widget;
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 
@@ -11,6 +12,7 @@ class SkillsSection extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggleExpansion;
   final String? errorMessage;
+  final bool isOwner;
 
   const SkillsSection({
     super.key,
@@ -18,6 +20,7 @@ class SkillsSection extends StatelessWidget {
     required this.isExpanded,
     required this.onToggleExpansion,
     this.errorMessage,
+    required this.isOwner,
   });
 
   @override
@@ -26,7 +29,8 @@ class SkillsSection extends StatelessWidget {
       builder: (context, provider, _) {
         final skillsList = skills ?? provider.skills ?? [];
         final error = errorMessage ?? provider.skillError;
-        final visibleSkills = isExpanded ? skillsList : skillsList.take(3).toList();
+        final visibleSkills =
+            isExpanded ? skillsList : skillsList.take(3).toList();
 
         return Container(
           color: Colors.white,
@@ -39,51 +43,62 @@ class SkillsSection extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: const Text(
+                    const Expanded(
+                      child: Text(
                         'Skills & Endorsements',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.add, color: Theme.of(context).primaryColor),
-                          onPressed: () async {
-                            final result = await Navigator.push<bool>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddSkillPage(),
-                              ),
-                            );
-                            
-                            if (result == true) {
-                              await provider.fetchProfile();
-                            }
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SkillListPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    if (isOwner)
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () async {
+                              final result = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AddSkillPage(),
+                                ),
+                              );
+
+                              if (result == true) {
+                                await provider.fetchProfile(provider.userId);
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SkillListPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
 
               // Skills List
               Column(
-                children: visibleSkills
-                    .map((skill) => skill_widget.SkillWidget(skill: skill))
-                    .toList(),
+                children:
+                    visibleSkills
+                        .map((skill) => skill_widget.SkillWidget(skill: skill))
+                        .toList(),
               ),
 
               // Show More/Show Less Button
@@ -102,7 +117,22 @@ class SkillsSection extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     error,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+
+              // Show empty state message when no skills and user is owner
+              if (skillsList.isEmpty && isOwner)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'Add skills to showcase your expertise and get endorsements.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ),
             ],

@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/feed/presentation/widgets/comment_actions_bottom_sheet.dart';
-import 'package:lucide_icons/lucide_icons.dart'; // For three dots icon
+import 'package:linkedin_clone/features/feed/presentation/widgets/comment_actions_footer.dart';
 import '../../domain/entities/comment_entity.dart';
-import '../widgets/comment_actions_bottom_sheet.dart';
 
 class CommentItem extends StatelessWidget {
   final CommentEntity comment;
+  final String currentUserId;
 
-  const CommentItem({super.key, required this.comment});
+  const CommentItem({
+    super.key,
+    required this.comment,
+    required this.currentUserId,
+  });
 
   String formatTimeAgo(DateTime timestamp) {
     final duration = DateTime.now().difference(timestamp);
-    if (duration.inMinutes < 60) {
+    if (duration.inSeconds < 60) {
+      return '${duration.inSeconds}s';
+    } else if (duration.inMinutes < 60) {
       return '${duration.inMinutes}m';
     } else if (duration.inHours < 24) {
       return '${duration.inHours}h';
@@ -24,23 +29,9 @@ class CommentItem extends StatelessWidget {
     }
   }
 
-  void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (_) => CommentActionsBottomSheet(
-            commentId: comment.id,
-            postId: comment.postId,
-            commentContent: comment.content,
-          ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    print("comitem ${currentUserId} ${comment.authorId}");
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
       child: Row(
@@ -48,7 +39,7 @@ class CommentItem extends StatelessWidget {
         children: [
           CircleAvatar(
             backgroundImage: NetworkImage(comment.authorPicture),
-            radius: 16, // Reduced size for profile image
+            radius: 16,
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -64,6 +55,7 @@ class CommentItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header row (name, time)
                   Row(
                     children: [
                       Expanded(
@@ -79,28 +71,35 @@ class CommentItem extends StatelessWidget {
                         formatTimeAgo(comment.timestamp),
                         style: TextStyle(color: Colors.grey[600], fontSize: 12),
                       ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () => _showBottomSheet(context),
-                        child: Icon(
-                          LucideIcons.moreHorizontal,
-                          size: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
                     ],
                   ),
+
+                  // Bio
                   Text(
                     comment.authorBio,
                     style: TextStyle(color: Colors.grey[600], fontSize: 12),
                   ),
+
                   const SizedBox(height: 2),
+
+                  // Comment content
                   Text(
                     comment.content,
                     style: const TextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w400, // Slightly slimmer font
+                      fontWeight: FontWeight.w400,
                     ),
+                  ),
+
+                  const SizedBox(height: 6),
+
+                  // ✅ Comment Footer Actions (Like | Reply | Edit | Delete)
+                  CommentActionsFooter(
+                    commentId: comment.id,
+                    postId: comment.postId,
+                    authorId: comment.authorId,
+                    currentUserId: currentUserId,
+                    commentContent: comment.content,
                   ),
                 ],
               ),

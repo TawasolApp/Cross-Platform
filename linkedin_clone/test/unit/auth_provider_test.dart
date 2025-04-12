@@ -12,8 +12,11 @@ import 'package:linkedin_clone/features/authentication/Presentation/Provider/aut
 
 /// ✅ Mock classes
 class MockLoginUseCase extends Mock implements LoginUseCase {}
+
 class MockForgotPassUseCase extends Mock implements ForgotPassUseCase {}
+
 class MockRegisterUseCase extends Mock implements RegisterUseCase {}
+
 class MockResendEmailUsecase extends Mock implements ResendEmailUsecase {}
 
 void main() {
@@ -46,8 +49,9 @@ void main() {
       final password = '123456';
       final user = UserEntity(token: 'mock_token_xyz');
 
-      when(() => mockLoginUseCase.call(email, password))
-          .thenAnswer((_) async => Right(user));
+      when(
+        () => mockLoginUseCase.call(email, password),
+      ).thenAnswer((_) async => Right(user));
 
       final result = await authProvider.login(email, password);
 
@@ -63,8 +67,9 @@ void main() {
       final email = 'wrong@example.com';
       final password = 'wrongpassword';
 
-      when(() => mockLoginUseCase.call(email, password))
-          .thenAnswer((_) async => Left(ServerFailure()));
+      when(
+        () => mockLoginUseCase.call(email, password),
+      ).thenAnswer((_) async => Left(ServerFailure()));
 
       final result = await authProvider.login(email, password);
 
@@ -75,25 +80,30 @@ void main() {
       print('✅ Login failure test passed!');
     });
 
-    test('✅ should send forgot password link successfully and return true', () async {
-      final email = 'test@example.com';
+    test(
+      '✅ should send forgot password link successfully and return true',
+      () async {
+        final email = 'test@example.com';
 
-      when(() => mockForgotPassUseCase.call(email))
-          .thenAnswer((_) async => const Right(unit));
+        when(
+          () => mockForgotPassUseCase.call(email),
+        ).thenAnswer((_) async => const Right(unit));
 
-      final result = await authProvider.forgotPassword(email);
+        final result = await authProvider.forgotPassword(email);
 
-      expect(result, true);
-      expect(authProvider.errorMessage, isNull);
+        expect(result, true);
+        expect(authProvider.errorMessage, isNull);
 
-      print('✅ Forgot password success test passed!');
-    });
+        print('✅ Forgot password success test passed!');
+      },
+    );
 
     test('✅ should fail forgot password and return false', () async {
       final email = 'notfound@example.com';
 
-      when(() => mockForgotPassUseCase.call(email))
-          .thenAnswer((_) async => Left(ServerFailure()));
+      when(
+        () => mockForgotPassUseCase.call(email),
+      ).thenAnswer((_) async => Left(ServerFailure()));
 
       final result = await authProvider.forgotPassword(email);
 
@@ -110,10 +120,23 @@ void main() {
       final password = 'password123';
       final token = 'mock_token_xyz';
 
-      when(() => mockRegisterUseCase.call(firstName, lastName, email, password, 'mock-captcha'))
-          .thenAnswer((_) async => Right(UserEntity(token: token)));
+      when(
+        () => mockRegisterUseCase.call(
+          firstName,
+          lastName,
+          email,
+          password,
+          'mock-captcha',
+        ),
+      ).thenAnswer((_) async => Right(UserEntity(token: token)));
 
-      final result = await registerProvider.register(firstName, lastName, email, password, 'mock-captcha');
+      final result = await registerProvider.register(
+        firstName,
+        lastName,
+        email,
+        password,
+        'mock-captcha',
+      );
 
       expect(result, true);
 
@@ -122,11 +145,15 @@ void main() {
 
     test('✅ should resend verification email successfully', () async {
       final email = 'test@example.com';
+      final type = 'verifyEmail';
+      when(
+        () => mockResendEmailUsecase.call(email, type),
+      ).thenAnswer((_) async => const Right(unit));
 
-      when(() => mockResendEmailUsecase.call(email))
-          .thenAnswer((_) async => const Right(unit));
-
-      final result = await registerProvider.resendVerificationEmail(email);
+      final result = await registerProvider.resendVerificationEmail(
+        email,
+        type,
+      );
 
       expect(result, true);
 
@@ -135,11 +162,15 @@ void main() {
 
     test('✅ should fail to resend verification email', () async {
       final email = 'notfound@example.com';
+      final type = 'verifyEmail';
+      when(
+        () => mockResendEmailUsecase.call(email, type),
+      ).thenAnswer((_) async => Left(ServerFailure()));
 
-      when(() => mockResendEmailUsecase.call(email))
-          .thenAnswer((_) async => Left(ServerFailure()));
-
-      final result = await registerProvider.resendVerificationEmail(email);
+      final result = await registerProvider.resendVerificationEmail(
+        email,
+        type,
+      );
 
       expect(result, false);
 

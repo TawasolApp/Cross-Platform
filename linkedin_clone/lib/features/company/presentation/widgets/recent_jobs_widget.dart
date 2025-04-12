@@ -87,7 +87,6 @@ class RecentJobsWidget extends StatelessWidget {
                                     (context) => JobDetailsScreen(
                                       job: job, 
                                       companyProvider: companyProvider,
-                                      userId: userId, 
                                       companyId:
                                           companyProvider.company?.companyId ??
                                           '',

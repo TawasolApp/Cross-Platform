@@ -10,22 +10,14 @@ class UserRepositoryImpl implements UserRepository {
   UserRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<User>> getUserFriends(String userId) async {
-    // TODO: Implement error handling for API call failures.
-    return await remoteDataSource.getUserFriends(userId);
+  Future<List<User>> getCommonFollowers(String userId) async {
+    return await remoteDataSource.getCommonFollowers(userId);
   }
 
-  @override
-  Future<bool> checkIfUserFollowsCompany(
-    String userId,
-    String companyId,
-  ) async {
-    return await remoteDataSource.checkIfUserFollowsCompany(userId, companyId);
-  }
 
   @override
-  Future<void> addAdminUser(String newUserId) async {
+  Future<void> addAdminUser(String newUserId,String companyId) async {
     final model = AddAdminRequestModel(newUserId: newUserId);
-    await remoteDataSource.addAdminUser(model);
+    await remoteDataSource.addAdminUser(model,companyId);
   }
 }

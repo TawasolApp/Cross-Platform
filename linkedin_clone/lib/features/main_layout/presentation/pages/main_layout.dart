@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/connections_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
-
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -18,11 +21,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    FeedPage(),      // Will be replaced by News Feed module
-    ConnectionsPage(token: "Mock token"), // Will be replaced by Connections module
-     // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
-    CompanyProfileScreen(companyId: "elsewedy-electric", title: "Test Company"),
-    SettingsPage(),   // Will be replaced by Settings module
+    FeedPage(), // Will be replaced by News Feed module
+    MyNetworkPage(), // Will be replaced by Connections module
+    // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
+    CompaniesListScreen(),
+    SettingsPage(), // Will be replaced by Settings module
   ];
 
   void _onItemTapped(int index) {
@@ -33,8 +36,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   void _goToProfile() {
     // Navigate to user profile
-    
-    context.go(RouteNames.profile); // Define this route in GoRouter or Navigator
+
+    context.go(
+      RouteNames.profile,
+    ); // Define this route in GoRouter or Navigator
   }
 
   @override
@@ -55,7 +60,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                 children: [
                   const CircleAvatar(
                     radius: 36,
-                    backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Replace with user image
+                    backgroundImage: AssetImage(
+                      'assets/images/profile_placeholder.png',
+                    ), // Replace with user image
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -117,9 +124,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
               ),
-              onTap: () { 
+              onTap: () {
                 Navigator.pop(context);
-                _onItemTapped(3); },
+                _onItemTapped(3);
+              },
             ),
           ],
         ),
@@ -133,9 +141,18 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         backgroundColor: theme.scaffoldBackgroundColor,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.people), label: "My Network"),
-          BottomNavigationBarItem(icon: Icon(Icons.work_outline), label: "Jobs"),
-          BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: "My Network",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.work_outline),
+            label: "Jobs",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+          ),
         ],
         type: BottomNavigationBarType.fixed,
       ),

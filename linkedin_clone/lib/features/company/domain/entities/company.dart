@@ -1,5 +1,5 @@
 class Company {
-  final String companyId;
+  final String? companyId;
   final String name;
   final String industry;
   final String companySize;
@@ -10,7 +10,7 @@ class Company {
   final String? description;
   final int? followers;
   final String? overview;
-  final String? founded;
+  final int? founded;
   final String? website;
   final String? address;
   final String? location;
@@ -18,9 +18,10 @@ class Company {
   final String? contactNumber;
   final String? banner;
   final String? specialities;
-  final bool? isAdmin;
+  final bool? isManager;
+
   const Company({
-    required this.companyId,
+    this.companyId,
     required this.name,
     required this.industry,
     required this.companySize,
@@ -39,6 +40,9 @@ class Company {
     this.contactNumber,
     this.banner,
     this.specialities,
-    this.isAdmin,
+    this.isManager,
   });
+
+  // Add getter for id to match the usage in add_experience.dart
+  String get id => companyId ?? '';
 }

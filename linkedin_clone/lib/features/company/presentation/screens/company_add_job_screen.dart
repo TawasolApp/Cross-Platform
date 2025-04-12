@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/domain/entities/create_job.dart';
+import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
 import '../providers/company_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddJobScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
-
+  final String companyId;
+  AddJobScreen({super.key, required this.companyId});
   // Controllers for job details
   final TextEditingController _positionController = TextEditingController();
   final TextEditingController _industryController = TextEditingController();
@@ -23,21 +24,20 @@ class AddJobScreen extends StatelessWidget {
     // For responsive padding
     final screenWidth = MediaQuery.of(context).size.width;
     final padding =
-        screenWidth > 600 ? 32.0 : 16.0; // Adjust padding for larger screens
+        screenWidth > 600 ? 32.0 : 16.0; 
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Add New Job"),
-        backgroundColor: Colors.blueAccent,
+        backgroundColor: Theme.of(context).primaryColor, 
       ),
-      backgroundColor: Colors.white, // Set the background color to white
+      backgroundColor: Colors.white, 
       body: SingleChildScrollView(
-        // Wrap the body in SingleChildScrollView
         padding: EdgeInsets.all(padding),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // Align items left
+            crossAxisAlignment: CrossAxisAlignment.start, 
             children: [
               _buildTextField(
                 _positionController,
@@ -60,13 +60,28 @@ class AddJobScreen extends StatelessWidget {
                 "Salary",
                 keyboardType: TextInputType.number,
               ),
-              _buildTextField(_experienceLevelController, "Experience Level"),
-
+              _buildDropdown(
+                controller: _experienceLevelController,
+                label: "Experience Level",
+                items: [
+                  "Internship",
+                  "Entry Level",
+                  "Junior",
+                  "Mid Level",
+                  "Senior",
+                  "Lead",
+                  "Manager",
+                  "Director",
+                  "Executive",
+                ],
+                isRequired: true,
+              ),
+              SizedBox(height: 10),
               // Location Type Dropdown (required)
               _buildDropdown(
                 controller: _locationTypeController,
                 label: "Location Type",
-                items: ['On-Site', 'Remote', 'Hybrid'],
+                items: ['On-site', 'Remote', 'Hybrid'],
                 isRequired: true,
               ),
               SizedBox(height: 10),
@@ -88,7 +103,7 @@ class AddJobScreen extends StatelessWidget {
                       : ElevatedButton(
                         onPressed: () => _submitJob(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
+                          backgroundColor: Theme.of(context).primaryColor,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -181,9 +196,10 @@ class AddJobScreen extends StatelessWidget {
       industry: _industryController.text.trim(),
       location: _locationController.text.trim(),
       description: _descriptionController.text.trim(),
-      salary: _salaryController.text.trim().isNotEmpty
-          ? double.tryParse(_salaryController.text.trim()) ?? 0.0
-          : 0.0,
+      salary:
+          _salaryController.text.trim().isNotEmpty
+              ? double.tryParse(_salaryController.text.trim()) ?? 0.0
+              : 0.0,
       experienceLevel: _experienceLevelController.text.trim(),
       locationType: _locationTypeController.text.trim(),
       employmentType: _employmentTypeController.text.trim(),
@@ -194,11 +210,27 @@ class AddJobScreen extends StatelessWidget {
         context,
         listen: false,
       );
-      await companyProvider.addJob(newJob);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Job added successfully!")));
-      Navigator.pop(context);
+
+      bool success = await companyProvider.addJob(newJob, companyId);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Job added successfully!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Pop the page if the job was successfully added
+        Navigator.pop(context, true); 
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Failed to add job. Try again."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } catch (error) {
       ScaffoldMessenger.of(
         context,

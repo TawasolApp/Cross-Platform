@@ -1,30 +1,48 @@
 import 'package:flutter/material.dart';
+import 'reaction_popup.dart';
+import 'package:linkedin_clone/features/feed/domain/entities/post_entity.dart';
+import '../../../../core/utils/reaction_type.dart';
 
 class LikeButton extends StatelessWidget {
-  final bool isLiked;
-  final VoidCallback onTap;
+  final PostEntity post;
 
-  const LikeButton({super.key, required this.isLiked, required this.onTap});
+  const LikeButton({super.key, required this.post});
+
+  void _showReactionPopup(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder:
+          (_) =>
+              ReactionPopup(postId: post.id, onReactionSelected: (String) {}),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final currentReaction =
+        post.reactions?.entries
+            .firstWhere(
+              (e) => e.value == true,
+              orElse: () => const MapEntry('', false),
+            )
+            .key;
+
+    final hasReacted = currentReaction != null && currentReaction.isNotEmpty;
+    final reactionType = getReactionTypeFromName(currentReaction ?? '');
+
+    final icon = hasReacted ? reactionType.icon : Icons.thumb_up_off_alt;
+
+    final color = hasReacted ? reactionType.color : Colors.grey;
+
+    final label = hasReacted ? reactionType.name : "Like";
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => _showReactionPopup(context),
       child: Row(
         children: [
-          Icon(
-            isLiked ? Icons.thumb_up : Icons.thumb_up_off_alt,
-            color:
-                isLiked ? Theme.of(context).colorScheme.primary : Colors.grey,
-          ),
+          Icon(icon, color: color),
           const SizedBox(width: 4),
-          Text(
-            "Like",
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color:
-                  isLiked ? Theme.of(context).colorScheme.primary : Colors.grey,
-            ),
-          ),
+          Text(label, style: TextStyle(color: color)),
         ],
       ),
     );

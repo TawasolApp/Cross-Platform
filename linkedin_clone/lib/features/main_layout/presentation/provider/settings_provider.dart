@@ -7,103 +7,113 @@ import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_passw
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
 
-
-
 class SettingsProvider with ChangeNotifier {
+  final ChangePasswordUseCase changePasswordUseCase;
+  final UpdateEmailUsecase updateEmailUsecase;
+  final DeleteAccountUsecase deleteAccountUsecase;
 
+  SettingsProvider(
+    this.changePasswordUseCase,
+    this.updateEmailUsecase,
+    this.deleteAccountUsecase,
+  );
 
-final ChangePasswordUseCase changePasswordUseCase;
-final UpdateEmailUsecase updateEmailUsecase;
-final DeleteAccountUsecase deleteAccountUsecase;
+  String? _errorMessage;
+  String? _email;
+  String newPassword = '';
+  String currentPassword = '';
+  String password = '';
+  String newEmail = '';
 
-SettingsProvider(this.changePasswordUseCase,this.updateEmailUsecase,this.deleteAccountUsecase);
+  String? get errorMessage => _errorMessage;
+  String? get email => _email;
+  String get newPasswordValue => newPassword;
+  String get currentPasswordValue => currentPassword;
+  String get passwordValue => password;
+  String get newEmailValue => newEmail;
 
-String? _errorMessage;
-String? _email;
-
-
-String? get errorMessage => _errorMessage;
-String? get email => _email;
-
-void setEmail(String value) {
-    _email = value;
+  void setErrorMessage(String value) {
+    _errorMessage = value;
     notifyListeners();
   }
 
+  void setNewPassword(String value) {
+    newPassword = value;
+    notifyListeners();
+  }
 
-  Future<bool> changePassword(String currentPassword,String newPassword) async { 
-    
-    final result = await changePasswordUseCase.call(currentPassword, newPassword);
+  void setCurrentPassword(String value) {
+    currentPassword = value;
+    notifyListeners();
+  }
+
+  void setPassword(String value) {
+    password = value;
+    notifyListeners();
+  }
+
+  void setEmail(String value) {
+    newEmail = value;
+    notifyListeners();
+  }
+
+  Future<bool> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    final result = await changePasswordUseCase.call(
+      currentPassword,
+      newPassword,
+    );
 
     return result.fold(
-      (failure){
-        //password not updated 
+      (failure) {
+        //password not updated
         //400 incorrect- 404 user not found etc..
-        _errorMessage=failure.message;
+        _errorMessage = failure.message;
         notifyListeners();
         return false;
       },
-      (_)
-      {
+      (_) {
         notifyListeners();
         return true;
       },
-
     );
-
   }
 
-
-    Future<bool> updateEmail(String newEmail,String password) async { 
-    
+  Future<bool> updateEmail(String newEmail, String password) async {
     final result = await updateEmailUsecase.call(newEmail, password);
 
     return result.fold(
-      (failure){
+      (failure) {
         //email not updated
         //400 incorrect- 404 user not found etc..
-        _errorMessage=failure.message;
+        _errorMessage = failure.message;
         notifyListeners();
         return false;
       },
-      (_)
-      {
+      (_) {
         notifyListeners();
         return true;
       },
-
     );
-
   }
 
-    Future<bool> deleteAccount(String email,String password) async { 
-    
-    final result = await changePasswordUseCase.call(email, password);
+  Future<bool> deleteAccount(String email, String password) async {
+    final result = await deleteAccountUsecase.call(email, password);
 
     return result.fold(
-      (failure){
+      (failure) {
         //Account deleted
         //400 incorrect- 404 user not found etc..
-        _errorMessage=failure.message;
+        _errorMessage = failure.message;
         notifyListeners();
         return false;
       },
-      (_)
-      {
+      (_) {
         notifyListeners();
         return true;
       },
-
     );
-
   }
-
-
-
-
 }
-
-
-
-
-

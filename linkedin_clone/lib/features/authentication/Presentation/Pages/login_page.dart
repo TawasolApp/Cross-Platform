@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/navigation/route_names.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
+import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/login_error_modal.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
@@ -42,13 +43,14 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   Image.asset(
                     'assets/images/linkedin_logo.png',
-                    height: 25,
+                    height: 120,
                     color: isDarkMode ? const Color(0xFFE5E5E5) : textColor,
                   ),
                   IconButton(
                     icon: Icon(
                       Icons.close,
-                      color: isDarkMode ? const Color(0xFFE5E5E5) : Colors.black,
+                      color:
+                          isDarkMode ? const Color(0xFFE5E5E5) : Colors.black,
                       size: 28,
                     ),
                     onPressed: () => context.go(RouteNames.onboarding),
@@ -62,7 +64,10 @@ class _LoginPageState extends State<LoginPage> {
                 "Sign in",
                 style: linkedinTextTheme.displayLarge?.copyWith(
                   fontSize: 32,
-                  color: isDarkMode ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                  color:
+                      isDarkMode
+                          ? const Color(0xFFE5E5E5)
+                          : const Color(0xFF191919),
                 ),
               ),
               const SizedBox(height: 8),
@@ -73,7 +78,10 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     "or ",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: isDarkMode ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                      color:
+                          isDarkMode
+                              ? const Color(0xFFE5E5E5)
+                              : const Color(0xFF191919),
                     ),
                   ),
                   GestureDetector(
@@ -96,7 +104,6 @@ class _LoginPageState extends State<LoginPage> {
                 hintText: "Email or Phone",
                 isPassword: false,
                 onChanged: (value) => email = value,
-              
               ),
               const SizedBox(height: 16),
               CustomTextField(
@@ -113,8 +120,12 @@ class _LoginPageState extends State<LoginPage> {
                 child: GestureDetector(
                   onTap: () {
                     // Future Forgot Password
-                    context.go(RouteNames.forgotPassword);
-              
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordPage(),
+                      ),
+                    );
                   },
                   child: Text(
                     "Forgot password?",
@@ -141,9 +152,10 @@ class _LoginPageState extends State<LoginPage> {
                       context: context,
                       backgroundColor: Colors.transparent,
                       isScrollControlled: true,
-                      builder: (context) => const CustomAuthErrorDialog(
-                        message: "Wrong username or password",
-                      ),
+                      builder:
+                          (context) => const CustomAuthErrorDialog(
+                            message: "Wrong username or password",
+                          ),
                     );
                   }
                 },

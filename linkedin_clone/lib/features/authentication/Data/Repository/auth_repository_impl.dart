@@ -11,23 +11,37 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, UserEntity>> login(String email, String password) async {
+  Future<Either<Failure, UserEntity>> login(
+    String email,
+    String password,
+  ) async {
     try {
       final userModel = await remoteDataSource.login(email, password);
 
       //Save token after API success
       await TokenService.saveToken(userModel.token);
-      return Right(userModel as UserEntity); 
+      return Right(userModel as UserEntity);
     } catch (e) {
-      
-      return Left(ServerFailure()); 
+      return Left(ServerFailure());
     }
   }
-  
+
   @override
-  Future<Either<Failure, UserEntity>> register(String firstName,String lastName,String email, String password, String recaptchaToken) async {
+  Future<Either<Failure, UserEntity>> register(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+    String recaptchaToken,
+  ) async {
     try {
-      final userModel = await remoteDataSource.register(firstName,lastName,email, password, recaptchaToken);
+      final userModel = await remoteDataSource.register(
+        firstName,
+        lastName,
+        email,
+        password,
+        recaptchaToken,
+      );
 
       // Save token after successful registration
       await TokenService.saveToken(userModel.token);
@@ -38,57 +52,34 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(ServerFailure());
     }
   }
-  
+
   @override
   Future<Either<Failure, void>> forgotPassword(String email) async {
-    
     try {
       await remoteDataSource.forgotPassword(email);
       return Right(null);
     } catch (e) {
       return Left(ServerFailure());
     }
-
-    
   }
-  
+
   @override
-  Future<Either<Failure, void>> resendVerificationEmail(String email) async {
-    
+  Future<Either<Failure, void>> resendVerificationEmail(
+    String email,
+    String type,
+  ) async {
     try {
-      await remoteDataSource.resendVerificationEmail(email);
+      await remoteDataSource.resendVerificationEmail(email, type);
       return Right(null);
     } catch (e) {
       return Left(ServerFailure());
     }
-   
   }
 
   @override
-Future<Either<Failure, void>> loginWithGoogle(String idToken) async {
-  try {
-    await remoteDataSource.loginWithGoogle(idToken);
-    return const Right(null);
-  } catch (e) {
-    return Left(ServerFailure());
-  }
-}
-
-  @override
-  Future<Either<Failure, void>> deleteAccount(String email, String password) async {
+  Future<Either<Failure, void>> loginWithGoogle(String idToken) async {
     try {
-      await remoteDataSource.deleteAccount(email,password);
-      return const Right(null);
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  
-  }
-
-  @override
-  Future<Either<Failure, void>> updateEmail(String newEmail, String password) async {
-    try {
-      await remoteDataSource.updateEmail(newEmail,password);
+      await remoteDataSource.loginWithGoogle(idToken);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure());
@@ -96,9 +87,12 @@ Future<Either<Failure, void>> loginWithGoogle(String idToken) async {
   }
 
   @override
-  Future<Either<Failure, void>> changePassword(String currentPassword, String newPassword) async{
+  Future<Either<Failure, void>> deleteAccount(
+    String email,
+    String password,
+  ) async {
     try {
-      await remoteDataSource.changePassword(currentPassword,newPassword);
+      await remoteDataSource.deleteAccount(email, password);
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure());
@@ -106,12 +100,37 @@ Future<Either<Failure, void>> loginWithGoogle(String idToken) async {
   }
 
   @override
-  Future<Either<Failure, void>> verifyEmail(String email, String verificationCode) {
+  Future<Either<Failure, void>> updateEmail(
+    String newEmail,
+    String password,
+  ) async {
+    try {
+      await remoteDataSource.updateEmail(newEmail, password);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
+    try {
+      await remoteDataSource.changePassword(currentPassword, newPassword);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> verifyEmail(
+    String email,
+    String verificationCode,
+  ) {
     // TODO: implement verifyEmail
     throw UnimplementedError();
   }
-
-
-
- 
 }

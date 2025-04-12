@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class PostContent extends StatelessWidget {
   final String content;
   final String? imageUrl;
-  
 
   const PostContent({super.key, required this.content, this.imageUrl});
 
@@ -15,8 +14,9 @@ class PostContent extends StatelessWidget {
       children: [
         Text(
           content,
-          style: TextStyle(fontSize: 15,
-          color: isDarkMode ? Colors.white : Colors.black
+          style: TextStyle(
+            fontSize: 15,
+            color: isDarkMode ? Colors.white : Colors.black,
           ),
           softWrap: true,
           overflow: TextOverflow.visible,

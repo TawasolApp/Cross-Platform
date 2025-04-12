@@ -41,7 +41,7 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
   }
 
   Color getProgressBarColor(int applicantCount, int maxApplicantCount) {
-    double percentage = applicantCount / maxApplicantCount;
+    double percentage = maxApplicantCount > 0 ? applicantCount / maxApplicantCount : 0.0;
     if (percentage > 0.75) {
       return Colors.green;
     } else if (percentage > 0.5) {
@@ -122,7 +122,9 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
                 itemCount: jobs.length,
                 itemBuilder: (context, index) {
                   final job = jobs[index];
-                  double progress = job.applicantCount / maxApplicantCount;
+                    double progress = maxApplicantCount > 0 
+                      ? job.applicantCount / maxApplicantCount 
+                      : 0.0;
 
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8.0),

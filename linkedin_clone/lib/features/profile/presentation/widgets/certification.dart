@@ -3,71 +3,84 @@ import 'package:linkedin_clone/features/profile/domain/entities/certification.da
 
 class CertificationWidget extends StatelessWidget {
   final Certification certification;
+  final bool showPresent;
 
   const CertificationWidget({
     super.key,
     required this.certification,
+    this.showPresent = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Organization Logo (Optional)
+          // Organization Logo
           Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey[300], // Placeholder color
-              borderRadius: BorderRadius.circular(4), // Square with slight rounding
-              image: certification.issuingOrganizationPic != null
-                  ? DecorationImage(
-                      image: NetworkImage(certification.issuingOrganizationPic!),
-                      fit: BoxFit.cover,
-                    )
-                  : null,
+            margin: const EdgeInsets.only(right: 12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child:
+                  certification.companyLogo != null
+                      ? Image.network(
+                        certification.companyLogo!,
+                        width: 54,
+                        height: 54,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (context, error, stackTrace) => Container(
+                              width: 54,
+                              height: 54,
+                              color: Colors.grey.shade200,
+                              child: const Icon(
+                                Icons.verified,
+                                color: Colors.blue,
+                              ),
+                            ),
+                      )
+                      : Container(
+                        width: 54,
+                        height: 54,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.verified, color: Colors.blue),
+                      ),
             ),
-            child: certification.issuingOrganizationPic == null
-                ? const Icon(Icons.verified, size: 24, color: Colors.white)
-                : null,
           ),
-          const SizedBox(width: 12), // Space between logo and text
-
           // Certification Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Certification Name (Bold)
                 Text(
                   certification.name,
                   style: const TextStyle(
-                    fontSize: 16, 
                     fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
-
+                const SizedBox(height: 4),
                 // Issuing Organization
-                Text(
-                  certification.issuingOrganization,
-                  style: const TextStyle(
-                    fontSize: 14, 
-                    color: Colors.black87,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      certification.company,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ],
                 ),
-
-                // Issue and Expiration Dates
+                const SizedBox(height: 4),
+                // Date range - similar to education format
                 Text(
-                  certification.expirationDate != null && certification.expirationDate!.isNotEmpty
-                      ? "Issued: ${certification.issueDate} • Expires: ${certification.expirationDate}"
-                      : "Issued: ${certification.issueDate} • No Expiration",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                  ),
+                  showPresent || certification.expiryDate == null
+                      ? "${certification.issueDate} - Present"
+                      : "${certification.issueDate} - ${certification.expiryDate}",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),

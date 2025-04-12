@@ -1,0 +1,63 @@
+LinkedIn Clone - Connections Module
+1. Description of Implemented Features
+
+Connections Management: View, add, and manage connections
+Connection Requests: Send, receive, accept, and reject connection requests
+Followers/Following: View and manage followers and people you follow
+Network Management: Discover and connect with people you may know
+Blocking System: Block and unblock users //not implement by backend yet
+
+2. Folder Structure Overview
+connections/
+├── data/                    # Data layer (API integration, models)
+│   ├── datasources/         # Remote and local data sources
+│   ├── models/              # Data models for connections
+│   └── repositories/        # Repository implementations
+├── domain/                  # Domain layer (business logic)
+│   ├── entities/            # Domain entities
+│   ├── repositories/        # Repository interfaces
+│   └── usecases/            # Business logic use cases
+└── presentations/           # Presentation layer (UI)
+    ├── pages/               # Full screens
+    ├── provider/            # State management
+    └── widgets/             # Reusable UI components
+
+3. File Descriptions
+Data Layer
+Data Sources
+connections_remote_data_source.dart: Handles all API calls to the backend, including fetching connections list, sent/received requests, followers, and following lists
+Models
+connections_user_model.dart: Data model for connection users
+connections_list_user_model.dart: Data model specifically for listing connections
+Repositories
+connections_repository_impl.dart: Implementation of the repository interfaces defined in the domain layer
+Domain Layer
+Entities
+connections_user_entity.dart: Core domain entity for a connection user
+connections_list_user_entity.dart: Domain entity for connection listings
+Repositories
+connections_repository.dart: Repository interface defining methods for connection operations
+Use Cases
+get_connections_list_usecase.dart: Business logic for retrieving connections
+send_connection_request_usecase.dart: Logic for sending connection requests
+accept_connection_request_usecase.dart: Logic for accepting connections
+reject_connection_request_usecase.dart: Logic for rejecting connections
+follow_user_usecase.dart: Logic for following users
+unfollow_user_usecase.dart: Logic for unfollowing users
+Presentation Layer
+Pages
+list_page.dart: Versatile page that displays connections, followers, following, and blocked users, manage networks pages 
+people_you_may_know_page.dart: Page displaying potential connections
+Providers
+connections_provider.dart: Manages state for connections and connection requests
+networks_provider.dart: Manages state for followers, following, and blocked users
+Widgets
+list_page_appbar.dart: Custom AppBar for the list pages with search and filter options
+user_card.dart: Reusable card component for displaying user information
+no_internet_connection.dart: Widget displayed when network errors occur
+people_you_may_know_body.dart: Component for displaying suggested connections
+page_type_enum.dart: Enum defining different page types (connections, followers, etc.)
+4. User Experience Assumptions 
+- error messages do not support retry, for retrying the user uses the button again 
+following/followers/connections count does not work correctly as backend hasn't implemented the needed endpoints yet 
+

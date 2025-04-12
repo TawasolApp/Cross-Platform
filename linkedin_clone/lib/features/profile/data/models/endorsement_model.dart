@@ -3,18 +3,24 @@ import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart
 
 class EndorsementModel extends Equatable {
   final String userId;
-  final String? profilePicUrl;
+  final String? profilePicture;
+  final String? firstName;
+  final String? lastName;
 
   const EndorsementModel({
     required this.userId,
-    this.profilePicUrl,
+    this.profilePicture,
+    this.firstName,
+    this.lastName,
   });
 
   /// Convert to Domain Entity
   Endorsement toEntity() {
     return Endorsement(
       userId: userId,
-      profilePicUrl: profilePicUrl,
+      profilePicture: profilePicture,
+      firstName: firstName,
+      lastName: lastName,
     );
   }
 
@@ -22,37 +28,45 @@ class EndorsementModel extends Equatable {
   factory EndorsementModel.fromEntity(Endorsement entity) {
     return EndorsementModel(
       userId: entity.userId,
-      profilePicUrl: entity.profilePicUrl,
+      profilePicture: entity.profilePicture,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
     );
   }
 
   /// Convert JSON to EndorsementModel
   factory EndorsementModel.fromJson(Map<String, dynamic> json) {
     return EndorsementModel(
-      userId: json['userId'] as String,
-      profilePicUrl: json['profilePicUrl'] as String?,
+      userId: json['_id'] as String,
+      profilePicture: json['profilePicture'] as String?,
+      firstName: json['firstName'] as String?,
+      lastName: json['lastName'] as String?,
     );
   }
 
   /// Convert EndorsementModel to JSON
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
-      'profilePicUrl': profilePicUrl,
+      '_id': userId,
+      'profilePicture': profilePicture,
+      'firstName': firstName,
+      'lastName': lastName,
     };
   }
 
   /// Create a copy with modified fields
   EndorsementModel copyWith({
     String? userId,
-    String? profilePicUrl,
+    String? profilePicture,
   }) {
     return EndorsementModel(
       userId: userId ?? this.userId,
-      profilePicUrl: profilePicUrl ?? this.profilePicUrl,
+      profilePicture: profilePicture ?? this.profilePicture,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
     );
   }
 
   @override
-  List<Object?> get props => [userId, profilePicUrl];
+  List<Object?> get props => [userId, profilePicture, firstName, lastName];
 }

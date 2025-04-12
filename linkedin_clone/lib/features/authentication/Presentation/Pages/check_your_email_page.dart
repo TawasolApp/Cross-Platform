@@ -63,6 +63,7 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
             TextButton(
               onPressed: () {
                 // Trigger resend email logic
+                authProvider.forgotPassword(authProvider.email!);
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
@@ -98,6 +99,30 @@ class ForgotPasswordCheckEmailPage extends StatelessWidget {
               child: const Text(
                 "Can’t access this email?",
                 style: TextStyle(color: Colors.blue),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Continue Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.go(RouteNames.login),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark ? const Color(0xFF0077B5) : Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  "Continue",
+                  style: TextStyle(
+                    color: isDark ? const Color(0xFFE5E5E5) : Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],

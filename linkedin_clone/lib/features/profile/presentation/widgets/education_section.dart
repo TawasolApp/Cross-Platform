@@ -11,6 +11,7 @@ class EducationSection extends StatelessWidget {
   final bool isExpanded;
   final VoidCallback onToggleExpansion;
   final String? errorMessage;
+  final bool isOwner;
 
   const EducationSection({
     super.key,
@@ -18,6 +19,7 @@ class EducationSection extends StatelessWidget {
     required this.isExpanded,
     required this.onToggleExpansion,
     this.errorMessage,
+    required this.isOwner,
   });
 
   @override
@@ -26,7 +28,8 @@ class EducationSection extends StatelessWidget {
       builder: (context, provider, _) {
         final eduList = educations ?? provider.educations ?? [];
         final error = errorMessage ?? provider.educationError;
-        final visibleEducations = isExpanded ? eduList : eduList.take(2).toList();
+        final visibleEducations =
+            isExpanded ? eduList : eduList.take(2).toList();
 
         return Container(
           color: Colors.white,
@@ -41,47 +44,65 @@ class EducationSection extends StatelessWidget {
                   children: [
                     const Text(
                       'Education',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.add, color: Theme.of(context).primaryColor),
-                          onPressed: () async {
-                            final result = await Navigator.push<bool>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const AddEducationPage(),
-                              ),
-                            );
-                            
-                            if (result == true) {
-                              await provider.fetchProfile();
-                            }
-                          },
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Theme.of(context).primaryColor),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const EducationListPage(),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                    if (isOwner)
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.add,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () async {
+                              final result = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const AddEducationPage(),
+                                ),
+                              );
+
+                              if (result == true) {
+                                await provider.fetchProfile(provider.userId);
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const EducationListPage(),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),
 
               // Education List
               Column(
-                children: visibleEducations.map((education) => EducationWidget(
-                  education: education,
-                )).toList(),
+                children:
+                    visibleEducations
+                        .map(
+                          (education) => EducationWidget(
+                            education: education,
+                            showPresent: education.endDate == null,
+                          ),
+                        )
+                        .toList(),
               ),
 
               // Show More/Show Less Button
@@ -100,7 +121,22 @@ class EducationSection extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
                     error,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ),
+
+              // Show empty state message when no education and user is owner
+              if (eduList.isEmpty && isOwner)
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Text(
+                      'Add your education history to highlight your academic background.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
                   ),
                 ),
             ],

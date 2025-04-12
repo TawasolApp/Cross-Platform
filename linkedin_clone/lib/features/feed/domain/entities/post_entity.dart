@@ -8,17 +8,23 @@ class PostEntity {
   final String authorBio;
   final String content;
   final List<String>? media;
-  final int likes;
-  final int comments;
+  final Map<String, bool>? reactions; // For reacting to a post
+  final Map<String, int>? reactCounts; // For fetching reactions
+  int comments;
   final int shares;
   final List<String>? taggedUsers;
   final String visibility;
   final String authorType;
-  final bool isLiked;
-  final RepostDetails? repostDetails;
+  final String reactType;
+  //final RepostDetails? repostDetails;
   final DateTime timestamp;
   final bool isSaved;
-  const PostEntity({
+  final bool isFollowing;
+  final bool isConnected;
+  final bool isEdited;
+  final bool isSilentRepost;
+
+  PostEntity({
     required this.id,
     required this.authorId,
     required this.authorName,
@@ -26,17 +32,23 @@ class PostEntity {
     required this.authorBio,
     required this.content,
     this.media,
-    this.likes = 0,
+    this.reactions = const {},
+    this.reactCounts,
     this.comments = 0,
     this.shares = 0,
     this.taggedUsers,
     required this.visibility,
     required this.authorType,
-    required this.isLiked,
+    required this.reactType,
     required this.timestamp,
-    this.repostDetails,
+    //this.repostDetails,
     this.isSaved = false,
+    this.isFollowing = false,
+    this.isConnected = false,
+    this.isEdited = false,
+    this.isSilentRepost = false,
   });
+
   PostEntity copyWith({
     String? id,
     String? authorId,
@@ -45,16 +57,21 @@ class PostEntity {
     String? authorBio,
     String? content,
     List<String>? media,
-    int? likes,
+    Map<String, bool>? reactions,
+    Map<String, int>? reactCounts,
     int? comments,
     int? shares,
     List<String>? taggedUsers,
     String? visibility,
     String? authorType,
-    bool? isLiked,
     DateTime? timestamp,
+    String? reactType,
     RepostDetails? repostDetails,
     bool? isSaved,
+    bool? isFollowing,
+    bool? isConnected,
+    bool? isEdited,
+    bool? isSilentRepost,
   }) {
     return PostEntity(
       id: id ?? this.id,
@@ -64,16 +81,23 @@ class PostEntity {
       authorBio: authorBio ?? this.authorBio,
       content: content ?? this.content,
       media: media ?? this.media,
-      likes: likes ?? this.likes,
+      reactions: reactions ?? this.reactions,
+      reactCounts: reactCounts ?? this.reactCounts,
+      //likes: likes ?? this.likes,
       comments: comments ?? this.comments,
       shares: shares ?? this.shares,
       taggedUsers: taggedUsers ?? this.taggedUsers,
       visibility: visibility ?? this.visibility,
       authorType: authorType ?? this.authorType,
-      isLiked: isLiked ?? this.isLiked,
+      reactType: reactType ?? this.reactType,
+      //isLiked: isLiked ?? this.isLiked,
       timestamp: timestamp ?? this.timestamp,
-      repostDetails: repostDetails ?? this.repostDetails,
+      //repostDetails: repostDetails ?? this.repostDetails,
       isSaved: isSaved ?? this.isSaved,
+      isFollowing: isFollowing ?? this.isFollowing,
+      isConnected: isConnected ?? this.isConnected,
+      isEdited: isEdited ?? this.isEdited,
+      isSilentRepost: isSilentRepost ?? this.isSilentRepost,
     );
   }
 }

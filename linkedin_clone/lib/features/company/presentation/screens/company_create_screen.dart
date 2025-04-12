@@ -134,7 +134,7 @@ class CreateCompanyScreen extends StatelessWidget {
                             maxLength: 300,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // No error if the field is empty
+                                return null; 
                               }
                             },
                           ),
@@ -163,7 +163,18 @@ class CreateCompanyScreen extends StatelessWidget {
                                     : null,
                       ),
                       SizedBox(height: 16),
-
+                      // ✅ Address Field
+                      TextFormField(
+                        onChanged: provider.setCompanyAddress,
+                        decoration: InputDecoration(
+                          labelText: "Address",
+                          prefixIcon: Icon(Icons.home),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 16),
                       // ✅ Location Field
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +191,7 @@ class CreateCompanyScreen extends StatelessWidget {
                             keyboardType: TextInputType.url,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // No error if the field is empty
+                                return null; 
                               }
 
                               final urlPattern =
@@ -191,7 +202,7 @@ class CreateCompanyScreen extends StatelessWidget {
                                 return "Please enter a valid website URL (e.g., https://example.com)";
                               }
 
-                              return null; // No error if valid
+                              return null; 
                             },
                           ),
                           Padding(
@@ -288,7 +299,7 @@ class CreateCompanyScreen extends StatelessWidget {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; // No error if the field is empty
+                            return null; 
                           }
 
                           // Validate a proper URL format
@@ -388,7 +399,7 @@ class CreateCompanyScreen extends StatelessWidget {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; 
+                            return null;
                           }
 
                           // ✅ Email validation regex pattern
@@ -419,12 +430,43 @@ class CreateCompanyScreen extends StatelessWidget {
                         keyboardType: TextInputType.phone,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; // No error if the field is empty
+                            return null;
                           }
                         },
                       ),
                       SizedBox(height: 16),
+                      // ✅ Founded Field
+                      TextFormField(
+                        onChanged: (value) {
+                          final year = int.tryParse(value);
+                          if (year != null) {
+                            provider.setCompanyFounded(year);
+                          }
+                        },
+                        decoration: InputDecoration(
+                          labelText: "Founded",
+                          prefixIcon: Icon(Icons.calendar_today),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return null; 
+                          }
 
+                          final year = int.tryParse(value);
+                          if (year == null ||
+                              year < 1000 ||
+                              year > DateTime.now().year) {
+                            return "Please enter a valid year";
+                          }
+
+                          return null; // Valid year
+                        },
+                      ),
+                      SizedBox(height: 16),
                       // ✅ Company Banner Picker
                       Row(
                         children: [
@@ -462,7 +504,7 @@ class CreateCompanyScreen extends StatelessWidget {
                             maxLines: 4,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // Field is optional, so no validation error
+                                return null;
                               }
                             },
                           ),

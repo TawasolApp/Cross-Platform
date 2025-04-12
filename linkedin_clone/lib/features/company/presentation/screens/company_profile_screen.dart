@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
+import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
+import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_edit_details_screen.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_list_followers.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_page_tabs.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_create_screen.dart';
 import 'package:provider/provider.dart';
@@ -12,8 +16,7 @@ import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompanyProfileScreen extends StatelessWidget {
-  final String companyId; //TODO: Replace with actual company ID pressed
-  final String userId = "1"; //TODO: Replace with actual user ID from auth
+  final String companyId; 
   const CompanyProfileScreen({
     required this.companyId,
     super.key,
@@ -86,14 +89,25 @@ class CompanyProfileScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) => ChangeNotifierProvider(
-                                create:
-                                    (_) => CompanyCreateProvider(
-                                      companyRepository: CompanyRepositoryImpl(
-                                        remoteDataSource:
-                                            CompanyRemoteDataSource(),
-                                      ),
-                                    ),
+                              (context) => MultiProvider(
+                                providers: [
+                                  ChangeNotifierProvider(
+                                    create:
+                                        (_) => CompanyCreateProvider(
+                                          companyRepository:
+                                              CompanyRepositoryImpl(
+                                                remoteDataSource:
+                                                    CompanyRemoteDataSource(),
+                                              ),
+                                          uploadImageUseCase: UploadImageUseCase(
+                                            mediaRepository: MediaRepository(
+                                              mediaRemoteDataSource:
+                                                  MediaRemoteDataSource(),
+                                            ),
+                                          ),
+                                        ),
+                                  ),
+                                ],
                                 child: CreateCompanyScreen(),
                               ),
                         ),
@@ -116,8 +130,8 @@ class CompanyProfileScreen extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) {
             final provider = CompanyProvider();
-            provider.fetchCompanyDetails(companyId, userId);
-            provider.fetchFriendsFollowingCompany(userId, companyId);
+            provider.fetchCompanyDetails(companyId);
+            provider.fetchFriendsFollowingCompany(companyId);
             return provider;
           },
         ),
@@ -125,6 +139,8 @@ class CompanyProfileScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.black),
+
           title: Consumer<CompanyProvider>(
             builder: (context, provider, child) {
               return (TextField(
@@ -173,49 +189,94 @@ class CompanyProfileScreen extends StatelessWidget {
                                 alignment: Alignment.topCenter,
                                 children: [
                                   // Banner image
-                                  if (provider.company!.banner != null)
-                                    Image.network(
-                                      provider.company!.banner!,
-                                      fit: BoxFit.cover,
-                                      width: double.infinity,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                          0.08,
-                                    ),
-
-                                  // Company logo
-                                  if (provider.company!.logo != null)
-                                    Container(
-                                      margin: EdgeInsets.only(
-                                        top: 30,
-                                        right: 270,
-                                      ),
-                                      width:
-                                          MediaQuery.of(context).size.height *
-                                          0.12,
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                          0.12,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.grey.withAlpha(
-                                              (0.2 * 255).toInt(),
-                                            ),
-                                            spreadRadius: 2,
-                                            blurRadius: 3,
-                                            offset: Offset(0, 1),
-                                          ),
-                                        ],
-                                        image: DecorationImage(
-                                          image: NetworkImage(
-                                            provider.company!.logo!,
-                                          ),
-                                          fit: BoxFit.cover,
+                                  (provider.hasValidBanner)
+                                      ? Image.network(
+                                        provider.company!.banner!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.08,
+                                      )
+                                      : Container(
+                                        width: double.infinity,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.08,
+                                        color: Colors.grey[200],
+                                        child: Icon(
+                                          Icons.business,
+                                          size: 30,
+                                          color: Colors.grey[600],
                                         ),
                                       ),
-                                    ),
+
+                                  // Company logo
+                                  (provider.hasValidLogo)
+                                      ? Container(
+                                        margin: EdgeInsets.only(
+                                          top: 30,
+                                          right: 270,
+                                        ),
+                                        width:
+                                            MediaQuery.of(context).size.height *
+                                            0.12,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.12,
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withAlpha(
+                                                (0.2 * 255).toInt(),
+                                              ),
+                                              spreadRadius: 2,
+                                              blurRadius: 3,
+                                              offset: Offset(0, 1),
+                                            ),
+                                          ],
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              provider.company!.logo!,
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      )
+                                      : Container(
+                                        margin: EdgeInsets.only(
+                                          top: 30,
+                                          right: 270,
+                                        ),
+                                        width:
+                                            MediaQuery.of(context).size.height *
+                                            0.12,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                            0.12,
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          shape: BoxShape.circle,
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.grey.withAlpha(
+                                                (0.2 * 255).toInt(),
+                                              ),
+                                              spreadRadius: 2,
+                                              blurRadius: 3,
+                                              offset: Offset(0, 1),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Center(
+                                          child: Icon(
+                                            Icons.business,
+                                            size: 30,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ),
                                 ],
                               ),
 
@@ -224,55 +285,67 @@ class CompanyProfileScreen extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          provider.company!.name,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.headlineSmall,
-                                        ),
-                                        Spacer(), // Pushes everything after it to the end
-                                        Material(
-                                          color:
-                                              Colors
-                                                  .transparent, // Keeps background unchanged
-                                          child: InkWell(
-                                            onTap: () {
-                                              provider.toggleViewMode();
-                                            },
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ), // Optional: Adds rounded corners
-                                            child: Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                horizontal: 8,
-                                                vertical: 4,
-                                              ), // Increase touch area
-                                              child: Row(
-                                                mainAxisSize:
-                                                    MainAxisSize
-                                                        .min, // Only takes needed space
-                                                children: [
-                                                  Text(
-                                                    provider.isViewingAsUser
-                                                        ? 'User View'
-                                                        : 'Admin View',
-                                                    style:
-                                                        Theme.of(
-                                                          context,
-                                                        ).textTheme.bodyMedium,
-                                                  ),
-                                                  SizedBox(width: 8),
-                                                  Icon(
-                                                    provider.isViewingAsUser
-                                                        ? Icons.visibility
-                                                        : Icons.visibility_off,
-                                                  ),
-                                                ],
+                                    // Company name and view mode toggle
+                                    if (provider.isManager)
+                                      Row(
+                                        children: [
+                                          Spacer(), // Pushes everything after it to the end
+                                          Material(
+                                            color:
+                                                Colors
+                                                    .transparent, // Keeps background unchanged
+                                            child: InkWell(
+                                              onTap: () {
+                                                provider.toggleViewMode();
+                                              },
+                                              borderRadius: BorderRadius.circular(
+                                                8,
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 4,
+                                                ), // Increase touch area
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize
+                                                          .min, // Only takes needed space
+                                                  children: [
+                                                    Text(
+                                                      provider.isViewingAsUser
+                                                          ? 'User View'
+                                                          : 'Admin View',
+                                                      style:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyMedium,
+                                                    ),
+                                                    SizedBox(width: 8),
+                                                    Icon(
+                                                      provider.isViewingAsUser
+                                                          ? Icons.visibility
+                                                          : Icons
+                                                              .visibility_off,
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
+                                          ),
+                                        ],
+                                      ),
+
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            provider.company!.name,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.headlineSmall,
                                           ),
                                         ),
                                       ],
@@ -286,7 +359,11 @@ class CompanyProfileScreen extends StatelessWidget {
                                             runSpacing: 4,
                                             children: [
                                               if (provider.company?.industry !=
-                                                  null)
+                                                      null &&
+                                                  provider
+                                                      .company!
+                                                      .industry!
+                                                      .isNotEmpty)
                                                 Text(
                                                   "${provider.company!.industry} •",
                                                   style: Theme.of(context)
@@ -297,7 +374,11 @@ class CompanyProfileScreen extends StatelessWidget {
                                                       ),
                                                 ),
                                               if (provider.company?.address !=
-                                                  null)
+                                                      null &&
+                                                  provider
+                                                      .company!
+                                                      .address!
+                                                      .isNotEmpty)
                                                 Text(
                                                   "${provider.company!.address} •",
                                                   style: Theme.of(context)
@@ -308,7 +389,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                                       ),
                                                 ),
                                               Text(
-                                                "${formatNumber(int.tryParse(provider.company?.companySize ?? '') ?? 0)} employees •",
+                                                "${provider.company?.companySize ?? ''} •",
                                                 style: Theme.of(context)
                                                     .textTheme
                                                     .bodyMedium
@@ -316,47 +397,78 @@ class CompanyProfileScreen extends StatelessWidget {
                                                       color: Colors.grey,
                                                     ),
                                               ),
-                                              Text(
-                                                "${formatNumber(provider.company?.followers ?? 0)} followers",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium
-                                                    ?.copyWith(
-                                                      color: Colors.grey,
+                                              GestureDetector(
+                                                onTap: () {
+                                                  // Navigate to the CompanyFollowersScreen
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (context) =>
+                                                              CompanyFollowersScreen(
+                                                                companyId:
+                                                                    provider
+                                                                        .company
+                                                                        ?.companyId ??
+                                                                    "",
+                                                              ),
                                                     ),
+                                                  );
+                                                },
+                                                child: Text(
+                                                  "${formatNumber(provider.company?.followers ?? 0)} followers",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.copyWith(
+                                                        color: Colors.grey,
+                                                      ),
+                                                ),
                                               ),
                                             ],
                                           ),
                                         ),
                                       ],
                                     ),
-                                    if (provider.friendsFollowing.isNotEmpty)
-                                      SizedBox(height: 16),
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            provider
-                                                .friendsFollowing
-                                                .first
-                                                .profilePicture,
-                                          ),
-                                          radius: 20,
-                                        ),
-                                        SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            "${provider.friendsFollowing.first.username} & ${provider.friendsFollowing.length - 1} other connections follow this page",
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodyMedium,
-                                            softWrap: true,
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                    provider.friendsFollowing.isNotEmpty
+                                        ? Column(
+                                          children: [
+                                            const SizedBox(height: 16),
+                                            Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                    provider
+                                                        .friendsFollowing
+                                                        .first
+                                                        .profilePicture,
+                                                  ),
+                                                  radius: 20,
+                                                ),
+                                                const SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    provider
+                                                                .friendsFollowing
+                                                                .length ==
+                                                            1
+                                                        ? "${provider.friendsFollowing.first.firstName} follows this page"
+                                                        : "${provider.friendsFollowing.first.firstName} & ${provider.friendsFollowing.length - 1} other connection(s) follow this page",
+                                                    style:
+                                                        Theme.of(
+                                                          context,
+                                                        ).textTheme.bodyMedium,
+                                                    softWrap: true,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 2,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                        : const SizedBox.shrink(),
                                     SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
@@ -395,7 +507,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                                 ),
                                                 onPressed: () {
                                                   provider.toggleFollowStatus(
-                                                    userId,
+                                                    companyId,
                                                     companyId,
                                                   );
                                                 },
@@ -520,7 +632,6 @@ class CompanyProfileScreen extends StatelessWidget {
                                 ),
                               ),
                               CompanyTabsWidget(
-                                userId: userId,
                                 companyId: companyId,
                               ),
                               Divider(thickness: 3, color: Colors.black54),
@@ -545,7 +656,8 @@ class CompanyProfileScreen extends StatelessWidget {
                 if (provider.isLoading) {
                   return Center(child: CircularProgressIndicator());
                 }
-                if (provider.company?.isAdmin == true && provider.isViewingAsUser==false) {
+                if (provider.company?.isManager == true &&
+                    provider.isViewingAsUser == false) {
                   // Only show for admins
                   return Align(
                     alignment: Alignment.bottomRight,
@@ -558,7 +670,7 @@ class CompanyProfileScreen extends StatelessWidget {
                             MaterialPageRoute(
                               builder:
                                   (context) => EditCompanyScreen(
-                                    companyId: provider.company!.companyId,
+                                    companyId: provider.company!.companyId!,
                                     company: UpdateCompanyEntity(
                                       name: provider.company!.name,
                                       description:
@@ -573,7 +685,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                       industry: provider.company!.industry,
                                       overview:
                                           provider.company!.overview ?? '',
-                                      founded: provider.company!.founded ?? '',
+                                      founded: provider.company!.founded ?? 0,
                                       website: provider.company!.website ?? '',
                                       address: provider.company!.address ?? '',
                                       contactNumber:
@@ -589,8 +701,7 @@ class CompanyProfileScreen extends StatelessWidget {
 
                           if (result == true) {
                             provider.fetchCompanyDetails(
-                              provider.company!.companyId,
-                              userId,
+                              provider.company!.companyId!,
                             ); // Refresh company details
                           }
                         },
@@ -603,26 +714,26 @@ class CompanyProfileScreen extends StatelessWidget {
                             color:
                                 Theme.of(
                                   context,
-                                ).colorScheme.primary, // Background color
+                                ).colorScheme.primary,
                             borderRadius: BorderRadius.circular(
                               16,
-                            ), // Rounded corners
+                            ), 
                           ),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min, // Wrap content
+                            mainAxisSize: MainAxisSize.min, 
                             children: [
                               Icon(
                                 Icons.edit,
-                                color: Colors.white, // Icon color
-                                size: 24, // Adjust icon size
+                                color: Colors.white, 
+                                size: 24, 
                               ),
-                              SizedBox(width: 6), // Space between icon and text
+                              SizedBox(width: 6),
                               Text(
                                 "Edit Details",
                                 style: TextStyle(
-                                  color: Colors.white, // Text color
-                                  fontSize: 16, // Adjust text size
-                                  fontWeight: FontWeight.w500, // Medium weight
+                                  color: Colors.white, 
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.w500, 
                                 ),
                               ),
                             ],

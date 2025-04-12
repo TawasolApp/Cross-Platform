@@ -4,8 +4,12 @@ import '../provider/feed_provider.dart';
 
 class AddCommentField extends StatefulWidget {
   final String postId;
-
-  const AddCommentField({super.key, required this.postId});
+  final bool isReply;
+  const AddCommentField({
+    super.key,
+    required this.postId,
+    this.isReply = false,
+  });
 
   @override
   _AddCommentFieldState createState() => _AddCommentFieldState();
@@ -15,14 +19,36 @@ class _AddCommentFieldState extends State<AddCommentField> {
   final TextEditingController _controller = TextEditingController();
   bool _isTyping = false;
 
-  void _addComment(BuildContext context) {
+  void _addComment(BuildContext context) async {
     final content = _controller.text.trim();
     if (content.isNotEmpty) {
-      context.read<FeedProvider>().addComment(widget.postId, content);
-      _controller.clear();
-      setState(() {
-        _isTyping = false;
-      });
+      try {
+        await context.read<FeedProvider>().addComment(
+          widget.postId,
+          content,
+          widget.isReply,
+        );
+        _controller.clear();
+        setState(() {
+          _isTyping = false;
+        });
+        FocusScope.of(context).unfocus(); // 🟢 Close keyboard
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Comment added successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } catch (e) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add comment: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -38,7 +64,7 @@ class _AddCommentFieldState extends State<AddCommentField> {
             child: CircleAvatar(
               radius: 18,
               backgroundImage: NetworkImage(
-                "https://example.com/profile-picture.jpg", // Replace with actual profile image URL
+                "https://example.com/profile-picture.jpg",
               ),
             ),
           ),
@@ -52,7 +78,7 @@ class _AddCommentFieldState extends State<AddCommentField> {
                   _isTyping = value.isNotEmpty;
                 });
               },
-              onSubmitted: (_) => _addComment(context),
+              //onSubmitted: (_) => _addComment(context),
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,

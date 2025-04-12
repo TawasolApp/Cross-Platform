@@ -4,8 +4,12 @@ import 'comment_list.dart';
 
 class CommentSection extends StatelessWidget {
   final String postId;
-
-  const CommentSection({super.key, required this.postId});
+  final String currentUserId;
+  const CommentSection({
+    super.key,
+    required this.postId,
+    required this.currentUserId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +17,10 @@ class CommentSection extends StatelessWidget {
       children: [
         AddCommentField(postId: postId),
         const Divider(),
-        CommentList(postId: postId),
+        CommentList(
+          postId: postId,
+          currentUserId: currentUserId,
+        ), // Replace with actual current user ID
       ],
     );
   }
