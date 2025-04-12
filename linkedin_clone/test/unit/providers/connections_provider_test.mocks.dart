@@ -9,19 +9,19 @@ import 'package:linkedin_clone/features/connections/domain/entities/connections_
     as _i5;
 import 'package:linkedin_clone/features/connections/domain/repository/connections_repository.dart'
     as _i2;
-import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignore_connection_request_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/accept_ignore_connection_request_usecase.dart'
     as _i9;
-import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart'
     as _i3;
-import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_received_connection_requests_usecase.dart'
     as _i7;
-import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_sent_connection_requests_usecase.dart'
     as _i8;
-import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/remove_connection_usecase.dart'
     as _i6;
-import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/send_connection_request_usecase.dart'
     as _i10;
-import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart'
     as _i11;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -67,12 +67,16 @@ class MockGetConnectionsUseCase extends _i1.Mock
 
   @override
   _i4.Future<List<_i5.ConnectionsUserEntity>> call({
+    String? userId,
+    String? search,
     int? page = 0,
     int? limit = 0,
     int? sortBy = 1,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {
+              #userId: userId,
+              #search: search,
               #page: page,
               #limit: limit,
               #sortBy: sortBy,

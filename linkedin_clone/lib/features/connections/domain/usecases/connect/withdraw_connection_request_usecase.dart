@@ -1,4 +1,4 @@
-import '../repository/connections_repository.dart';
+import '../../repository/connections_repository.dart';
 
 class WithdrawConnectionRequestUseCase {
   Future<bool> call(String userId) async {

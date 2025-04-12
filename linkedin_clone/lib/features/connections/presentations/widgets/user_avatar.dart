@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -8,30 +10,36 @@ class UserAvatar extends StatelessWidget {
   final String profilePicture;
   final bool isOnline;
   final PageType cardType;
+  double avatarSize;
 
-  const UserAvatar({
+  UserAvatar({
     super.key,
     required this.profilePicture,
     required this.isOnline,
     required this.cardType,
+    this.avatarSize = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final double radius = screenWidth * 0.09 > 50 ? 50 : screenWidth * 0.09;
-    final double iconSize = screenWidth * 0.1 > 40 ? 40 : screenWidth * 0.1;
+    final double radius =
+        avatarSize > 0
+            ? avatarSize
+            : screenWidth * 0.09 > 50
+            ? 50
+            : screenWidth * 0.09;
     final showOnline =
         cardType == PageType.connections ||
         cardType == PageType.followers ||
         cardType == PageType.following;
-    final avatarSize = radius * 2;
+    final size = radius * 2;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        width: avatarSize,
-        height: avatarSize,
+        width: size,
+        height: size,
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -42,17 +50,8 @@ class UserAvatar extends StatelessWidget {
                     (profilePicture != 'not available' &&
                             profilePicture != 'notavailable')
                         ? NetworkImage(profilePicture)
-                        : null,
-                backgroundColor: Theme.of(context).primaryColor,
-                child:
-                    (profilePicture == 'not available' ||
-                            profilePicture == 'notavailable')
-                        ? Icon(
-                          Icons.person,
-                          size: iconSize,
-                          color: Theme.of(context).primaryColor,
-                        )
-                        : null,
+                        : AssetImage('assets/images/profile_placeholder.jpg')
+                            as ImageProvider<Object>,
               ),
             ),
             if (showOnline && isOnline)

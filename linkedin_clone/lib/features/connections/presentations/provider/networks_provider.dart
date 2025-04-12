@@ -1,11 +1,17 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/foundation.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/follow_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_following_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/unfollow_user_usecase.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';
-import '../../domain/usecases/get_followers_list_usecase.dart';
+import '../../domain/usecases/follow/get_followers_list_usecase.dart';
 
 class NetworksProvider with ChangeNotifier {
   bool _isBusy = false; // Tracks whether the provider is busy
@@ -24,16 +30,26 @@ class NetworksProvider with ChangeNotifier {
   List<ConnectionsUserEntity>? followingList;
   List<ConnectionsUserEntity>? followersList;
   List<ConnectionsUserEntity>? blockedList;
+  List<PeopleYouMayKnowUserEntity>? peopleYouMayKnowList;
+
   GetFollowingListUseCase getFollowingListUseCase;
   UnfollowUserUseCase unfollowUseCase;
   GetFollowersListUseCase getFollowersListUseCase;
   FollowUserUseCase followUseCase;
+  GetBlockedListUseCase getBlockedListUseCase;
+  BlockUserUseCase blockUserUseCase;
+  UnblockUserUseCase unblockUserUseCase;
+  GetPeopleYouMayKnowUseCase getPeopleYouMayKnowUseCase;
 
   NetworksProvider(
     this.getFollowingListUseCase,
     this.unfollowUseCase,
     this.getFollowersListUseCase,
     this.followUseCase,
+    this.getBlockedListUseCase,
+    this.blockUserUseCase,
+    this.unblockUserUseCase,
+    this.getPeopleYouMayKnowUseCase,
   );
 
   Future<void> getFollowingList({bool isInitial = false}) async {
@@ -125,7 +141,7 @@ class NetworksProvider with ChangeNotifier {
         _currentPage++;
       }
       if (_currentPage == 1) {
-        blockedList = await getFollowersListUseCase.call(
+        blockedList = await getBlockedListUseCase.call(
           page: _currentPage,
           limit: 15,
         );
@@ -146,6 +162,51 @@ class NetworksProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       _isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> getPeopleYouMayKnowList({bool isInitial = false}) async {
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _isLoading = true;
+      _error = null;
+      if (isInitial) {
+        _currentPage = 1;
+        _hasMore = true;
+      } else {
+        _currentPage++;
+      }
+      if (_currentPage == 1) {
+        peopleYouMayKnowList = await getPeopleYouMayKnowUseCase.call(
+          page: _currentPage,
+          limit: 16,
+        );
+      } else {
+        final newPeopleYouMayKnowList = await getPeopleYouMayKnowUseCase.call(
+          page: _currentPage,
+          limit: 16,
+        );
+        if (newPeopleYouMayKnowList.isEmpty) {
+          _hasMore = false;
+        } else {
+          peopleYouMayKnowList!.addAll(newPeopleYouMayKnowList);
+        }
+      }
+    } catch (e) {
+      print('\nNetworksProvider: getPeopleYouMayKnowList $e\n');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      _isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  void removePeopleyouMayKnowElement(String? userId) async {
+    if (peopleYouMayKnowList != null) {
+      peopleYouMayKnowList!.removeWhere((user) => user.userId == userId);
       notifyListeners();
     }
   }
@@ -192,5 +253,70 @@ class NetworksProvider with ChangeNotifier {
       _error = e.toString();
       return false; // Return false if there was an error
     }
+  }
+
+  Future<int> getFollowingsCount() async {
+    return 0;
+    // try {
+    //   List<ConnectionsUserEntity>? tempFollowingList;
+    //   int tempCurrentPage = 1;
+    //   tempFollowingList = await getFollowingListUseCase.call(
+    //     page: tempCurrentPage,
+    //     limit: 300,
+    //   );
+    //   List<ConnectionsUserEntity>? newTempFollowingList =
+    //       await getFollowingListUseCase.call(page: tempCurrentPage);
+    //   if (newTempFollowingList.isNotEmpty) {
+    //     tempFollowingList.addAll(newTempFollowingList);
+    //   }
+    //   while (newTempFollowingList!.isNotEmpty) {
+    //     tempCurrentPage++;
+    //     newTempFollowingList = await getFollowingListUseCase.call(
+    //       page: tempCurrentPage,
+    //       limit: 300,
+    //     );
+    //     tempFollowingList.addAll(newTempFollowingList);
+    //   }
+
+    //   return tempFollowingList.length;
+    // } catch (e) {
+    //   print('\nNetworksProvider: getFollowingsCount $e\n');
+    //   return -1;
+    // } finally {
+    //   notifyListeners();
+    // }
+  }
+
+  Future<int> getFollowersCount() async {
+    return 0;
+
+    // try {
+    //   List<ConnectionsUserEntity>? tempFollowersList;
+    //   int tempCurrentPage = 1;
+    //   tempFollowersList = await getFollowersListUseCase.call(
+    //     page: tempCurrentPage,
+    //     limit: 300,
+    //   );
+    //   List<ConnectionsUserEntity>? newTempFollowersList =
+    //       await getFollowersListUseCase.call(page: tempCurrentPage);
+    //   if (newTempFollowersList.isNotEmpty) {
+    //     tempFollowersList.addAll(newTempFollowersList);
+    //   }
+    //   while (newTempFollowersList!.isNotEmpty) {
+    //     tempCurrentPage++;
+    //     newTempFollowersList = await getFollowersListUseCase.call(
+    //       page: tempCurrentPage,
+    //       limit: 300,
+    //     );
+    //     tempFollowersList.addAll(newTempFollowersList);
+    //   }
+
+    //   return tempFollowersList.length;
+    // } catch (e) {
+    //   print('\nNetworksProvider: getFollowersCount $e\n');
+    //   return -1;
+    // } finally {
+    //   notifyListeners();
+    // }
   }
 }

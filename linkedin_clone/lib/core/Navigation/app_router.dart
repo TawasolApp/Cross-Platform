@@ -12,6 +12,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/change_password.dart';
@@ -216,6 +217,7 @@ class AppRouter {
           return ListPage(type: PageType.connections, userId: userId);
         },
       ),
+
       GoRoute(
         path: RouteNames.followers,
         builder: (context, state) => ListPage(type: PageType.followers),
@@ -230,11 +232,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.manageMyNetwrok,
-        builder: (context, state) {
-          final extras = state.extra as Map<String, String?>;
-          final userId = extras['userId'];
-          return ListPage(type: PageType.manageMyNetwork, userId: userId);
-        },
+        builder: (context, state) => ListPage(type: PageType.manageMyNetwork),
       ),
     ],
   );

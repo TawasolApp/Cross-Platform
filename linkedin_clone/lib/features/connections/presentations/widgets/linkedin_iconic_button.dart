@@ -18,7 +18,7 @@ class LinkedInIconicButton extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.symmetric(horizontal: width),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(40.0),
           side: BorderSide(color: Theme.of(context).primaryColor),

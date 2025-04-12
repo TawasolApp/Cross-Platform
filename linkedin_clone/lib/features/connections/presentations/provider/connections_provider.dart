@@ -1,18 +1,18 @@
 // ignore_for_file: avoid_print, prefer_final_fields, curly_braces_in_flow_control_structures
 
 import 'package:flutter/foundation.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignore_connection_request_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import '../../domain/entities/connections_user_entity.dart';
+import '../../domain/usecases/connect/get_connections_usecase.dart';
+import '../../domain/usecases/connect/remove_connection_usecase.dart';
+import '../../domain/usecases/connect/get_received_connection_requests_usecase.dart';
+import '../../domain/usecases/connect/get_sent_connection_requests_usecase.dart';
+import '../../domain/usecases/connect/accept_ignore_connection_request_usecase.dart';
+import '../../domain/usecases/connect/send_connection_request_usecase.dart';
+import '../../domain/usecases/connect/withdraw_connection_request_usecase.dart';
 
 class ConnectionsProvider with ChangeNotifier {
   // Variables
@@ -101,7 +101,6 @@ class ConnectionsProvider with ChangeNotifier {
 
   // Get connections
   Future<void> getConnections({bool isInitial = false, String? id}) async {
-    print('getConnections called with id: $id');
     _isLoading = true;
     String userId = id ?? await getMyUserId();
     if (_isBusy) return;
