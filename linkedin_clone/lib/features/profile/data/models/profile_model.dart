@@ -22,7 +22,8 @@ class ProfileModel extends Equatable {
   final List<ExperienceModel> workExperience;
   final String visibility;
   final int? connectionCount;
-  final String status;
+  final String connectStatus;
+  final String followStatus;
 
   const ProfileModel({
     required this.userId,
@@ -41,7 +42,8 @@ class ProfileModel extends Equatable {
     this.workExperience = const [],
     this.visibility = "public",
     this.connectionCount,
-    this.status = "Owner",
+    this.connectStatus = "Owner",
+    this.followStatus = "Owner",
   });
 
   // Convert to Entity
@@ -63,7 +65,8 @@ class ProfileModel extends Equatable {
       workExperience: workExperience.map((exp) => exp.toEntity()).toList(),
       visibility: visibility,
       connectionCount: connectionCount,
-      status: status,
+      connectStatus: connectStatus,
+      followStatus: followStatus,
     );
   }
 
@@ -96,7 +99,8 @@ class ProfileModel extends Equatable {
               .toList(),
       visibility: entity.visibility,
       connectionCount: entity.connectionCount,
-      status: entity.status,
+      connectStatus: entity.connectStatus,
+      followStatus: entity.followStatus,
     );
   }
 
@@ -142,7 +146,8 @@ class ProfileModel extends Equatable {
           const [],
       visibility: json['visibility'] as String? ?? "public",
       connectionCount: json['connectionCount'] as int?,
-      status: json['status'] as String? ?? "Owner",
+      connectStatus: json['connectStatus'] as String? ?? "Owner",
+      followStatus: json['followStatus'] as String? ?? "Owner",
     );
   }
 
@@ -164,7 +169,8 @@ class ProfileModel extends Equatable {
       'workExperience': workExperience.map((exp) => exp.toJson()).toList(),
       'visibility': visibility,
       'connectionCount': connectionCount,
-      'status': status,
+      'connectStatus': connectStatus,
+      'followStatus': followStatus,
     };
   }
 
@@ -185,7 +191,8 @@ class ProfileModel extends Equatable {
     List<ExperienceModel>? workExperience,
     String? visibility,
     int? connectionCount,
-    String? status,
+    String? connectStatus,
+    String? followStatus,
   }) {
     return ProfileModel(
       userId: userId ?? this.userId,
@@ -204,7 +211,8 @@ class ProfileModel extends Equatable {
       workExperience: workExperience ?? this.workExperience,
       visibility: visibility ?? this.visibility,
       connectionCount: connectionCount ?? this.connectionCount,
-      status: status ?? this.status,
+      connectStatus: connectStatus ?? this.connectStatus,
+      followStatus: followStatus ?? this.followStatus,
     );
   }
 
@@ -226,6 +234,7 @@ class ProfileModel extends Equatable {
     workExperience,
     visibility,
     connectionCount,
-    status,
+    connectStatus,
+    followStatus,
   ];
 }

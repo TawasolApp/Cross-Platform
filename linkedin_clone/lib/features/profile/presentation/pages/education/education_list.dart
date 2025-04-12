@@ -48,7 +48,7 @@ class _EducationListPageState extends State<EducationListPage> {
         }
 
         return RefreshIndicator(
-          onRefresh: () => provider.fetchProfile(),
+          onRefresh: () => provider.fetchProfile(provider.userId),
           child: ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: provider.educations!.length,
@@ -69,9 +69,9 @@ class _EducationListPageState extends State<EducationListPage> {
     ProfileProvider provider,
   ) {
     // Format degree type for display
-    String formatDegreeType(String type) {
+    String formatDegreeType(String? type) {
       // Convert to title case with proper formatting
-      return type.trim();
+      return type?.trim() ?? '';
     }
 
     final String formattedDegree = formatDegreeType(education.degree);
@@ -96,36 +96,51 @@ class _EducationListPageState extends State<EducationListPage> {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Degree with field
-            Row(
-              children: [
-                Text(formattedDegree),
-                const Text(" · ", style: TextStyle(color: Colors.grey)),
-                Text(
-                  education.field,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ],
-            ),
-            // Date range
-            Text(
-              education.endDate != null
-                  ? "${education.startDate} - ${education.endDate}"
-                  : "${education.startDate} - Present",
-              style: const TextStyle(color: Colors.grey),
-            ),
-            // Grade
-            if (education.grade.isNotEmpty)
+            // Only show degree and field if they exist
+            if (education.degree != null && education.field != null) ...[
+              Row(
+                children: [
+                  Text(formattedDegree),
+                  const Text(" · ", style: TextStyle(color: Colors.grey)),
+                  Text(
+                    education.field ?? '',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
+                ],
+              ),
+            ] else if (education.degree != null) ...[
+              Text(formattedDegree),
+            ] else if (education.field != null) ...[
+              Text(
+                education.field ?? '',
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
+            ],
+
+            // Date range - only show if startDate exists
+            if (education.startDate != null) ...[
+              Text(
+                education.endDate != null
+                    ? "${education.startDate} - ${education.endDate}"
+                    : "${education.startDate} - Present",
+                style: const TextStyle(color: Colors.grey),
+              ),
+            ],
+
+            // Grade - only show if exists
+            if (education.grade != null && education.grade!.isNotEmpty)
               Text(
                 "Grade: ${education.grade}",
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
-            // Description
-            if (education.description.isNotEmpty)
+
+            // Description - only show if exists
+            if (education.description != null &&
+                education.description!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Text(
-                  education.description,
+                  education.description!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 12),
@@ -248,7 +263,7 @@ class _EducationListPageState extends State<EducationListPage> {
   Future<void> _refreshEducations(ProfileProvider provider) async {
     setState(() => _isLoading = true);
     try {
-      await provider.fetchProfile();
+      await provider.fetchProfile(provider.userId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

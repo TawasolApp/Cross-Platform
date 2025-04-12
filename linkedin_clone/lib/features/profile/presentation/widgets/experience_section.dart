@@ -66,7 +66,7 @@ class ExperienceSection extends StatelessWidget {
                               );
 
                               if (result == true) {
-                                await provider.fetchProfile();
+                                await provider.fetchProfile(provider.userId);
                               }
                             },
                           ),

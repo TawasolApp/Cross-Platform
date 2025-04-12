@@ -3,6 +3,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:linkedin_clone/features/connections/data/models/connections_user_model.dart';
+import 'package:linkedin_clone/features/connections/data/models/people_you_may_know_user_model.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/core/services/token_service.dart';
 
@@ -22,6 +23,7 @@ class ConnectionsRemoteDataSource {
 
   ///////////////////Get connections list
   Future<List<ConnectionsUserEntity>> getConnectionsList({
+    String? userId,
     int page = 0,
     int limit = 0,
     int sortBy = 1,
@@ -31,7 +33,7 @@ class ConnectionsRemoteDataSource {
       final response = await client
           .get(
             Uri.parse(
-              '${baseUrl}connections/list?page=$page&limit=$limit&by=$sortBy&direction=1',
+              '${baseUrl}connections/$userId/list?page=$page&limit=$limit&by=$sortBy&direction=-1',
             ),
             headers: {
               'Accept': 'application/json',
@@ -80,7 +82,10 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
+      print('page: $page');
+      print('limit: $limit');
       final token = await initToken();
+      print(token);
       final response = await client
           .get(
             Uri.parse('${baseUrl}connections/pending?page=$page&limit=$limit'),
@@ -391,16 +396,18 @@ class ConnectionsRemoteDataSource {
 
   ///////////////////Accept or Ignore connection Request
   Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept) async {
-    print('userId: $userId');
     try {
       final token = await initToken();
-      final response = await client.post(
+      final response = await client.patch(
         Uri.parse('${baseUrl}connections/$userId'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
         body: jsonEncode({"isAccept": accept}),
       );
 
-      if (response.statusCode == 204) {
+      if (response.statusCode == 200) {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(
@@ -435,7 +442,6 @@ class ConnectionsRemoteDataSource {
 
   ///////////////////Send connection Request
   Future<bool> sendConnectionRequest(String userId) async {
-    print('userId: $userId');
     try {
       final token = await initToken();
       final response = await client.post(
@@ -570,9 +576,12 @@ class ConnectionsRemoteDataSource {
   Future<bool> followUser(String userId) async {
     try {
       final token = await initToken();
-      final response = await client.delete(
+      final response = await client.post(
         Uri.parse('${baseUrl}connections/follow'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: jsonEncode({'userId': userId}),
       );
 
@@ -680,6 +689,59 @@ class ConnectionsRemoteDataSource {
     } catch (e) {
       print('\nConnectionsRemoteDataSource :unblockUser: ${e.toString()}\n');
       return false;
+    }
+  }
+
+  Future<List<PeopleYouMayKnowUserModel>> getPeopleYouMayKnowList({
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final token = await initToken();
+      final response = await client
+          .get(
+            Uri.parse(
+              '${baseUrl}connections/recommended?page=$page&limit=$limit',
+            ),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        print('jsonResponse: $jsonResponse');
+
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => PeopleYouMayKnowUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          'ConnectionsRemoteDataSource :getPeopleYouMayKnowList: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getPeopleYouMayKnowList: 401 Authentication failed",
+        );
+      } else {
+        throw Exception('Unknown error ${response.statusCode}');
+      }
+    } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getPeopleYouMayKnowList: ${e.toString()}\n',
+      );
+      rethrow;
     }
   }
 }

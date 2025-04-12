@@ -48,7 +48,7 @@ class _CertificationListPageState extends State<CertificationListPage> {
         }
 
         return RefreshIndicator(
-          onRefresh: () => provider.fetchProfile(),
+          onRefresh: () => provider.fetchProfile(provider.userId),
           child: ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: provider.certifications!.length,
@@ -83,9 +83,7 @@ class _CertificationListPageState extends State<CertificationListPage> {
         leading:
             certification.companyLogo != null
                 ? CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    certification.companyLogo!,
-                  ),
+                  backgroundImage: NetworkImage(certification.companyLogo!),
                   backgroundColor: Colors.grey[200],
                   onBackgroundImageError: (_, __) {
                     return;
@@ -234,7 +232,7 @@ class _CertificationListPageState extends State<CertificationListPage> {
   Future<void> _refreshCertifications(ProfileProvider provider) async {
     setState(() => _isLoading = true);
     try {
-      await provider.fetchProfile();
+      await provider.fetchProfile(provider.userId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

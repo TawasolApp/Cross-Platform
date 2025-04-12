@@ -5,7 +5,7 @@ class Certification extends Equatable {
   final String name;
   final String company;
   final String? companyLogo;
-  final String companyId;
+  final String? companyId;
   final String issueDate;
   final String? expiryDate;
 
@@ -14,7 +14,7 @@ class Certification extends Equatable {
     required this.name,
     required this.company,
     this.companyLogo,
-    required this.companyId,
+    this.companyId,
     required this.issueDate,
     this.expiryDate,
   });

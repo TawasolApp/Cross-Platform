@@ -103,6 +103,7 @@ import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_i
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_location.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_bio.dart';
 import 'package:linkedin_clone/features/profile/domain/usecases/profile/delete_resume.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/skills/get_skill_endorsements.dart';
 
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
@@ -125,7 +126,6 @@ void main() {
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
 
-
   // Initialize data source and repository
   // final ProfileRemoteDataSourceImpl dataSource = ProfileRemoteDataSourceImpl(
   //   client: http.Client(),
@@ -141,9 +141,8 @@ void main() {
   final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
 
   // Initialize data source and repository
-  final ProfileRemoteDataSourceImpl dataSourceProfile = ProfileRemoteDataSourceImpl(
-    baseUrl: 'https://tawasolapp.me/api',
-  );
+  final ProfileRemoteDataSourceImpl dataSourceProfile =
+      ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -188,7 +187,12 @@ void main() {
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(changePasswordUseCase,updateEmailUsecase, deleteAccountUsecase),
+          create:
+              (_) => SettingsProvider(
+                changePasswordUseCase,
+                updateEmailUsecase,
+                deleteAccountUsecase,
+              ),
         ),
         ChangeNotifierProvider(
           create:
@@ -327,7 +331,9 @@ void main() {
                 deleteIndustryUseCase: DeleteIndustryUseCase(profileRepository),
                 updateLocationUseCase: UpdateLocationUseCase(profileRepository),
                 deleteLocationUseCase: DeleteLocationUseCase(profileRepository),
-                updateFirstNameUseCase: UpdateFirstNameUseCase(profileRepository),
+                updateFirstNameUseCase: UpdateFirstNameUseCase(
+                  profileRepository,
+                ),
                 updateLastNameUseCase: UpdateLastNameUseCase(profileRepository),
                 updateResumeUseCase: UpdateResumeUseCase(profileRepository),
                 deleteResumeUseCase: DeleteResumeUseCase(profileRepository),
@@ -359,6 +365,9 @@ void main() {
                 addSkillUseCase: AddSkillUseCase(profileRepository),
                 updateSkillUseCase: UpdateSkillUseCase(profileRepository),
                 deleteSkillUseCase: DeleteSkillUseCase(profileRepository),
+                getSkillEndorsementsUseCase: GetSkillEndorsements(
+                  profileRepository,
+                ),
               ),
         ),
         ChangeNotifierProvider(
@@ -378,7 +387,9 @@ void main() {
                   companyRepository: companyrepos,
                 ),
                 addAdminUseCase: AddAdminUseCase(repository: userRepos),
-                searchUsersUseCase: SearchUsersUseCase(userRemoteDataSource: userRemoteDataSource)
+                searchUsersUseCase: SearchUsersUseCase(
+                  userRemoteDataSource: userRemoteDataSource,
+                ),
               ),
         ),
 
@@ -411,7 +422,6 @@ void main() {
                 ),
               ),
         ),
-
       ],
       child: const MyApp(),
     ),

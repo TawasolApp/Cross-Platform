@@ -48,7 +48,7 @@ class _SkillListPageState extends State<SkillListPage> {
         }
 
         return RefreshIndicator(
-          onRefresh: () => provider.fetchProfile(),
+          onRefresh: () => provider.fetchProfile(provider.userId),
           child: ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: provider.skills!.length,
@@ -118,10 +118,7 @@ class _SkillListPageState extends State<SkillListPage> {
           elevation: 3,
           itemBuilder:
               (context) => [
-                const PopupMenuItem(
-                  value: "edit",
-                  child: Text("Edit"),
-                ),
+                const PopupMenuItem(value: "edit", child: Text("Edit")),
                 const PopupMenuItem(
                   value: "delete",
                   child: Text("Delete", style: TextStyle(color: Colors.red)),
@@ -222,7 +219,7 @@ class _SkillListPageState extends State<SkillListPage> {
   Future<void> _refreshSkills(ProfileProvider provider) async {
     setState(() => _isLoading = true);
     try {
-      await provider.fetchProfile();
+      await provider.fetchProfile(provider.userId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

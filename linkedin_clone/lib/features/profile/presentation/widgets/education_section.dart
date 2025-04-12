@@ -67,7 +67,7 @@ class EducationSection extends StatelessWidget {
                               );
 
                               if (result == true) {
-                                await provider.fetchProfile();
+                                await provider.fetchProfile(provider.userId);
                               }
                             },
                           ),
@@ -99,9 +99,7 @@ class EducationSection extends StatelessWidget {
                         .map(
                           (education) => EducationWidget(
                             education: education,
-                            showPresent:
-                                education.endDate ==
-                                null, // This part already handles showing "Present" correctly
+                            showPresent: education.endDate == null,
                           ),
                         )
                         .toList(),

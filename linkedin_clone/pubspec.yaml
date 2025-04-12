@@ -34,6 +34,7 @@ dependencies:
   lucide_icons: ^0.257.0
   http_parser: ^4.0.2
   mime_type: ^1.0.0
+  debounce_throttle: ^2.0.0
   test: any
   matcher: ^0.12.0
   # permission_handler: ^10.2.0  # Add this lineersion compatible with Flutter embedding v2
@@ -57,7 +58,7 @@ flutter:
     - assets/images/linkedin_logo.png
     - assets/images/onboarding_illustration.jpg
     - assets/html/recaptcha.html
-    - assets/images/profile.png  #TODO: remove this line after connecting to API
+    - assets/images/profile.png #TODO: remove this line after connecting to API
   fonts:
     - family: SourceSansPro
       fonts:

@@ -7,13 +7,12 @@ import 'package:linkedin_clone/features/profile/data/models/experience_model.dar
 import 'package:linkedin_clone/features/profile/data/models/education_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/certification_model.dart';
-// import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/profile.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
-// import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
 import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
@@ -351,6 +350,26 @@ class ProfileRepositoryImpl implements ProfileRepository {
       // }
       await profileRemoteDataSource.deleteCertification(certificationId);
       return right(null);
+    } on ServerException catch (e) {
+      return left(Failure(message: e.message, errorCode: 400));
+    }
+  }
+
+  // Endorsements
+  @override
+  Future<Either<Failure, List<Endorsement>>> getSkillEndorsements(
+    String userId,
+    String skillName,
+  ) async {
+    try {
+      // if (!await connectionChecker.isConnected) {
+      //   return left(Failure(message: "No internet connection", errorCode: 500));
+      // }
+      final endorsementModels = await profileRemoteDataSource
+          .getSkillEndorsements(userId, skillName);
+      final endorsements =
+          endorsementModels.map((model) => model.toEntity()).toList();
+      return right(endorsements);
     } on ServerException catch (e) {
       return left(Failure(message: e.message, errorCode: 400));
     }

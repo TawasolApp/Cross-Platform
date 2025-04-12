@@ -48,7 +48,7 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
         }
 
         return RefreshIndicator(
-          onRefresh: () => provider.fetchProfile(),
+          onRefresh: () => provider.fetchProfile(provider.userId),
           child: ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: provider.experiences!.length,
@@ -295,7 +295,7 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
   Future<void> _refreshExperiences(ProfileProvider provider) async {
     setState(() => _isLoading = true);
     try {
-      await provider.fetchProfile();
+      await provider.fetchProfile(provider.userId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

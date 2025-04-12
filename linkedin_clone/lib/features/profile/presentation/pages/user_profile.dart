@@ -10,9 +10,13 @@ import 'package:linkedin_clone/features/profile/presentation/widgets/education_s
 import 'package:linkedin_clone/features/profile/presentation/widgets/certifications_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/resume_section.dart';
 import 'package:provider/provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart'; // Add this import
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart'; // Add this import
 
 class UserProfile extends StatefulWidget {
-  const UserProfile({super.key});
+  final String? userId;
+
+  const UserProfile({super.key, this.userId});
 
   @override
   State<UserProfile> createState() => _UserProfileState();
@@ -33,7 +37,8 @@ class _UserProfileState extends State<UserProfile> {
   Future<void> _loadProfileData() async {
     try {
       final profileProvider = context.read<ProfileProvider>();
-      await profileProvider.fetchProfile();
+      // Pass the widget's userId to fetchProfile
+      await profileProvider.fetchProfile(widget.userId);
       if (profileProvider.profileError != null) {
         setState(() => _error = profileProvider.profileError);
       }
@@ -50,6 +55,14 @@ class _UserProfileState extends State<UserProfile> {
   }
 
   Widget _buildPrivateProfileMessage(BuildContext context) {
+    final profileProvider = context.read<ProfileProvider>();
+    final isFollowing = profileProvider.followStatus == 'Following';
+    final isPending = profileProvider.connectStatus == 'Pending';
+    final networksProvider = Provider.of<NetworksProvider>(
+      context,
+      listen: false,
+    );
+
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(24),
@@ -93,22 +106,146 @@ class _UserProfileState extends State<UserProfile> {
                   height: 42,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
+                      backgroundColor:
+                          isPending
+                              ? Colors.grey[200]
+                              : Theme.of(context).primaryColor,
+                      foregroundColor:
+                          isPending ? Colors.black87 : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onPressed: () {
-                      // Handle connect action
+                    onPressed: () async {
+                      final connectionsProvider =
+                          Provider.of<ConnectionsProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                      if (profileProvider.userId == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('User ID is missing')),
+                        );
+                        return;
+                      }
+
+                      if (isPending) {
+                        // If status is pending, show a confirmation dialog to withdraw
+                        final shouldWithdraw = await showDialog<bool>(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text(
+                                  'Withdraw Connection Request',
+                                ),
+                                content: const Text(
+                                  'Are you sure you want to withdraw your connection request?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, false),
+                                    child: const Text('CANCEL'),
+                                  ),
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, true),
+                                    child: const Text(
+                                      'WITHDRAW',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        );
+
+                        if (shouldWithdraw == true) {
+                          // Show loading indicator
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Withdrawing connection request...',
+                              ),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+
+                          // Call the withdraw connection request function
+                          final success = await connectionsProvider
+                              .withdrawConnectionRequest(
+                                profileProvider.userId!,
+                              );
+
+                          // Show result
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success
+                                    ? 'Connection request withdrawn'
+                                    : 'Failed to withdraw connection request',
+                              ),
+                              backgroundColor:
+                                  success ? Colors.green : Colors.red,
+                            ),
+                          );
+
+                          // Refresh profile if successful
+                          if (success) {
+                            await profileProvider.fetchProfile(widget.userId);
+                          }
+                        }
+                      } else {
+                        // Status is not pending, send a new connection request
+                        // Show loading indicator
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sending connection request...'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+
+                        // Send connection request
+                        final success = await connectionsProvider
+                            .sendConnectionRequest(profileProvider.userId!);
+
+                        // Show result
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              success
+                                  ? 'Connection request sent successfully'
+                                  : 'Failed to send connection request',
+                            ),
+                            backgroundColor:
+                                success ? Colors.green : Colors.red,
+                          ),
+                        );
+
+                        // Refresh profile to get updated status
+                        if (success) {
+                          await profileProvider.fetchProfile(widget.userId);
+                        }
+                      }
                     },
-                    child: const Text(
-                      'Connect',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          isPending ? 'Pending' : 'Connect',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        if (isPending) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.hourglass_top, size: 16),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -119,26 +256,81 @@ class _UserProfileState extends State<UserProfile> {
                   height: 42,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Theme.of(context).primaryColor,
+                      backgroundColor:
+                          isFollowing ? Colors.grey[200] : Colors.white,
+                      foregroundColor:
+                          isFollowing
+                              ? Colors.black87
+                              : Theme.of(context).primaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                         side: BorderSide(
-                          color: Theme.of(context).primaryColor,
+                          color:
+                              isFollowing
+                                  ? Colors.transparent
+                                  : Theme.of(context).primaryColor,
                           width: 1.5,
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
-                    onPressed: () {
-                      // Handle follow action
+                    onPressed: () async {
+                      if (profileProvider.userId == null) return;
+
+                      bool success;
+                      if (isFollowing) {
+                        // Unfollow action using NetworksProvider directly
+                        success = await networksProvider.unfollowUser(
+                          profileProvider.userId!,
+                        );
+                      } else {
+                        // Follow action using NetworksProvider directly
+                        success = await networksProvider.followUser(
+                          profileProvider.userId!,
+                        );
+                      }
+
+                      if (success) {
+                        // Refresh profile to update UI state
+                        await profileProvider.fetchProfile(widget.userId);
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFollowing
+                                  ? 'Unfollowed successfully'
+                                  : 'Following successfully',
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              isFollowing
+                                  ? 'Failed to unfollow'
+                                  : 'Failed to follow',
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
-                    child: const Text(
-                      'Follow',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          isFollowing ? 'Following' : 'Follow',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        if (isFollowing) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.check, size: 16),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -150,22 +342,70 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
+  Widget _buildShowAllPostsButton(BuildContext context, String userId) {
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 4.0, bottom: 12.0),
+            child: Text(
+              "Activity",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Divider(thickness: 1, color: Colors.grey[300]),
+          OutlinedButton(
+            onPressed: () {
+              // Navigate to user posts page with the userId
+              // context.push('${RouteNames.userPosts}/$userId');
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.grey[700],
+              backgroundColor: Colors.white, // Background color
+              side: BorderSide.none, // Remove border
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.article_outlined, size: 20, color: Colors.grey[700]),
+                const SizedBox(width: 8),
+                Text(
+                  'Show all posts',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileProvider = context.watch<ProfileProvider>();
     final isLoading = _isLoading || profileProvider.isLoading;
 
-    // Use 'Owner' consistently (already correct in this file)
-    final isOwner = profileProvider.status == 'Owner';
-    final isConnection = profileProvider.status == 'Connection';
+    // Update status checks to use connectStatus and followStatus
+    final isOwner = profileProvider.connectStatus == 'Owner';
+    final isConnection = profileProvider.connectStatus == 'Connection';
     final isPrivateProfile = profileProvider.visibility == 'private';
     final isConnectionsOnly = profileProvider.visibility == 'connections_only';
     final isPublicProfile = profileProvider.visibility == 'public';
 
     // Determine if we should show private profile message:
-    // - If private profile AND NOT owner -> show private message
-    // - If connections_only profile AND neither owner nor connection -> show private message
-    // - If public OR if owner OR if connection with connections_only -> show full profile
     final showPrivateMessage =
         (isPrivateProfile && !isOwner) ||
         (isConnectionsOnly && !isOwner && !isConnection);
@@ -182,7 +422,8 @@ class _UserProfileState extends State<UserProfile> {
           if (isOwner) // Only show refresh for owner
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed: _loadProfileData,
+              onPressed:
+                  _loadProfileData, // This calls the fixed _loadProfileData method
               tooltip: 'Refresh Profile',
             ),
         ],
@@ -248,16 +489,24 @@ class _UserProfileState extends State<UserProfile> {
                         const SizedBox(height: 10),
 
                       // Resume section (only visible to owner)
-                      if (isOwner)
-                        Container(
-                          color: Colors.white,
-                          child: ResumeSection(
-                            resumeUrl: profileProvider.resume,
-                            isCurrentUser: isOwner,
-                            errorMessage: profileProvider.resumeError,
-                          ),
+                      Container(
+                        color: Colors.white,
+                        child: ResumeSection(
+                          resumeUrl: profileProvider.resume,
+                          isCurrentUser: isOwner,
+                          errorMessage: profileProvider.resumeError,
                         ),
-                      if (isOwner) const SizedBox(height: 10),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Show All Posts button - add at the end
+                      if (!showPrivateMessage && profileProvider.userId != null)
+                        _buildShowAllPostsButton(
+                          context,
+                          profileProvider.userId!,
+                        ),
+
+                      const SizedBox(height: 10),
 
                       // Experience section
                       Container(

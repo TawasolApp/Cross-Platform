@@ -4,26 +4,25 @@ import 'package:linkedin_clone/features/profile/domain/entities/certification.da
 class DateUtils {
   static String formatToYearMonth(String dateString) {
     try {
-      // Handle various date formats that might come from API
       if (dateString.contains('-')) {
         final parts = dateString.split('-');
         if (parts.length >= 2) {
           return '${parts[0]}-${parts[1].padLeft(2, '0')}';
         }
       }
-      // If format is unexpected, return as-is (you might want to throw an error instead)
       return dateString;
     } catch (e) {
-      return dateString; // or throw FormatException('Invalid date format');
+      return dateString;
     }
   }
 }
+
 class CertificationModel extends Equatable {
   final String? certificationId;
   final String name;
   final String company;
   final String? companyLogo;
-  final String companyId;
+  final String? companyId;
   final String issueDate;
   final String? expiryDate;
 
@@ -32,7 +31,7 @@ class CertificationModel extends Equatable {
     required this.name,
     required this.company,
     this.companyLogo,
-    this.companyId = '',
+    this.companyId,
     required this.issueDate,
     this.expiryDate,
   });
@@ -53,11 +52,11 @@ class CertificationModel extends Equatable {
   /// Create from Domain Entity
   factory CertificationModel.fromEntity(Certification entity) {
     return CertificationModel(
-      certificationId: entity.certificationId ?? '',// Providing default empty string if null
+      certificationId: entity.certificationId,
       name: entity.name,
       company: entity.company,
       companyLogo: entity.companyLogo,
-      companyId: entity.companyId ?? '', // Providing default empty string if null
+      companyId: entity.companyId,
       issueDate: entity.issueDate,
       expiryDate: entity.expiryDate,
     );
@@ -66,31 +65,45 @@ class CertificationModel extends Equatable {
   /// Convert JSON to `CertificationModel`
   factory CertificationModel.fromJson(Map<String, dynamic> json) {
     return CertificationModel(
-      certificationId: json['_id'] as String? ?? '',
+      certificationId: json['_id'] as String?,
       name: json['name'] as String,
       company: json['company'] as String,
       companyLogo: json['companyLogo'] as String?,
-      companyId: json['companyId'] as String? ?? '', // Providing default empty string if null
+      companyId: json['companyId'] as String?,
       issueDate: DateUtils.formatToYearMonth(json['issueDate'] as String),
-      expiryDate: json['expiryDate'] != null
-          ? DateUtils.formatToYearMonth(json['expiryDate'] as String)
-          : null,
+      expiryDate:
+          json['expiryDate'] != null
+              ? DateUtils.formatToYearMonth(json['expiryDate'] as String)
+              : null,
     );
   }
 
   /// Convert `CertificationModel` to JSON
   Map<String, dynamic> toJson() {
-    return {
-      '_id': certificationId,
+    final Map<String, dynamic> data = {
       'name': name,
       'company': company,
-      'companyLogo': companyLogo,
-      'companyId': companyId,
       'issueDate': issueDate,
-      'expiryDate': expiryDate,
     };
+
+    // Only include these fields if they're not null
+    if (certificationId != null && certificationId!.isNotEmpty) {
+      data['_id'] = certificationId;
+    }
+    if (companyLogo != null) {
+      data['companyLogo'] = companyLogo;
+    }
+    if (companyId != null) {
+      data['companyId'] = companyId;
+    }
+    if (expiryDate != null) {
+      data['expiryDate'] = expiryDate;
+    }
+
+    return data;
   }
 
+  /// Create a copy with modified fields
   CertificationModel copyWith({
     String? certificationId,
     String? name,
@@ -113,11 +126,12 @@ class CertificationModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        name,
-        company,
-        companyLogo,
-        companyId,
-        issueDate,
-        expiryDate,
-      ];
+    certificationId,
+    name,
+    company,
+    companyLogo,
+    companyId,
+    issueDate,
+    expiryDate,
+  ];
 }

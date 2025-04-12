@@ -1,23 +1,23 @@
+import 'package:equatable/equatable.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/experience.dart';
 
 class DateUtils {
   static String formatToYearMonth(String dateString) {
     try {
-      // Handle various date formats that might come from API
       if (dateString.contains('-')) {
         final parts = dateString.split('-');
         if (parts.length >= 2) {
           return '${parts[0]}-${parts[1].padLeft(2, '0')}';
         }
       }
-      // If format is unexpected, return as-is (you might want to throw an error instead)
       return dateString;
     } catch (e) {
-      return dateString; // or throw FormatException('Invalid date format');
+      return dateString;
     }
   }
 }
-class ExperienceModel {
+
+class ExperienceModel extends Equatable {
   final String? workExperienceId;
   final String title;
   final String company;
@@ -29,7 +29,6 @@ class ExperienceModel {
   final String? description;
   final String employmentType;
   final String? locationType;
-  
 
   const ExperienceModel({
     this.workExperienceId,
@@ -81,34 +80,53 @@ class ExperienceModel {
 
   // JSON Serialization
   Map<String, dynamic> toJson() {
-    return {
-      '_id': workExperienceId,
+    final Map<String, dynamic> data = {
       'title': title,
       'company': company,
-      'companyLogo': companyLogo,
-      'companyId': companyId,
-      'location': location,
       'startDate': startDate,
-      'endDate': endDate,
-      'description': description,
       'employmentType': employmentType,
-      'locationType': locationType,
     };
+
+    // Only include fields that are not null
+    if (workExperienceId != null && workExperienceId!.isNotEmpty) {
+      data['_id'] = workExperienceId;
+    }
+    if (companyLogo != null) {
+      data['companyLogo'] = companyLogo;
+    }
+    if (companyId != null) {
+      data['companyId'] = companyId;
+    }
+    if (location != null) {
+      data['location'] = location;
+    }
+    if (endDate != null) {
+      data['endDate'] = endDate;
+    }
+    if (description != null) {
+      data['description'] = description;
+    }
+    if (locationType != null) {
+      data['locationType'] = locationType;
+    }
+
+    return data;
   }
 
   // JSON Deserialization
   factory ExperienceModel.fromJson(Map<String, dynamic> json) {
     return ExperienceModel(
-      workExperienceId: json['_id'] as String? ?? '',
+      workExperienceId: json['_id'] as String?,
       title: json['title'] as String,
       company: json['company'] as String,
       companyLogo: json['companyLogo'] as String?,
-      companyId: json['companyId'] as String? ?? '',
+      companyId: json['companyId'] as String?,
       location: json['location'] as String?,
       startDate: DateUtils.formatToYearMonth(json['startDate'] as String),
-      endDate: json['endDate'] != null
-          ? DateUtils.formatToYearMonth(json['endDate'] as String)
-          : null,
+      endDate:
+          json['endDate'] != null
+              ? DateUtils.formatToYearMonth(json['endDate'] as String)
+              : null,
       description: json['description'] as String?,
       employmentType: json['employmentType'] as String,
       locationType: json['locationType'] as String?,
@@ -145,33 +163,17 @@ class ExperienceModel {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ExperienceModel &&
-          runtimeType == other.runtimeType &&
-          workExperienceId == other.workExperienceId &&
-          title == other.title &&
-          company == other.company &&
-          companyId == other.companyId &&
-          companyLogo == other.companyLogo &&
-          location == other.location &&
-          startDate == other.startDate &&
-          endDate == other.endDate &&
-          description == other.description &&
-          employmentType == other.employmentType &&
-          locationType == other.locationType;
-
-  @override
-  int get hashCode =>
-      workExperienceId.hashCode ^
-      title.hashCode ^
-      company.hashCode ^
-      companyLogo.hashCode ^
-      companyId.hashCode ^
-      location.hashCode ^
-      startDate.hashCode ^
-      endDate.hashCode ^
-      description.hashCode ^
-      employmentType.hashCode ^
-      locationType.hashCode;
+  List<Object?> get props => [
+    workExperienceId,
+    title,
+    company,
+    companyLogo,
+    companyId,
+    location,
+    startDate,
+    endDate,
+    description,
+    employmentType,
+    locationType,
+  ];
 }

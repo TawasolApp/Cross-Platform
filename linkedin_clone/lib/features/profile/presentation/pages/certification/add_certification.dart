@@ -17,9 +17,20 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
   final _issueDateController = TextEditingController();
   final _expiryDateController = TextEditingController();
 
-  bool _isCurrentlyValid =
-      false; // Renamed from _doesNotExpire to match education pattern
+  bool _isCurrentlyValid = false;
   bool _isSaving = false;
+  bool _isCustomCompany = false;
+  String? _selectedCompanyId;
+  String? _selectedCompanyLogo;
+
+  final FocusNode _companyFocusNode = FocusNode();
+  final List<String> _companyResults = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _companyFocusNode.addListener(_onCompanyFocusChange);
+  }
 
   @override
   void dispose() {
@@ -27,7 +38,77 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
     _issuingOrgController.dispose();
     _issueDateController.dispose();
     _expiryDateController.dispose();
+    _companyFocusNode.dispose();
     super.dispose();
+  }
+
+  void _onCompanyFocusChange() {
+    if (_companyFocusNode.hasFocus) {
+      _searchCompanies(_issuingOrgController.text);
+    }
+  }
+
+  void _onCompanyTextChanged(String text) {
+    _searchCompanies(text);
+  }
+
+  void _useCustomCompany() {
+    setState(() {
+      _isCustomCompany = true;
+      _selectedCompanyId = null;
+      _selectedCompanyLogo = null;
+    });
+  }
+
+  Future<void> _searchCompanies(String query) async {
+    // Implement your company search logic here
+    // For now, we'll just simulate a search with a delay
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {
+      _companyResults.clear();
+      if (query.isNotEmpty) {
+        _companyResults.addAll(['Company A', 'Company B', 'Company C']);
+      }
+    });
+  }
+
+  void _selectCompany(String companyId, String companyLogo) {
+    setState(() {
+      _isCustomCompany = false;
+      _selectedCompanyId = companyId;
+      _selectedCompanyLogo = companyLogo;
+    });
+  }
+
+  Widget _buildCompanyResults() {
+    if (_companyResults.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: _companyResults.length,
+      itemBuilder: (context, index) {
+        final company = _companyResults[index];
+        return ListTile(
+          title: Text(company),
+          onTap: () => _selectCompany('companyId_$index', 'companyLogo_$index'),
+        );
+      },
+    );
+  }
+
+  Widget _buildCompanySelectionIndicator() {
+    if (_isCustomCompany) {
+      return const SizedBox.shrink();
+    }
+    return ListTile(
+      title: Text(_issuingOrgController.text),
+      subtitle: const Text('Selected from search results'),
+      trailing: IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: _useCustomCompany,
+      ),
+    );
   }
 
   Future<void> _saveCertification() async {
@@ -38,7 +119,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
 
-      // Make sure to set expiryDate to null when certification doesn't expire
       String? expiryDate;
       if (!_isCurrentlyValid) {
         expiryDate = _expiryDateController.text;
@@ -47,10 +127,10 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
       final newCertification = Certification(
         name: _nameController.text,
         company: _issuingOrgController.text,
-        companyLogo: null,
-        companyId: '', // Assuming you don't have a company ID yet
+        companyLogo: _isCustomCompany ? null : _selectedCompanyLogo,
+        companyId: _isCustomCompany ? null : _selectedCompanyId,
         issueDate: _issueDateController.text,
-        expiryDate: expiryDate, // Use the correctly processed expiryDate
+        expiryDate: expiryDate,
       );
 
       await provider.addCertification(newCertification);
@@ -144,7 +224,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              // Organization Logo Placeholder
               Card(
                 shape: const CircleBorder(),
                 elevation: 4,
@@ -162,8 +241,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Certification Name
               Card(
                 color: Colors.white,
                 elevation: 1,
@@ -188,8 +265,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   ),
                 ),
               ),
-
-              // Issuing Organization
               Card(
                 color: Colors.white,
                 elevation: 1,
@@ -204,6 +279,8 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   ),
                   child: TextFormField(
                     controller: _issuingOrgController,
+                    focusNode: _companyFocusNode,
+                    onChanged: _onCompanyTextChanged,
                     decoration: const InputDecoration(
                       labelText: "Issuing Organization*",
                       border: InputBorder.none,
@@ -214,8 +291,8 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   ),
                 ),
               ),
-
-              // Issue Date
+              _buildCompanySelectionIndicator(),
+              _buildCompanyResults(),
               Card(
                 color: Colors.white,
                 elevation: 1,
@@ -242,8 +319,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   ),
                 ),
               ),
-
-              // Expiry Date - Updated to match education end date pattern
               Card(
                 color: Colors.white,
                 elevation: 1,
@@ -277,10 +352,9 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                     readOnly: true,
                     enabled: !_isCurrentlyValid,
                     onTap:
-                        () =>
-                            _isCurrentlyValid
-                                ? null
-                                : _selectDate(context, _expiryDateController),
+                        _isCurrentlyValid
+                            ? null
+                            : () => _selectDate(context, _expiryDateController),
                     validator: (value) {
                       if (!_isCurrentlyValid && (value?.isEmpty ?? true)) {
                         return "Required unless certificate does not expire";
@@ -290,7 +364,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   ),
                 ),
               ),
-
               Card(
                 color: Colors.white,
                 elevation: 0,
@@ -307,11 +380,9 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                         onChanged: (value) {
                           setState(() {
                             _isCurrentlyValid = value;
-                            // Update expiry date field when switch changes
                             if (value) {
                               _expiryDateController.clear();
-                              _expiryDateController.text =
-                                  "Present"; // Show "Present" in the UI
+                              _expiryDateController.text = "Present";
                             } else {
                               _expiryDateController.clear();
                             }
@@ -327,8 +398,6 @@ class _AddCertificationPageState extends State<AddCertificationPage> {
                   ),
                 ),
               ),
-
-              // Save Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
