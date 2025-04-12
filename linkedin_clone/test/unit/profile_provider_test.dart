@@ -51,7 +51,8 @@ class MockDeleteProfilePictureUseCase extends Mock
 class MockUpdateCoverPictureUseCase extends Mock
     implements UpdateCoverPictureUseCase {}
 
-class MockDeleteCoverPhotoUseCase extends Mock implements DeleteCoverPhotoUseCase {}
+class MockDeleteCoverPhotoUseCase extends Mock
+    implements DeleteCoverPhotoUseCase {}
 
 class MockUpdateHeadlineUseCase extends Mock implements UpdateHeadlineUseCase {}
 

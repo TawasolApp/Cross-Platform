@@ -48,7 +48,7 @@ class _EducationListPageState extends State<EducationListPage> {
         }
 
         return RefreshIndicator(
-          onRefresh: () => provider.fetchProfile(),
+          onRefresh: () => provider.fetchProfile(provider.userId),
           child: ListView.builder(
             padding: const EdgeInsets.all(16.0),
             itemCount: provider.educations!.length,
@@ -263,7 +263,7 @@ class _EducationListPageState extends State<EducationListPage> {
   Future<void> _refreshEducations(ProfileProvider provider) async {
     setState(() => _isLoading = true);
     try {
-      await provider.fetchProfile();
+      await provider.fetchProfile(provider.userId);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

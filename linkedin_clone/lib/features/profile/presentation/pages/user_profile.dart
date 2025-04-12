@@ -37,6 +37,7 @@ class _UserProfileState extends State<UserProfile> {
   Future<void> _loadProfileData() async {
     try {
       final profileProvider = context.read<ProfileProvider>();
+      // Pass the widget's userId to fetchProfile
       await profileProvider.fetchProfile(widget.userId);
       if (profileProvider.profileError != null) {
         setState(() => _error = profileProvider.profileError);
@@ -56,6 +57,7 @@ class _UserProfileState extends State<UserProfile> {
   Widget _buildPrivateProfileMessage(BuildContext context) {
     final profileProvider = context.read<ProfileProvider>();
     final isFollowing = profileProvider.followStatus == 'Following';
+    final isPending = profileProvider.connectStatus == 'Pending';
     final networksProvider = Provider.of<NetworksProvider>(
       context,
       listen: false,
@@ -104,66 +106,146 @@ class _UserProfileState extends State<UserProfile> {
                   height: 42,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      foregroundColor: Colors.white,
+                      backgroundColor:
+                          isPending
+                              ? Colors.grey[200]
+                              : Theme.of(context).primaryColor,
+                      foregroundColor:
+                          isPending ? Colors.black87 : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                     onPressed: () async {
-                      // Get the connections provider
                       final connectionsProvider =
                           Provider.of<ConnectionsProvider>(
                             context,
                             listen: false,
                           );
 
-                      // Verify we have a user ID
                       if (profileProvider.userId == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Cannot connect: User ID is missing'),
-                          ),
+                          const SnackBar(content: Text('User ID is missing')),
                         );
                         return;
                       }
 
-                      // Show loading indicator
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Sending connection request...'),
-                        ),
-                      );
+                      if (isPending) {
+                        // If status is pending, show a confirmation dialog to withdraw
+                        final shouldWithdraw = await showDialog<bool>(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text(
+                                  'Withdraw Connection Request',
+                                ),
+                                content: const Text(
+                                  'Are you sure you want to withdraw your connection request?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, false),
+                                    child: const Text('CANCEL'),
+                                  ),
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, true),
+                                    child: const Text(
+                                      'WITHDRAW',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                        );
 
-                      // Send connection request
-                      final success = await connectionsProvider
-                          .sendConnectionRequest(profileProvider.userId!);
+                        if (shouldWithdraw == true) {
+                          // Show loading indicator
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Withdrawing connection request...',
+                              ),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
 
-                      // Show result
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            success
-                                ? 'Connection request sent successfully'
-                                : 'Failed to send connection request',
+                          // Call the withdraw connection request function
+                          final success = await connectionsProvider
+                              .withdrawConnectionRequest(
+                                profileProvider.userId!,
+                              );
+
+                          // Show result
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success
+                                    ? 'Connection request withdrawn'
+                                    : 'Failed to withdraw connection request',
+                              ),
+                              backgroundColor:
+                                  success ? Colors.green : Colors.red,
+                            ),
+                          );
+
+                          // Refresh profile if successful
+                          if (success) {
+                            await profileProvider.fetchProfile(widget.userId);
+                          }
+                        }
+                      } else {
+                        // Status is not pending, send a new connection request
+                        // Show loading indicator
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Sending connection request...'),
+                            duration: Duration(seconds: 1),
                           ),
-                          backgroundColor: success ? Colors.green : Colors.red,
-                        ),
-                      );
+                        );
 
-                      // Refresh profile to get updated status
-                      if (success) {
-                        await profileProvider.fetchProfile();
+                        // Send connection request
+                        final success = await connectionsProvider
+                            .sendConnectionRequest(profileProvider.userId!);
+
+                        // Show result
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              success
+                                  ? 'Connection request sent successfully'
+                                  : 'Failed to send connection request',
+                            ),
+                            backgroundColor:
+                                success ? Colors.green : Colors.red,
+                          ),
+                        );
+
+                        // Refresh profile to get updated status
+                        if (success) {
+                          await profileProvider.fetchProfile(widget.userId);
+                        }
                       }
                     },
-                    child: const Text(
-                      'Connect',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          isPending ? 'Pending' : 'Connect',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        if (isPending) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.hourglass_top, size: 16),
+                        ],
+                      ],
                     ),
                   ),
                 ),
@@ -210,7 +292,7 @@ class _UserProfileState extends State<UserProfile> {
 
                       if (success) {
                         // Refresh profile to update UI state
-                        await profileProvider.fetchProfile();
+                        await profileProvider.fetchProfile(widget.userId);
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
@@ -272,10 +354,7 @@ class _UserProfileState extends State<UserProfile> {
             padding: EdgeInsets.only(left: 4.0, bottom: 12.0),
             child: Text(
               "Activity",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Divider(thickness: 1, color: Colors.grey[300]),
@@ -285,9 +364,9 @@ class _UserProfileState extends State<UserProfile> {
               // context.push('${RouteNames.userPosts}/$userId');
             },
             style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.grey[700],
-                backgroundColor: Colors.white, // Background color
-                side: BorderSide.none, // Remove border
+              foregroundColor: Colors.grey[700],
+              backgroundColor: Colors.white, // Background color
+              side: BorderSide.none, // Remove border
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -343,7 +422,8 @@ class _UserProfileState extends State<UserProfile> {
           if (isOwner) // Only show refresh for owner
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed: _loadProfileData,
+              onPressed:
+                  _loadProfileData, // This calls the fixed _loadProfileData method
               tooltip: 'Refresh Profile',
             ),
         ],
@@ -421,7 +501,10 @@ class _UserProfileState extends State<UserProfile> {
 
                       // Show All Posts button - add at the end
                       if (!showPrivateMessage && profileProvider.userId != null)
-                        _buildShowAllPostsButton(context, profileProvider.userId!),
+                        _buildShowAllPostsButton(
+                          context,
+                          profileProvider.userId!,
+                        ),
 
                       const SizedBox(height: 10),
 

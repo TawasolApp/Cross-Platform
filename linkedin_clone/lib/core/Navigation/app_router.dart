@@ -73,7 +73,20 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.profile,
-        builder: (context, state) => UserProfile(),
+        builder: (context, state) {
+          // Extract userId from state.extra if available
+          // state.extra can be a String (for direct user profiles) or a Map (for nested navigation)
+          String? userId;
+          if (state.extra != null) {
+            if (state.extra is String) {
+              userId = state.extra as String;
+            } else if (state.extra is Map) {
+              userId =
+                  (state.extra as Map<String, dynamic>)['userId'] as String?;
+            }
+          }
+          return UserProfile(userId: userId);
+        },
       ),
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
@@ -120,14 +133,6 @@ class AppRouter {
       //     return UserProfile(userId);
       //   },
       // ),
-      GoRoute(
-        path: RouteNames.profile,
-        builder: (context, state) {
-          // Extract userId from state.extra if available
-          final userId = state.extra as String?;
-          return UserProfile(userId: userId);
-        },
-      ),
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
         path: RouteNames.addName,

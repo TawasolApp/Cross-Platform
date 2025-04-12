@@ -231,7 +231,7 @@ class ProfileHeader extends StatelessWidget {
                               Provider.of<ProfileProvider>(
                                 context,
                                 listen: false,
-                              ).fetchProfile();
+                              ).fetchProfile(provider.userId);
                             }
                           });
                         },
@@ -473,7 +473,7 @@ class ProfileHeader extends StatelessWidget {
 
                 if (success) {
                   // Refresh the profile to get updated status
-                  await provider.fetchProfile();
+                  await provider.fetchProfile(provider.userId);
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -616,7 +616,7 @@ class ProfileHeader extends StatelessWidget {
 
                   // Refresh profile if successful
                   if (success) {
-                    await provider.fetchProfile();
+                    await provider.fetchProfile(provider.userId);
                   }
                 }
               },
@@ -678,7 +678,7 @@ class ProfileHeader extends StatelessWidget {
                     );
                   }
                 }
-                await provider.fetchProfile();
+                await provider.fetchProfile(provider.userId);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: isFollowing ? Colors.grey[200] : Colors.white,
@@ -777,7 +777,7 @@ class ProfileHeader extends StatelessWidget {
 
                 // Refresh profile if successful
                 if (success) {
-                  await provider.fetchProfile();
+                  await provider.fetchProfile(provider.userId);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -868,7 +868,7 @@ class ProfileHeader extends StatelessWidget {
 
                   // Refresh profile if successful
                   if (success) {
-                    await provider.fetchProfile();
+                    await provider.fetchProfile(provider.userId);
                   }
                 }
               },
@@ -1062,7 +1062,7 @@ class ProfileHeader extends StatelessWidget {
 
                       // Refresh the profile to get updated status from server
                       if (success) {
-                        await provider.fetchProfile();
+                        await provider.fetchProfile(provider.userId);
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -1103,7 +1103,7 @@ class ProfileHeader extends StatelessWidget {
 
                       if (success) {
                         // Refresh to update UI
-                        await provider.fetchProfile();
+                        await provider.fetchProfile(provider.userId);
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

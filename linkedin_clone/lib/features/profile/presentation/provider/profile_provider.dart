@@ -400,19 +400,13 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Profile methods
-  Future<void> fetchProfile([String? userId]) async {
+  Future<void> fetchProfile(String? userId) async {
     _setLoading(true);
     _profileError = null;
 
     try {
-      // Use passed userId if provided, otherwise use default '67f7206a5268518585c585e4'
-      final targetUserId = userId ?? "";
-
-      // if (targetUserId.isEmpty) {
-      //   _profileError = "User ID is not set or invalid";
-      //   _setLoading(false);
-      //   return;
-      // }
+      // If userId is null or empty, fetch current user's profile
+      final targetUserId = (userId != null && userId.isNotEmpty) ? userId : "";
 
       final result = await getProfileUseCase.call(targetUserId);
 
