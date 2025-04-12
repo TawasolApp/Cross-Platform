@@ -1,14 +1,18 @@
 // ignore_for_file: avoid_print, prefer_final_fields, curly_braces_in_flow_control_structures
 
 import 'package:flutter/foundation.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/accept_ignore_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_connections_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_received_connection_requests_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_sent_connection_requests_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/remove_connection_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/send_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/withdraw_connection_request_usecase.dart';
+import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
+import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
+import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 import '../../domain/entities/connections_user_entity.dart';
-import '../../domain/usecases/get_connections_usecase.dart';
-import '../../domain/usecases/remove_connection_usecase.dart';
-import '../../domain/usecases/get_received_connection_requests_usecase.dart';
-import '../../domain/usecases/get_sent_connection_requests_usecase.dart';
-import '../../domain/usecases/accept_ignore_connection_request_usecase.dart';
-import '../../domain/usecases/send_connection_request_usecase.dart';
-import '../../domain/usecases/withdraw_connection_request_usecase.dart';
 
 class ConnectionsProvider with ChangeNotifier {
   // Variables
@@ -25,6 +29,9 @@ class ConnectionsProvider with ChangeNotifier {
   bool _hasMoreSecondary = true;
   String _activeFilter = 'Recently added';
   String _selectedFilter = 'Recently added';
+  int receivedRequestsCount = 0;
+  int sentRequestsCount = 0;
+  int connectionsCount = 0;
 
   // Getters
   String? get errorMain => _errorMain;
@@ -50,7 +57,13 @@ class ConnectionsProvider with ChangeNotifier {
   acceptIgnoreConnectionRequestUseCase;
   final SendConnectionRequestUseCase sendConnectionRequestUseCase;
   final WithdrawConnectionRequestUseCase withdrawConnectionRequestUsecase;
-
+  final GetProfileUseCase getProfileUseCase = GetProfileUseCase(
+    ProfileRepositoryImpl(
+      profileRemoteDataSource: ProfileRemoteDataSourceImpl(
+        baseUrl: 'https://tawasolapp.me/api',
+      ),
+    ),
+  );
   // Constructor
   ConnectionsProvider(
     this.getConnectionsUseCase,
@@ -62,8 +75,34 @@ class ConnectionsProvider with ChangeNotifier {
     this.withdrawConnectionRequestUsecase,
   );
 
+  Future<String> getMyUserId() async {
+    final result = await getProfileUseCase.call("");
+    String userId = result.fold(
+      (failure) {
+        print('getMyUserId: Error fetching userId: $failure');
+        return ''; // Handle failure case, return a default or empty string
+      },
+      (profile) => profile.userId, // Assuming 'userId' is a String
+    );
+    return userId;
+  }
+
+  Future<String> getMyProfilePicture() async {
+    final result = await getProfileUseCase.call("");
+    String profilePicture = result.fold(
+      (failure) {
+        print('getMyUserId: Error fetching userId: $failure');
+        return ''; // Handle failure case, return a default or empty string
+      },
+      (profile) => profile.profilePicture!, // Assuming 'userId' is a String
+    );
+    return profilePicture;
+  }
+
   // Get connections
-  Future<void> getConnections({bool isInitial = false}) async {
+  Future<void> getConnections({bool isInitial = false, String? id}) async {
+    _isLoading = true;
+    String userId = id ?? await getMyUserId();
     if (_isBusy) return;
     int sortBy = 1;
     if (_activeFilter == 'First name') {
@@ -73,7 +112,6 @@ class ConnectionsProvider with ChangeNotifier {
     }
     _isBusy = true;
     try {
-      _isLoading = true;
       _errorMain = null;
       if (isInitial) {
         _currentPageMain = 1;
@@ -83,12 +121,14 @@ class ConnectionsProvider with ChangeNotifier {
       }
       if (_currentPageMain == 1) {
         connectionsList = await getConnectionsUseCase.call(
+          userId: userId,
           page: _currentPageMain,
           limit: 15,
           sortBy: sortBy,
         );
       } else {
         final newConnectionsList = await getConnectionsUseCase.call(
+          userId: userId,
           page: _currentPageMain,
           limit: 15,
           sortBy: sortBy,
@@ -282,5 +322,96 @@ class ConnectionsProvider with ChangeNotifier {
     final withdrawn = await withdrawConnectionRequestUsecase.call(userId);
     if (withdrawn) await getSentConnectionRequests(isInitial: true);
     return withdrawn;
+  }
+
+  /////TODO: should be removed after backend implementation for connections count
+  ///
+  Future<void> getConnectionsCount({String? id}) async {
+    //connectionsCount = 0;
+    // try {
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount id: $id, connectionsCount: $connectionsCount',
+    //   );
+    //   String userId = id ?? await getMyUserId();
+    //   List<ConnectionsUserEntity>? tempConnectionsList;
+    //   int tempCurrentPage = 1;
+    //   tempConnectionsList = await getConnectionsUseCase.call(
+    //     page: tempCurrentPage,
+    //     limit: 300,
+    //     sortBy: 1,
+    //     userId: userId,
+    //   );
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount tempConnectionsList: $tempConnectionsList',
+    //   );
+    //   List<ConnectionsUserEntity>? newTempConnectionsList =
+    //       await getConnectionsUseCase.call(
+    //         page: tempCurrentPage,
+    //         limit: 300,
+    //         sortBy: 1,
+    //         userId: userId,
+    //       );
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount tempConnectionsList: $tempConnectionsList',
+    //   );
+    //   if (newTempConnectionsList.isNotEmpty) {
+    //     tempConnectionsList.addAll(newTempConnectionsList);
+    //   }
+    //   while (newTempConnectionsList!.isNotEmpty) {
+    //     tempCurrentPage++;
+    //     newTempConnectionsList = await getConnectionsUseCase.call(
+    //       page: tempCurrentPage,
+    //       limit: 300,
+    //       sortBy: 1,
+    //       userId: userId,
+    //     );
+    //     tempConnectionsList.addAll(newTempConnectionsList);
+    //   }
+
+    //   connectionsCount = tempConnectionsList.length;
+    // } catch (e) {
+    //   print('\nConnectionsProvider: getConnectionsCount $e\n');
+    //   connectionsCount = -1;
+    // } finally {
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount finally connectionsCount: $connectionsCount',
+    //   );
+    //   notifyListeners();
+    // }
+  }
+
+  Future<void> getReceivedConnectionRequestsCount() async {
+    receivedRequestsCount = 0;
+    //   try {
+    //     List<ConnectionsUserEntity>? tempReceivedConnectionsList;
+    //     int tempCurrentPage = 1;
+    //     tempReceivedConnectionsList = await getReceivedConnectionRequestsUseCase
+    //         .call(page: tempCurrentPage, limit: 300);
+    //     List<ConnectionsUserEntity>? newTempReceivedConnectionsList =
+    //         await getReceivedConnectionRequestsUseCase.call(
+    //           page: tempCurrentPage,
+    //           limit: 300,
+    //         );
+    //     if (newTempReceivedConnectionsList.isNotEmpty) {
+    //       tempReceivedConnectionsList.addAll(newTempReceivedConnectionsList);
+    //     }
+    //     while (newTempReceivedConnectionsList!.isNotEmpty) {
+    //       tempCurrentPage++;
+    //       newTempReceivedConnectionsList =
+    //           await getReceivedConnectionRequestsUseCase.call(
+    //             page: tempCurrentPage,
+    //             limit: 300,
+    //           );
+    //       tempReceivedConnectionsList.addAll(newTempReceivedConnectionsList);
+    //     }
+
+    //     receivedRequestsCount = tempReceivedConnectionsList.length;
+    //   } catch (e) {
+    //     print('\nConnectionsProvider: getReceivedConnectionRequestsCount $e\n');
+    //     receivedRequestsCount = -1;
+    //   } finally {
+    //     notifyListeners();
+    //   }
+    // }
   }
 }

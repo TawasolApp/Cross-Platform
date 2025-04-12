@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/profile_header/edit_profile.dart';
@@ -288,14 +289,20 @@ class ProfileHeader extends StatelessWidget {
                               ?.copyWith(color: const Color(0xFF6E6E6E)),
                         ),
                         const SizedBox(height: 8),
-
-                        Text(
-                          '${provider.connectionCount ?? 0} connections',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).primaryColor,
+                        GestureDetector(
+                          onTap:
+                              () => goToConnections(
+                                context,
+                                userId: provider.userId,
+                              ),
+                          child: Text(
+                            '${provider.connectionCount ?? 0} connections',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),

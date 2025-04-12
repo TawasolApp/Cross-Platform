@@ -120,7 +120,6 @@ void main() {
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
 
-
   // Initialize data source and repository
   // final ProfileRemoteDataSourceImpl dataSource = ProfileRemoteDataSourceImpl(
   //   client: http.Client(),
@@ -136,9 +135,8 @@ void main() {
   final userRepos = UserRepositoryImpl(remoteDataSource: userRemoteDataSource);
 
   // Initialize data source and repository
-  final ProfileRemoteDataSourceImpl dataSourceProfile = ProfileRemoteDataSourceImpl(
-    baseUrl: 'https://tawasolapp.me/api',
-  );
+  final ProfileRemoteDataSourceImpl dataSourceProfile =
+      ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -183,7 +181,6 @@ void main() {
                 updateEmailUsecase,
                 deleteAccountUsecase,
               ),
-   
         ),
         ChangeNotifierProvider(
           create:
@@ -315,7 +312,9 @@ void main() {
                 deleteIndustryUseCase: DeleteIndustryUseCase(profileRepository),
                 updateLocationUseCase: UpdateLocationUseCase(profileRepository),
                 deleteLocationUseCase: DeleteLocationUseCase(profileRepository),
-                updateFirstNameUseCase: UpdateFirstNameUseCase(profileRepository),
+                updateFirstNameUseCase: UpdateFirstNameUseCase(
+                  profileRepository,
+                ),
                 updateLastNameUseCase: UpdateLastNameUseCase(profileRepository),
                 updateResumeUseCase: UpdateResumeUseCase(profileRepository),
                 deleteResumeUseCase: DeleteResumeUseCase(profileRepository),
@@ -366,7 +365,9 @@ void main() {
                   companyRepository: companyrepos,
                 ),
                 addAdminUseCase: AddAdminUseCase(repository: userRepos),
-                searchUsersUseCase: SearchUsersUseCase(userRemoteDataSource: userRemoteDataSource)
+                searchUsersUseCase: SearchUsersUseCase(
+                  userRemoteDataSource: userRemoteDataSource,
+                ),
               ),
         ),
 
@@ -399,7 +400,6 @@ void main() {
                 ),
               ),
         ),
-
       ],
       child: const MyApp(),
     ),
