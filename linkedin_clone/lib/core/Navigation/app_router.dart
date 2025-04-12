@@ -198,8 +198,13 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.connections,
-        builder: (context, state) => ListPage(type: PageType.connections),
+        builder: (context, state) {
+          final extras = state.extra as Map<String, String?>;
+          final userId = extras['userId'];
+          return ListPage(type: PageType.connections, userId: userId);
+        },
       ),
+
       GoRoute(
         path: RouteNames.followers,
         builder: (context, state) => ListPage(type: PageType.followers),
@@ -214,7 +219,11 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.manageMyNetwrok,
-        builder: (context, state) => ListPage(type: PageType.manageMyNetwork),
+        builder: (context, state) {
+          final extras = state.extra as Map<String, String>;
+          final userId = extras['userId'];
+          return ListPage(type: PageType.manageMyNetwork, userId: userId);
+        },
       ),
     ],
   );
