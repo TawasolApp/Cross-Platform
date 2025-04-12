@@ -7,8 +7,14 @@ void goToInvitations(BuildContext context) {
   GoRouter.of(context).push(RouteNames.invitations);
 }
 
-void goToProfile(BuildContext context, {required String userId}) {
-  GoRouter.of(context).push(RouteNames.profile, extra: {'userId': userId});
+void goToProfile(BuildContext context, {String? userId}) {
+  if (userId != null && userId.isNotEmpty) {
+    // Pass userId as extra parameter to match router configuration
+    GoRouter.of(context).push(RouteNames.profile, extra: userId);
+  } else {
+    // If no userId provided, navigate to the user's own profile
+    GoRouter.of(context).push(RouteNames.profile);
+  }
 }
 
 void goToConnections(BuildContext context, {String? userId}) {
