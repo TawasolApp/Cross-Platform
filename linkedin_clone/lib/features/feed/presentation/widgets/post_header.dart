@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/Navigation/route_names.dart'; // Update the path if needed
 import 'post_actions_bottom_sheet.dart';
 
 class PostHeader extends StatelessWidget {
@@ -8,7 +10,9 @@ class PostHeader extends StatelessWidget {
   final String postTime;
   final String postId;
   final String postContent;
-  final String visibility; // Add this line to include visibility
+  final String visibility;
+  final String authorId; // Add this field for routing
+
   const PostHeader({
     super.key,
     required this.profileImage,
@@ -18,18 +22,27 @@ class PostHeader extends StatelessWidget {
     required this.postId,
     required this.postContent,
     required this.visibility,
+    required this.authorId, // Pass it from PostEntity
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(backgroundImage: NetworkImage(profileImage), radius: 22),
+        GestureDetector(
+          onTap: () {
+            context.go(RouteNames.profile, extra: authorId);
+          },
+          child: CircleAvatar(
+            backgroundImage: NetworkImage(profileImage),
+            radius: 22,
+          ),
+        ),
         const SizedBox(width: 10),
-
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +73,6 @@ class PostHeader extends StatelessWidget {
             ],
           ),
         ),
-
         IconButton(
           icon: const Icon(Icons.more_horiz),
           onPressed: () {

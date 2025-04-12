@@ -17,7 +17,10 @@ class EmailVerificationPage extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final textColor = theme.textTheme.bodyMedium?.color;
     final authProvider = Provider.of<AuthProvider>(context);
-    final registerProvider = Provider.of<RegisterProvider>(context, listen: false);
+    final registerProvider = Provider.of<RegisterProvider>(
+      context,
+      listen: false,
+    );
     final email = registerProvider.email;
     final password = registerProvider.password;
 
@@ -35,7 +38,10 @@ class EmailVerificationPage extends StatelessWidget {
                 },
                 child: Icon(
                   Icons.arrow_back,
-                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                  color:
+                      isDark
+                          ? const Color(0xFFE5E5E5)
+                          : const Color(0xFF191919),
                 ),
               ),
 
@@ -43,14 +49,17 @@ class EmailVerificationPage extends StatelessWidget {
 
               Image.asset(
                 'assets/images/linkedin_logo.png',
-                height: 25,
+                height: 120,
                 color: isDark ? const Color(0xFFE5E5E5) : textColor,
               ),
               const SizedBox(height: 32),
               Text(
                 'Check your email',
                 style: linkedinTextTheme.displayLarge?.copyWith(
-                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                  color:
+                      isDark
+                          ? const Color(0xFFE5E5E5)
+                          : const Color(0xFF191919),
                   fontSize: 28,
                 ),
               ),
@@ -58,19 +67,27 @@ class EmailVerificationPage extends StatelessWidget {
               Text(
                 'We sent a verification link to $email.\nClick the link to verify your email and continue.',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDark ? const Color(0xFFE5E5E5) : const Color(0xFF191919),
+                  color:
+                      isDark
+                          ? const Color(0xFFE5E5E5)
+                          : const Color(0xFF191919),
                 ),
               ),
               const SizedBox(height: 32),
               TextButton(
                 onPressed: () {
                   // Trigger resend email
-                  registerProvider.resendVerificationEmail(email!);
+                  registerProvider.resendVerificationEmail(
+                    email!,
+                    "verifyEmail",
+                  );
 
                   // Show a SnackBar to indicate the email has been resent
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: const Text('Verification email has been resent.'),
+                      content: const Text(
+                        'Verification email has been resent.',
+                      ),
                       duration: const Duration(seconds: 3),
                       behavior: SnackBarBehavior.floating,
                     ),
@@ -100,9 +117,11 @@ class EmailVerificationPage extends StatelessWidget {
                         context: context,
                         backgroundColor: Colors.transparent,
                         isScrollControlled: true,
-                        builder: (context) => const CustomAuthErrorDialog(
-                          message: "Please verify your email before continuing",
-                        ),
+                        builder:
+                            (context) => const CustomAuthErrorDialog(
+                              message:
+                                  "Please verify your email before continuing",
+                            ),
                       );
                     }
                   },

@@ -2,12 +2,17 @@ import 'package:linkedin_clone/features/authentication/Data/Models/user_model.da
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> login(String email, String password);
-  Future<UserModel> register(String firstName, String lastName, String email, String password, String recaptchaToken);
+  Future<UserModel> register(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+    String recaptchaToken,
+  );
   Future<void> forgotPassword(String email);
-  Future<void> resendVerificationEmail(String email);
+  Future<void> resendVerificationEmail(String email, String type);
   Future<void> loginWithGoogle(String idToken);
-  Future<void> changePassword(String currentPassword,String newPassword);
-  Future<void> updateEmail(String newEmail,String password);
-  Future<void> deleteAccount(String email,String password);
-  
+  Future<void> changePassword(String currentPassword, String newPassword);
+  Future<void> updateEmail(String newEmail, String password);
+  Future<void> deleteAccount(String email, String password);
 }

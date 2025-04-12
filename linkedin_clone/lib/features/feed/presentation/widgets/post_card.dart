@@ -29,8 +29,9 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Card(
-      color: Colors.white,
+      color: isDarkMode ? Colors.grey[900] : Colors.white,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -45,6 +46,7 @@ class PostCard extends StatelessWidget {
               postId: post.id,
               postContent: post.content,
               visibility: post.visibility ?? 'Public',
+              authorId: post.authorId,
             ),
             const SizedBox(height: 8),
             PostContent(

@@ -4,19 +4,27 @@ import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:linkedin_clone/features/profile/presentation/Provider/profile_provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
 
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
 
-  
+class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
     final authProvider = Provider.of<AuthProvider>(context);
     final regProvider = Provider.of<RegisterProvider>(context, listen: false);
-
+    // final profileProvider = Provider.of<ProfileProvider>(
+    //   context,
+    //   listen: false,
+    // );
+    // profileProvider.fetchProfile("");
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
@@ -30,12 +38,18 @@ class SettingsPage extends StatelessWidget {
         children: [
           // Profile Image and Name
           GestureDetector(
-            onTap: () => context.go(RouteNames.profile),
+            onTap:
+                () => context.go(
+                  RouteNames.profile,
+                  // extra: profileProvider.userId,
+                ),
             child: Row(
               children: [
                 const CircleAvatar(
                   radius: 30,
-                  backgroundImage: AssetImage('assets/images/profile_placeholder.png'), // Replace with user image
+                  backgroundImage: AssetImage(
+                    'assets/images/profile_placeholder.png',
+                  ), // Replace with user image
                 ),
                 const SizedBox(width: 12),
                 Column(
@@ -88,11 +102,11 @@ class SettingsPage extends StatelessWidget {
               // Navigate to Logout Page
               authProvider.Logout();
               regProvider.reset();
-              
+
               context.go(RouteNames.onboarding);
             },
           ),
-           ListTile(
+          ListTile(
             leading: const Icon(Icons.delete),
             title: const Text("Delete Account"),
             onTap: () {

@@ -36,19 +36,27 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     final post = feedProvider.posts.firstWhereOrNull(
       (p) => p.id == widget.postId,
     );
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDarkMode ? Colors.black : Colors.white,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text("Post Details"),
-        backgroundColor: Colors.blue,
-        foregroundColor: Colors.black,
+        backgroundColor: isDarkMode ? Colors.black : Colors.blue,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         elevation: 0.5,
       ),
       body:
           post == null
-              ? const Center(child: Text("Post not found"))
+              ? Center(
+                child: Text(
+                  "Post not found",
+                  style: TextStyle(
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
+                ),
+              )
               : Column(
                 children: [
                   // Display the post using PostCard

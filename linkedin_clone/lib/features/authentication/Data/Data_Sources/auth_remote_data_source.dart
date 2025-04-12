@@ -7,8 +7,10 @@ import 'dart:convert';
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   // Helper function to get headers with authorization
   Future<Map<String, String>> _getHeaders() async {
-    final token = await TokenService.getToken(); 
-    print("TOKEN AHO $token******8");// Replace with actual token retrieval logic
+    final token = await TokenService.getToken();
+    print(
+      "TOKEN AHO $token******8",
+    ); // Replace with actual token retrieval logic
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
@@ -20,10 +22,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "email": email,
-        "password": password,
-      }),
+      body: jsonEncode({"email": email, "password": password}),
     );
 
     if (response.statusCode == 201) {
@@ -41,13 +40,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/forgot-password'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        "email": email,
-        "isAndroid": true}),
+      body: jsonEncode({"email": email, "isAndroid": true}),
     );
 
     if (response.statusCode == 200) {
-
       print("Password reset link sent to your email");
     } else {
       print("Failed to send password reset request: ${response.body}");
@@ -56,11 +52,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<void> resendVerificationEmail(String email) async {
+  Future<void> resendVerificationEmail(String email, String type) async {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/resend-confirmation'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({"email": email}),
+      body: jsonEncode({"email": email, "type": type}),
     );
 
     if (response.statusCode == 200) {
@@ -91,7 +87,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String firstName, String lastName, String email, String password, String captchaToken) async {
+  Future<UserModel> register(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+    String captchaToken,
+  ) async {
     final response = await http.post(
       Uri.parse('https://tawasolapp.me/api/auth/register'),
       headers: {'Content-Type': 'application/json'},
@@ -108,13 +110,18 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       print("[SUCCESS] Registration successful: ${response.body}");
       return userModel;
     } else {
-      print("[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}");
+      print(
+        "[ERROR] Registration failed with status code ${response.statusCode}: ${response.body}",
+      );
       throw Exception("Failed to register: ${response.body}");
     }
   }
 
   @override
-  Future<void> changePassword(String currentPassword, String newPassword) async {
+  Future<void> changePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     print("Current Password: $currentPassword");
     print("New Password: $newPassword");
     final response = await http.patch(
@@ -139,7 +146,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String? token = await TokenService.getToken();
     print("TOKEN NAFSO AHO   $token");
     print("NEW EMAIL AHO  $newEmail");
-    
+
     final headers = await _getHeaders();
     print("HEADERS AHO   $headers");
     final response = await http.patch(
@@ -148,10 +155,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        "newEmail": newEmail,
-        "password": password,
-      }),
+      body: jsonEncode({"newEmail": newEmail, "password": password}),
     );
 
     if (response.statusCode == 200) {
@@ -170,10 +174,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await http.delete(
       Uri.parse('https://tawasolapp.me/api/users/delete-account'),
       headers: await _getHeaders(),
-      body: jsonEncode({
-        "email": email,
-        "password": password,
-      }),
+      body: jsonEncode({"email": email, "password": password}),
     );
 
     if (response.statusCode == 200) {

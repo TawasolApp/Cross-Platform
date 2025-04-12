@@ -26,12 +26,12 @@ class _FeedPageState extends State<FeedPage> {
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
-
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
         title: const Text("News Feed"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: isDarkMode ? Colors.black : Colors.white,
+        foregroundColor: isDarkMode ? Colors.white : Colors.black,
         elevation: 0.5,
       ),
       body:
@@ -59,9 +59,9 @@ class _FeedPageState extends State<FeedPage> {
             await feedProvider.fetchPosts();
           }
         },
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
         tooltip: 'Create Post',
-        child: const Icon(Icons.add, color: Colors.blue),
+        child: Icon(Icons.add, color: isDarkMode ? Colors.white : Colors.blue),
       ),
     );
   }

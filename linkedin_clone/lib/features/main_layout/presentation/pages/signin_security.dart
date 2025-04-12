@@ -17,10 +17,7 @@ class SignInSecurityPage extends StatelessWidget {
           onPressed: () => context.go(RouteNames.settings),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.help_outline), onPressed: () {}),
         ],
       ),
       body: ListView(
@@ -32,15 +29,20 @@ class SignInSecurityPage extends StatelessWidget {
           _buildTile(context, 'Change Password', Icons.lock_outline, () {
             context.go(RouteNames.changePassword);
           }),
-          _buildTile(context, 'Update Info', Icons.info_outline, () {
-           context.go(RouteNames.updateInfo);
-          }),
+          // _buildTile(context, 'Update Info', Icons.info_outline, () {
+          //  context.go(RouteNames.updateInfo);
+          // }),
         ],
       ),
     );
   }
 
-  Widget _buildTile(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildTile(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       leading: Icon(icon, color: const Color(0xFF0073B1)),
       title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
