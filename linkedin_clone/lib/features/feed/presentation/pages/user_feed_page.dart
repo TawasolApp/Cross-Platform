@@ -4,21 +4,22 @@ import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
 import 'create_post_page.dart';
 
-class FeedPage extends StatefulWidget {
-  const FeedPage({super.key});
+class UserFeedPage extends StatefulWidget {
+  final String userId;
 
+  const UserFeedPage({super.key, required this.userId});
   @override
-  _FeedPageState createState() => _FeedPageState();
+  _UserFeedPageState createState() => _UserFeedPageState();
 }
 
-class _FeedPageState extends State<FeedPage> {
+class _UserFeedPageState extends State<UserFeedPage> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
       if (feedProvider.posts.isEmpty) {
-        feedProvider.fetchPosts();
+        feedProvider.fetchUserPosts(widget.userId);
       }
     });
   }
@@ -56,7 +57,7 @@ class _FeedPageState extends State<FeedPage> {
               context,
               listen: false,
             );
-            await feedProvider.fetchPosts();
+            await feedProvider.fetchUserPosts(widget.userId);
           }
         },
         backgroundColor: Colors.white,

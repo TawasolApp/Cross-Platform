@@ -12,9 +12,9 @@ class EducationWidget extends StatelessWidget {
   });
 
   // Format degree type for display in a consistent way
-  String _formatDegreeType(String type) {
-    // Simply return the degree type (already in proper format)
-    return type.trim();
+  String _formatDegreeType(String? type) {
+    // Return empty string if null
+    return type?.trim() ?? '';
   }
 
   @override
@@ -59,42 +59,63 @@ class EducationWidget extends StatelessWidget {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 2),
-                // Degree with field of study
-                Row(
-                  children: [
-                    Text(formattedDegree, style: const TextStyle(fontSize: 14)),
-                    const Text(
-                      " · ",
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    Text(
-                      education.field,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                // Date range
-                Text(
-                  showPresent
-                      ? "${education.startDate} - Present"
-                      : "${education.startDate} - ${education.endDate}",
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                ),
+
+                // Only show degree and field if they exist
+                if (education.degree != null && education.field != null) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        formattedDegree,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      const Text(
+                        " · ",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      Text(
+                        education.field ?? '',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ] else if (education.degree != null) ...[
+                  const SizedBox(height: 2),
+                  Text(formattedDegree, style: const TextStyle(fontSize: 14)),
+                ] else if (education.field != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    education.field ?? '',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
+
+                // Date range - only show if startDate exists
+                if (education.startDate != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    showPresent
+                        ? "${education.startDate} - Present"
+                        : "${education.startDate} - ${education.endDate ?? ''}",
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
+
                 // Grade if available
-                if (education.grade.isNotEmpty) ...[
+                if (education.grade != null && education.grade!.isNotEmpty) ...[
                   const SizedBox(height: 2),
                   Text(
                     "Grade: ${education.grade}",
                     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
+
                 // Description
-                if (education.description.isNotEmpty) ...[
+                if (education.description != null &&
+                    education.description!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
-                    education.description,
+                    education.description!,
                     style: const TextStyle(fontSize: 14),
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,

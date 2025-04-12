@@ -29,8 +29,8 @@ class OnboardingPage extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Image.asset(
-                    'assets/images/linkedin_logo.png',
-                    height: 25,
+                  'assets/images/linkedin_logo.png',
+                  height: 150, // Increased the height to make it bigger
                   ),
                 ),
                 SizedBox(height: 20),

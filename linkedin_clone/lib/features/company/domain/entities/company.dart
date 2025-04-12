@@ -42,4 +42,7 @@ class Company {
     this.specialities,
     this.isManager,
   });
+
+  // Add getter for id to match the usage in add_experience.dart
+  String get id => companyId ?? '';
 }

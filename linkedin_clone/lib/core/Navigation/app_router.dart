@@ -120,6 +120,14 @@ class AppRouter {
       //     return UserProfile(userId);
       //   },
       // ),
+      GoRoute(
+        path: RouteNames.profile,
+        builder: (context, state) {
+          // Extract userId from state.extra if available
+          final userId = state.extra as String?;
+          return UserProfile(userId: userId);
+        },
+      ),
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
         path: RouteNames.addName,

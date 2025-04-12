@@ -1,6 +1,7 @@
 import 'package:linkedin_clone/features/profile/data/models/certification_model.dart';
-import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/education_model.dart';
+import 'package:linkedin_clone/features/profile/data/models/endorsement_model.dart';
+import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/skill_model.dart';
 
@@ -9,7 +10,7 @@ abstract class ProfileRemoteDataSource {
   Future<ProfileModel> getProfile(String id);
   Future<void> createProfile(ProfileModel profile);
   Future<void> updateProfile(ProfileModel profile);
-  
+
   /// Profile components deletion
   Future<void> deleteProfilePicture();
   Future<void> deleteCoverPhoto();
@@ -44,6 +45,12 @@ abstract class ProfileRemoteDataSource {
     ExperienceModel experience,
   );
   Future<void> deleteWorkExperience(String workExperienceId);
+
+  /// Endorsements
+  Future<List<EndorsementModel>> getSkillEndorsements(
+    String userId,
+    String skillName,
+  );
 
   /// Additional profile features
   Future<List<dynamic>> getFollowedCompanies(String userId);

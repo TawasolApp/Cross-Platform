@@ -19,11 +19,39 @@ class CacheException implements Exception {
   const CacheException(this.message);
 }
 
+class TokenException implements Exception {
+  final String message;
+  TokenException(this.message);
+  @override
+  String toString() => "TokenException: $message";
+}
+
+class NotFoundException implements Exception {
+  final String message;
+  NotFoundException(this.message);
+  @override
+  String toString() => "NotFoundException: $message";
+}
+
 class UnauthorizedException implements Exception {
   final String message;
-
   UnauthorizedException(this.message);
 
   @override
-  String toString() => 'UnauthorizedException: $message';
+  String toString() => "UnauthorizedException: $message";
 }
+
+class UnknownException implements Exception {
+  final String message;
+  UnknownException(this.message);
+}
+
+class ForbiddenException implements Exception {
+  final String message;
+  ForbiddenException([this.message = "Forbidden"]);
+
+  @override
+  String toString() => "ForbiddenException: $message";
+}
+
+
