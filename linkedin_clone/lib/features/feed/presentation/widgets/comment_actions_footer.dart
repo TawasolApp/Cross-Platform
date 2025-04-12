@@ -32,25 +32,23 @@ class CommentActionsFooter extends StatelessWidget {
           _buildActionText(context, "Reply", () {
             // Reply functionality
           }),
-          //if (authorId == currentUserId)
-          _buildSeparator(),
-          //if (authorId == currentUserId)
-          _buildActionText(context, "Edit", () {
-            _showEditDialog(context);
-          }),
+          if (authorId == currentUserId) _buildSeparator(),
+          if (authorId == currentUserId)
+            _buildActionText(context, "Edit", () {
+              _showEditDialog(context);
+            }),
 
-          //if (authorId == currentUserId)
-          _buildSeparator(),
-          //if (authorId == currentUserId)
-          _buildActionText(context, "Delete", () async {
-            await Provider.of<FeedProvider>(
-              context,
-              listen: false,
-            ).deleteComment(postId, commentId);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Comment deleted successfully")),
-            );
-          }),
+          if (authorId == currentUserId) _buildSeparator(),
+          if (authorId == currentUserId)
+            _buildActionText(context, "Delete", () async {
+              await Provider.of<FeedProvider>(
+                context,
+                listen: false,
+              ).deleteComment(postId, commentId);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Comment deleted successfully")),
+              );
+            }),
         ],
       ),
     );
