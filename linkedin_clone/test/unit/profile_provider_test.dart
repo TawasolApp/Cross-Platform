@@ -1,5 +1,7 @@
 // import 'package:flutter_test/flutter_test.dart';
 // import 'package:linkedin_clone/core/errors/failures.dart';
+// import 'package:fpdart/fpdart.dart' as fpdart;
+// import 'package:linkedin_clone/core/usecase/usecase.dart';
 // import 'package:linkedin_clone/features/profile/domain/entities/certification.dart';
 // import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
 // import 'package:linkedin_clone/features/profile/domain/entities/endorsement.dart';
@@ -252,17 +254,18 @@
 //       ],
 //       workExperience: [
 //         Experience(
+//           workExperienceId: "exp123",
 //           title: 'Developer',
 //           company: 'Tech Corp',
 //           startDate: '2019-07',
 //           endDate: '2021-12',
-//           employmentType: 'Full-time', // Added required field
+//           employmentType: 'full-time', // Added required field
 //         ),
 //       ],
 //       visibility: 'public',
 //       connectionCount: 150,
-//       connectStatus: 'connected',
-//       followStatus: 'following',
+//       connectStatus: 'Connected',
+//       followStatus: 'Following',
 //     );
 
 //     test('initial state', () {
@@ -291,12 +294,13 @@
 //     group('fetchProfile', () {
 //       test('should update state with profile data on success', () async {
 //         // Arrange
+//         final userId = 'test123';
 //         when(
-//           mockGetProfileUseCase.call(any),
-//         ).thenAnswer((_) async => Right(testProfile));
+//           mockGetProfileUseCase.call(userId),
+//         ).thenAnswer((_) async => fpdart.right(testProfile));
 
 //         // Act
-//         await profileProvider.fetchProfile('test123');
+//         await profileProvider.fetchProfile(userId);
 
 //         // Assert
 //         expect(profileProvider.userId, 'test123');
@@ -324,8 +328,8 @@
 //       test('should set error on failure', () async {
 //         // Arrange
 //         when(
-//           mockGetProfileUseCase.call(any),
-//         ).thenAnswer((_) async => Left(ServerFailure()));
+//           mockGetProfileUseCase.call(testProfile.userId),
+//         ).thenAnswer((_) async => fpdart.left(ServerFailure()));
 
 //         // Act
 //         await profileProvider.fetchProfile('test123');
@@ -340,8 +344,13 @@
 //       test('updateProfilePicture should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateProfilePictureUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateProfilePictureUseCase.call(
+//             ProfilePictureParams(
+//               userId: testProfile.userId,
+//               profilePicture: testProfile.profilePicture,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateProfilePicture('new_profile.jpg');
@@ -358,8 +367,8 @@
 //           // Arrange
 //           profileProvider.profilePicture = 'profile.jpg';
 //           when(
-//             mockDeleteProfilePictureUseCase.call(any),
-//           ).thenAnswer((_) async => const Right(null));
+//             mockDeleteProfilePictureUseCase.call(NoParams()),
+//           ).thenAnswer((_) async => fpdart.right(null));
 
 //           // Act
 //           await profileProvider.deleteProfilePicture();
@@ -376,8 +385,13 @@
 //       test('updateCoverPhoto should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateCoverPictureUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateCoverPictureUseCase.call(
+//             CoverPictureParams(
+//               userId: testProfile.userId,
+//               coverPhoto: testProfile.coverPhoto,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateCoverPhoto('new_cover.jpg');
@@ -392,8 +406,8 @@
 //         // Arrange
 //         profileProvider.coverPhoto = 'cover.jpg';
 //         when(
-//           mockDeleteCoverPhotoUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteCoverPhotoUseCase.call(NoParams()),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.deleteCoverPhoto();
@@ -409,8 +423,13 @@
 //       test('updateHeadline should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateHeadlineUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateHeadlineUseCase.call(
+//             HeadlineParams(
+//               userId: testProfile.userId,
+//               headline: testProfile.headline,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateHeadline('New Headline');
@@ -425,8 +444,8 @@
 //         // Arrange
 //         profileProvider.headline = 'Current Headline';
 //         when(
-//           mockDeleteHeadlineUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteHeadlineUseCase.call(NoParams()),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.deleteHeadline();
@@ -442,8 +461,13 @@
 //       test('updateIndustry should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateIndustryUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateIndustryUseCase.call(
+//             IndustryParams(
+//               userId: testProfile.userId,
+//               industry: 'New Industry',
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateIndustry('New Industry');
@@ -458,8 +482,8 @@
 //         // Arrange
 //         profileProvider.industry = 'Current Industry';
 //         when(
-//           mockDeleteIndustryUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteIndustryUseCase.call(NoParams()),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.deleteIndustry();
@@ -475,8 +499,13 @@
 //       test('updateLocation should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateLocationUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateLocationUseCase.call(
+//             LocationParams(
+//               userId: testProfile.userId,
+//               location: testProfile.location,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateLocation('New Location');
@@ -491,8 +520,8 @@
 //         // Arrange
 //         profileProvider.location = 'Current Location';
 //         when(
-//           mockDeleteLocationUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteLocationUseCase.call(NoParams()),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.deleteLocation();
@@ -508,8 +537,13 @@
 //       test('updateFirstName should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateFirstNameUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateFirstNameUseCase.call(
+//             FirstNameParams(
+//               userId: testProfile.userId,
+//               firstName: testProfile.firstName,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateFirstName('Jane');
@@ -523,8 +557,13 @@
 //       test('updateLastName should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateLastNameUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateLastNameUseCase.call(
+//             LastNameParams(
+//               userId: testProfile.userId,
+//               lastName: testProfile.lastName,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateLastName('Smith');
@@ -540,8 +579,13 @@
 //       test('updateResume should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateResumeUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateResumeUseCase.call(
+//             ResumeParams(
+//               userId: testProfile.userId,
+//               resume: testProfile.resume,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateResume('new_resume.pdf');
@@ -556,8 +600,8 @@
 //         // Arrange
 //         profileProvider.resume = 'current_resume.pdf';
 //         when(
-//           mockDeleteResumeUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteResumeUseCase.call(NoParams()),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.deleteResume();
@@ -573,8 +617,10 @@
 //       test('setUserBio should update state on success', () async {
 //         // Arrange
 //         when(
-//           mockUpdateBioUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateBioUseCase.call(
+//             BioParams(userId: testProfile.userId, bio: testProfile.bio),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.setUserBio('New bio text');
@@ -589,8 +635,8 @@
 //         // Arrange
 //         profileProvider.bio = 'Current bio';
 //         when(
-//           mockDeleteBioUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteBioUseCase.call(NoParams()),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.deleteBio();
@@ -608,38 +654,24 @@
 //         company: 'Tech Corp',
 //         startDate: '2019-07',
 //         endDate: '2021-12',
-//         employmentType: 'Full-time',
-//         workExperienceId: 'exp123', // Add ID for the tests to work
+//         employmentType: 'full-time',
+//         workExperienceId: 'exp123',
 //       );
 
 //       test('addExperience should add experience on success', () async {
 //         // Arrange
 //         when(
-//           mockAddExperienceUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockAddExperienceUseCase.call(testExperience),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.addExperience(testExperience);
 
 //         // Assert
 //         expect(profileProvider.experiences?.length, 1);
-//         expect(profileProvider.experiences?[0].title, 'Developer');
-//         expect(profileProvider.isLoading, false);
-//         expect(profileProvider.experienceError, isNull);
-//       });
-
-//       test('removeExperience should remove experience on success', () async {
-//         // Arrange
-//         profileProvider.experiences = [testExperience];
-//         when(
-//           mockDeleteExperienceUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
-
-//         // Act
-//         await profileProvider.removeExperience(0);
-
-//         // Assert
-//         expect(profileProvider.experiences?.length, 0);
+//         expect(profileProvider.experiences?[1].title, 'Developer');
+//         expect(profileProvider.experiences?[1].company, '2019-07');
+//         expect(profileProvider.experiences?[1].employmentType, 'full_time');
 //         expect(profileProvider.isLoading, false);
 //         expect(profileProvider.experienceError, isNull);
 //       });
@@ -652,8 +684,13 @@
 //         );
 //         profileProvider.experiences = [oldExperience];
 //         when(
-//           mockUpdateExperienceUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateExperienceUseCase.call(
+//             ExperienceUpdateParams(
+//               experienceId: oldExperience.workExperienceId!,
+//               experience: newExperience,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateExperience(oldExperience, newExperience);
@@ -663,14 +700,30 @@
 //         expect(profileProvider.isLoading, false);
 //         expect(profileProvider.experienceError, isNull);
 //       });
+
+//       test('removeExperience should remove experience on success', () async {
+//         // Arrange
+//         profileProvider.experiences = [testExperience];
+//         when(
+//           mockDeleteExperienceUseCase.call(testExperience.workExperienceId!),
+//         ).thenAnswer((_) async => fpdart.right(null));
+
+//         // Act
+//         await profileProvider.removeExperience(0);
+
+//         // Assert
+//         expect(profileProvider.experiences?.length, 0);
+//         expect(profileProvider.isLoading, false);
+//         expect(profileProvider.experienceError, isNull);
+//       });
 //     });
 
 //     group('Education', () {
 //       final testEducation = Education(
-//         educationId: 'edu123', // Add ID for tests to work
+//         educationId: 'edu123',
 //         school: 'University',
 //         degree: 'BSc',
-//         field: 'Computer Science', // Changed from fieldOfStudy to field
+//         field: 'Computer Science',
 //         startDate: '2015-09',
 //         endDate: '2019-06',
 //       );
@@ -678,8 +731,8 @@
 //       test('addEducation should add education on success', () async {
 //         // Arrange
 //         when(
-//           mockAddEducationUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockAddEducationUseCase.call(testEducation),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.addEducation(testEducation);
@@ -691,30 +744,19 @@
 //         expect(profileProvider.educationError, isNull);
 //       });
 
-//       test('removeEducation should remove education on success', () async {
-//         // Arrange
-//         profileProvider.educations = [testEducation];
-//         when(
-//           mockDeleteEducationUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
-
-//         // Act
-//         await profileProvider.removeEducation(0);
-
-//         // Assert
-//         expect(profileProvider.educations?.length, 0);
-//         expect(profileProvider.isLoading, false);
-//         expect(profileProvider.educationError, isNull);
-//       });
-
 //       test('updateEducation should update education on success', () async {
 //         // Arrange
 //         final oldEducation = testEducation;
 //         final newEducation = testEducation.copyWith(degree: 'MSc');
 //         profileProvider.educations = [oldEducation];
 //         when(
-//           mockUpdateEducationUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockUpdateEducationUseCase.call(
+//             EducationUpdateParams(
+//               educationId: oldEducation.educationId!,
+//               education: newEducation,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.updateEducation(oldEducation, newEducation);
@@ -724,22 +766,37 @@
 //         expect(profileProvider.isLoading, false);
 //         expect(profileProvider.educationError, isNull);
 //       });
-//     });
 
+//       test('removeEducation should remove education on success', () async {
+//         // Arrange
+//         profileProvider.educations = [testEducation];
+//         when(
+//           mockDeleteEducationUseCase.call(testEducation.educationId!),
+//         ).thenAnswer((_) async => fpdart.right(null));
+
+//         // Act
+//         await profileProvider.removeEducation(0);
+
+//         // Assert
+//         expect(profileProvider.educations?.length, 0);
+//         expect(profileProvider.isLoading, false);
+//         expect(profileProvider.educationError, isNull);
+//       });
+//     });
 //     group('Certification', () {
 //       final testCertification = Certification(
-//         certificationId: 'cert123', // Add ID for tests to work
+//         certificationId: 'cert123',
 //         name: 'Flutter Certification',
-//         company: 'Google', // Changed from issuingOrganization to company
+//         company: 'Google',
 //         issueDate: '2020-01',
-//         expiryDate: '2022-01', // Changed from expirationDate to expiryDate
+//         expiryDate: '2022-01',
 //       );
 
 //       test('addCertification should add certification on success', () async {
 //         // Arrange
 //         when(
-//           mockAddCertificationUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockAddCertificationUseCase.call(testCertification),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.addCertification(testCertification);
@@ -755,25 +812,6 @@
 //       });
 
 //       test(
-//         'removeCertification should remove certification on success',
-//         () async {
-//           // Arrange
-//           profileProvider.certifications = [testCertification];
-//           when(
-//             mockDeleteCertificationUseCase.call(any),
-//           ).thenAnswer((_) async => const Right(null));
-
-//           // Act
-//           await profileProvider.removeCertification(0);
-
-//           // Assert
-//           expect(profileProvider.certifications?.length, 0);
-//           expect(profileProvider.isLoading, false);
-//           expect(profileProvider.certificationError, isNull);
-//         },
-//       );
-
-//       test(
 //         'updateCertification should update certification on success',
 //         () async {
 //           // Arrange
@@ -783,8 +821,13 @@
 //           );
 //           profileProvider.certifications = [oldCertification];
 //           when(
-//             mockUpdateCertificationUseCase.call(any),
-//           ).thenAnswer((_) async => const Right(null));
+//             mockUpdateCertificationUseCase.call(
+//               CertificationUpdateParams(
+//                 certificationId: oldCertification.certificationId!,
+//                 certification: newCertification,
+//               ),
+//             ),
+//           ).thenAnswer((_) async => fpdart.right(null));
 
 //           // Act
 //           await profileProvider.updateCertification(
@@ -801,6 +844,27 @@
 //           expect(profileProvider.certificationError, isNull);
 //         },
 //       );
+
+//       test(
+//         'removeCertification should remove certification on success',
+//         () async {
+//           // Arrange
+//           profileProvider.certifications = [testCertification];
+//           when(
+//             mockDeleteCertificationUseCase.call(
+//               testCertification.certificationId!,
+//             ),
+//           ).thenAnswer((_) async => fpdart.right(null));
+
+//           // Act
+//           await profileProvider.removeCertification(0);
+
+//           // Assert
+//           expect(profileProvider.certifications?.length, 0);
+//           expect(profileProvider.isLoading, false);
+//           expect(profileProvider.certificationError, isNull);
+//         },
+//       );
 //     });
 
 //     group('Skills', () {
@@ -812,8 +876,8 @@
 //       test('addSkill should add skill on success', () async {
 //         // Arrange
 //         when(
-//           mockAddSkillUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockAddSkillUseCase.call(testSkill),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.addSkill(testSkill);
@@ -825,12 +889,32 @@
 //         expect(profileProvider.skillError, isNull);
 //       });
 
+//       test('updateSkill should update skill on success', () async {
+//         // Arrange
+//         final oldSkill = testSkill;
+//         final newSkill = testSkill.copyWith(position: '2');
+//         profileProvider.skills = [oldSkill];
+//         when(
+//           mockUpdateSkillUseCase.call(
+//             UpdateSkillParams(skillName: oldSkill.skillName, skill: newSkill),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(null));
+
+//         // Act
+//         await profileProvider.updateSkill(0, newSkill);
+
+//         // Assert
+//         expect(profileProvider.skills?[0].position, '2');
+//         expect(profileProvider.isLoading, false);
+//         expect(profileProvider.skillError, isNull);
+//       });
+
 //       test('removeSkill should remove skill on success', () async {
 //         // Arrange
 //         profileProvider.skills = [testSkill];
 //         when(
-//           mockDeleteSkillUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
+//           mockDeleteSkillUseCase.call(testSkill.skillName),
+//         ).thenAnswer((_) async => fpdart.right(null));
 
 //         // Act
 //         await profileProvider.removeSkill(0);
@@ -840,35 +924,18 @@
 //         expect(profileProvider.isLoading, false);
 //         expect(profileProvider.skillError, isNull);
 //       });
-
-//       test('updateSkill should update skill on success', () async {
-//         // Arrange
-//         profileProvider.skills = [testSkill];
-//         final updatedSkill = testSkill.copyWith(position: '2');
-//         when(
-//           mockUpdateSkillUseCase.call(any),
-//         ).thenAnswer((_) async => const Right(null));
-
-//         // Act
-//         await profileProvider.updateSkill(0, updatedSkill);
-
-//         // Assert
-//         expect(profileProvider.skills?[0].position, '2');
-//         expect(profileProvider.isLoading, false);
-//         expect(profileProvider.skillError, isNull);
-//       });
 //     });
 
 //     group('Endorsements', () {
 //       final testEndorsements = [
 //         Endorsement(
-//           userId: 'user1', // Added required field
+//           userId: 'user1',
 //           firstName: 'Alice',
 //           lastName: 'Smith',
 //           profilePicture: 'alice.jpg',
 //         ),
 //         Endorsement(
-//           userId: 'user2', // Added required field
+//           userId: 'user2',
 //           firstName: 'Bob',
 //           lastName: 'Johnson',
 //           profilePicture: 'bob.jpg',
@@ -879,9 +946,13 @@
 //         // Arrange
 //         profileProvider.userId = 'test123';
 //         when(
-//           mockGetSkillEndorsementsUseCase.call(any),
-//         ).thenAnswer((_) async => Right(testEndorsements));
-
+//           mockGetSkillEndorsementsUseCase.call(
+//             GetSkillEndorsementsParams(
+//               userId: testProfile.userId,
+//               skillName: testProfile.skills[0].skillName,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.right(testEndorsements));
 //         // Act
 //         await profileProvider.getSkillEndorsements('Flutter');
 
@@ -895,8 +966,13 @@
 //         // Arrange
 //         profileProvider.userId = 'test123';
 //         when(
-//           mockGetSkillEndorsementsUseCase.call(any),
-//         ).thenAnswer((_) async => Left(ServerFailure()));
+//           mockGetSkillEndorsementsUseCase.call(
+//             GetSkillEndorsementsParams(
+//               userId: testProfile.userId,
+//               skillName: testProfile.skills[0].skillName,
+//             ),
+//           ),
+//         ).thenAnswer((_) async => fpdart.left(ServerFailure()));
 
 //         // Act
 //         await profileProvider.getSkillEndorsements('Flutter');
@@ -994,7 +1070,6 @@
 //         profileProvider.certificationError = 'Error';
 //         profileProvider.bioError = 'Error';
 //         profileProvider.resumeError = 'Error';
-//         profileProvider.endorsementsError = 'Error';
 
 //         // Clear errors
 //         profileProvider.clearErrors();
@@ -1009,45 +1084,6 @@
 //         expect(profileProvider.resumeError, isNull);
 //         expect(profileProvider.endorsementsError, isNull);
 //       });
-
-//       test('clearEndorsementsError should clear only endorsements error', () {
-//         // Set some errors
-//         profileProvider.endorsementsError = 'Error';
-//         profileProvider.profileError = 'Other Error';
-
-//         // Clear endorsements error
-//         profileProvider.clearEndorsementsError();
-
-//         // Verify only endorsements error is cleared
-//         expect(profileProvider.endorsementsError, isNull);
-//         expect(profileProvider.profileError, 'Other Error');
-//       });
-
-//       test(
-//         '_mapFailureToMessage should return correct message for each failure type',
-//         () {
-//           expect(
-//             profileProvider._mapFailureToMessage(ServerFailure()),
-//             'Server error occurred. Please try again later.',
-//           );
-//           expect(
-//             profileProvider._mapFailureToMessage(NetworkFailure()),
-//             'Network error. Please check your connection.',
-//           );
-//           expect(
-//             profileProvider._mapFailureToMessage(CacheFailure()),
-//             'Cache error. Please restart the app.',
-//           );
-//           expect(
-//             profileProvider._mapFailureToMessage(ValidationFailure('Test')),
-//             'Validation error: Test',
-//           );
-//           expect(
-//             profileProvider._mapFailureToMessage(UnknownFailure()),
-//             'Unexpected error occurred. Please try again.',
-//           );
-//         },
-//       );
 //     });
 //   });
 // }

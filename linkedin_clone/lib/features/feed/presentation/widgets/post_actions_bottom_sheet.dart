@@ -11,7 +11,9 @@ class PostActionsBottomSheet extends StatelessWidget {
   final String authorName;
   final String authorTitle;
   final String visibility;
-  final BuildContext rootContext; // Add root context
+  final BuildContext rootContext;
+  // final String authorId;
+  // final String currentUserId;
 
   const PostActionsBottomSheet({
     super.key,
@@ -21,7 +23,9 @@ class PostActionsBottomSheet extends StatelessWidget {
     required this.authorName,
     required this.authorTitle,
     required this.visibility,
-    required this.rootContext, // Add this parameter
+    required this.rootContext,
+    // required this.authorId,
+    // required this.currentUserId,
   });
 
   @override
