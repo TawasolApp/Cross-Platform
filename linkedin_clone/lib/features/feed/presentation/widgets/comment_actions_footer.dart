@@ -20,7 +20,6 @@ class CommentActionsFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isOwner = (authorId == currentUserId);
     return Padding(
       padding: const EdgeInsets.only(top: 4.0),
       child: Row(
@@ -33,15 +32,16 @@ class CommentActionsFooter extends StatelessWidget {
           _buildActionText(context, "Reply", () {
             // Reply functionality
           }),
-          //if (isOwner)
+          //if (authorId == currentUserId)
           _buildSeparator(),
-          //if (isOwner)
+          //if (authorId == currentUserId)
           _buildActionText(context, "Edit", () {
             _showEditDialog(context);
           }),
-          // if (isOwner)
+
+          //if (authorId == currentUserId)
           _buildSeparator(),
-          //if (isOwner)
+          //if (authorId == currentUserId)
           _buildActionText(context, "Delete", () async {
             await Provider.of<FeedProvider>(
               context,

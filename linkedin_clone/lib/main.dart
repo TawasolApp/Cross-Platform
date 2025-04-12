@@ -211,7 +211,7 @@ void main() {
                 reactToPostUseCase: reactToPostUseCase,
                 editCommentUseCase: editCommentUseCase,
                 getPostReactionsUseCase: getPostReactionsUseCase,
-                getProfileUseCase: GetProfileUseCase(profileRepository),
+
                 unsavePostUseCase: unsavePostUseCase,
                 getUserPostsUseCase: getUserPostsUseCase,
                 deleteCommentUseCase: deleteCommentUseCase,

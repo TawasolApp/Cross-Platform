@@ -152,7 +152,6 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         "isSilentRepost": isSilentRepost,
       };
 
-      // Only add parentPostId if it is not null
       if (parentPostId != null) {
         data["parentPostId"] = parentPostId;
       }
@@ -379,20 +378,20 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
           },
         ),
       );
-      if (response.statusCode == 200) {
-        return const Right(unit);
-      } else if (response.statusCode == 401) {
-        return Left(UnauthorizedFailure("Unauthorized access"));
-      } else if (response.statusCode == 403) {
-        return Left(ForbiddenFailure());
-      } else if (response.statusCode == 404) {
-        return Left(NotFoundFailure("Comment not found"));
-      } else {
-        return Left(ServerFailure());
-      }
+
+      _validateResponse(response);
+
+      return right(unit); // Success
+    } on UnauthorizedException catch (e) {
+      return left(UnauthorizedFailure(e.message));
+    } on ForbiddenException catch (e) {
+      return left(ForbiddenFailure(e.message));
+    } on NotFoundException catch (e) {
+      return left(NotFoundFailure(e.message));
+    } on ServerException catch (e) {
+      return left(ServerFailure(e.message));
     } catch (e) {
-      print("editComment error: $e");
-      return Left(UnexpectedFailure());
+      return left(UnexpectedFailure(e.toString()));
     }
   }
 

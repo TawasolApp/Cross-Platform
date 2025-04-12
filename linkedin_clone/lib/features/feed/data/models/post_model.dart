@@ -4,7 +4,7 @@ import 'package:linkedin_clone/features/feed/data/models/repost_detail_model.dar
 import '../../domain/entities/post_entity.dart';
 
 class PostModel extends PostEntity {
-  const PostModel({
+  PostModel({
     required super.id,
     required super.authorId,
     required super.authorName,
@@ -33,13 +33,18 @@ class PostModel extends PostEntity {
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
-      id: json['id'],
-      authorId: json['authorId'],
-      authorName: json['authorName'],
-      authorPicture: json['authorPicture'],
-      authorBio: json['authorBio'],
-      content: json['content'],
+      id: json['id'] ?? '',
+      authorId: json['authorId'] ?? '',
+      authorName: json['authorName'] ?? '',
+      authorPicture: json['authorPicture'] ?? '',
+      authorBio: json['authorBio'] ?? '',
+      content: json['content'] ?? '',
       media: List<String>.from(json['media'] ?? []),
+      reactions:
+          json['reactions'] != null
+              ? Map<String, bool>.from(json['reactions'])
+              : <String, bool>{},
+
       reactCounts: Map<String, int>.from(json['reactCounts'] ?? {}),
       comments: json['comments'] ?? 0,
       shares: json['shares'] ?? 0,
@@ -47,7 +52,7 @@ class PostModel extends PostEntity {
       visibility: json['visibility'] ?? 'Public',
       authorType: json['authorType'] ?? 'User',
       reactType: json['reactType'] ?? 'None',
-      timestamp: DateTime.parse(json['timestamp']),
+      timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toString()),
       isSaved: json['isSaved'] ?? false,
       isFollowing: json['isFollowing'] ?? false,
       isConnected: json['isConnected'] ?? false,

@@ -13,7 +13,6 @@ import 'package:linkedin_clone/features/company/domain/entities/company.dart'
     as _i3;
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart'
     as _i7;
-import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart' as _i3;
 import 'package:linkedin_clone/features/company/domain/entities/user.dart'
     as _i6;
 import 'package:mockito/mockito.dart' as _i1;

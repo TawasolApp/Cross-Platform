@@ -18,6 +18,8 @@ import '../../../profile/domain/usecases/profile/get_profile.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import '../../domain/usecases/unsave_post_usecase.dart';
 import '../../domain/usecases/get_user_posts_usecase.dart';
+import 'package:collection/collection.dart';
+import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import '../../domain/usecases/delete_comment_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
@@ -31,7 +33,6 @@ class FeedProvider extends ChangeNotifier {
   final EditCommentUseCase editCommentUseCase;
   final ReactToPostUseCase reactToPostUseCase;
   final GetPostReactionsUseCase getPostReactionsUseCase;
-  final GetProfileUseCase getProfileUseCase;
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
   final DeleteCommentUseCase deleteCommentUseCase;
@@ -47,15 +48,17 @@ class FeedProvider extends ChangeNotifier {
     required this.editCommentUseCase,
     required this.reactToPostUseCase,
     required this.getPostReactionsUseCase,
-    required this.getProfileUseCase,
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
     required this.deleteCommentUseCase,
   });
 
+  //String _currentUserId;
   List<PostEntity> _posts = [];
   List<PostEntity> get posts => _posts;
 
+  List<PostEntity> _userPosts = [];
+  List<PostEntity> get userPosts => _userPosts;
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
 
@@ -91,19 +94,6 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  ///////// call it at init in provider
-  // Future<void> loadUserProfile() async {
-  //   final result = await getProfileUseCase(NoParams());
-  //   result.fold((failure) => print("Failed to get user profile: $failure"), (
-  //     profile,
-  //   ) {
-  //     _authorId = profile.userId;
-  //     _authorName = profile.name;
-  //     //_profileImage = profile.profilePicture;
-  //     //_authorTitle = profile.headline;
-  //   });
-  // }
-
   Future<void> fetchPosts({int page = 1, int limit = 10}) async {
     if (_isLoading) {
       print("Fetch already in progress, skipping...");
@@ -128,6 +118,8 @@ class FeedProvider extends ChangeNotifier {
         },
         (posts) {
           _posts = List<PostEntity>.from(posts);
+
+          ///
           print("Posts fetched successfully, count: ${_posts.length}");
           _isLoading = false;
           notifyListeners();
@@ -143,7 +135,11 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchUserPosts(userId, {int page = 1, int limit = 10}) async {
+  Future<void> fetchUserPosts(
+    String userId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
     if (_isLoading) {
       print("Fetch already in progress, skipping...");
       print("fetchPosts called from: ${StackTrace.current}");
@@ -170,8 +166,8 @@ class FeedProvider extends ChangeNotifier {
           notifyListeners();
         },
         (posts) {
-          _posts = List<PostEntity>.from(posts);
-          print("Posts fetched successfully, count: ${_posts.length}");
+          _userPosts = List<PostEntity>.from(posts);
+          print("Posts fetched successfully, count: ${_userPosts.length}");
           _isLoading = false;
           notifyListeners();
         },
@@ -334,8 +330,12 @@ class FeedProvider extends ChangeNotifier {
         print("Failed to add comment: $failure");
       },
       (comment) async {
-        comments.add(comment); // Directly add the comment model
+        comments.add(comment);
         print("Provider: Comment added successfully: ${comment.content}");
+        final postIndex = _posts.indexWhere((post) => post.id == postId);
+        if (postIndex != -1) {
+          _posts[postIndex].comments += 1;
+        }
         notifyListeners();
       },
     );
@@ -376,7 +376,7 @@ class FeedProvider extends ChangeNotifier {
     final result = await editCommentUseCase(
       commentId: commentId,
       content: updatedContent,
-      tagged: taggedUsers ?? [],
+      tagged: taggedUsers,
       isReply: isReply,
     );
     result.fold((failure) => _handleFailure(failure), (_) {
@@ -400,27 +400,72 @@ class FeedProvider extends ChangeNotifier {
       reactions: reactions,
       postType: postType,
     );
-    result.fold(
-      (failure) {
-        print("Provider: Failed to react to post: $failure");
-        _handleFailure(failure);
-      },
-      (_) {
-        print("Provider: Reaction updated successfully");
-        final index = _posts.indexWhere((post) => post.id == postId);
-        if (index != -1) {
-          final currentPost = _posts[index];
-          final selected = reactions.entries.firstWhere((e) => e.value).key;
-          final updatedPost = currentPost.copyWith(
-            reactType: selected,
-            reactCounts: Map<String, int>.from(currentPost.reactCounts ?? {})
-              ..update(selected, (value) => value + 1, ifAbsent: () => 1),
+    print("prov: $reactions");
+    result.fold((failure) => _handleFailure(failure), (_) {
+      final index = _posts.indexWhere((post) => post.id == postId);
+      if (index != -1) {
+        final post = _posts[index];
+        print("prov: Reacting to post: ${post.id}");
+
+        final previousReaction =
+            post.reactType.isNotEmpty ? post.reactType : null;
+
+        print("🧠 Previous reaction: $previousReaction");
+
+        final selectedReaction =
+            reactions.entries
+                .firstWhere(
+                  (e) => e.value == true,
+                  orElse: () => const MapEntry('', false),
+                )
+                .key;
+
+        print("🧠 Previous reaction: $previousReaction");
+        print("👍 New selected reaction: $selectedReaction");
+
+        final updatedCounts = Map<String, int>.from(post.reactCounts ?? {});
+
+        if (previousReaction != null &&
+            previousReaction.isNotEmpty &&
+            previousReaction != selectedReaction) {
+          final currCount = (updatedCounts[previousReaction] ?? 1);
+          updatedCounts[previousReaction] =
+              (currCount - 1).clamp(0, double.infinity).toInt();
+          print(
+            "➖ Decreased count of '$previousReaction' to ${updatedCounts[previousReaction]}",
           );
-          _posts[index] = updatedPost;
-          notifyListeners();
+          if (updatedCounts[previousReaction]! <= 0) {
+            updatedCounts.remove(previousReaction);
+            print("🗑 Removed '$previousReaction' from counts");
+          }
         }
-      },
-    );
+
+        if (selectedReaction.isNotEmpty &&
+            previousReaction != selectedReaction) {
+          updatedCounts[selectedReaction] =
+              (updatedCounts[selectedReaction] ?? 0) + 1;
+          print(
+            "➕ Increased count of '$selectedReaction' to ${updatedCounts[selectedReaction]}",
+          );
+        }
+
+        final newReactionMap = <String, bool>{};
+        if (selectedReaction.isNotEmpty) {
+          newReactionMap[selectedReaction] = true;
+        }
+
+        print("🧩 Updated reactions map: $newReactionMap");
+
+        _posts[index] = post.copyWith(
+          reactCounts: updatedCounts,
+          reactions: newReactionMap,
+          reactType: selectedReaction,
+        );
+
+        notifyListeners();
+        print("✅ Reaction applied and UI notified.");
+      }
+    });
   }
 
   Future<List<Map<String, dynamic>>> getPostReactions(String postId) async {
@@ -437,13 +482,13 @@ class FeedProvider extends ChangeNotifier {
     result.fold(
       (failure) {
         print("Provider: Failed to delete comment: $failure");
-        if (failure is NotFoundException) {
+        if (failure is NotFoundFailure) {
           print("Comment not found.");
-        } else if (failure is UnauthorizedException) {
+        } else if (failure is UnauthorizedFailure) {
           print("Unauthorized access.");
-        } else if (failure is ForbiddenException) {
+        } else if (failure is ForbiddenFailure) {
           print("Action forbidden.");
-        } else if (failure is ServerException) {
+        } else if (failure is ServerFailure) {
           print("Server error occurred.");
         } else {
           print("Unexpected failure occurred.");

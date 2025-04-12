@@ -49,3 +49,15 @@ class UnexpectedFailure extends Failure {
   UnexpectedFailure({String message = "Unexpected Error", int errorCode = 0})
     : super(message: message, errorCode: errorCode);
 }
+
+class ForbiddenFailure extends Failure {
+  ForbiddenFailure([String message = 'Access forbidden', int errorCode = 403])
+    : super(message: message, errorCode: errorCode);
+}
+
+class UnexpectedFailure extends Failure {
+  UnexpectedFailure([
+    String message = 'Unexpected error occurred',
+    int errorCode = 0,
+  ]) : super(message: message, errorCode: errorCode);
+}

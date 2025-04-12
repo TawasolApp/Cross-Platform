@@ -6,6 +6,23 @@ import 'reaction_bar.dart';
 import 'post_footer.dart';
 
 class PostCard extends StatelessWidget {
+  String formatTimeAgo(DateTime timestamp) {
+    final duration = DateTime.now().difference(timestamp);
+    if (duration.inSeconds < 60) {
+      return '${duration.inSeconds}s';
+    } else if (duration.inMinutes < 60) {
+      return '${duration.inMinutes}m';
+    } else if (duration.inHours < 24) {
+      return '${duration.inHours}h';
+    } else if (duration.inDays < 30) {
+      return '${(duration.inDays / 30).floor()}mon';
+    } else if (duration.inDays < 365) {
+      return '${(duration.inDays / 30).floor()}mon';
+    } else {
+      return '${(duration.inDays / 365).floor()}y';
+    }
+  }
+
   final PostEntity post;
 
   const PostCard({super.key, required this.post});
@@ -24,7 +41,7 @@ class PostCard extends StatelessWidget {
               profileImage: post.authorPicture ?? '',
               authorName: post.authorName,
               authorTitle: post.authorBio,
-              postTime: post.timestamp.toString(),
+              postTime: formatTimeAgo(post.timestamp),
               postId: post.id,
               postContent: post.content,
               visibility: post.visibility ?? 'Public',
