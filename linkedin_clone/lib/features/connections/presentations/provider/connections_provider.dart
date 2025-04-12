@@ -101,6 +101,7 @@ class ConnectionsProvider with ChangeNotifier {
 
   // Get connections
   Future<void> getConnections({bool isInitial = false, String? id}) async {
+    print('getConnections called with id: $id');
     _isLoading = true;
     String userId = id ?? await getMyUserId();
     if (_isBusy) return;

@@ -7,8 +7,8 @@ void goToInvitations(BuildContext context) {
   GoRouter.of(context).push(RouteNames.invitations);
 }
 
-void goToProfile(BuildContext context, {required String userId}) {
-  GoRouter.of(context).push(RouteNames.profile, extra: {'userId': userId});
+void goToProfile(BuildContext context, {String? userId}) {
+  GoRouter.of(context).push(RouteNames.profile, extra: userId);
 }
 
 void goToConnections(BuildContext context, {String? userId}) {
