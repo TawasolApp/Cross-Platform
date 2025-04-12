@@ -259,15 +259,11 @@ Before running the tests, ensure you have the following dependencies installed o
      ```
 
 ### 5. **Install Appium Drivers**
-   After Appium is installed, run the following commands to install Android and Windows drivers:
+   After Appium is installed, run the following commands to install Android driver:
    
    - Android:
      ```bash
      appium driver install UiAutomator2
-     ```
-   - Windows:
-     ```bash
-     appium driver install Windows
      ```
 
 ### 6. **Install Python Dependencies**
@@ -293,11 +289,6 @@ After everything is installed, follow the next steps to run the E2E tests:
    flutter build apk
    ```
 
-   Build Desktop app:
-   ```bash
-   flutter build windows
-   ```
-
 ### 3. **Run Android Tests**
    First, make sure you have a connected physical device or a running emulator. Then, go to appium/android/capabilities.py and update the 'deviceName' with the name of your device.
 
@@ -310,11 +301,3 @@ After everything is installed, follow the next steps to run the E2E tests:
    ```bash
    pytest appium/android
    ```
-
-### 4. **Run Windows Tests**
-   Assuming your local device is a Windows device, just run the following command:
-   ```bash
-   pytest appium/desktop
-   ```
-
-   Otherwise, you would need to install a virtual windows machine first for the tests to run on.
