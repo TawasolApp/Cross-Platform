@@ -200,7 +200,6 @@ class NetworksProvider with ChangeNotifier {
     } finally {
       _isLoading = false;
       _isBusy = false;
-      print('People you may know list: $currentPage');
       notifyListeners();
     }
   }

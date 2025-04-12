@@ -11,8 +11,8 @@ void goToProfile(BuildContext context, {required String userId}) {
   GoRouter.of(context).push(RouteNames.profile, extra: {'userId': userId});
 }
 
-void goToConnections(BuildContext context) {
-  GoRouter.of(context).push(RouteNames.connections);
+void goToConnections(BuildContext context, {String? userId}) {
+  GoRouter.of(context).push(RouteNames.connections, extra: {'userId': userId});
 }
 
 void goToFollowers(BuildContext context) {

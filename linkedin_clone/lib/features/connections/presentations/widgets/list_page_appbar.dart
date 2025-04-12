@@ -36,6 +36,8 @@ class ListPageAppBar extends StatelessWidget {
                   child: Text(
                     pageType == PageType.connections
                         ? '$count Connections'
+                        : pageType == PageType.manageMyNetwork
+                        ? "Manage my network "
                         : '$count People',
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),

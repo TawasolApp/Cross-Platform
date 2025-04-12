@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/list_page_appbar.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/people_you_may_know_body.dart';
 
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
@@ -12,8 +11,9 @@ import 'package:linkedin_clone/features/connections/presentations/provider/netwo
 
 class ListPage extends StatefulWidget {
   final PageType type;
+  final String? userId;
 
-  const ListPage({super.key, required this.type});
+  const ListPage({super.key, required this.type, this.userId});
 
   @override
   State<ListPage> createState() => _ListPageState();
@@ -36,6 +36,7 @@ class _ListPageState extends State<ListPage> {
       networksProvider = Provider.of<NetworksProvider>(context, listen: false);
     }
     _scrollController = ScrollController()..addListener(_scrollListener);
+
     _fetchInitial();
   }
 
@@ -51,7 +52,14 @@ class _ListPageState extends State<ListPage> {
         networksProvider?.getBlockedList(isInitial: true);
         break;
       case PageType.connections:
-        connectionsProvider?.getConnections(isInitial: true);
+        if (widget.userId != null) {
+          connectionsProvider?.getConnections(
+            isInitial: true,
+            id: widget.userId!,
+          );
+        } else {
+          connectionsProvider?.getConnections(isInitial: true);
+        }
         break;
       default:
         break;
@@ -61,7 +69,13 @@ class _ListPageState extends State<ListPage> {
   void _scrollListener() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      if (networksProvider != null &&
+      if (connectionsProvider != null &&
+          !connectionsProvider!.isBusy &&
+          connectionsProvider!.hasMoreMain) {
+        if (widget.type == PageType.connections) {
+          connectionsProvider!.getConnections();
+        }
+      } else if (networksProvider != null &&
           !networksProvider!.isBusy &&
           networksProvider!.hasMore) {
         switch (widget.type) {
@@ -78,14 +92,6 @@ class _ListPageState extends State<ListPage> {
             break;
         }
       }
-
-      if (connectionsProvider != null &&
-          !connectionsProvider!.isBusy &&
-          connectionsProvider!.hasMoreMain) {
-        if (widget.type == PageType.connections) {
-          connectionsProvider!.getConnections();
-        }
-      }
     }
   }
 
@@ -100,10 +106,7 @@ class _ListPageState extends State<ListPage> {
     final isWide = MediaQuery.of(context).size.width >= 600;
 
     return Scaffold(
-      backgroundColor:
-          widget.type == PageType.manageMyNetwork
-              ? Theme.of(context).scaffoldBackgroundColor
-              : Theme.of(context).colorScheme.onSecondary,
+      backgroundColor: Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
         surfaceTintColor: Theme.of(context).colorScheme.onSecondary,
         elevation: 0,
@@ -116,7 +119,7 @@ class _ListPageState extends State<ListPage> {
               : widget.type == PageType.following
               ? 'People I Follow'
               : widget.type == PageType.manageMyNetwork
-              ? 'Manage My Network'
+              ? "Manage My Network"
               : 'Blocked',
           style: Theme.of(context).textTheme.titleLarge,
         ),
@@ -202,6 +205,11 @@ class _ListPageState extends State<ListPage> {
                     },
                   ),
                 )
+                : widget.type == PageType.manageMyNetwork
+                ? PreferredSize(
+                  preferredSize: const Size.fromHeight(42),
+                  child: ListPageAppBar(pageType: widget.type, count: 0),
+                )
                 : null,
       ),
       body:
@@ -222,21 +230,15 @@ class _ListPageState extends State<ListPage> {
   }
 
   Widget _buildBody(BuildContext context) {
-    final list = _getList();
-
     if (widget.type == PageType.manageMyNetwork) {
       // Using FutureBuilder to handle the async operation
-      return FutureBuilder<String?>(
-        future: connectionsProvider?.getMyUserId(),
-        builder: (context, snapshot) {
-          return ManageMyNetworkBody(
-            networksProvider: networksProvider,
-            connectionsProvider: connectionsProvider,
-            userId: snapshot.data,
-          );
-        },
+      return ManageMyNetworkBody(
+        networksProvider: networksProvider,
+        connectionsProvider: connectionsProvider,
+        userId: widget.userId,
       );
     }
+    final list = _getList();
 
     return RefreshIndicator(
       color: Theme.of(context).primaryColor,

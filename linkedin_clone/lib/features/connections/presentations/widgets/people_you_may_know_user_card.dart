@@ -149,7 +149,7 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
                     onPressed: () async {
                       final result = await connectionsProvider
                           ?.sendConnectionRequest(userId);
-                      if (!result!) {
+                      if (result == null || !result) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {

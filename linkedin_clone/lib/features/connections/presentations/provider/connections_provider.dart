@@ -101,6 +101,7 @@ class ConnectionsProvider with ChangeNotifier {
 
   // Get connections
   Future<void> getConnections({bool isInitial = false, String? id}) async {
+    _isLoading = true;
     String userId = id ?? await getMyUserId();
     if (_isBusy) return;
     int sortBy = 1;
@@ -111,7 +112,6 @@ class ConnectionsProvider with ChangeNotifier {
     }
     _isBusy = true;
     try {
-      _isLoading = true;
       _errorMain = null;
       if (isInitial) {
         _currentPageMain = 1;
@@ -327,8 +327,11 @@ class ConnectionsProvider with ChangeNotifier {
   /////TODO: should be removed after backend implementation for connections count
   ///
   Future<void> getConnectionsCount({String? id}) async {
-    connectionsCount = 0;
+    //connectionsCount = 0;
     // try {
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount id: $id, connectionsCount: $connectionsCount',
+    //   );
     //   String userId = id ?? await getMyUserId();
     //   List<ConnectionsUserEntity>? tempConnectionsList;
     //   int tempCurrentPage = 1;
@@ -338,6 +341,9 @@ class ConnectionsProvider with ChangeNotifier {
     //     sortBy: 1,
     //     userId: userId,
     //   );
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount tempConnectionsList: $tempConnectionsList',
+    //   );
     //   List<ConnectionsUserEntity>? newTempConnectionsList =
     //       await getConnectionsUseCase.call(
     //         page: tempCurrentPage,
@@ -345,6 +351,9 @@ class ConnectionsProvider with ChangeNotifier {
     //         sortBy: 1,
     //         userId: userId,
     //       );
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount tempConnectionsList: $tempConnectionsList',
+    //   );
     //   if (newTempConnectionsList.isNotEmpty) {
     //     tempConnectionsList.addAll(newTempConnectionsList);
     //   }
@@ -364,6 +373,9 @@ class ConnectionsProvider with ChangeNotifier {
     //   print('\nConnectionsProvider: getConnectionsCount $e\n');
     //   connectionsCount = -1;
     // } finally {
+    //   print(
+    //     'ConnectionsProvider: getConnectionsCount finally connectionsCount: $connectionsCount',
+    //   );
     //   notifyListeners();
     // }
   }

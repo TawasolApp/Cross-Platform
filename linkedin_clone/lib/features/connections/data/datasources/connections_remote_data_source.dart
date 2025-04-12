@@ -33,7 +33,7 @@ class ConnectionsRemoteDataSource {
       final response = await client
           .get(
             Uri.parse(
-              '${baseUrl}connections/$userId/list?page=$page&limit=$limit&by=$sortBy&direction=1',
+              '${baseUrl}connections/$userId/list?page=$page&limit=$limit&by=$sortBy&direction=-1',
             ),
             headers: {
               'Accept': 'application/json',
@@ -396,7 +396,6 @@ class ConnectionsRemoteDataSource {
 
   ///////////////////Accept or Ignore connection Request
   Future<bool> acceptIgnoreConnectionRequest(String userId, bool accept) async {
-    print('userId: $userId');
     try {
       final token = await initToken();
       final response = await client.patch(
@@ -443,7 +442,6 @@ class ConnectionsRemoteDataSource {
 
   ///////////////////Send connection Request
   Future<bool> sendConnectionRequest(String userId) async {
-    print('userId: $userId');
     try {
       final token = await initToken();
       final response = await client.post(
@@ -578,9 +576,12 @@ class ConnectionsRemoteDataSource {
   Future<bool> followUser(String userId) async {
     try {
       final token = await initToken();
-      final response = await client.delete(
+      final response = await client.post(
         Uri.parse('${baseUrl}connections/follow'),
-        headers: {'Authorization': 'Bearer $token'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: jsonEncode({'userId': userId}),
       );
 
@@ -716,6 +717,7 @@ class ConnectionsRemoteDataSource {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
+        print('jsonResponse: $jsonResponse');
 
         if (jsonResponse is List<dynamic>) {
           return jsonResponse
