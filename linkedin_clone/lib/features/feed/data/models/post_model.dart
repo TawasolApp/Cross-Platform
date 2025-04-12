@@ -33,12 +33,12 @@ class PostModel extends PostEntity {
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
     return PostModel(
-      id: json['id'],
-      authorId: json['authorId'],
-      authorName: json['authorName'],
-      authorPicture: json['authorPicture'],
-      authorBio: json['authorBio'],
-      content: json['content'],
+      id: json['id'] ?? '',
+      authorId: json['authorId'] ?? '',
+      authorName: json['authorName'] ?? '',
+      authorPicture: json['authorPicture'] ?? '',
+      authorBio: json['authorBio'] ?? '',
+      content: json['content'] ?? '',
       media: List<String>.from(json['media'] ?? []),
       reactions:
           json['reactions'] != null
@@ -52,7 +52,7 @@ class PostModel extends PostEntity {
       visibility: json['visibility'] ?? 'Public',
       authorType: json['authorType'] ?? 'User',
       reactType: json['reactType'] ?? 'None',
-      timestamp: DateTime.parse(json['timestamp']),
+      timestamp: DateTime.parse(json['timestamp'] ?? DateTime.now().toString()),
       isSaved: json['isSaved'] ?? false,
       isFollowing: json['isFollowing'] ?? false,
       isConnected: json['isConnected'] ?? false,
