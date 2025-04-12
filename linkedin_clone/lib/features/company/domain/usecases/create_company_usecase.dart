@@ -1,6 +1,5 @@
 import 'package:linkedin_clone/features/company/domain/entities/company_create_entity.dart';
 
-import '../entities/company.dart';
 import '../repositories/company_repository.dart';
 
 class CreateCompanyUseCase {

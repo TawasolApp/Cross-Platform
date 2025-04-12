@@ -134,7 +134,7 @@ class CreateCompanyScreen extends StatelessWidget {
                             maxLength: 300,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // No error if the field is empty
+                                return null; 
                               }
                             },
                           ),
@@ -191,7 +191,7 @@ class CreateCompanyScreen extends StatelessWidget {
                             keyboardType: TextInputType.url,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // No error if the field is empty
+                                return null; 
                               }
 
                               final urlPattern =
@@ -202,7 +202,7 @@ class CreateCompanyScreen extends StatelessWidget {
                                 return "Please enter a valid website URL (e.g., https://example.com)";
                               }
 
-                              return null; // No error if valid
+                              return null; 
                             },
                           ),
                           Padding(
@@ -299,7 +299,7 @@ class CreateCompanyScreen extends StatelessWidget {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; // No error if the field is empty
+                            return null; 
                           }
 
                           // Validate a proper URL format
@@ -430,7 +430,7 @@ class CreateCompanyScreen extends StatelessWidget {
                         keyboardType: TextInputType.phone,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; // No error if the field is empty
+                            return null;
                           }
                         },
                       ),
@@ -453,7 +453,7 @@ class CreateCompanyScreen extends StatelessWidget {
                         keyboardType: TextInputType.number,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return null; // No error if the field is empty
+                            return null; 
                           }
 
                           final year = int.tryParse(value);
@@ -504,7 +504,7 @@ class CreateCompanyScreen extends StatelessWidget {
                             maxLines: 4,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return null; // Field is optional, so no validation error
+                                return null;
                               }
                             },
                           ),

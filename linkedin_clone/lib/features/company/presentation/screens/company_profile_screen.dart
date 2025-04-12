@@ -16,8 +16,7 @@ import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompanyProfileScreen extends StatelessWidget {
-  final String companyId; //TODO: Replace with actual company ID pressed
-  final String userId = "1"; //TODO: Replace with actual user ID from auth
+  final String companyId; 
   const CompanyProfileScreen({
     required this.companyId,
     super.key,
@@ -131,8 +130,8 @@ class CompanyProfileScreen extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) {
             final provider = CompanyProvider();
-            provider.fetchCompanyDetails(companyId, userId);
-            provider.fetchFriendsFollowingCompany(userId, companyId);
+            provider.fetchCompanyDetails(companyId);
+            provider.fetchFriendsFollowingCompany(companyId);
             return provider;
           },
         ),
@@ -301,7 +300,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                               },
                                               borderRadius: BorderRadius.circular(
                                                 8,
-                                              ), // Optional: Adds rounded corners
+                                              ),
                                               child: Padding(
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal: 8,
@@ -633,7 +632,6 @@ class CompanyProfileScreen extends StatelessWidget {
                                 ),
                               ),
                               CompanyTabsWidget(
-                                userId: userId,
                                 companyId: companyId,
                               ),
                               Divider(thickness: 3, color: Colors.black54),
@@ -704,7 +702,6 @@ class CompanyProfileScreen extends StatelessWidget {
                           if (result == true) {
                             provider.fetchCompanyDetails(
                               provider.company!.companyId!,
-                              userId,
                             ); // Refresh company details
                           }
                         },
@@ -717,26 +714,26 @@ class CompanyProfileScreen extends StatelessWidget {
                             color:
                                 Theme.of(
                                   context,
-                                ).colorScheme.primary, // Background color
+                                ).colorScheme.primary,
                             borderRadius: BorderRadius.circular(
                               16,
-                            ), // Rounded corners
+                            ), 
                           ),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min, // Wrap content
+                            mainAxisSize: MainAxisSize.min, 
                             children: [
                               Icon(
                                 Icons.edit,
-                                color: Colors.white, // Icon color
-                                size: 24, // Adjust icon size
+                                color: Colors.white, 
+                                size: 24, 
                               ),
-                              SizedBox(width: 6), // Space between icon and text
+                              SizedBox(width: 6),
                               Text(
                                 "Edit Details",
                                 style: TextStyle(
-                                  color: Colors.white, // Text color
-                                  fontSize: 16, // Adjust text size
-                                  fontWeight: FontWeight.w500, // Medium weight
+                                  color: Colors.white, 
+                                  fontSize: 16, 
+                                  fontWeight: FontWeight.w500, 
                                 ),
                               ),
                             ],

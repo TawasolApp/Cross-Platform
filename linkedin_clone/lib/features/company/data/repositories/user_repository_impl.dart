@@ -11,7 +11,6 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<List<User>> getCommonFollowers(String userId) async {
-    // TODO: Implement error handling for API call failures.
     return await remoteDataSource.getCommonFollowers(userId);
   }
 

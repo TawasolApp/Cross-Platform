@@ -211,10 +211,8 @@ class AddJobScreen extends StatelessWidget {
         listen: false,
       );
 
-      // Await the result of the addJob method
       bool success = await companyProvider.addJob(newJob, companyId);
 
-      // Show a success message if the job was added successfully
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -226,7 +224,6 @@ class AddJobScreen extends StatelessWidget {
         // Pop the page if the job was successfully added
         Navigator.pop(context, true); 
       } else {
-        // If job wasn't added, show an error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Failed to add job. Try again."),
@@ -235,7 +232,6 @@ class AddJobScreen extends StatelessWidget {
         );
       }
     } catch (error) {
-      // Show error message if there's any exception in adding job
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text("Failed to add job. Try again.")));

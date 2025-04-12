@@ -4,7 +4,7 @@ import 'package:linkedin_clone/features/company/domain/usecases/get_related_comp
 
 class RelatedCompaniesProvider extends ChangeNotifier {
   final GetRelatedCompanies getRelatedCompaniesUseCase;
-  String? companyId; // Nullable companyId property
+  String? companyId; 
   bool isAllLoaded = false;
   bool isLoading = false;
   List<Company> _relatedCompanies = [];
@@ -18,11 +18,9 @@ class RelatedCompaniesProvider extends ChangeNotifier {
   RelatedCompaniesProvider({
     required this.getRelatedCompaniesUseCase,
   });
-
-  // Set companyId dynamically
   void setCompanyId(String id) {
     companyId = id;
-    resetProvider(); // Reset provider when setting a new companyId
+    resetProvider(); 
   }
 
   // Fetch related companies with pagination
@@ -39,7 +37,7 @@ class RelatedCompaniesProvider extends ChangeNotifier {
 
     try {
       final newCompanies = await getRelatedCompaniesUseCase.execute(
-        companyId!, // Use the dynamically set companyId
+        companyId!, 
         page: page,
         limit: limit,
       );
@@ -54,7 +52,6 @@ class RelatedCompaniesProvider extends ChangeNotifier {
         _relatedCompanies.addAll(newCompanies);
       }
     } catch (e) {
-      // Handle the error
       print("Error fetching related companies: $e");
     } finally {
       isLoading = false;
@@ -62,7 +59,6 @@ class RelatedCompaniesProvider extends ChangeNotifier {
     }
   }
 
-  // Method to load more related companies
   Future<void> loadMoreCompanies() async {
     if (isLoading || isAllLoaded || companyId == null) return;
       
@@ -70,7 +66,7 @@ class RelatedCompaniesProvider extends ChangeNotifier {
     await fetchRelatedCompanies(page: _currentPage, limit: _limit);
   }
 
-  // Reset the provider (clear data, page, etc.)
+  // Reset the provider
   void resetProvider() {
     _relatedCompanies.clear();
     _currentPage = 1;

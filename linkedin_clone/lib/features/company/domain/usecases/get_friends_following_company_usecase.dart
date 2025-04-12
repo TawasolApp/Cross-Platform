@@ -11,7 +11,7 @@ class GetFriendsFollowingCompany {
     required this.companyRepository,
   });
 
-  Future<List<User>> execute(String userId, String companyId) async {
+  Future<List<User>> execute(String companyId) async {
     
       List<User> commonUsers= await userRepository.getCommonFollowers(companyId);
     print("Friends Following Company: ${commonUsers.map((user) => user.userId).toList()}");

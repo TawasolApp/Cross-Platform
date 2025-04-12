@@ -19,12 +19,11 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetch company admins when screen loads
     Future.microtask(() {
       Provider.of<CompanyAdminsProvider>(
         context,
         listen: false,
-      ).fetchAdmins(widget.companyId); // Fetch the company admins initially
+      ).fetchAdmins(widget.companyId);
     });
   }
 

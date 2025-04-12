@@ -64,7 +64,6 @@ class FeedProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
-
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 

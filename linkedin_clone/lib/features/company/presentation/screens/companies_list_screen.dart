@@ -60,27 +60,23 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
             },
             child: Builder(
               builder: (_) {
-                // Show a loading spinner if fetching companies
                 if (provider.isLoading && provider.companies.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                // Show error message if there's an error
                 if (provider.error != null) {
                   return Center(child: Text('Error: ${provider.error}'));
                 }
 
-                // Show message when no companies are found
                 if (provider.companies.isEmpty) {
                   return const Center(child: Text('No companies found.'));
                 }
 
                 return ListView.separated(
                   itemCount:
-                      provider.companies.length + 1, // +1 for load more button
+                      provider.companies.length + 1,
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
-                    // Inside itemBuilder
                     if (index < provider.companies.length) {
                       final company = provider.companies[index];
                       return ListTile(
@@ -113,7 +109,6 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                         },
                       );
                     } else if (provider.isAllLoaded) {
-                      // If all companies are loaded, show "No more companies"
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Center(
@@ -127,7 +122,6 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                         child: Center(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Load next set of companies (next page)
                               provider.loadMoreCompanies(
                                 _searchController.text.trim(),
                               );

@@ -19,14 +19,13 @@ class CreateJob {
       // Call the remote data source to add the job
       final success = await repository.addJob(job, companyId);
 
-      // Optionally, handle success/failure based on repository's response (e.g., boolean or status code)
       if (!success) {
         throw Exception("Failed to add job.");
       }
     } catch (e) {
       // Handle any error that occurs during the add job process
       print("Error adding job: $e");
-      rethrow; // Propagate the error for further handling in the calling code
+      rethrow;
     }
   }
 }

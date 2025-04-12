@@ -7,9 +7,8 @@ import 'package:linkedin_clone/core/utils/time_ago.dart';
 
 class JobCard extends StatefulWidget {
   final Job job;
-  final String userId;
   final String companyId;
-  JobCard({required this.job, required this.userId, required this.companyId});
+  JobCard({required this.job, required this.companyId});
 
   @override
   _JobCardState createState() => _JobCardState();
@@ -26,7 +25,7 @@ class _JobCardState extends State<JobCard> {
     );
 
     return Material(
-      color: Colors.white, // Color to something visible for ripple effect
+      color: Colors.white, 
       child: InkWell(
         onTap: () {
           print("Tapped on job: ${widget.job.id}");
@@ -37,7 +36,6 @@ class _JobCardState extends State<JobCard> {
                   (context) => JobDetailsScreen(
                     job: widget.job,
                     companyProvider: companyProvider,
-                    userId: widget.userId,
                     companyId: widget.companyId,
                   ),
             ),
@@ -163,7 +161,7 @@ class _JobCardState extends State<JobCard> {
                 style: TextStyle(color: Colors.green[500], fontSize: 12),
               ),
               SizedBox(height: 10),
-              Divider(), // Adds a subtle divider between job listings
+              Divider(), 
             ],
           ),
         ),

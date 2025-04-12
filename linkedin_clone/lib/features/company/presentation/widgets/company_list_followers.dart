@@ -62,14 +62,12 @@ class _CompanyFollowersScreenState extends State<CompanyFollowersScreen> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Trigger load more functionality when button is pressed
                       provider.loadMoreFollowers(widget.companyId);
                     },
                     child: const Text('Load More'),
                   ),
                 ),
               if (provider.isAllFollowersLoaded)
-                // If all followers are loaded, show "No more followers"
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   child: Center(

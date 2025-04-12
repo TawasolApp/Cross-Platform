@@ -7,14 +7,12 @@ import 'package:linkedin_clone/features/company/presentation/widgets/job_card_wi
 import 'package:provider/provider.dart';
 
 class CompanyJobsWidget extends StatefulWidget {
-  final String userId;
   final String companyId;
   final VoidCallback? onEditPressed;
   final VoidCallback? onAnalyticsPressed;
 
   const CompanyJobsWidget({
     Key? key,
-    required this.userId,
     required this.companyId,
     this.onEditPressed,
     this.onAnalyticsPressed,
@@ -124,7 +122,6 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                 itemBuilder: (context, index) {
                   return JobCard(
                     job: jobs[index],
-                    userId: widget.userId,
                     companyId: widget.companyId,
                   );
                 },
@@ -146,7 +143,6 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Center(child: const Text('No more jobs available.')),
               )
-            // Show loading indicator at the bottom when more jobs are being loaded
             else if (companyProvider.isLoadingJobs && jobs.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
