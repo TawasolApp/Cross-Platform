@@ -219,11 +219,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.manageMyNetwrok,
-        builder: (context, state) {
-          final extras = state.extra as Map<String, String>;
-          final userId = extras['userId'];
-          return ListPage(type: PageType.manageMyNetwork, userId: userId);
-        },
+        builder: (context, state) => ListPage(type: PageType.manageMyNetwork),
       ),
     ],
   );
