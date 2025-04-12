@@ -22,7 +22,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider!.fetchProfile();
+      profileProvider!.fetchProfile("");
       print(profileProvider!.profilePicture);
     });
   }
