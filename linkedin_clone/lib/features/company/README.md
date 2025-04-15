@@ -96,7 +96,7 @@ The project adopts **Clean Architecture** with three main layers:
     - `company_list_related_companies.dart`: Related company suggestions
     - `company_page_tabs.dart`: UI tabs for company sections
     - `company_posts_tab.dart`: Posts related to company
-    - `job_apply_widget.dart`: Apply button and interaction for jobs
+    - `job_apply_widget.dart`: Apply widget and interaction for jobs
     - `job_card_widget.dart`: Visual card for displaying job info
     - `job_details.dart`: Full job description and metadata
     - `recent_jobs_widget.dart`: Displays list of recently posted jobs
