@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from capabilities import get_capabilities
 import utils
 
-def test_login():
+def test_failed_registration():
 
     options = get_capabilities()
 
