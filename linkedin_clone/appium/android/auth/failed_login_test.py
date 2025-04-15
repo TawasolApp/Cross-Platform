@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from capabilities import get_capabilities
 import utils
 
-def test_login():
+def test_failed_login():
 
     user = utils.get_user("userNatalia")
 
@@ -36,7 +36,7 @@ def test_login():
 
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
-    password_textbox.send_keys(user["password"])
+    password_textbox.send_keys("password")
 
     driver.hide_keyboard()
 
@@ -45,10 +45,6 @@ def test_login():
 
     time.sleep(5)
 
-    # assert logged in
-    assert driver.find_element(by="accessibility id", value="Home\nTab 1 of 4").get_attribute("displayed") == 'true'
-    assert driver.find_element(by="accessibility id", value="My Network\nTab 2 of 4").get_attribute("displayed") == 'true'
-    assert driver.find_element(by="accessibility id", value="Jobs\nTab 3 of 4").get_attribute("displayed") == 'true'
-    assert driver.find_element(by="accessibility id", value="Settings\nTab 4 of 4").get_attribute("displayed") == 'true'
-
+    # assert failure
+    assert driver.find_element(by="accessibility id", value="Wrong username or password").get_attribute("displayed") == "true"
     driver.quit()
