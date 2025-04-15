@@ -23,11 +23,13 @@ def test_failed_login():
 
     time.sleep(5)
 
+    # click on login button
     login_button = driver.find_element(by="accessibility id", value="Already on LinkedIn? Sign in")
     login_button.click()
 
     time.sleep(2)
 
+    # enter email and password
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
@@ -43,5 +45,6 @@ def test_failed_login():
 
     time.sleep(5)
 
+    # assert failure
     assert driver.find_element(by="accessibility id", value="Wrong username or password").get_attribute("displayed") == "true"
     driver.quit()

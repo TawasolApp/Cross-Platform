@@ -23,11 +23,13 @@ def test_login():
 
     time.sleep(5)
 
+    # click on login button
     login_button = driver.find_element(by="accessibility id", value="Already on LinkedIn? Sign in")
     login_button.click()
 
     time.sleep(2)
 
+    # enter email and password
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
@@ -43,6 +45,7 @@ def test_login():
 
     time.sleep(5)
 
+    # assert logged in
     assert driver.find_element(by="accessibility id", value="Home\nTab 1 of 4").get_attribute("displayed") == 'true'
     assert driver.find_element(by="accessibility id", value="My Network\nTab 2 of 4").get_attribute("displayed") == 'true'
     assert driver.find_element(by="accessibility id", value="Jobs\nTab 3 of 4").get_attribute("displayed") == 'true'

@@ -29,12 +29,27 @@ def test_login():
 
     time.sleep(2)
 
-    # enter first and last names
+    # don't enter first and last name
     firstname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
+    firstname_textbox.click()
+
+    lastname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
+    lastname_textbox.click()
+
+    driver.hide_keyboard()
+
+    form_button = driver.find_element(by="accessibility id", value="Continue")
+    form_button.click()
+
+    # assert failure
+    assert driver.find_element(by="accessibility id", value="Please enter both first and last name.").get_attribute("displayed") == "true"
+
+    # enter first and last names
+    # firstname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     firstname_textbox.click()
     firstname_textbox.send_keys("Marwan")
 
-    lastname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
+    # lastname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     lastname_textbox.click()
     lastname_textbox.send_keys("Ahmed")
 
@@ -43,33 +58,40 @@ def test_login():
     form_button = driver.find_element(by="accessibility id", value="Continue")
     form_button.click()
 
-    time.sleep(5)
-
-    # enter email and password
     random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-    email = f"{random_string}@mailinator.com"
-    password = "07032004"
+    invalid_email = f"{random_string}@mailinator"
+    valid_email = f"{random_string}@mailinator.com"
+    invalid_password = "07032"
 
+    # enter invalid email
     email_textbox = driver.find_element(AppiumBy.CLASS_NAME, "android.widget.EditText")
     email_textbox.click()
-    email_textbox.send_keys(email)
+    email_textbox.send_keys(invalid_email)
 
     form_button = driver.find_element(by="accessibility id", value="Continue")
     form_button.click()
 
-    time.sleep(5)
+    # assert failure
+    assert driver.find_element(by="accessibility id", value="Please enter a valid email.").get_attribute("displayed") == "true"
 
+    # enter email
+    # email_textbox = driver.find_element(AppiumBy.CLASS_NAME, "android.widget.EditText")
+    email_textbox.click()
+    email_textbox.clear()
+    email_textbox.send_keys(valid_email)
+
+    form_button = driver.find_element(by="accessibility id", value="Continue")
+    form_button.click()
+
+    # enter invalid password
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
-    password_textbox.send_keys(password)
+    password_textbox.send_keys(invalid_password)
 
     form_button = driver.find_element(by="accessibility id", value="Continue")
     form_button.click()
 
-    time.sleep(5)
-
-    # assert email verification is sent
-    assert driver.find_element(by="accessibility id", value="Check your email").get_attribute("displayed") == 'true'
-    assert driver.find_element(by="accessibility id", value=f"We sent a verification link to {email}.\nClick the link to verify your email and continue.").get_attribute("displayed") == 'true'
+    # assert failure
+    assert driver.find_element(by="accessibility id", value="Password must be 6+ characters.").get_attribute("displayed") == "true"
 
     driver.quit()
