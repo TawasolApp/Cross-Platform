@@ -35,11 +35,11 @@ def test_delete_account():
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
+    driver.hide_keyboard()
 
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
     password_textbox.send_keys(user["password"])
-
     driver.hide_keyboard()
 
     form_button = driver.find_element(AppiumBy.XPATH, '//android.widget.Button[@content-desc="Sign in"]')
@@ -61,6 +61,7 @@ def test_delete_account():
     # click on confirmation
     password_textbox = driver.find_element(AppiumBy.CLASS_NAME, 'android.widget.EditText')
     password_textbox.send_keys(user["password"])
+    driver.hide_keyboard()
     confirm = driver.find_element(by="accessibility id", value="Save Changes")
     confirm.click()
 
@@ -76,11 +77,11 @@ def test_delete_account():
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
+    driver.hide_keyboard()
 
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
     password_textbox.send_keys(user["password"])
-
     driver.hide_keyboard()
 
     form_button = driver.find_element(AppiumBy.XPATH, '//android.widget.Button[@content-desc="Sign in"]')

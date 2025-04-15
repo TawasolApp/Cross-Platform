@@ -34,11 +34,11 @@ def test_change_name():
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
+    driver.hide_keyboard()
 
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
     password_textbox.send_keys(user["password"])
-
     driver.hide_keyboard()
 
     form_button = driver.find_element(AppiumBy.XPATH, '//android.widget.Button[@content-desc="Sign in"]')
@@ -53,19 +53,7 @@ def test_change_name():
     time.sleep(5)
 
     # click on profile
-#     profile = driver.find_element(AppiumBy.XPATH, '''//android.view.View[@content-desc="Omar Kaddah
-# Ex-SWE Intern @Dell Technologies"]''')
-#     profile.click()
     driver.execute_script("mobile: clickGesture", {"x": 300, "y": 400})
-    
-    # finger = PointerInput(PointerInput.TOUCH, "finger")
-    # actions = ActionBuilder(driver)
-    # actions.add_action(finger)
-
-    # actions.pointer_action.move_to_location(300, 400)
-    # actions.pointer_action.pointer_down()
-    # actions.pointer_action.pointer_up()
-    # actions.perform()
 
     time.sleep(5)
 
@@ -80,12 +68,14 @@ def test_change_name():
     first_name.clear()
     first_name = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     first_name.send_keys("Marwan")
+    driver.hide_keyboard()
 
     last_name = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Macejkovic")')
     last_name.click()
     last_name.clear()
     last_name = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     last_name.send_keys("Ahmed")
+    driver.hide_keyboard()
 
     save_button = driver.find_element(by="accessibility id", value="Save")
     save_button.click()  
