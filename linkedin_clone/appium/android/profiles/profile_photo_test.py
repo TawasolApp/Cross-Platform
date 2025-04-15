@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from capabilities import get_capabilities
 import utils
 
-def test_update_profile():
+def test_profile_photo():
 
     user = utils.get_user("userHillard")
     new_password = "07032004"
@@ -88,7 +88,7 @@ def test_update_profile():
     driver.find_element(by="accessibility id", value="Choose from Gallery").click()
     time.sleep(5)
     driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().resourceId("com.google.android.providers.media.module:id/icon_thumbnail")').click()
-    time.sleep(5)
+    time.sleep(10)
 
     # assert profile photo exists (clickable and location disappears)
     driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.view.View").instance(5)').click()
