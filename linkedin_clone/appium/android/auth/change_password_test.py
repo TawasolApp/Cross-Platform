@@ -36,11 +36,11 @@ def test_change_password():
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
+    driver.hide_keyboard()
 
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
     password_textbox.send_keys(user["password"])
-
     driver.hide_keyboard()
 
     form_button = driver.find_element(AppiumBy.XPATH, '//android.widget.Button[@content-desc="Sign in"]')
@@ -68,14 +68,17 @@ def test_change_password():
     current_password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     current_password_textbox.click()
     current_password_textbox.send_keys(user["password"])
+    driver.hide_keyboard()
 
     new_password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     new_password_textbox.click()
     new_password_textbox.send_keys(new_password)
+    driver.hide_keyboard()
 
     confirm_new_password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(2)')
     confirm_new_password_textbox.click()
     confirm_new_password_textbox.send_keys(new_password)
+    driver.hide_keyboard()
 
     change_password = driver.find_element(by="accessibility id", value="Save Changes")
     change_password.click()
@@ -103,11 +106,11 @@ def test_change_password():
     email_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     email_textbox.click()
     email_textbox.send_keys(user["email"])
+    driver.hide_keyboard()
 
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
     password_textbox.send_keys(new_password)
-
     driver.hide_keyboard()
 
     form_button = driver.find_element(AppiumBy.XPATH, '//android.widget.Button[@content-desc="Sign in"]')

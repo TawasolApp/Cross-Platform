@@ -48,11 +48,11 @@ def test_failed_registration():
     # firstname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)')
     firstname_textbox.click()
     firstname_textbox.send_keys("Marwan")
+    driver.hide_keyboard()
 
     # lastname_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     lastname_textbox.click()
     lastname_textbox.send_keys("Ahmed")
-
     driver.hide_keyboard()
 
     form_button = driver.find_element(by="accessibility id", value="Continue")
@@ -67,6 +67,7 @@ def test_failed_registration():
     email_textbox = driver.find_element(AppiumBy.CLASS_NAME, "android.widget.EditText")
     email_textbox.click()
     email_textbox.send_keys(invalid_email)
+    driver.hide_keyboard()
 
     form_button = driver.find_element(by="accessibility id", value="Continue")
     form_button.click()
@@ -79,6 +80,7 @@ def test_failed_registration():
     email_textbox.click()
     email_textbox.clear()
     email_textbox.send_keys(valid_email)
+    driver.hide_keyboard()
 
     form_button = driver.find_element(by="accessibility id", value="Continue")
     form_button.click()
@@ -87,6 +89,7 @@ def test_failed_registration():
     password_textbox = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(1)')
     password_textbox.click()
     password_textbox.send_keys(invalid_password)
+    driver.hide_keyboard()
 
     form_button = driver.find_element(by="accessibility id", value="Continue")
     form_button.click()

@@ -29,16 +29,17 @@
       "password": "TestPassword123",
       "owner": "marwan"
     },
+    "userDestiny": {
+      "email": "danika25@gmail.com",
+      "password": "TestPassword123",
+      "owner": "marwan"
+    },
     "userWendy": {
       "email": "nathaniel.dach69@hotmail.com",
       "password": "TestPassword123"
     },
     "userVirginie": {
       "email": "marjory70@yahoo.com",
-      "password": "TestPassword123"
-    },
-    "userDestiny": {
-      "email": "danika25@gmail.com",
       "password": "TestPassword123"
     },
     "userPrice": {
