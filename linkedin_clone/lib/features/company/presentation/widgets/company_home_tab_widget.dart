@@ -23,7 +23,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
       if (feedProvider.posts.isEmpty && !feedProvider.isLoading) {
-        feedProvider.fetchUserPosts(widget.companyId); 
+        feedProvider.fetchUserPosts(widget.companyId);
       }
     });
   }
@@ -197,7 +197,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                             ),
                             child: Container(
                               width: 200, // Add a width constraint
-                              child: PostCard(post: post), // Render PostCard
+                              //child: PostCard(post: post, ), // Render PostCard
                             ),
                           );
                         },
@@ -212,7 +212,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                     DefaultTabController.of(
                       context,
                     ).animateTo(2); // Index 2 for "Posts" tab
-                                   },
+                  },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

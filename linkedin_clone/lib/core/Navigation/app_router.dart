@@ -27,6 +27,7 @@ import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page
 import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -127,13 +128,7 @@ class AppRouter {
               title: "Test",
             ),
       ),
-      // GoRoute(
-      //   path: RouteNames.profile,
-      //   builder: (context, state) {
-      //     final userId = state.extra as String;
-      //     return UserProfile(userId);
-      //   },
-      // ),
+
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
         path: RouteNames.addName,
@@ -233,6 +228,13 @@ class AppRouter {
       GoRoute(
         path: RouteNames.manageMyNetwrok,
         builder: (context, state) => ListPage(type: PageType.manageMyNetwork),
+      ),
+      GoRoute(
+        path: RouteNames.reactions,
+        builder: (context, state) {
+          final postId = state.extra as String;
+          return ReactionsPage(postId: postId);
+        },
       ),
     ],
   );

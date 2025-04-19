@@ -21,6 +21,7 @@ import '../../domain/usecases/get_user_posts_usecase.dart';
 import 'package:collection/collection.dart';
 import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import '../../domain/usecases/delete_comment_usecase.dart';
+import '../../data/models/reaction_model.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -59,11 +60,13 @@ class FeedProvider extends ChangeNotifier {
 
   List<PostEntity> _userPosts = [];
   List<PostEntity> get userPosts => _userPosts;
+
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
@@ -81,6 +84,15 @@ class FeedProvider extends ChangeNotifier {
 
   String _visibility = "Public"; // default
   String get visibility => _visibility;
+
+  List<ReactionModel> _postReactions = [];
+  List<ReactionModel> get postReactions => _postReactions;
+
+  bool _isReactionsLoading = false;
+  bool get isReactionsLoading => _isReactionsLoading;
+
+  String? _reactionsError;
+  String? get reactionsError => _reactionsError;
 
   void setVisibility(String newVisibility) {
     _visibility = newVisibility;
@@ -467,12 +479,27 @@ class FeedProvider extends ChangeNotifier {
     });
   }
 
-  Future<List<Map<String, dynamic>>> getPostReactions(String postId) async {
-    final result = await getPostReactionsUseCase(postId);
-    return result.fold((failure) {
-      _handleFailure(failure);
-      return [];
-    }, (reactions) => reactions);
+  Future<void> getPostReactions(String postId, {String type = 'All'}) async {
+    _isReactionsLoading = true;
+    _reactionsError = null;
+    notifyListeners();
+
+    final result = await getPostReactionsUseCase(postId, type: type);
+
+    result.fold(
+      (failure) {
+        _postReactions = [];
+        _reactionsError = failure.message;
+        print("Failed to fetch reactions: ${failure.message}");
+      },
+      (reactions) {
+        _postReactions = reactions;
+        print("Fetched ${reactions.length} reactions for post $postId");
+      },
+    );
+
+    _isReactionsLoading = false;
+    notifyListeners();
   }
 
   Future<void> deleteComment(String postId, String commentId) async {

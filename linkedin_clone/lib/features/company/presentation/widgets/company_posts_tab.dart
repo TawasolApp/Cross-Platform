@@ -43,7 +43,8 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                   ? const Center(child: CircularProgressIndicator())
                   : ListView.builder(
                     padding: const EdgeInsets.only(top: 10),
-                   itemCount: feedProvider.userPosts.length + (isAdminView ? 2 : 1),
+                    itemCount:
+                        feedProvider.userPosts.length + (isAdminView ? 2 : 1),
                     itemBuilder: (context, index) {
                       if (isAdminView) {
                         if (index == 0) {
@@ -125,7 +126,7 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                           // Posts
                           final adjustedIndex = index - 2;
                           final post = feedProvider.userPosts[adjustedIndex];
-                          return PostCard(post: post);
+                          //return PostCard(post: post);
                         }
                       } else {
                         if (index == 0) {
@@ -147,7 +148,7 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                         } else {
                           final adjustedIndex = index - 1;
                           final post = feedProvider.userPosts[adjustedIndex];
-                          return PostCard(post: post);
+                          //return PostCard(post: post);
                         }
                       }
                     },

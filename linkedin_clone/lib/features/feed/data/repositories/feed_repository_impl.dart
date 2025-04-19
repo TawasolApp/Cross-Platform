@@ -6,6 +6,7 @@ import '../../domain/entities/post_entity.dart';
 import '../data_sources/feed_remote_data_source.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../data/models/post_model.dart';
+import '../models/reaction_model.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
   final FeedRemoteDataSource remoteDataSource;
@@ -113,14 +114,20 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, List<Map<String, dynamic>>>> getPostReactions(
-    String postId,
-  ) async {
+  Future<Either<Failure, List<ReactionModel>>> getPostReactions(
+    String postId, {
+    String type = 'All',
+  }) async {
     try {
-      final reactions = await remoteDataSource.getPostReactions(postId);
+      final reactions = await remoteDataSource.getPostReactions(
+        postId,
+        type: type,
+      );
       return Right(reactions);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure("Unexpected error: ${e.toString()}"));
     }
   }
 

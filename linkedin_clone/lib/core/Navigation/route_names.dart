@@ -27,4 +27,5 @@ class RouteNames {
   static const String following = "/following";
   static const String invitations = "/invitations";
   static const String manageMyNetwrok = "/manage_my_network";
+  static const String reactions = "/reactions";
 }

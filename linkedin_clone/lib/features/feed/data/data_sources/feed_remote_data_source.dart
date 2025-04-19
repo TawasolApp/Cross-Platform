@@ -8,6 +8,7 @@ import '../../../../core/errors/exceptions.dart';
 import '../models/post_model.dart';
 import '../../../../core/services/token_service.dart';
 import '../../../../core/errors/failures.dart';
+import '../models/reaction_model.dart';
 
 abstract class FeedRemoteDataSource {
   Future<Either<Failure, List<PostModel>>> getPosts({int? page, int limit});
@@ -51,13 +52,16 @@ abstract class FeedRemoteDataSource {
     required List<String> tagged,
     required bool isReply,
   });
-  Future<List<Map<String, dynamic>>> getPostReactions(String postId);
   Future<Either<Failure, List<PostModel>>> getUserPosts(
     String userId, {
     int? page,
     int limit,
   });
   Future<void> deleteComment(String commentId);
+  Future<List<ReactionModel>> getPostReactions(
+    String postId, {
+    String type = 'All',
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -477,7 +481,10 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getPostReactions(String postId) async {
+  Future<List<ReactionModel>> getPostReactions(
+    String postId, {
+    String type = 'All',
+  }) async {
     try {
       final token = await _getToken();
       final response = await dio.get(
@@ -486,10 +493,12 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(response.data);
-      } else {
+        final List<dynamic> data = response.data;
+        return data.map((json) => ReactionModel.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
         throw ServerException('Failed to fetch reactions');
       }
+      throw ServerException('Unexpected error: ${response.statusCode}');
     } catch (e) {
       throw ServerException("Error fetching reactions: ${e.toString()}");
     }

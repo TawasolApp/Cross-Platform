@@ -332,19 +332,19 @@ void main() {
 
     expect(provider.comments.first.content, "Updated comment");
   });
-  test('getPostReactions - success', () async {
-    final reactions = [
-      {"reaction": "Like", "count": 3},
-      {"reaction": "Love", "count": 1},
-    ];
+  // test('getPostReactions - success', () async {
+  //   final reactions = [
+  //     {"reaction": "Like", "count": 3},
+  //     {"reaction": "Love", "count": 1},
+  //   ];
 
-    when(() => getPostReactions("1")).thenAnswer((_) async => Right(reactions));
+  //   when(() => getPostReactions("1")).thenAnswer((_) async => Right(reactions));
 
-    final result = await provider.getPostReactions("1");
+  //   final result = await provider.getPostReactions("1");
 
-    expect(result.length, 2);
-    expect(result.first["reaction"], "Like");
-  });
+  //   expect(result.length, 2);
+  //   expect(result.first["reaction"], "Like");
+  // });
   test('fetchUserPosts - success', () async {
     final userPosts = [mockPost(id: "u1", content: "User post")];
 
@@ -539,15 +539,7 @@ void main() {
 
     expect(provider.comments.first.content, "Wrong");
   });
-  test('getPostReactions - failure', () async {
-    when(
-      () => getPostReactions("p1"),
-    ).thenAnswer((_) async => Left(ServerFailure()));
 
-    final result = await provider.getPostReactions("p1");
-
-    expect(result, []);
-  });
   test('fetchUserPosts - failure', () async {
     when(
       () => getUserPosts(

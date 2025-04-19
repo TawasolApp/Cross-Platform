@@ -2,6 +2,7 @@ import '../../../../core/errors/failures.dart';
 import '../entities/post_entity.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../data/models/comment_model.dart';
+import '../../data/models/reaction_model.dart';
 
 abstract class FeedRepository {
   Future<Either<Failure, List<PostEntity>>> getPosts({int page, int limit});
@@ -26,9 +27,10 @@ abstract class FeedRepository {
     required Map<String, bool> reactions,
     required String postType,
   });
-  Future<Either<Failure, List<Map<String, dynamic>>>> getPostReactions(
-    String postId,
-  );
+  Future<Either<Failure, List<ReactionModel>>> getPostReactions(
+    String postId, {
+    String type = 'All',
+  });
 
   Future<Either<Failure, Unit>> editPost({
     required String postId,

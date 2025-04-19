@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
 import 'create_post_page.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class UserFeedPage extends StatefulWidget {
   final String userId;
-
   const UserFeedPage({super.key, required this.userId});
+
   @override
   _UserFeedPageState createState() => _UserFeedPageState();
 }
@@ -21,13 +22,17 @@ class _UserFeedPageState extends State<UserFeedPage> {
       if (feedProvider.posts.isEmpty) {
         feedProvider.fetchUserPosts(widget.userId);
       }
+      final profile = Provider.of<ProfileProvider>(context, listen: false);
+      profile.fetchProfile("");
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
-
+    final profile = Provider.of<ProfileProvider>(context);
+    final myId = profile.userId;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       body:
           feedProvider.isLoading
@@ -37,7 +42,10 @@ class _UserFeedPageState extends State<UserFeedPage> {
                 itemCount: feedProvider.posts.length,
                 itemBuilder: (context, index) {
                   final post = feedProvider.posts[index];
-                  return PostCard(post: post);
+                  return PostCard(
+                    post: post,
+                    currentUserId: myId ?? '',
+                  ); ///////
                 },
               ),
       floatingActionButton: FloatingActionButton(
@@ -54,9 +62,9 @@ class _UserFeedPageState extends State<UserFeedPage> {
             await feedProvider.fetchUserPosts(widget.userId);
           }
         },
-        backgroundColor: Colors.white,
+        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
         tooltip: 'Create Post',
-        child: const Icon(Icons.add, color: Colors.blue),
+        child: Icon(Icons.add, color: isDarkMode ? Colors.white : Colors.blue),
       ),
     );
   }

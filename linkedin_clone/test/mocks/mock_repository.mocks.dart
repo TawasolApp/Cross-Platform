@@ -184,21 +184,6 @@ class MockFeedRepository extends _i1.Mock implements _i2.FeedRepository {
           as _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>>);
 
   @override
-  _i3.Future<_i4.Either<_i5.Failure, List<Map<String, dynamic>>>>
-  getPostReactions(String? postId) =>
-      (super.noSuchMethod(
-            Invocation.method(#getPostReactions, [postId]),
-            returnValue: _i3.Future<
-              _i4.Either<_i5.Failure, List<Map<String, dynamic>>>
-            >.value(
-              _i7.dummyValue<
-                _i4.Either<_i5.Failure, List<Map<String, dynamic>>>
-              >(this, Invocation.method(#getPostReactions, [postId])),
-            ),
-          )
-          as _i3.Future<_i4.Either<_i5.Failure, List<Map<String, dynamic>>>>);
-
-  @override
   _i3.Future<_i4.Either<_i5.Failure, _i4.Unit>> editPost({
     required String? postId,
     required String? content,

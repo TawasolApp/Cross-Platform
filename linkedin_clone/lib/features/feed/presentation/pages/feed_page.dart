@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
 import 'create_post_page.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -20,12 +21,19 @@ class _FeedPageState extends State<FeedPage> {
       if (feedProvider.posts.isEmpty) {
         feedProvider.fetchPosts();
       }
+      final profile = Provider.of<ProfileProvider>(context, listen: false);
+      profile.fetchProfile("");
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
+    final profile = Provider.of<ProfileProvider>(context);
+    final myId = profile.userId;
+    final profileImage = profile.profilePicture;
+    final profileName = profile.fullName;
+    final profileTitle = profile.headline;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       appBar: AppBar(
@@ -42,14 +50,24 @@ class _FeedPageState extends State<FeedPage> {
                 itemCount: feedProvider.posts.length,
                 itemBuilder: (context, index) {
                   final post = feedProvider.posts[index];
-                  return PostCard(post: post);
+                  return PostCard(
+                    post: post,
+                    currentUserId: myId ?? '',
+                  ); ///////
                 },
               ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PostCreationPage()),
+            MaterialPageRoute(
+              builder:
+                  (context) => PostCreationPage(
+                    authorImage: profileImage,
+                    authorName: profileName,
+                    authorTitle: profileTitle,
+                  ),
+            ),
           );
           if (result == true) {
             final feedProvider = Provider.of<FeedProvider>(
