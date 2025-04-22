@@ -53,7 +53,7 @@ class PostActionsBottomSheet extends StatelessWidget {
 
               // Perform save or unsave based on current state
               if (isSaved) {
-                await feedProvider.unsavePost(postId);
+                await feedProvider.unsavePost(currentUserId, postId);
                 ScaffoldMessenger.of(rootContext).showSnackBar(
                   const SnackBar(
                     content: Text("Post unsaved successfully"),
@@ -61,7 +61,7 @@ class PostActionsBottomSheet extends StatelessWidget {
                   ),
                 );
               } else {
-                await feedProvider.savePost(postId);
+                await feedProvider.savePost(currentUserId, postId);
                 ScaffoldMessenger.of(rootContext).showSnackBar(
                   const SnackBar(
                     content: Text("Post saved successfully"),
@@ -123,7 +123,7 @@ class PostActionsBottomSheet extends StatelessWidget {
                 showDeletePostDialog(
                   context: context,
                   onDelete: () async {
-                    await feedProvider.deletePost(postId);
+                    await feedProvider.deletePost(currentUserId, postId);
                     final message = feedProvider.errorMessage;
                     ScaffoldMessenger.of(rootContext).showSnackBar(
                       SnackBar(

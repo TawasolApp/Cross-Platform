@@ -7,7 +7,7 @@ class SavePostUseCase {
 
   SavePostUseCase(this.repository);
 
-  Future<Either<Failure, Unit>> call(String postId) {
-    return repository.savePost(postId);
+  Future<Either<Failure, Unit>> call(String userId, String postId) {
+    return repository.savePost(userId, postId);
   }
 }

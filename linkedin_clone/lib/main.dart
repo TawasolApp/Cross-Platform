@@ -223,7 +223,7 @@ void main() {
                 unsavePostUseCase: unsavePostUseCase,
                 getUserPostsUseCase: getUserPostsUseCase,
                 deleteCommentUseCase: deleteCommentUseCase,
-              )..fetchPosts(),
+              )..fetchPosts(userId),
         ),
 
         ChangeNotifierProvider(

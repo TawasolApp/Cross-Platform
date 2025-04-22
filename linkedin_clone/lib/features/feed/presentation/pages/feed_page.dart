@@ -66,6 +66,7 @@ class _FeedPageState extends State<FeedPage> {
                     authorImage: profileImage,
                     authorName: profileName,
                     authorTitle: profileTitle,
+                    userId: myId ?? '',
                   ),
             ),
           );
@@ -74,7 +75,7 @@ class _FeedPageState extends State<FeedPage> {
               context,
               listen: false,
             );
-            await feedProvider.fetchPosts();
+            await feedProvider.fetchPosts(myId ?? '');
           }
         },
         backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,

@@ -9,10 +9,11 @@ class GetPostsUseCase {
 
   GetPostsUseCase(this.repository);
 
-  Future<Either<Failure, List<PostEntity>>> call({
+  Future<Either<Failure, List<PostEntity>>> call(
+    String userId, {
     int page = 1,
     int limit = 10,
   }) async {
-    return await repository.getPosts(page: page, limit: limit);
+    return await repository.getPosts(userId, page: page, limit: limit);
   }
 }

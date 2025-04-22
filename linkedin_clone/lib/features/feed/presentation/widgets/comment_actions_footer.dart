@@ -44,7 +44,7 @@ class CommentActionsFooter extends StatelessWidget {
               await Provider.of<FeedProvider>(
                 context,
                 listen: false,
-              ).deleteComment(postId, commentId);
+              ).deleteComment(currentUserId, postId, commentId);
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Comment deleted successfully")),
               );
@@ -108,6 +108,7 @@ class CommentActionsFooter extends StatelessWidget {
                     context,
                     listen: false,
                   ).editComment(
+                    currentUserId,
                     commentId: commentId,
                     updatedContent: updatedText,
                     isReply: false,

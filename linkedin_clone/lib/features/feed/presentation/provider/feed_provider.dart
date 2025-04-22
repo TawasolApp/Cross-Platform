@@ -105,7 +105,7 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchPosts({int page = 1, int limit = 10}) async {
+  Future<void> fetchPosts(String userId, {int page = 1, int limit = 10}) async {
     if (_isLoading) {
       print("Fetch already in progress, skipping...");
       print("fetchPosts called from: ${StackTrace.current}");
@@ -119,7 +119,7 @@ class FeedProvider extends ChangeNotifier {
     print("Fetching posts...");
 
     try {
-      final result = await getPostsUseCase(page: page, limit: limit);
+      final result = await getPostsUseCase(userId, page: page, limit: limit);
       result.fold(
         (failure) {
           _errorMessage = failure.message;
@@ -147,6 +147,7 @@ class FeedProvider extends ChangeNotifier {
   }
 
   Future<void> fetchUserPosts(
+    String companyId,
     String userId, {
     int page = 1,
     int limit = 10,
@@ -165,6 +166,7 @@ class FeedProvider extends ChangeNotifier {
 
     try {
       final result = await getUserPostsUseCase(
+        companyId,
         userId,
         page: page,
         limit: limit,
@@ -193,7 +195,8 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createPost({
+  Future<void> createPost(
+    String userId, {
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
@@ -206,6 +209,7 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
 
     final result = await createPostUseCase(
+      userId,
       content: content,
       media: media,
       taggedUsers: taggedUsers,
@@ -228,9 +232,9 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> deletePost(String postId) async {
+  Future<void> deletePost(String userId, String postId) async {
     print('Provider: Deleting post with ID: $postId');
-    final result = await deletePostUseCase(postId);
+    final result = await deletePostUseCase(userId, postId);
     result.fold(
       (failure) {
         _handleFailure(failure);
@@ -245,10 +249,10 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> savePost(String postId) async {
+  Future<void> savePost(String userId, String postId) async {
     try {
       print("Provider: Attempting to save post with ID: $postId");
-      final result = await savePostUseCase(postId);
+      final result = await savePostUseCase(userId, postId);
       result.fold(
         (failure) {
           print("Provider Error saving post: $failure");
@@ -270,10 +274,10 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> unsavePost(String postId) async {
+  Future<void> unsavePost(String userId, String postId) async {
     try {
       print("Provider: Attempting to unsave post with ID: $postId");
-      final result = await unsavePostUseCase(postId);
+      final result = await unsavePostUseCase(userId, postId);
       result.fold(
         (failure) {
           print("Provider Error unsaving post: $failure");
@@ -295,7 +299,8 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> editPost({
+  Future<void> editPost(
+    String userId, {
     required String postId,
     required String content,
     List<String>? media,
@@ -303,6 +308,7 @@ class FeedProvider extends ChangeNotifier {
     required String visibility,
   }) async {
     final result = await editPostUseCase(
+      userId,
       postId: postId,
       content: content,
       media: media,
@@ -329,8 +335,14 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> addComment(String postId, String content, bool isReply) async {
+  Future<void> addComment(
+    String userId,
+    String postId,
+    String content,
+    bool isReply,
+  ) async {
     final result = await commentPostUseCase(
+      userId,
       postId: postId,
       content: content,
       isReply: isReply,
@@ -354,6 +366,7 @@ class FeedProvider extends ChangeNotifier {
 
   // Fetch method for comments
   Future<void> fetchComments(
+    String userId,
     String postId, {
     int page = 1,
     int limit = 10,
@@ -362,7 +375,12 @@ class FeedProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final result = await fetchCommentsUseCase(postId, page: page, limit: limit);
+    final result = await fetchCommentsUseCase(
+      userId,
+      postId,
+      page: page,
+      limit: limit,
+    );
 
     result.fold(
       (failure) {
@@ -378,13 +396,15 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> editComment({
+  Future<void> editComment(
+    String userId, {
     required String commentId,
     required String updatedContent,
     List<String>? taggedUsers,
     bool isReply = false,
   }) async {
     final result = await editCommentUseCase(
+      userId,
       commentId: commentId,
       content: updatedContent,
       tagged: taggedUsers,
@@ -396,17 +416,19 @@ class FeedProvider extends ChangeNotifier {
         _comments[index] = _comments[index].copyWith(content: updatedContent);
         notifyListeners();
       }
-      fetchComments(_comments[index].postId);
+      fetchComments(userId, _comments[index].postId);
       print("Comment edited successfully: $updatedContent");
     });
   }
 
   Future<void> reactToPost(
+    String userId,
     String postId,
     Map<String, bool> reactions,
     String postType,
   ) async {
     final result = await reactToPostUseCase(
+      userId,
       postId: postId,
       reactions: reactions,
       postType: postType,
@@ -479,12 +501,16 @@ class FeedProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> getPostReactions(String postId, {String type = 'All'}) async {
+  Future<void> getPostReactions(
+    String userId,
+    String postId, {
+    String type = 'All',
+  }) async {
     _isReactionsLoading = true;
     _reactionsError = null;
     notifyListeners();
 
-    final result = await getPostReactionsUseCase(postId, type: type);
+    final result = await getPostReactionsUseCase(userId, postId, type: type);
 
     result.fold(
       (failure) {
@@ -502,9 +528,13 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteComment(String postId, String commentId) async {
+  Future<void> deleteComment(
+    String userId,
+    String postId,
+    String commentId,
+  ) async {
     print('Provider: Deleting comment with ID: $commentId from post: $postId');
-    final result = await deleteCommentUseCase(commentId);
+    final result = await deleteCommentUseCase(userId, commentId);
     result.fold(
       (failure) {
         print("Provider: Failed to delete comment: $failure");
@@ -523,7 +553,7 @@ class FeedProvider extends ChangeNotifier {
       (_) {
         comments.removeWhere((comment) => comment.id == commentId);
         notifyListeners();
-        fetchComments(postId);
+        fetchComments(userId, postId);
         print("Comment deleted successfully");
       },
     );

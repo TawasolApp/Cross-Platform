@@ -8,7 +8,8 @@ class CommentPostUseCase {
 
   CommentPostUseCase(this.repository);
 
-  Future<Either<Failure, CommentModel>> call({
+  Future<Either<Failure, CommentModel>> call(
+    String userId, {
     required String postId,
     required String content,
     List<String>? taggedUsers,
@@ -19,6 +20,7 @@ class CommentPostUseCase {
     );
 
     return await repository.addComment(
+      userId,
       postId: postId,
       content: content,
       taggedUsers: taggedUsers,

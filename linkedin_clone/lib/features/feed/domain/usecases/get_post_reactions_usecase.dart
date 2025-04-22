@@ -9,9 +9,10 @@ class GetPostReactionsUseCase {
   GetPostReactionsUseCase(this.repository);
 
   Future<Either<Failure, List<ReactionModel>>> call(
+    String userId,
     String postId, {
     String type = 'All',
   }) async {
-    return await repository.getPostReactions(postId, type: type);
+    return await repository.getPostReactions(userId, postId, type: type);
   }
 }

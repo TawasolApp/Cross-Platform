@@ -9,10 +9,11 @@ class FetchCommentsUseCase {
   FetchCommentsUseCase(this.repository);
 
   Future<Either<Failure, List<CommentModel>>> call(
+    String userId,
     String postId, {
     int page = 1,
     int limit = 10,
   }) {
-    return repository.fetchComments(postId, page: page, limit: limit);
+    return repository.fetchComments(userId, postId, page: page, limit: limit);
   }
 }

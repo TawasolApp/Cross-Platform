@@ -12,6 +12,7 @@ class PostCreationPage extends StatefulWidget {
   final String? authorTitle;
   final String? authorImage;
   final String? visibility;
+  final String userId;
 
   const PostCreationPage({
     super.key,
@@ -21,6 +22,7 @@ class PostCreationPage extends StatefulWidget {
     this.authorTitle,
     this.authorImage,
     this.visibility,
+    required this.userId,
   });
 
   @override
@@ -71,6 +73,7 @@ class PostCreationPageState extends State<PostCreationPage> {
                         if (widget.postId != null) {
                           // Editing existing post
                           await feedProvider.editPost(
+                            widget.userId,
                             postId: widget.postId!,
                             content: content,
                             visibility: feedProvider.visibility,
@@ -97,6 +100,7 @@ class PostCreationPageState extends State<PostCreationPage> {
                         } else {
                           // Creating a new post
                           await feedProvider.createPost(
+                            widget.userId,
                             content: content,
                             visibility: feedProvider.visibility,
                           );

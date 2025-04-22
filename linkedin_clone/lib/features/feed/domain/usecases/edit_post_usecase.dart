@@ -7,7 +7,8 @@ class EditPostUseCase {
 
   EditPostUseCase(this.repository);
 
-  Future<Either<Failure, Unit>> call({
+  Future<Either<Failure, Unit>> call(
+    String userId, {
     required String postId,
     required String content,
     required List<String>? media,
@@ -16,6 +17,7 @@ class EditPostUseCase {
   }) {
     print('Use Case: Calling repository with post ID: $postId');
     return repository.editPost(
+      userId,
       postId: postId,
       content: content,
       media: media,

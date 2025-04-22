@@ -7,8 +7,13 @@ import '../../../profile/presentation/provider/profile_provider.dart';
 
 class UserFeedPage extends StatefulWidget {
   final String userId;
-  const UserFeedPage({super.key, required this.userId});
+  final String companyId;
 
+  const UserFeedPage({
+    super.key,
+    required this.userId,
+    required this.companyId,
+  });
   @override
   _UserFeedPageState createState() => _UserFeedPageState();
 }
@@ -20,7 +25,7 @@ class _UserFeedPageState extends State<UserFeedPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
       if (feedProvider.posts.isEmpty) {
-        feedProvider.fetchUserPosts(widget.userId);
+        feedProvider.fetchUserPosts(widget.companyId, widget.userId);
       }
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
@@ -52,14 +57,17 @@ class _UserFeedPageState extends State<UserFeedPage> {
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const PostCreationPage()),
+            MaterialPageRoute(
+              builder:
+                  (context) => const PostCreationPage(userId: widget.companyId),
+            ),
           );
           if (result == true) {
             final feedProvider = Provider.of<FeedProvider>(
               context,
               listen: false,
             );
-            await feedProvider.fetchUserPosts(widget.userId);
+            await feedProvider.fetchUserPosts(widget.companyId, widget.userId);
           }
         },
         backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,

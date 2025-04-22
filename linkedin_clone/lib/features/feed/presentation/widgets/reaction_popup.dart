@@ -5,11 +5,13 @@ import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
 
 class ReactionPopup extends StatelessWidget {
+  final String userId;
   final String postId;
   final Function(String) onReactionSelected;
 
   const ReactionPopup({
     Key? key,
+    required this.userId,
     required this.postId,
     required this.onReactionSelected,
   }) : super(key: key);
@@ -20,7 +22,7 @@ class ReactionPopup extends StatelessWidget {
       for (var r in ReactionType.values.where((r) => r != ReactionType.none))
         r.name: r == selectedReaction,
     };
-    provider.reactToPost(postId, reactions, "Post");
+    provider.reactToPost(userId, postId, reactions, "Post");
     onReactionSelected(selectedReaction.name);
     Navigator.pop(context);
   }

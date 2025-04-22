@@ -11,8 +11,13 @@ import '../../../../core/errors/failures.dart';
 import '../models/reaction_model.dart';
 
 abstract class FeedRemoteDataSource {
-  Future<Either<Failure, List<PostModel>>> getPosts({int? page, int limit});
-  Future<Either<Failure, PostModel>> createPost({
+  Future<Either<Failure, List<PostModel>>> getPosts(
+    String userId, {
+    int? page,
+    int limit,
+  });
+  Future<Either<Failure, PostModel>> createPost(
+    String userId, {
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
@@ -20,45 +25,54 @@ abstract class FeedRemoteDataSource {
     String? parentPostId,
     bool isSilentRepost = false,
   });
-  Future<void> deletePost(String postId);
-  Future<Either<Failure, Unit>> savePost(String postId);
-  Future<Either<Failure, Unit>> unsavePost(String postId);
-  Future<void> reactToPost({
+  Future<void> deletePost(String userId, String postId);
+  Future<Either<Failure, Unit>> savePost(String userId, String postId);
+  Future<Either<Failure, Unit>> unsavePost(String userId, String postId);
+  Future<void> reactToPost(
+    String userId, {
     required String postId,
     required Map<String, bool> reactions,
     required String postType,
   });
-  Future<void> editPost({
+  Future<void> editPost(
+    String userId, {
     required String postId,
     required String content,
     required List<String> media,
     required List<String> taggedUsers,
     required String visibility,
   });
-  Future<Either<Failure, CommentModel>> addComment({
+  Future<Either<Failure, CommentModel>> addComment(
+    String userId, {
     required String postId,
     required String content,
     List<String>? tagged,
     bool isReply = false,
   });
   Future<List<CommentModel>> fetchComments(
+    String userId,
     String postId, {
     int page = 1,
     int limit = 10,
   });
-  Future<Either<Failure, Unit>> editComment({
+  Future<Either<Failure, Unit>> editComment(
+    String userId, {
     required String commentId,
     required String content,
     required List<String> tagged,
     required bool isReply,
   });
+
+  //here is the only one where they're both different
   Future<Either<Failure, List<PostModel>>> getUserPosts(
+    String companyId,
     String userId, {
     int? page,
     int limit,
   });
-  Future<void> deleteComment(String commentId);
+  Future<void> deleteComment(String userId, String commentId);
   Future<List<ReactionModel>> getPostReactions(
+    String userId,
     String postId, {
     String type = 'All',
   });
@@ -93,7 +107,8 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, List<PostModel>>> getPosts({
+  Future<Either<Failure, List<PostModel>>> getPosts(
+    String userId, {
     int? page,
     int limit = 10,
   }) async {
@@ -104,7 +119,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       //final Map<String, dynamic> requestBody = {};
 
       final response = await dio.get(
-        'https://tawasolapp.me/api/posts',
+        'https://tawasolapp.me/api/posts/$userId',
         queryParameters: queryParams,
         //data: requestBody,
         options: Options(headers: {'Authorization': 'Bearer ${token.trim()}'}),
@@ -138,7 +153,9 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     }
   }
 
-  Future<Either<Failure, PostModel>> createPost({
+  @override
+  Future<Either<Failure, PostModel>> createPost(
+    String userId, {
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
@@ -161,7 +178,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
 
       final response = await dio.post(
-        'https://tawasolapp.me/api/posts',
+        'https://tawasolapp.me/api/posts/$userId',
         data: data,
         options: Options(
           headers: {
@@ -194,14 +211,14 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<void> deletePost(String postId) async {
+  Future<void> deletePost(String userId, String postId) async {
     try {
       final token = await _getToken();
       print('Deleting post with ID: $postId');
       print('Authorization token: Bearer $token');
 
       final response = await dio.delete(
-        'https://tawasolapp.me/api/posts/$postId',
+        'https://tawasolapp.me/api/posts/$userId/$postId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -240,11 +257,11 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, Unit>> savePost(String postId) async {
+  Future<Either<Failure, Unit>> savePost(String userId, String postId) async {
     try {
       final token = await _getToken();
       final response = await dio.post(
-        'https://tawasolapp.me/api/posts/save/$postId',
+        'https://tawasolapp.me/api/posts/$userId/save/$postId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -263,11 +280,11 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, Unit>> unsavePost(String postId) async {
+  Future<Either<Failure, Unit>> unsavePost(String userId, String postId) async {
     try {
       final token = await _getToken();
       final response = await dio.delete(
-        'https://tawasolapp.me/api/posts/save/$postId',
+        'https://tawasolapp.me/api/posts/$userId/save/$postId',
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
@@ -289,7 +306,8 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, CommentModel>> addComment({
+  Future<Either<Failure, CommentModel>> addComment(
+    String userId, {
     required String postId,
     required String content,
     List<String>? tagged,
@@ -299,7 +317,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       print('Adding comment to post with ID: $postId');
       final token = await _getToken();
       final response = await dio.post(
-        'https://tawasolapp.me/api/posts/comment/$postId',
+        'https://tawasolapp.me/api/posts/$userId/comment/$postId',
         data: {
           "content": content,
           "taggedUsers": tagged ?? [],
@@ -335,6 +353,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<List<CommentModel>> fetchComments(
+    String userId,
     String postId, {
     int page = 1,
     int limit = 10,
@@ -342,7 +361,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.get(
-        'https://tawasolapp.me/api/posts/comments/$postId',
+        'https://tawasolapp.me/api/posts/$userId/comments/$postId',
         queryParameters: {'page': page, 'limit': limit},
         options: Options(
           headers: {
@@ -364,7 +383,8 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, Unit>> editComment({
+  Future<Either<Failure, Unit>> editComment(
+    String userId, {
     required String commentId,
     required String content,
     required List<String> tagged,
@@ -373,7 +393,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.patch(
-        'https://tawasolapp.me/api/posts/comment/$commentId',
+        'https://tawasolapp.me/api/posts/$userId/comment/$commentId',
         data: {'content': content, 'tagged': tagged, 'isReply': isReply},
         options: Options(
           headers: {
@@ -400,7 +420,8 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<Either<Failure, Unit>> editPost({
+  Future<Either<Failure, Unit>> editPost(
+    String userId, {
     required String postId,
     required String content,
     List<String>? media,
@@ -417,7 +438,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       };
 
       final response = await dio.patch(
-        'https://tawasolapp.me/api/posts/$postId',
+        'https://tawasolapp.me/api/posts/$userId/$postId',
         data: data,
         options: Options(
           headers: {
@@ -454,7 +475,8 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<void> reactToPost({
+  Future<void> reactToPost(
+    String userId, {
     required String postId,
     required Map<String, bool> reactions,
     required String postType,
@@ -462,7 +484,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.post(
-        'https://tawasolapp.me/api/posts/react/$postId',
+        'https://tawasolapp.me/api/posts/$userId/react/$postId',
         data: {"reactions": reactions, "postType": postType},
         options: Options(
           headers: {
@@ -482,13 +504,14 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<List<ReactionModel>> getPostReactions(
+    String userId,
     String postId, {
     String type = 'All',
   }) async {
     try {
       final token = await _getToken();
       final response = await dio.get(
-        'https://tawasolapp.me/api/posts/reactions/$postId',
+        'https://tawasolapp.me/api/posts/$userId/reactions/$postId',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
 
@@ -506,6 +529,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
 
   @override
   Future<Either<Failure, List<PostModel>>> getUserPosts(
+    String companyId,
     String userId, {
     int? page,
     int limit = 10,
@@ -514,7 +538,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       final token = await _getToken();
       final queryParams = {'page': page ?? 1, 'limit': limit};
       final response = await dio.get(
-        'https://tawasolapp.me/api/posts/user/$userId',
+        'https://tawasolapp.me/api/posts/$companyId/user/$userId',
         queryParameters: queryParams,
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
@@ -544,10 +568,10 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<void> deleteComment(String commentId) async {
+  Future<void> deleteComment(String userId, String commentId) async {
     final token = await _getToken();
     final response = await dio.delete(
-      'https://tawasolapp.me/api/posts/comment/$commentId',
+      'https://tawasolapp.me/api/posts/$userId/comment/$commentId',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
