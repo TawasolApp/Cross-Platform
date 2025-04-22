@@ -64,10 +64,10 @@ class AppRouter {
         path: RouteNames.main,
         builder: (context, state) => MainNavigationPage(),
       ),
-      GoRoute(
-        path: RouteNames.createPost,
-        builder: (context, state) => PostCreationPage(),
-      ),
+      // GoRoute(
+      //   path: RouteNames.createPost,
+      //   builder: (context, state) => PostCreationPage(userId: ,),
+      // ),
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
@@ -115,10 +115,10 @@ class AppRouter {
         path: RouteNames.main,
         builder: (context, state) => MainNavigationPage(),
       ),
-      GoRoute(
-        path: RouteNames.createPost,
-        builder: (context, state) => PostCreationPage(),
-      ),
+      // GoRoute(
+      //   path: RouteNames.createPost,
+      //   builder: (context, state) => PostCreationPage(),
+      // ),
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
@@ -156,7 +156,10 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.createPost,
-        builder: (context, state) => PostCreationPage(),
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return PostCreationPage(userId: userId);
+        },
       ),
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
@@ -233,7 +236,8 @@ class AppRouter {
         path: RouteNames.reactions,
         builder: (context, state) {
           final postId = state.extra as String;
-          return ReactionsPage(postId: postId);
+          final userId = state.extra as String;
+          return ReactionsPage(userId: userId, postId: postId);
         },
       ),
     ],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
-import 'package:linkedin_clone/features/feed/presentation/pages/user_feed_page.dart'; 
+import 'package:linkedin_clone/features/feed/presentation/pages/user_feed_page.dart';
 import 'package:provider/provider.dart';
 
 class PostsTabWidget extends StatefulWidget {
@@ -50,7 +50,10 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                                 context,
                                 MaterialPageRoute(
                                   builder:
-                                      (context) => const PostCreationPage(),
+                                      //see if it'll be changed later
+                                      (context) => PostCreationPage(
+                                        userId: widget.companyId,
+                                      ),
                                 ),
                               );
                               if (result == true) {
@@ -58,7 +61,9 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                                   context,
                                   listen: false,
                                 );
+                                /////change later
                                 await feedProvider.fetchUserPosts(
+                                  widget.companyId,
                                   widget.companyId,
                                 );
                               }
@@ -106,12 +111,13 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
-                          
                           ),
                         ),
                       ),
                       Expanded(
                         child: UserFeedPage(
+                          //check if it will be changed later
+                          companyId: widget.companyId,
                           userId: widget.companyId,
                           showFAB:
                               false, // Hide FAB because we already show a create post card

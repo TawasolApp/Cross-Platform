@@ -85,7 +85,7 @@ class FeedProvider extends ChangeNotifier {
   String? get lastFetchedUserId => _lastFetchedUserId;
   String _visibility = "Public"; // default
   String get visibility => _visibility;
-
+  String userId = '';
   List<ReactionModel> _postReactions = [];
   List<ReactionModel> get postReactions => _postReactions;
 

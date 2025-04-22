@@ -26,8 +26,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
-      feedProvider.fetchComments(widget.postId);
-      feedProvider.getPostReactions(widget.postId);
+      feedProvider.fetchComments(widget.postId, profile.userId ?? '');
+      feedProvider.getPostReactions(widget.postId, profile.userId ?? '');
     });
   }
 
@@ -95,7 +95,12 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                   ),
 
                   // Add Comment Field
-                  SafeArea(child: AddCommentField(postId: widget.postId)),
+                  SafeArea(
+                    child: AddCommentField(
+                      postId: widget.postId,
+                      userId: myId ?? '',
+                    ),
+                  ),
                 ],
               ),
     );

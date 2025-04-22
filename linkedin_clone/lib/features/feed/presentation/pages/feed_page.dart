@@ -18,11 +18,11 @@ class _FeedPageState extends State<FeedPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-      if (feedProvider.posts.isEmpty) {
-        feedProvider.fetchPosts();
-      }
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
+      if (feedProvider.posts.isEmpty) {
+        feedProvider.fetchPosts(profile.userId ?? '');
+      }
     });
   }
 

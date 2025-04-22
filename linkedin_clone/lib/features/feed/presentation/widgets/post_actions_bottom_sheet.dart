@@ -91,6 +91,7 @@ class PostActionsBottomSheet extends StatelessWidget {
                           authorImage: authorImage,
                           authorName: authorName,
                           authorTitle: authorTitle,
+                          userId: currentUserId,
                         ),
                   ),
                 );

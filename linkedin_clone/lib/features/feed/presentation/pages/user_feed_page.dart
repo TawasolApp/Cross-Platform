@@ -62,7 +62,8 @@ class _UserFeedPageState extends State<UserFeedPage> {
                   final result = await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const PostCreationPage(),
+                      builder:
+                          (context) => PostCreationPage(userId: widget.userId),
                     ),
                   );
                   if (result == true) {
@@ -70,7 +71,10 @@ class _UserFeedPageState extends State<UserFeedPage> {
                       context,
                       listen: false,
                     );
-                    await feedProvider.fetchUserPosts(widget.userId);
+                    await feedProvider.fetchUserPosts(
+                      widget.companyId,
+                      widget.userId,
+                    );
                   }
                 },
                 backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
