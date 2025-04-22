@@ -81,7 +81,8 @@ class FeedProvider extends ChangeNotifier {
   String get authorName => _authorName;
   String get profileImage => _profileImage;
   String get authorTitle => _authorTitle;
-
+  String? _lastFetchedUserId;
+  String? get lastFetchedUserId => _lastFetchedUserId;
   String _visibility = "Public"; // default
   String get visibility => _visibility;
 
@@ -150,18 +151,21 @@ class FeedProvider extends ChangeNotifier {
     String userId, {
     int page = 1,
     int limit = 10,
+    bool forceRefresh = false,
   }) async {
-    if (_isLoading) {
-      print("Fetch already in progress, skipping...");
-      print("fetchPosts called from: ${StackTrace.current}");
-
+    // Skip fetching if already fetched same userId and not forced
+    if (!forceRefresh && _lastFetchedUserId == userId) {
+      print("🟡 Skipping fetch — already fetched userId: $userId");
       return;
     }
 
+    _lastFetchedUserId = userId;
+    _userPosts = []; // Clear previous posts
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-    print("Fetching posts...");
+
+    print("🔄 Fetching posts for user: $userId");
 
     try {
       final result = await getUserPostsUseCase(
@@ -169,27 +173,23 @@ class FeedProvider extends ChangeNotifier {
         page: page,
         limit: limit,
       );
+
       result.fold(
         (failure) {
           _errorMessage = failure.message;
-          print("Error while fetching posts: $_errorMessage");
-          _isLoading = false;
-          notifyListeners();
+          print("❌ Error fetching posts: $_errorMessage");
         },
         (posts) {
           _userPosts = List<PostEntity>.from(posts);
-          print("Posts fetched successfully, count: ${_userPosts.length}");
-          _isLoading = false;
-          notifyListeners();
+          print("✅ Posts fetched: ${_userPosts.length}");
         },
       );
     } catch (e) {
       _errorMessage = "Failed to fetch posts: $e";
-      print("Exception: $_errorMessage");
+      print("❌ Exception: $_errorMessage");
+    } finally {
       _isLoading = false;
       notifyListeners();
-    } finally {
-      print("Fetch complete, isLoading: $_isLoading");
     }
   }
 
