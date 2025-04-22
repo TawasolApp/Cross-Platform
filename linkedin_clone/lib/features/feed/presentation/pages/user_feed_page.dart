@@ -7,13 +7,15 @@ import '../../../profile/presentation/provider/profile_provider.dart';
 
 class UserFeedPage extends StatefulWidget {
   final String userId;
+  final bool showFAB;
   final String companyId;
-
   const UserFeedPage({
     super.key,
     required this.userId,
     required this.companyId,
+    this.showFAB = true, // show button to create a post
   });
+
   @override
   _UserFeedPageState createState() => _UserFeedPageState();
 }
@@ -44,36 +46,41 @@ class _UserFeedPageState extends State<UserFeedPage> {
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(
                 padding: const EdgeInsets.only(top: 10),
-                itemCount: feedProvider.posts.length,
+                itemCount: feedProvider.userPosts.length,
                 itemBuilder: (context, index) {
-                  final post = feedProvider.posts[index];
+                  final post = feedProvider.userPosts[index];
                   return PostCard(
                     post: post,
                     currentUserId: myId ?? '',
                   ); ///////
                 },
               ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder:
-                  (context) => const PostCreationPage(userId: widget.companyId),
-            ),
-          );
-          if (result == true) {
-            final feedProvider = Provider.of<FeedProvider>(
-              context,
-              listen: false,
-            );
-            await feedProvider.fetchUserPosts(widget.companyId, widget.userId);
-          }
-        },
-        backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
-        tooltip: 'Create Post',
-        child: Icon(Icons.add, color: isDarkMode ? Colors.white : Colors.blue),
-      ),
+      floatingActionButton:
+          widget.showFAB
+              ? FloatingActionButton(
+                onPressed: () async {
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PostCreationPage(),
+                    ),
+                  );
+                  if (result == true) {
+                    final feedProvider = Provider.of<FeedProvider>(
+                      context,
+                      listen: false,
+                    );
+                    await feedProvider.fetchUserPosts(widget.userId);
+                  }
+                },
+                backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,
+                tooltip: 'Create Post',
+                child: Icon(
+                  Icons.add,
+                  color: isDarkMode ? Colors.white : Colors.blue,
+                ),
+              )
+              : null,
     );
   }
 }
