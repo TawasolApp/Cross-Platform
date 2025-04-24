@@ -4,11 +4,13 @@ import 'package:linkedin_clone/features/authentication/Domain/Entities/user_enti
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Repository/auth_repository.dart';
+import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
+  final ProfileRemoteDataSource profileRemoteDataSource;
 
-  AuthRepositoryImpl(this.remoteDataSource);
+  AuthRepositoryImpl(this.remoteDataSource,this.profileRemoteDataSource);
 
   @override
   Future<Either<Failure, UserEntity>> login(
@@ -20,6 +22,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       //Save token after API success
       await TokenService.saveToken(userModel.token);
+      final profileModel = await profileRemoteDataSource.getProfile("");
+      await TokenService.saveUserId(profileModel.userId);
       return Right(userModel as UserEntity);
     } catch (e) {
       return Left(ServerFailure());

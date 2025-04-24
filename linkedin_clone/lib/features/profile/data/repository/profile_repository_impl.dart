@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/errors/exceptions.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/models/profile_model.dart';
 import 'package:linkedin_clone/features/profile/data/models/experience_model.dart';
@@ -31,6 +32,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
       //   return left(Failure(message: "No internet connection", errorCode: 500));
       // }
       final profileModel = await profileRemoteDataSource.getProfile(id);
+      await TokenService.saveUserId(profileModel.userId);
       return right(profileModel.toEntity());
     } on ServerException catch (e) {
       return left(Failure(message: e.message, errorCode: 500));
