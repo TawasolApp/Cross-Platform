@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
@@ -101,6 +102,7 @@ class CompanyProvider with ChangeNotifier {
     safeNotify();
     print('CompanyID is:$companyId');
     _company = await _getCompanyDetails.execute(companyId);
+    await TokenService.saveCompanyId(companyId); //saves company id
 
     await fetchFollowStatus(companyId);
     _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
@@ -142,8 +144,9 @@ class CompanyProvider with ChangeNotifier {
     safeNotify();
   }
 
-  void toggleViewMode() {
+  void toggleViewMode() async {
     isViewingAsUser = !isViewingAsUser;
+    await TokenService.saveIsCompany(isViewingAsUser);
     notifyListeners();
   }
 
