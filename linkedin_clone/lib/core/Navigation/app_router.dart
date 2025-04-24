@@ -28,6 +28,9 @@ import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/job_listings_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/analytics_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -239,6 +242,18 @@ class AppRouter {
           final userId = state.extra as String;
           return ReactionsPage(userId: userId, postId: postId);
         },
+      ),
+      GoRoute(
+        path: RouteNames.adminReports,
+        builder: (context, state) => const ReportsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.adminJobs,
+        builder: (context, state) => const JobListingsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.adminAnalytics,
+        builder: (context, state) => const AnalyticsPage(),
       ),
     ],
   );

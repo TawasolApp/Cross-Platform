@@ -21,7 +21,7 @@ class _FeedPageState extends State<FeedPage> {
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
       if (feedProvider.posts.isEmpty) {
-        feedProvider.fetchPosts(profile.userId ?? '');
+        feedProvider.fetchPosts();
       }
     });
   }
@@ -75,7 +75,7 @@ class _FeedPageState extends State<FeedPage> {
               context,
               listen: false,
             );
-            await feedProvider.fetchPosts(myId ?? '');
+            await feedProvider.fetchPosts();
           }
         },
         backgroundColor: isDarkMode ? Colors.grey[800] : Colors.white,

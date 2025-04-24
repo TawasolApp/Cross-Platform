@@ -15,7 +15,6 @@ import 'package:linkedin_clone/features/company/data/datasources/job_remote_data
 import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/entities/job.dart';
 
-
 class CompanyProvider with ChangeNotifier {
   Company? _company;
   List<User> _friendsFollowing = [];
@@ -104,9 +103,7 @@ class CompanyProvider with ChangeNotifier {
     _company = await _getCompanyDetails.execute(companyId);
 
     await fetchFollowStatus(companyId);
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
     _isLoading = false;
@@ -150,15 +147,11 @@ class CompanyProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<User>> fetchFriendsFollowingCompany(
-    String companyId,
-  ) async {
+  Future<List<User>> fetchFriendsFollowingCompany(String companyId) async {
     _isLoading = true;
     safeNotify();
 
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
 
     _isLoading = false;
     safeNotify();
@@ -277,9 +270,7 @@ class CompanyProvider with ChangeNotifier {
       }
 
       if (followersList.isNotEmpty) {
-        _followers.addAll(
-          followersList,
-        ); 
+        _followers.addAll(followersList);
       } else {
         _isAllFollowersLoaded = true;
       }
@@ -307,7 +298,6 @@ class CompanyProvider with ChangeNotifier {
       if (newFollowers.isEmpty) {
         _isAllFollowersLoaded = true;
       } else {
-
         _currentFollowersPage = nextPage;
       }
     } catch (e) {

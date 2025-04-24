@@ -126,6 +126,15 @@ import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
 
+import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reports_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/resolve_report_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_job_listings_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/delete_job_listing_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_analytics_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/data/repositories/admin_repository_impl.dart';
+import 'package:linkedin_clone/features/admin_panel/data/data_sources/admin_remote_data_source.dart';
+
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
@@ -184,6 +193,11 @@ void main() {
   final getUserPostsUseCase = GetUserPostsUseCase(repository);
   final deleteCommentUseCase = DeleteCommentUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
+
+  //////admin
+  final adminRemoteDataSource = AdminRemoteDataSource(dio);
+  final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
+
   runApp(
     MultiProvider(
       providers: [
@@ -452,6 +466,24 @@ void main() {
                     mediaRemoteDataSource: MediaRemoteDataSource(),
                   ),
                 ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => AdminProvider(
+                getReportsUseCase: GetReportsUseCase(adminRepository),
+                resolveReportUseCase: ResolveReportUseCase(adminRepository),
+                getJobListingsUseCase: GetJobListingsUseCase(adminRepository),
+                deleteJobListingUseCase: DeleteJobListingUseCase(
+                  adminRepository,
+                ),
+                getUserAnalyticsUseCase: GetUserAnalyticsUseCase(
+                  adminRepository,
+                ),
+                getPostAnalyticsUseCase: GetPostAnalyticsUseCase(
+                  adminRepository,
+                ),
+                getJobAnalyticsUseCase: GetJobAnalyticsUseCase(adminRepository),
               ),
         ),
       ],

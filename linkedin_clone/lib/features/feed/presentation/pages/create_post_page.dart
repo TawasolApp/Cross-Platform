@@ -100,7 +100,6 @@ class PostCreationPageState extends State<PostCreationPage> {
                         } else {
                           // Creating a new post
                           await feedProvider.createPost(
-                            widget.userId,
                             content: content,
                             visibility: feedProvider.visibility,
                           );

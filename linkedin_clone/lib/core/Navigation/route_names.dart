@@ -28,4 +28,7 @@ class RouteNames {
   static const String invitations = "/invitations";
   static const String manageMyNetwrok = "/manage_my_network";
   static const String reactions = "/reactions";
+  static const String adminReports = '/admin/reports';
+  static const String adminJobs = '/admin/jobs';
+  static const String adminAnalytics = '/admin/analytics';
 }

@@ -14,9 +14,10 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_cre
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../feed/presentation/provider/feed_provider.dart';
 
 class CompanyProfileScreen extends StatelessWidget {
-  final String companyId; 
+  final String companyId;
   const CompanyProfileScreen({
     required this.companyId,
     super.key,
@@ -297,10 +298,13 @@ class CompanyProfileScreen extends StatelessWidget {
                                             child: InkWell(
                                               onTap: () {
                                                 provider.toggleViewMode();
+                                                provider.fetchCompanyDetails(
+                                                  companyId,
+                                                );
+                                                if (provider.isViewingAsUser) {}
                                               },
-                                              borderRadius: BorderRadius.circular(
-                                                8,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                               child: Padding(
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal: 8,
@@ -404,14 +408,15 @@ class CompanyProfileScreen extends StatelessWidget {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder:
-                                                          (context) =>
-                                                              CompanyFollowersScreen(
-                                                                companyId:
-                                                                    provider
-                                                                        .company
-                                                                        ?.companyId ??
-                                                                    "",
-                                                              ),
+                                                          (
+                                                            context,
+                                                          ) => CompanyFollowersScreen(
+                                                            companyId:
+                                                                provider
+                                                                    .company
+                                                                    ?.companyId ??
+                                                                "",
+                                                          ),
                                                     ),
                                                   );
                                                 },
@@ -631,9 +636,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              CompanyTabsWidget(
-                                companyId: companyId,
-                              ),
+                              CompanyTabsWidget(companyId: companyId),
                               Divider(thickness: 3, color: Colors.black54),
                             ],
                           ),
@@ -711,29 +714,20 @@ class CompanyProfileScreen extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(
-                              16,
-                            ), 
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min, 
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.edit,
-                                color: Colors.white, 
-                                size: 24, 
-                              ),
+                              Icon(Icons.edit, color: Colors.white, size: 24),
                               SizedBox(width: 6),
                               Text(
                                 "Edit Details",
                                 style: TextStyle(
-                                  color: Colors.white, 
-                                  fontSize: 16, 
-                                  fontWeight: FontWeight.w500, 
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],

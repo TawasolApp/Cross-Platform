@@ -106,7 +106,7 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchPosts(String userId, {int page = 1, int limit = 10}) async {
+  Future<void> fetchPosts({int page = 1, int limit = 10}) async {
     if (_isLoading) {
       print("Fetch already in progress, skipping...");
       print("fetchPosts called from: ${StackTrace.current}");
@@ -195,8 +195,7 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> createPost(
-    String userId, {
+  Future<void> createPost({
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
