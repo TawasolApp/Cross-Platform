@@ -162,6 +162,13 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           ),
         ],
         type: BottomNavigationBarType.fixed,
+        selectedFontSize: 12,
+        unselectedFontSize: 10,
+        iconSize: 24,
+        showUnselectedLabels: true,
+        enableFeedback: true,
+        // Allow labels to take more space
+        landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
       ),
     );
   }
