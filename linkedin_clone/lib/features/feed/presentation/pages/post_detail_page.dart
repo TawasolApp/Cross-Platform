@@ -26,8 +26,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
-      feedProvider.fetchComments(widget.postId, profile.userId ?? '');
-      feedProvider.getPostReactions(widget.postId, profile.userId ?? '');
+      feedProvider.fetchComments(widget.postId);
+      feedProvider.getPostReactions(widget.postId);
     });
   }
 
@@ -36,9 +36,9 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     final feedProvider = Provider.of<FeedProvider>(context);
     final profile = Provider.of<ProfileProvider>(context);
     final myId = profile.userId;
-    final post = feedProvider.posts.firstWhereOrNull(
-      (p) => p.id == widget.postId,
-    );
+    final post =
+        feedProvider.posts.firstWhereOrNull((p) => p.id == widget.postId) ??
+        feedProvider.userPosts.firstWhereOrNull((p) => p.id == widget.postId);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -95,12 +95,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                   ),
 
                   // Add Comment Field
-                  SafeArea(
-                    child: AddCommentField(
-                      postId: widget.postId,
-                      userId: myId ?? '',
-                    ),
-                  ),
+                  SafeArea(child: AddCommentField(postId: widget.postId)),
                 ],
               ),
     );

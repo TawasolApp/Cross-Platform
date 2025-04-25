@@ -26,9 +26,10 @@ class _UserFeedPageState extends State<UserFeedPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-      if (feedProvider.posts.isEmpty) {
-        feedProvider.fetchUserPosts(widget.companyId, widget.userId);
-      }
+      //if (feedProvider.userPosts.isEmpty) {
+      print("Fana gowa daaaaaa");
+      feedProvider.fetchUserPosts(widget.companyId);
+      //}
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
     });
@@ -61,10 +62,7 @@ class _UserFeedPageState extends State<UserFeedPage> {
                 onPressed: () async {
                   final result = await Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) => PostCreationPage(userId: widget.userId),
-                    ),
+                    MaterialPageRoute(builder: (context) => PostCreationPage()),
                   );
                   if (result == true) {
                     final feedProvider = Provider.of<FeedProvider>(
@@ -73,7 +71,7 @@ class _UserFeedPageState extends State<UserFeedPage> {
                     );
                     await feedProvider.fetchUserPosts(
                       widget.companyId,
-                      widget.userId,
+                      forceRefresh: true,
                     );
                   }
                 },

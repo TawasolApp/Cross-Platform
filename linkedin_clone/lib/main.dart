@@ -167,7 +167,10 @@ void main() {
   final AuthRemoteDataSource dataSource =
       useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
-  final AuthRepository authRepository = AuthRepositoryImpl(dataSource);
+  final AuthRepository authRepository = AuthRepositoryImpl(
+    dataSource,
+    dataSourceProfile,
+  );
   final loginUseCase = LoginUseCase(authRepository);
   final registerUseCase = RegisterUseCase(authRepository);
   final forgotPassUseCase = ForgotPassUseCase(authRepository);

@@ -14,6 +14,9 @@ class GetUserPostsUseCase {
     int page = 1,
     int limit = 10,
   }) async {
+    print(
+      "GetUserPostsUseCase called with companyId: $companyId, userId: $userId, page: $page, limit: $limit",
+    );
     return await repository.getUserPosts(companyId, userId);
   }
 }

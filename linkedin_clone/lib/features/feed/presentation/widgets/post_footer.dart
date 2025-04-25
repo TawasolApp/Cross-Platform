@@ -11,13 +11,11 @@ class PostFooter extends StatefulWidget {
   final PostEntity post;
   final int comments;
   final int shares;
-  final String userId;
   const PostFooter({
     super.key,
     required this.post,
     required this.comments,
     required this.shares,
-    required this.userId,
   });
 
   @override
@@ -30,7 +28,6 @@ class _PostFooterState extends State<PostFooter> {
       context: context,
       builder:
           (_) => ReactionPopup(
-            userId: widget.userId,
             postId: widget.post.id,
             onReactionSelected: (reaction) {
               setState(() {});
@@ -47,9 +44,7 @@ class _PostFooterState extends State<PostFooter> {
     final provider = Provider.of<FeedProvider>(context, listen: false);
     final reactionToSend = hasReacted ? 'none' : 'Like';
 
-    provider.reactToPost(widget.userId, widget.post.id, {
-      reactionToSend: true,
-    }, "Post");
+    provider.reactToPost(widget.post.id, {reactionToSend: true}, "Post");
 
     setState(() {});
   }
@@ -63,7 +58,7 @@ class _PostFooterState extends State<PostFooter> {
 
     final icon = hasReacted ? reaction.icon : Icons.thumb_up_off_alt;
     final color = hasReacted ? reaction.color : Colors.grey;
-    final label = hasReacted ? reaction.name : 'React';
+    final label = hasReacted ? reaction.name : 'Like';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),

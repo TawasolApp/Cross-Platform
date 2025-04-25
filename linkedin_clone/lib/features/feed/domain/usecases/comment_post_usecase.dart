@@ -16,7 +16,7 @@ class CommentPostUseCase {
     bool isReply = false,
   }) async {
     print(
-      'CommentPostUseCase called with postId: $postId, content: $content, taggedUsers: $taggedUsers, isReply: $isReply',
+      'CommentPostUseCase called with postId: $postId, content: $content, taggedUsers: $taggedUsers, isReply: $isReply, userId: $userId',
     );
 
     return await repository.addComment(

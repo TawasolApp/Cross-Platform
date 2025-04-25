@@ -161,7 +161,7 @@ class AppRouter {
         path: RouteNames.createPost,
         builder: (context, state) {
           final userId = state.extra as String;
-          return PostCreationPage(userId: userId);
+          return PostCreationPage();
         },
       ),
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
@@ -240,7 +240,7 @@ class AppRouter {
         builder: (context, state) {
           final postId = state.extra as String;
           final userId = state.extra as String;
-          return ReactionsPage(userId: userId, postId: postId);
+          return ReactionsPage(postId: postId);
         },
       ),
       GoRoute(

@@ -257,10 +257,13 @@ class FeedRepositoryImpl implements FeedRepository {
   Future<Either<Failure, List<PostEntity>>> getUserPosts(
     String companyId,
     String userId, {
-    int? page,
+    int page = 1,
     int limit = 10,
   }) async {
     try {
+      print(
+        "Repository: Fetching user posts with companyId: $companyId, userId: $userId, page: $page, limit: $limit",
+      );
       final result = await remoteDataSource.getUserPosts(
         companyId,
         userId,

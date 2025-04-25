@@ -4,6 +4,7 @@ import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
 import 'create_post_page.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
+import '../../../../core/services/token_service.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -18,6 +19,7 @@ class _FeedPageState extends State<FeedPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
+
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
       if (feedProvider.posts.isEmpty) {
@@ -50,10 +52,7 @@ class _FeedPageState extends State<FeedPage> {
                 itemCount: feedProvider.posts.length,
                 itemBuilder: (context, index) {
                   final post = feedProvider.posts[index];
-                  return PostCard(
-                    post: post,
-                    currentUserId: myId ?? '',
-                  ); ///////
+                  return PostCard(post: post, currentUserId: myId ?? '');
                 },
               ),
       floatingActionButton: FloatingActionButton(
@@ -66,7 +65,6 @@ class _FeedPageState extends State<FeedPage> {
                     authorImage: profileImage,
                     authorName: profileName,
                     authorTitle: profileTitle,
-                    userId: myId ?? '',
                   ),
             ),
           );

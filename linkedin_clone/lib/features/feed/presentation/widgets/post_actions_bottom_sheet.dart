@@ -30,9 +30,11 @@ class PostActionsBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final feedProvider = Provider.of<FeedProvider>(context);
-    final isSaved =
-        feedProvider.posts.firstWhere((p) => p.id == postId).isSaved;
+    final feedProvider = Provider.of<FeedProvider>(context, listen: false);
+    final post =
+        feedProvider.posts.firstWhere((p) => p.id == postId) ??
+        feedProvider.userPosts.firstWhere((p) => p.id == postId);
+    final isSaved = post.isSaved;
 
     return SafeArea(
       child: Column(
@@ -53,7 +55,7 @@ class PostActionsBottomSheet extends StatelessWidget {
 
               // Perform save or unsave based on current state
               if (isSaved) {
-                await feedProvider.unsavePost(currentUserId, postId);
+                await feedProvider.unsavePost(postId);
                 ScaffoldMessenger.of(rootContext).showSnackBar(
                   const SnackBar(
                     content: Text("Post unsaved successfully"),
@@ -61,7 +63,7 @@ class PostActionsBottomSheet extends StatelessWidget {
                   ),
                 );
               } else {
-                await feedProvider.savePost(currentUserId, postId);
+                await feedProvider.savePost(postId);
                 ScaffoldMessenger.of(rootContext).showSnackBar(
                   const SnackBar(
                     content: Text("Post saved successfully"),
@@ -91,7 +93,6 @@ class PostActionsBottomSheet extends StatelessWidget {
                           authorImage: authorImage,
                           authorName: authorName,
                           authorTitle: authorTitle,
-                          userId: currentUserId,
                         ),
                   ),
                 );
@@ -124,7 +125,7 @@ class PostActionsBottomSheet extends StatelessWidget {
                 showDeletePostDialog(
                   context: context,
                   onDelete: () async {
-                    await feedProvider.deletePost(currentUserId, postId);
+                    await feedProvider.deletePost(postId);
                     final message = feedProvider.errorMessage;
                     ScaffoldMessenger.of(rootContext).showSnackBar(
                       SnackBar(

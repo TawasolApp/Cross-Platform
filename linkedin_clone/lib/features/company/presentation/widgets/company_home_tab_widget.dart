@@ -26,7 +26,8 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
       if (feedProvider.posts.isEmpty && !feedProvider.isLoading) {
-        feedProvider.fetchUserPosts(widget.companyId, profile.userId ?? '');
+        feedProvider.fetchUserPosts(widget.companyId);
+        print("Fetching posts for companyId: ${widget.companyId}");
       }
     });
   }

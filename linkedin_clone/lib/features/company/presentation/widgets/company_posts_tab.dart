@@ -22,6 +22,8 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
 
   @override
   Widget build(BuildContext context) {
+    print("Company ID: ${widget.companyId}howa daaaaaa");
+
     final feedProvider = Provider.of<FeedProvider>(context);
 
     return Consumer<CompanyProvider>(
@@ -49,11 +51,7 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                               final result = await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder:
-                                      //see if it'll be changed later
-                                      (context) => PostCreationPage(
-                                        userId: widget.companyId,
-                                      ),
+                                  builder: (context) => PostCreationPage(),
                                 ),
                               );
                               if (result == true) {
@@ -61,10 +59,11 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                                   context,
                                   listen: false,
                                 );
-                                /////change later
                                 await feedProvider.fetchUserPosts(
                                   widget.companyId,
-                                  widget.companyId,
+                                );
+                                print(
+                                  "Posts fetched after creating a new post.",
                                 );
                               }
                             },
@@ -114,9 +113,9 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                           ),
                         ),
                       ),
+
                       Expanded(
                         child: UserFeedPage(
-                          //check if it will be changed later
                           companyId: widget.companyId,
                           userId: widget.companyId,
                           showFAB:

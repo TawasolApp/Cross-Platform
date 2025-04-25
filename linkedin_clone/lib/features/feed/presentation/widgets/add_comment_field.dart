@@ -5,12 +5,10 @@ import '../provider/feed_provider.dart';
 class AddCommentField extends StatefulWidget {
   final String postId;
   final bool isReply;
-  final String userId;
   const AddCommentField({
     super.key,
     required this.postId,
     this.isReply = false,
-    required this.userId,
   });
 
   @override
@@ -26,7 +24,6 @@ class _AddCommentFieldState extends State<AddCommentField> {
     if (content.isNotEmpty) {
       try {
         await context.read<FeedProvider>().addComment(
-          widget.userId,
           widget.postId,
           content,
           widget.isReply,

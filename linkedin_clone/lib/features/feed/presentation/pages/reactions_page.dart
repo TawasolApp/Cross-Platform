@@ -6,8 +6,7 @@ import '../../../../core/utils/reaction_type.dart';
 
 class ReactionsPage extends StatefulWidget {
   final String postId;
-  final String userId;
-  const ReactionsPage({super.key, required this.postId, required this.userId});
+  const ReactionsPage({super.key, required this.postId});
 
   @override
   State<ReactionsPage> createState() => _ReactionsPageState();
@@ -34,7 +33,7 @@ class _ReactionsPageState extends State<ReactionsPage>
     _tabController = TabController(length: filterTypes.length, vsync: this);
 
     final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-    feedProvider.getPostReactions(widget.postId, widget.userId);
+    feedProvider.getPostReactions(widget.postId);
   }
 
   @override
