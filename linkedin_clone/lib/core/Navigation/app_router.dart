@@ -27,6 +27,7 @@ import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page
 import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -233,6 +234,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.manageMyNetwrok,
         builder: (context, state) => ListPage(type: PageType.manageMyNetwork),
+      ),
+      GoRoute(
+        path: RouteNames.notifications,
+        builder: (context, state) => const NotificationsListPage(),
       ),
     ],
   );
