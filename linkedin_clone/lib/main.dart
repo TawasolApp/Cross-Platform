@@ -425,6 +425,10 @@ void main() {
                 updateCompanyDetails: UpdateCompanyDetails(
                   companyRepository:
                       companyrepos, // Using the existing repository here
+                ), uploadImageUseCase: UploadImageUseCase(
+                  mediaRepository: MediaRepository(
+                    mediaRemoteDataSource: MediaRemoteDataSource(),
+                  ),
                 ),
               ),
         ),
