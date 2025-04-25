@@ -55,6 +55,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -195,6 +196,7 @@ void main() {
   final unsavePostUseCase = UnsavePostUseCase(repository);
   final getUserPostsUseCase = GetUserPostsUseCase(repository);
   final deleteCommentUseCase = DeleteCommentUseCase(repository);
+  final getSavedPostsUsecase = GetSavedPostsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
 
   //////admin
@@ -236,10 +238,10 @@ void main() {
                 reactToPostUseCase: reactToPostUseCase,
                 editCommentUseCase: editCommentUseCase,
                 getPostReactionsUseCase: getPostReactionsUseCase,
-
                 unsavePostUseCase: unsavePostUseCase,
                 getUserPostsUseCase: getUserPostsUseCase,
                 deleteCommentUseCase: deleteCommentUseCase,
+                getSavedPostsUseCase: getSavedPostsUsecase,
               ),
         ),
 
@@ -425,7 +427,8 @@ void main() {
                 updateCompanyDetails: UpdateCompanyDetails(
                   companyRepository:
                       companyrepos, // Using the existing repository here
-                ), uploadImageUseCase: UploadImageUseCase(
+                ),
+                uploadImageUseCase: UploadImageUseCase(
                   mediaRepository: MediaRepository(
                     mediaRemoteDataSource: MediaRemoteDataSource(),
                   ),

@@ -300,4 +300,27 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(UnexpectedFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> getSavedPosts(
+    String companyId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final result = await remoteDataSource.getSavedPosts(
+        companyId,
+        page: page,
+        limit: limit,
+      );
+      return result.fold((failure) => Left(failure), (posts) {
+        final entities = posts.map((post) => post).toList();
+        return Right(entities);
+      });
+    } on ServerException {
+      return Left(ServerFailure('Failed to load saved posts'));
+    } catch (e) {
+      return Left(ServerFailure('Failed to load saved posts'));
+    }
+  }
 }

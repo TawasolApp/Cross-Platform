@@ -69,4 +69,9 @@ abstract class FeedRepository {
     bool isReply,
   });
   Future<Either<Failure, Unit>> deleteComment(String userId, String commentId);
+  Future<Either<Failure, List<PostEntity>>> getSavedPosts(
+    String companyId, {
+    int page,
+    int limit,
+  });
 }

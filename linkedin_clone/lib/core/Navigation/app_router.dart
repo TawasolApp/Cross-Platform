@@ -31,6 +31,7 @@ import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.d
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/job_listings_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/analytics_page.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/saved_posts_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -254,6 +255,13 @@ class AppRouter {
       GoRoute(
         path: RouteNames.adminAnalytics,
         builder: (context, state) => const AnalyticsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.savedPosts,
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return SavedPostsPage(userId: userId);
+        },
       ),
     ],
   );

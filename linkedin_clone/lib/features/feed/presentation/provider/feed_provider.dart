@@ -8,21 +8,17 @@ import '../../domain/usecases/save_post_usecase.dart';
 import '../../domain/usecases/edit_post_usecase.dart';
 import '../../domain/usecases/comment_post_usecase.dart';
 import '../../domain/usecases/fetch_comments_usecase.dart';
-import '../../data/models/post_model.dart';
 import '../../data/models/comment_model.dart';
 import '../../../../../core/errors/failures.dart';
 import '../../domain/usecases/edit_comment_usecase.dart';
 import '../../domain/usecases/react_to_post_usecase.dart';
 import '../../domain/usecases/get_post_reactions_usecase.dart';
-import '../../../profile/domain/usecases/profile/get_profile.dart';
-import 'package:linkedin_clone/core/usecase/usecase.dart';
 import '../../domain/usecases/unsave_post_usecase.dart';
 import '../../domain/usecases/get_user_posts_usecase.dart';
-import 'package:collection/collection.dart';
-import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import '../../domain/usecases/delete_comment_usecase.dart';
 import '../../data/models/reaction_model.dart';
 import '../../../../core/services/token_service.dart';
+import '../../domain/usecases/get_saved_posts_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -38,6 +34,7 @@ class FeedProvider extends ChangeNotifier {
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
   final DeleteCommentUseCase deleteCommentUseCase;
+  final GetSavedPostsUseCase getSavedPostsUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -53,6 +50,7 @@ class FeedProvider extends ChangeNotifier {
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
     required this.deleteCommentUseCase,
+    required this.getSavedPostsUseCase,
   });
 
   //String _currentUserId;
@@ -61,6 +59,9 @@ class FeedProvider extends ChangeNotifier {
 
   List<PostEntity> _userPosts = [];
   List<PostEntity> get userPosts => _userPosts;
+
+  List<PostEntity> _savedPosts = [];
+  List<PostEntity> get savedPosts => _savedPosts;
 
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
@@ -568,5 +569,35 @@ class FeedProvider extends ChangeNotifier {
         print("Comment deleted successfully");
       },
     );
+  }
+
+  Future<void> fetchSavedPosts({int page = 1, int limit = 10}) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final userId = await this.userId;
+      final result = await getSavedPostsUseCase(
+        userId,
+        page: page,
+        limit: limit,
+      );
+
+      result.fold(
+        (failure) {
+          _errorMessage = failure.message;
+          _savedPosts = [];
+        },
+        (posts) {
+          _savedPosts = List<PostEntity>.from(posts);
+        },
+      );
+    } catch (e) {
+      _errorMessage = "Failed to fetch saved posts: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

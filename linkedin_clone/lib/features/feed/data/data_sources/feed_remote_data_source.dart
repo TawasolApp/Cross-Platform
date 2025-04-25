@@ -76,6 +76,11 @@ abstract class FeedRemoteDataSource {
     String postId, {
     String type = 'All',
   });
+  Future<Either<Failure, List<PostEntity>>> getSavedPosts(
+    String companyId, {
+    int page = 1,
+    int limit = 10,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -585,6 +590,38 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       throw NotFoundException("Comment not found");
     } else {
       throw ServerException("A server error occurred");
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> getSavedPosts(
+    String companyId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final token = await _getToken(); // your token method
+      final response = await dio.get(
+        'https://tawasolapp.me/api/posts/$companyId/saved',
+        queryParameters: {'page': page, 'limit': limit},
+        options: Options(headers: {'Authorization': 'Bearer ${token.trim()}'}),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        final posts = data.map((post) => PostModel.fromJson(post)).toList();
+        return Right(posts);
+      } else if (response.statusCode == 401) {
+        return Left(UnauthorizedFailure('Unauthorized access.'));
+      } else if (response.statusCode == 404) {
+        return Left(NotFoundFailure('No saved posts found.'));
+      } else if (response.statusCode == 500) {
+        return Left(ServerFailure('Server error.'));
+      } else {
+        return Left(UnknownFailure('Unexpected error: ${response.statusCode}'));
+      }
+    } catch (e) {
+      return Left(NetworkFailure('Failed to connect to server: $e'));
     }
   }
 }
