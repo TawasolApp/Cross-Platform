@@ -101,6 +101,7 @@ class CompanyProvider with ChangeNotifier {
     _isLoading = true;
     safeNotify();
     print('CompanyID is:$companyId');
+
     _company = await _getCompanyDetails.execute(companyId);
     await TokenService.saveCompanyId(companyId); //saves company id
 
@@ -108,6 +109,8 @@ class CompanyProvider with ChangeNotifier {
     _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
+    await TokenService.saveIsCompany(isViewingAsUser);
+
     _isLoading = false;
     safeNotify();
   }

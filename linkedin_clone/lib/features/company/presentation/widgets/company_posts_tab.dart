@@ -60,7 +60,7 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                                   listen: false,
                                 );
                                 await feedProvider.fetchUserPosts(
-                                  widget.companyId,
+                                  widget.companyId,forceRefresh: true,
                                 );
                                 print(
                                   "Posts fetched after creating a new post.",
