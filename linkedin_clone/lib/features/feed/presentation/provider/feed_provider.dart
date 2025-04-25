@@ -73,8 +73,8 @@ class FeedProvider extends ChangeNotifier {
 
   bool _isCreating = false;
   bool get isCreating => _isCreating;
-  bool _hasLoadedUserPosts = false;
-  bool get hasLoadedUserPosts => _hasLoadedUserPosts;
+  // bool _hasLoadedUserPosts = false;
+  // bool get hasLoadedUserPosts => _hasLoadedUserPosts;
 
   String _authorName = '';
   String _profileImage = '';
@@ -99,7 +99,7 @@ class FeedProvider extends ChangeNotifier {
 
   Future<String> get userId async {
     final isCompany = await TokenService.getIsCompany();
-    return isCompany == true
+    return isCompany == false
         ? await TokenService.getCompanyId() ?? ''
         : await TokenService.getUserId() ?? '';
   }
@@ -221,6 +221,8 @@ class FeedProvider extends ChangeNotifier {
     bool isSilentRepost = false,
   }) async {
     final userId = await this.userId;
+    print("create prov User ID: $userId");
+
     _isCreating = true;
     _errorMessage = null;
     notifyListeners();
