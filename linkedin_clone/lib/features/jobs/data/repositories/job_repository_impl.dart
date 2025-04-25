@@ -1,9 +1,9 @@
-import 'package:linkedin_clone/features/company/data/models/create_job_model.dart';
+import 'package:linkedin_clone/features/jobs/data/model/create_job_model.dart';
 import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
 
 import '../../domain/repositories/job_repository.dart';
 import '../../domain/entities/job.dart';
-import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 
 class JobRepositoryImpl implements JobRepository {
   final JobRemoteDataSource remoteDataSource;

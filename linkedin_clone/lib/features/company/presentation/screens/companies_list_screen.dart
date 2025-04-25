@@ -64,11 +64,9 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (provider.error != null) {
-                  return Center(child: Text('Error: ${provider.error}'));
-                }
+                
 
-                if (provider.companies.isEmpty) {
+                if (provider.companies.isEmpty||provider.error != null) {
                   return const Center(child: Text('No companies found.'));
                 }
 

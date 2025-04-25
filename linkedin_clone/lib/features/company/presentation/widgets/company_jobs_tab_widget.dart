@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_add_job_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_job_analytics_screen.dart';
-import 'package:linkedin_clone/features/company/presentation/widgets/job_card_widget.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_card_widget.dart';
 import 'package:provider/provider.dart';
 
 class CompanyJobsWidget extends StatefulWidget {

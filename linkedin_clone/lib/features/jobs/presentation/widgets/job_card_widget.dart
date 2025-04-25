@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
-import 'package:linkedin_clone/features/company/presentation/widgets/job_details.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
 

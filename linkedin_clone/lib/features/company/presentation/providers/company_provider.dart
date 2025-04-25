@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
-import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
+import 'package:linkedin_clone/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
-import 'package:linkedin_clone/features/company/domain/usecases/create_job_posting_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/create_job_posting_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_company_details_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_company_followers_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_friends_following_company_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
-import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
-import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
 
 
 class CompanyProvider with ChangeNotifier {

@@ -9,6 +9,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
+import 'package:linkedin_clone/features/jobs/presentation/pages/jobs_search_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -23,8 +24,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final List<Widget> _pages = [
     FeedPage(), // Will be replaced by News Feed module
     MyNetworkPage(), // Will be replaced by Connections module
-    // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompaniesListScreen(),
+    JobSearchPage(),
     SettingsPage(), // Will be replaced by Settings module
   ];
 
@@ -146,9 +147,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: "My Network",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.work_outline),
-            label: "Jobs",
+            icon: Icon(Icons.business),
+            label: "Comapnies",
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Jobs"),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: "Settings",

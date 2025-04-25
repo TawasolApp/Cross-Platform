@@ -1,4 +1,4 @@
-import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
 
 class JobModel extends Job {
   JobModel({

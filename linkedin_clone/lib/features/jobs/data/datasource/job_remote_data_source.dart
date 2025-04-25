@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:linkedin_clone/core/services/token_service.dart';
-import 'package:linkedin_clone/features/company/data/models/create_job_model.dart';
-import '../models/job_model.dart';
+import 'package:linkedin_clone/features/jobs/data/model/create_job_model.dart';
+import '../model/job_model.dart';
 
 class JobRemoteDataSource {
   final String baseUrl = "https://tawasolapp.me/api";

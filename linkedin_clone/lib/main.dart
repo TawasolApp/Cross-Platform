@@ -14,11 +14,11 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_em
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
-import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
-import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
+import 'package:linkedin_clone/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
