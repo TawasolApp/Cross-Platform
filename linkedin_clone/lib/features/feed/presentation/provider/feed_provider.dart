@@ -169,9 +169,7 @@ class FeedProvider extends ChangeNotifier {
     bool forceRefresh = false,
   }) async {
     // Skip fetching if already fetched same userId and not forced
-    if (!forceRefresh &&
-        _lastFetchedUserId == searchUser &&
-        _hasLoadedUserPosts) {
+    if (!forceRefresh && _lastFetchedUserId == searchUser) {
       print("🟡 Skipping fetch — already fetched userId: $userId");
       return;
     }
@@ -201,7 +199,7 @@ class FeedProvider extends ChangeNotifier {
         },
         (posts) {
           _userPosts = List<PostEntity>.from(posts);
-          _hasLoadedUserPosts = true;
+
           print("✅ Posts fetched: ${_userPosts.length}");
         },
       );
