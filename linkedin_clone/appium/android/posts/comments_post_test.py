@@ -20,7 +20,7 @@ import utils
 
 # TEST: COMMENT POST, EDIT POST, DELETE POST
 
-def test_create_post():
+def test_comment_post():
     user = utils.get_user("userDallas")
 
     options = get_capabilities()

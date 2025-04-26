@@ -20,7 +20,7 @@ import utils
 
 # TEST: SAVES POST, VIEWS SAVED POSTS
 
-def test_create_post():
+def test_saved_post():
     user = utils.get_user("userDallas")
 
     options = get_capabilities()
@@ -104,6 +104,21 @@ def test_create_post():
     except Exception as e:
         print(f"Element 'Saved Posts page' was not visible: {e}")
 
+    # -------------------------------------------------- UNSAVES POSTS --------------------------------------------------
+    time.sleep(5)
+    ellipsis = driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.Button").instance(1)')
+    ellipsis.click()
+    ellipsisUnsave = driver.find_element(by="accessibility id", value="Unsave")
+    ellipsisUnsave.click()
+    time.sleep(2)
+
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.ACCESSIBILITY_ID, "Post unsaved successfully"))
+        )
+        print("Post unsaved successfully.")
+    except Exception as e:
+        print(f"Element 'Post unsaved successfully' was not visible: {e}")
 
 
 
