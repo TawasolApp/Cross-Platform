@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_job_card_widget.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_add_job_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_job_analytics_screen.dart';
-import 'package:linkedin_clone/features/jobs/presentation/widgets/job_card_widget.dart';
 import 'package:provider/provider.dart';
 
 class CompanyJobsWidget extends StatefulWidget {
@@ -120,7 +120,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
               child: ListView.builder(
                 itemCount: jobs.length,
                 itemBuilder: (context, index) {
-                  return JobCard(
+                  return CompanyJobCard(
                     job: jobs[index],
                     companyId: widget.companyId,
                   );

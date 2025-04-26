@@ -13,7 +13,8 @@ import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
 import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
-import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/delete_job_use_case.dart';
 
 
 class CompanyProvider with ChangeNotifier {
@@ -92,6 +93,11 @@ class CompanyProvider with ChangeNotifier {
           remoteDataSource: CompanyRemoteDataSource(),
         ),
       );
+final DeleteJob _deleteJob = DeleteJob(
+  JobRepositoryImpl(
+    remoteDataSource: JobRemoteDataSource(),
+  ),
+);
 
   final UserRemoteDataSource _userRemoteDataSource = UserRemoteDataSource();
 
@@ -317,6 +323,16 @@ class CompanyProvider with ChangeNotifier {
       safeNotify();
     }
   }
+Future<bool> deleteJob(String jobId) async {
+  final success = await _deleteJob(jobId);
+
+  if (success) {
+    _jobs.removeWhere((job) => job.id == jobId);
+    safeNotify();
+  }
+
+  return success;
+}
 
   void resetJobs() {
     _jobs.clear();

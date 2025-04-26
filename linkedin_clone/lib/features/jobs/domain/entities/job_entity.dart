@@ -12,6 +12,13 @@ class Job {
   final DateTime postedDate;
   final int applicantCount;
   final bool isOpen;
+  final String companyName;
+  final String companyLogo;
+  final String companyLocation;
+  final String companyDescription;
+  final String applicationLink;
+  final bool isSaved;
+  final String status;
 
   Job({
     required this.id,
@@ -27,5 +34,12 @@ class Job {
     required this.postedDate,
     required this.applicantCount,
     required this.isOpen,
+    required this.companyName,
+    required this.companyLogo,
+    required this.companyLocation,
+    required this.companyDescription,
+    required this.applicationLink,
+    required this.isSaved,
+    required this.status,
   });
 }

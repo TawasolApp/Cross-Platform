@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_job_details.dart';
 import 'package:provider/provider.dart';
 import '../providers/company_provider.dart';
 
@@ -84,7 +84,7 @@ class RecentJobsWidget extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder:
-                                    (context) => JobDetailsScreen(
+                                    (context) => CompanyJobDetailsScreen(
                                       job: job, 
                                       companyProvider: companyProvider,
                                       companyId:

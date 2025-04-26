@@ -57,6 +57,10 @@ import 'package:linkedin_clone/features/connections/presentations/widgets/test_p
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/apply_for_job_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_case.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
@@ -452,6 +456,15 @@ void main() {
                     mediaRemoteDataSource: MediaRemoteDataSource(),
                   ),
                 ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => JobSearchProvider(searchJobs: SearchJobs(jobrepos)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ApplyJobProvider(
+                applyForJobUseCase: ApplyForJobUseCase(repository: jobrepos),
               ),
         ),
       ],

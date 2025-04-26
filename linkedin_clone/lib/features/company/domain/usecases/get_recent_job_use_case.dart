@@ -1,4 +1,4 @@
-import '../../../jobs/domain/entities/job.dart';
+import '../../../jobs/domain/entities/job_entity.dart';
 import '../../../jobs/domain/repositories/job_repository.dart';
 
 class GetRecentJobs {

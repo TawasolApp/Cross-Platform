@@ -7,6 +7,7 @@ import 'package:linkedin_clone/features/company/domain/repositories/media_reposi
 import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_create_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_edit_details_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_list_followers.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_page_tabs.dart';
@@ -16,7 +17,7 @@ import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CompanyProfileScreen extends StatelessWidget {
-  final String companyId; 
+  final String companyId;
   const CompanyProfileScreen({
     required this.companyId,
     super.key,
@@ -143,29 +144,38 @@ class CompanyProfileScreen extends StatelessWidget {
 
           title: Consumer<CompanyProvider>(
             builder: (context, provider, child) {
-              return (TextField(
-                controller: TextEditingController(text: provider.company?.name),
-                style: Theme.of(context).textTheme.titleLarge,
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  hintStyle: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
-                  prefixIcon: Icon(Icons.search),
-                  enabledBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.grey[300]!,
-                      width: 1.0,
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => CompaniesListScreen()),
+                  );
+                },
+                child: AbsorbPointer(
+                  absorbing: true,
+                  child: TextField(
+                    controller: TextEditingController(
+                      text: provider.company?.name,
+                    ),
+                    style: Theme.of(context).textTheme.titleLarge,
+                    decoration: InputDecoration(
+                      hintText: 'Search companies...',
+                      hintStyle: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                      prefixIcon: Icon(Icons.search),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1.0,
+                        ),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.blue, width: 2.0),
+                      ),
                     ),
                   ),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Colors.blue, width: 2.0),
-                  ),
                 ),
-                onChanged: (value) {
-                  print('Search query: \$value');
-                },
-              ));
+              );
             },
           ),
         ),
@@ -298,9 +308,8 @@ class CompanyProfileScreen extends StatelessWidget {
                                               onTap: () {
                                                 provider.toggleViewMode();
                                               },
-                                              borderRadius: BorderRadius.circular(
-                                                8,
-                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                               child: Padding(
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal: 8,
@@ -404,14 +413,15 @@ class CompanyProfileScreen extends StatelessWidget {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder:
-                                                          (context) =>
-                                                              CompanyFollowersScreen(
-                                                                companyId:
-                                                                    provider
-                                                                        .company
-                                                                        ?.companyId ??
-                                                                    "",
-                                                              ),
+                                                          (
+                                                            context,
+                                                          ) => CompanyFollowersScreen(
+                                                            companyId:
+                                                                provider
+                                                                    .company
+                                                                    ?.companyId ??
+                                                                "",
+                                                          ),
                                                     ),
                                                   );
                                                 },
@@ -631,9 +641,7 @@ class CompanyProfileScreen extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              CompanyTabsWidget(
-                                companyId: companyId,
-                              ),
+                              CompanyTabsWidget(companyId: companyId),
                               Divider(thickness: 3, color: Colors.black54),
                             ],
                           ),
@@ -711,29 +719,20 @@ class CompanyProfileScreen extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.primary,
-                            borderRadius: BorderRadius.circular(
-                              16,
-                            ), 
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
-                            mainAxisSize: MainAxisSize.min, 
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
-                                Icons.edit,
-                                color: Colors.white, 
-                                size: 24, 
-                              ),
+                              Icon(Icons.edit, color: Colors.white, size: 24),
                               SizedBox(width: 6),
                               Text(
                                 "Edit Details",
                                 style: TextStyle(
-                                  color: Colors.white, 
-                                  fontSize: 16, 
-                                  fontWeight: FontWeight.w500, 
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],

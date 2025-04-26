@@ -1,8 +1,9 @@
 import 'package:linkedin_clone/features/jobs/data/model/create_job_model.dart';
 import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/apply_for_job_entity.dart';
 
 import '../../domain/repositories/job_repository.dart';
-import '../../domain/entities/job.dart';
+import '../../domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 
 class JobRepositoryImpl implements JobRepository {
@@ -33,4 +34,40 @@ class JobRepositoryImpl implements JobRepository {
       companyId,
     );
   }
+
+@override
+Future<List<Job>> searchJobs({
+  String? keyword,
+  String? location,
+  String? industry,
+  String? experienceLevel,
+  String? company,
+  double? minSalary,
+  double? maxSalary,
+  int page = 1,
+  int limit = 5,
+}) {
+  return remoteDataSource.searchJobs(
+    keyword: keyword,
+    location: location,
+    industry: industry,
+    experienceLevel: experienceLevel,
+    company: company,
+    minSalary: minSalary,
+    maxSalary: maxSalary,
+    page: page,
+    limit: limit,
+  );
+}
+
+@override
+Future<bool> deleteJob(String jobId) {
+  return remoteDataSource.deleteJob(jobId);
+}
+
+@override
+Future<bool> applyForJob(ApplyForJobEntity application) {
+  return remoteDataSource.applyForJob(application);
+}
+
 }

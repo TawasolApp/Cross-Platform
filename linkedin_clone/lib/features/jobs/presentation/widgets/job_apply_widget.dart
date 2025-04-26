@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/apply_for_job_entity.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
+import 'package:provider/provider.dart';
 
 class ApplyForJobWidget extends StatelessWidget {
   final String companyName;
-  ApplyForJobWidget({required this.companyName});
+  final String jobId; // You must pass the jobId now!
+
+  ApplyForJobWidget({required this.companyName, required this.jobId});
 
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  bool _isResumeUploaded = false;
-  PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'US'); // Default country code
+  PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'EG'); // Default country code
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white, 
+        backgroundColor: Colors.white,
         title: Text(
           'Apply for $companyName',
-          style: TextStyle(color: const Color.fromARGB(255, 21, 98, 161)), 
+          style: const TextStyle(color: Color.fromARGB(255, 21, 98, 161)),
         ),
-        iconTheme: IconThemeData(color: Colors.black), 
-        elevation: 0, 
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,63 +37,29 @@ class ApplyForJobWidget extends StatelessWidget {
                 'Personal Details',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              SizedBox(height: 16),
-              // Name input
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your full name';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              // Email input
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email Address',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email address';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
-              // Phone number input with country code dropdown
+              const SizedBox(height: 16),
+
+              const SizedBox(height: 16),
+
+              const SizedBox(height: 16),
+              // Phone Number
               InternationalPhoneNumberInput(
                 onInputChanged: (PhoneNumber number) {
                   _phoneNumber = number;
                 },
                 initialValue: _phoneNumber,
                 textFieldController: _phoneController,
-                inputDecoration: InputDecoration(
+                inputDecoration: const InputDecoration(
                   labelText: 'Phone Number',
                   border: OutlineInputBorder(),
                 ),
                 countries: [],
               ),
-              SizedBox(height: 16),
-              // Resume upload section
-              ElevatedButton(
-                onPressed: () => _uploadResume(context),
-                child: Text(
-                  _isResumeUploaded ? 'Resume Uploaded' : 'Upload Resume',
-                ),
-              ),
-              SizedBox(height: 20),
-              // Submit button
+              const SizedBox(height: 24),
+              // Submit Button
               ElevatedButton(
                 onPressed: () => _applyForJob(context),
-                child: Text('Submit Application'),
+                child: const Text('Submit Application'),
               ),
             ],
           ),
@@ -101,38 +68,33 @@ class ApplyForJobWidget extends StatelessWidget {
     );
   }
 
-  // Handle job application submission
-  void _applyForJob(BuildContext context) {
+  // Handle form submission
+  void _applyForJob(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Application Submitted Successfully')),
+      final provider = Provider.of<ApplyJobProvider>(context, listen: false);
+
+      final application = ApplyForJobEntity(
+        jobId: jobId, 
+        phoneNumber: _phoneNumber.phoneNumber ?? '',
+        resumeURL: '', // If not required anymore, just empty string
       );
+
+      final success = await provider.applyForJob(application);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Application Submitted Successfully')),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to submit application')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill out all required fields')),
+        const SnackBar(content: Text('Please fill out all required fields')),
       );
-    }
-  }
-
-  // Handle file upload
-  void _uploadResume(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['pdf', 'doc', 'docx'], // Specify allowed extensions
-    );
-
-    if (result != null) {
-      // You can get the file path and upload it to your backend
-      String filePath = result.files.single.path ?? '';
-      _isResumeUploaded = true;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Resume Uploaded Successfully')));
-    } else {
-      // User canceled the file picker
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('No file selected')));
     }
   }
 }

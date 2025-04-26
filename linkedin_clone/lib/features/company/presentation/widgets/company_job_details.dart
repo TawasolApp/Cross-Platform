@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
-import 'package:linkedin_clone/features/jobs/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/widgets/job_apply_widget.dart';
 
-class JobDetailsScreen extends StatefulWidget {
+class CompanyJobDetailsScreen extends StatefulWidget {
   final Job job;
   final CompanyProvider companyProvider;
   final String companyId;
 
-  const JobDetailsScreen({
+  const CompanyJobDetailsScreen({
     Key? key,
     required this.job,
     required this.companyProvider,
@@ -21,7 +21,7 @@ class JobDetailsScreen extends StatefulWidget {
   _JobDetailsScreenState createState() => _JobDetailsScreenState();
 }
 
-class _JobDetailsScreenState extends State<JobDetailsScreen> {
+class _JobDetailsScreenState extends State<CompanyJobDetailsScreen> {
   bool isSaved = false;
   bool isExpanded = false;
   bool showBottomNav = false;
@@ -154,6 +154,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 MaterialPageRoute(
                                   builder:
                                       (_) => ApplyForJobWidget(
+                                        jobId: widget.job.id,
                                         companyName:
                                             widget
                                                 .companyProvider
@@ -328,6 +329,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                             MaterialPageRoute(
                               builder:
                                   (_) => ApplyForJobWidget(
+                                    jobId: widget.job.id,
                                     companyName:
                                         widget.companyProvider.company?.name ??
                                         'Unknown Company',
