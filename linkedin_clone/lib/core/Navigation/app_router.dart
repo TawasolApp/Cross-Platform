@@ -68,10 +68,7 @@ class AppRouter {
         path: RouteNames.main,
         builder: (context, state) => MainNavigationPage(),
       ),
-      // GoRoute(
-      //   path: RouteNames.createPost,
-      //   builder: (context, state) => PostCreationPage(userId: ,),
-      // ),
+
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
@@ -119,10 +116,7 @@ class AppRouter {
         path: RouteNames.main,
         builder: (context, state) => MainNavigationPage(),
       ),
-      // GoRoute(
-      //   path: RouteNames.createPost,
-      //   builder: (context, state) => PostCreationPage(),
-      // ),
+
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,

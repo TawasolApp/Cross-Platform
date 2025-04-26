@@ -12,6 +12,8 @@ class PostCreationPage extends StatefulWidget {
   final String? authorTitle;
   final String? authorImage;
   final String? visibility;
+  final String? parentPostId; // For reposting
+  final bool? isSilentRepost; // For reposting
 
   const PostCreationPage({
     super.key,
@@ -21,6 +23,8 @@ class PostCreationPage extends StatefulWidget {
     this.authorTitle,
     this.authorImage,
     this.visibility,
+    this.parentPostId,
+    this.isSilentRepost,
   });
 
   @override

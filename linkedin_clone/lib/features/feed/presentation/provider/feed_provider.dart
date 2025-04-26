@@ -227,12 +227,14 @@ class FeedProvider extends ChangeNotifier {
     _isCreating = true;
     _errorMessage = null;
     notifyListeners();
-
+    final actualContent = isSilentRepost ? "Reposted" : content;
+    final actualMedia = isSilentRepost ? <String>[] : (media ?? []);
+    final actualTaggedUsers = isSilentRepost ? <String>[] : (taggedUsers ?? []);
     final result = await createPostUseCase(
       userId,
-      content: content,
-      media: media,
-      taggedUsers: taggedUsers,
+      content: actualContent,
+      media: actualMedia,
+      taggedUsers: actualTaggedUsers,
       visibility: visibility,
       parentPostId: parentPostId?.isNotEmpty == true ? parentPostId : null,
       isSilentRepost: isSilentRepost,
