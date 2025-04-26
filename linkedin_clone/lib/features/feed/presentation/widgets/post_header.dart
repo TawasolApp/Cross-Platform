@@ -11,8 +11,9 @@ class PostHeader extends StatelessWidget {
   final String postId;
   final String postContent;
   final String visibility;
-  final String authorId; // Add this field for routing
-
+  final String authorId;
+  final String currentUserId;
+  final String authorType;
   const PostHeader({
     super.key,
     required this.profileImage,
@@ -22,7 +23,9 @@ class PostHeader extends StatelessWidget {
     required this.postId,
     required this.postContent,
     required this.visibility,
-    required this.authorId, // Pass it from PostEntity
+    required this.authorId,
+    required this.currentUserId,
+    required this.authorType,
   });
 
   @override
@@ -37,10 +40,23 @@ class PostHeader extends StatelessWidget {
           onTap: () {
             context.go(RouteNames.profile, extra: authorId);
           },
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(profileImage),
-            radius: 22,
-          ),
+          child:
+              authorType == "User"
+                  ? CircleAvatar(
+                    backgroundImage: NetworkImage(profileImage),
+                    radius: 22,
+                  )
+                  : ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: Image.network(
+                      profileImage,
+                      width: 44,
+                      height: 44,
+                      fit: BoxFit.cover,
+                      errorBuilder:
+                          (_, __, ___) => const Icon(Icons.business, size: 40),
+                    ),
+                  ),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -86,6 +102,8 @@ class PostHeader extends StatelessWidget {
                     authorName: authorName,
                     authorTitle: authorTitle,
                     visibility: visibility,
+                    authorId: authorId,
+                    currentUserId: currentUserId,
                     rootContext: context,
                   ),
             );

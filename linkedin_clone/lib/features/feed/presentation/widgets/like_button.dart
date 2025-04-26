@@ -5,7 +5,6 @@ import '../../../../core/utils/reaction_type.dart';
 
 class LikeButton extends StatelessWidget {
   final PostEntity post;
-
   const LikeButton({super.key, required this.post});
 
   void _showReactionPopup(BuildContext context) {

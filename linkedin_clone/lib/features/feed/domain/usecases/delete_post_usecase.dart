@@ -7,7 +7,7 @@ class DeletePostUseCase {
 
   DeletePostUseCase(this.repository);
 
-  Future<Either<Failure, void>> call(String postId) {
-    return repository.deletePost(postId);
+  Future<Either<Failure, void>> call(String userId, String postId) {
+    return repository.deletePost(userId, postId);
   }
 }

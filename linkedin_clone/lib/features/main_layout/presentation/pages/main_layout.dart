@@ -9,6 +9,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
+import '../../../../core/services/token_service.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -19,6 +20,8 @@ class MainNavigationPage extends StatefulWidget {
 
 class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
+  String? _userId;
+  bool _loadingId = true;
 
   final List<Widget> _pages = [
     FeedPage(), // Will be replaced by News Feed module
@@ -27,6 +30,27 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     CompaniesListScreen(),
     SettingsPage(), // Will be replaced by Settings module
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCompanyId();
+  }
+
+  Future<void> _loadCompanyId() async {
+    final isCompany = await TokenService.getIsCompany();
+    final id =
+        isCompany == true
+            ? await TokenService.getCompanyId()
+            : await TokenService.getUserId();
+
+    setState(() {
+      _userId = id;
+      _loadingId = false;
+    });
+
+    print("🔐 Loaded ID for saved posts: $_userId");
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -40,6 +64,13 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     context.go(
       RouteNames.profile,
     ); // Define this route in GoRouter or Navigator
+  }
+
+  void _goToSavedPosts() {
+    if (_userId == null) return;
+
+    Navigator.pop(context); // close drawer
+    context.push(RouteNames.savedPosts, extra: _userId);
   }
 
   @override
@@ -97,6 +128,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
               ),
+              onTap: _loadingId ? null : _goToSavedPosts,
             ),
             ListTile(
               title: Text(

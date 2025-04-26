@@ -8,17 +8,19 @@ class CommentPostUseCase {
 
   CommentPostUseCase(this.repository);
 
-  Future<Either<Failure, CommentModel>> call({
+  Future<Either<Failure, CommentModel>> call(
+    String userId, {
     required String postId,
     required String content,
     List<String>? taggedUsers,
     bool isReply = false,
   }) async {
     print(
-      'CommentPostUseCase called with postId: $postId, content: $content, taggedUsers: $taggedUsers, isReply: $isReply',
+      'CommentPostUseCase called with postId: $postId, content: $content, taggedUsers: $taggedUsers, isReply: $isReply, userId: $userId',
     );
 
     return await repository.addComment(
+      userId,
       postId: postId,
       content: content,
       taggedUsers: taggedUsers,

@@ -10,6 +10,7 @@ class ReactionPopup extends StatelessWidget {
 
   const ReactionPopup({
     Key? key,
+
     required this.postId,
     required this.onReactionSelected,
   }) : super(key: key);

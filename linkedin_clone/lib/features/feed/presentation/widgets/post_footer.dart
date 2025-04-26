@@ -6,12 +6,12 @@ import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import 'package:go_router/go_router.dart';
 import '../provider/feed_provider.dart';
 import 'package:provider/provider.dart';
+import 'repost_bottom_sheet.dart';
 
 class PostFooter extends StatefulWidget {
   final PostEntity post;
   final int comments;
   final int shares;
-
   const PostFooter({
     super.key,
     required this.post,
@@ -59,7 +59,7 @@ class _PostFooterState extends State<PostFooter> {
 
     final icon = hasReacted ? reaction.icon : Icons.thumb_up_off_alt;
     final color = hasReacted ? reaction.color : Colors.grey;
-    final label = hasReacted ? reaction.name : 'React';
+    final label = hasReacted ? reaction.name : 'Like';
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -98,16 +98,23 @@ class _PostFooterState extends State<PostFooter> {
               ],
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.loop, size: 20, color: Colors.grey),
-              const SizedBox(height: 2),
-              Text(
-                "Repost",
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
-              ),
-            ],
+
+          GestureDetector(
+            onTap: () {
+              showRepostBottomSheet(context, widget.post.id);
+            },
+
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.loop, size: 20, color: Colors.grey),
+                const SizedBox(height: 2),
+                Text(
+                  "Repost",
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
+            ),
           ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,

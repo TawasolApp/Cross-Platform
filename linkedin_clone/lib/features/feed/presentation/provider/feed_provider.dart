@@ -8,19 +8,17 @@ import '../../domain/usecases/save_post_usecase.dart';
 import '../../domain/usecases/edit_post_usecase.dart';
 import '../../domain/usecases/comment_post_usecase.dart';
 import '../../domain/usecases/fetch_comments_usecase.dart';
-import '../../data/models/post_model.dart';
 import '../../data/models/comment_model.dart';
 import '../../../../../core/errors/failures.dart';
 import '../../domain/usecases/edit_comment_usecase.dart';
 import '../../domain/usecases/react_to_post_usecase.dart';
 import '../../domain/usecases/get_post_reactions_usecase.dart';
-import '../../../profile/domain/usecases/profile/get_profile.dart';
-import 'package:linkedin_clone/core/usecase/usecase.dart';
 import '../../domain/usecases/unsave_post_usecase.dart';
 import '../../domain/usecases/get_user_posts_usecase.dart';
-import 'package:collection/collection.dart';
-import 'package:linkedin_clone/core/utils/reaction_type.dart';
 import '../../domain/usecases/delete_comment_usecase.dart';
+import '../../data/models/reaction_model.dart';
+import '../../../../core/services/token_service.dart';
+import '../../domain/usecases/get_saved_posts_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -36,6 +34,7 @@ class FeedProvider extends ChangeNotifier {
   final UnsavePostUseCase unsavePostUseCase;
   final GetUserPostsUseCase getUserPostsUseCase;
   final DeleteCommentUseCase deleteCommentUseCase;
+  final GetSavedPostsUseCase getSavedPostsUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -51,6 +50,7 @@ class FeedProvider extends ChangeNotifier {
     required this.unsavePostUseCase,
     required this.getUserPostsUseCase,
     required this.deleteCommentUseCase,
+    required this.getSavedPostsUseCase,
   });
 
   //String _currentUserId;
@@ -59,16 +59,23 @@ class FeedProvider extends ChangeNotifier {
 
   List<PostEntity> _userPosts = [];
   List<PostEntity> get userPosts => _userPosts;
+
+  List<PostEntity> _savedPosts = [];
+  List<PostEntity> get savedPosts => _savedPosts;
+
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
   bool _isCreating = false;
   bool get isCreating => _isCreating;
+  // bool _hasLoadedUserPosts = false;
+  // bool get hasLoadedUserPosts => _hasLoadedUserPosts;
 
   String _authorName = '';
   String _profileImage = '';
@@ -78,9 +85,30 @@ class FeedProvider extends ChangeNotifier {
   String get authorName => _authorName;
   String get profileImage => _profileImage;
   String get authorTitle => _authorTitle;
-
+  String? _lastFetchedUserId;
+  String? get lastFetchedUserId => _lastFetchedUserId;
   String _visibility = "Public"; // default
   String get visibility => _visibility;
+  List<ReactionModel> _postReactions = [];
+  List<ReactionModel> get postReactions => _postReactions;
+
+  bool _isReactionsLoading = false;
+  bool get isReactionsLoading => _isReactionsLoading;
+
+  String? _reactionsError;
+  String? get reactionsError => _reactionsError;
+
+  Future<String> get userId async {
+    final isCompany = await TokenService.getIsCompany();
+    return isCompany == false
+        ? await TokenService.getCompanyId() ?? ''
+        : await TokenService.getUserId() ?? '';
+  }
+
+  Future<bool> get isCompany async {
+    final isCompany = await TokenService.getIsCompany();
+    return isCompany ?? false;
+  }
 
   void setVisibility(String newVisibility) {
     _visibility = newVisibility;
@@ -107,7 +135,8 @@ class FeedProvider extends ChangeNotifier {
     print("Fetching posts...");
 
     try {
-      final result = await getPostsUseCase(page: page, limit: limit);
+      final userId = await this.userId;
+      final result = await getPostsUseCase(userId, page: page, limit: limit);
       result.fold(
         (failure) {
           _errorMessage = failure.message;
@@ -135,49 +164,52 @@ class FeedProvider extends ChangeNotifier {
   }
 
   Future<void> fetchUserPosts(
-    String userId, {
+    String searchUser, {
     int page = 1,
     int limit = 10,
+    bool forceRefresh = false,
   }) async {
-    if (_isLoading) {
-      print("Fetch already in progress, skipping...");
-      print("fetchPosts called from: ${StackTrace.current}");
-
+    // Skip fetching if already fetched same userId and not forced
+    if (!forceRefresh && _lastFetchedUserId == searchUser) {
+      print("🟡 Skipping fetch — already fetched userId: $userId");
       return;
     }
 
+    _lastFetchedUserId = searchUser;
+    _userPosts = []; // Clear previous posts
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-    print("Fetching posts...");
+
+    print("🔄 Fetching posts for user: $searchUser");
 
     try {
+      final userId = await this.userId;
+      print("🔄 inside: Fetching posts for user: $searchUser");
       final result = await getUserPostsUseCase(
         userId,
+        searchUser,
         page: page,
         limit: limit,
       );
+
       result.fold(
         (failure) {
           _errorMessage = failure.message;
-          print("Error while fetching posts: $_errorMessage");
-          _isLoading = false;
-          notifyListeners();
+          print("❌ Error fetching posts: $_errorMessage");
         },
         (posts) {
           _userPosts = List<PostEntity>.from(posts);
-          print("Posts fetched successfully, count: ${_userPosts.length}");
-          _isLoading = false;
-          notifyListeners();
+
+          print("✅ Posts fetched: ${_userPosts.length}");
         },
       );
     } catch (e) {
       _errorMessage = "Failed to fetch posts: $e";
-      print("Exception: $_errorMessage");
+      print("❌ Exception: $_errorMessage");
+    } finally {
       _isLoading = false;
       notifyListeners();
-    } finally {
-      print("Fetch complete, isLoading: $_isLoading");
     }
   }
 
@@ -189,14 +221,20 @@ class FeedProvider extends ChangeNotifier {
     String? parentPostId,
     bool isSilentRepost = false,
   }) async {
+    final userId = await this.userId;
+    print("create prov User ID: $userId");
+
     _isCreating = true;
     _errorMessage = null;
     notifyListeners();
-
+    final actualContent = isSilentRepost ? "Reposted" : content;
+    final actualMedia = isSilentRepost ? <String>[] : (media ?? []);
+    final actualTaggedUsers = isSilentRepost ? <String>[] : (taggedUsers ?? []);
     final result = await createPostUseCase(
-      content: content,
-      media: media,
-      taggedUsers: taggedUsers,
+      userId,
+      content: actualContent,
+      media: actualMedia,
+      taggedUsers: actualTaggedUsers,
       visibility: visibility,
       parentPostId: parentPostId?.isNotEmpty == true ? parentPostId : null,
       isSilentRepost: isSilentRepost,
@@ -218,7 +256,8 @@ class FeedProvider extends ChangeNotifier {
 
   Future<void> deletePost(String postId) async {
     print('Provider: Deleting post with ID: $postId');
-    final result = await deletePostUseCase(postId);
+    final userId = await this.userId;
+    final result = await deletePostUseCase(userId, postId);
     result.fold(
       (failure) {
         _handleFailure(failure);
@@ -236,7 +275,8 @@ class FeedProvider extends ChangeNotifier {
   Future<void> savePost(String postId) async {
     try {
       print("Provider: Attempting to save post with ID: $postId");
-      final result = await savePostUseCase(postId);
+      final userId = await this.userId;
+      final result = await savePostUseCase(userId, postId);
       result.fold(
         (failure) {
           print("Provider Error saving post: $failure");
@@ -261,7 +301,8 @@ class FeedProvider extends ChangeNotifier {
   Future<void> unsavePost(String postId) async {
     try {
       print("Provider: Attempting to unsave post with ID: $postId");
-      final result = await unsavePostUseCase(postId);
+      final userId = await this.userId;
+      final result = await unsavePostUseCase(userId, postId);
       result.fold(
         (failure) {
           print("Provider Error unsaving post: $failure");
@@ -290,7 +331,9 @@ class FeedProvider extends ChangeNotifier {
     List<String>? taggedUsers,
     required String visibility,
   }) async {
+    final userId = await this.userId;
     final result = await editPostUseCase(
+      userId,
       postId: postId,
       content: content,
       media: media,
@@ -318,7 +361,9 @@ class FeedProvider extends ChangeNotifier {
   }
 
   Future<void> addComment(String postId, String content, bool isReply) async {
+    final userId = await this.userId;
     final result = await commentPostUseCase(
+      userId,
       postId: postId,
       content: content,
       isReply: isReply,
@@ -340,7 +385,6 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  // Fetch method for comments
   Future<void> fetchComments(
     String postId, {
     int page = 1,
@@ -349,8 +393,14 @@ class FeedProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
-
-    final result = await fetchCommentsUseCase(postId, page: page, limit: limit);
+    print("Fetching comments for post: $postId");
+    final userId = await this.userId;
+    final result = await fetchCommentsUseCase(
+      userId,
+      postId,
+      page: page,
+      limit: limit,
+    );
 
     result.fold(
       (failure) {
@@ -372,7 +422,9 @@ class FeedProvider extends ChangeNotifier {
     List<String>? taggedUsers,
     bool isReply = false,
   }) async {
+    final userId = await this.userId;
     final result = await editCommentUseCase(
+      userId,
       commentId: commentId,
       content: updatedContent,
       tagged: taggedUsers,
@@ -394,7 +446,9 @@ class FeedProvider extends ChangeNotifier {
     Map<String, bool> reactions,
     String postType,
   ) async {
+    final userId = await this.userId;
     final result = await reactToPostUseCase(
+      userId,
       postId: postId,
       reactions: reactions,
       postType: postType,
@@ -467,17 +521,34 @@ class FeedProvider extends ChangeNotifier {
     });
   }
 
-  Future<List<Map<String, dynamic>>> getPostReactions(String postId) async {
-    final result = await getPostReactionsUseCase(postId);
-    return result.fold((failure) {
-      _handleFailure(failure);
-      return [];
-    }, (reactions) => reactions);
+  Future<void> getPostReactions(String postId, {String type = 'All'}) async {
+    _isReactionsLoading = true;
+    _reactionsError = null;
+    notifyListeners();
+    print("Fetching reactions for post: $postId");
+    final userId = await this.userId;
+    final result = await getPostReactionsUseCase(userId, postId, type: type);
+
+    result.fold(
+      (failure) {
+        _postReactions = [];
+        _reactionsError = failure.message;
+        print("Failed to fetch reactions: ${failure.message}");
+      },
+      (reactions) {
+        _postReactions = reactions;
+        print("Fetched ${reactions.length} reactions for post $postId");
+      },
+    );
+
+    _isReactionsLoading = false;
+    notifyListeners();
   }
 
   Future<void> deleteComment(String postId, String commentId) async {
     print('Provider: Deleting comment with ID: $commentId from post: $postId');
-    final result = await deleteCommentUseCase(commentId);
+    final userId = await this.userId;
+    final result = await deleteCommentUseCase(userId, commentId);
     result.fold(
       (failure) {
         print("Provider: Failed to delete comment: $failure");
@@ -500,5 +571,35 @@ class FeedProvider extends ChangeNotifier {
         print("Comment deleted successfully");
       },
     );
+  }
+
+  Future<void> fetchSavedPosts({int page = 1, int limit = 10}) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final userId = await this.userId;
+      final result = await getSavedPostsUseCase(
+        userId,
+        page: page,
+        limit: limit,
+      );
+
+      result.fold(
+        (failure) {
+          _errorMessage = failure.message;
+          _savedPosts = [];
+        },
+        (posts) {
+          _savedPosts = List<PostEntity>.from(posts);
+        },
+      );
+    } catch (e) {
+      _errorMessage = "Failed to fetch saved posts: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

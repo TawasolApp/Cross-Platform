@@ -27,6 +27,11 @@ import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page
 import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/job_listings_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/analytics_page.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/saved_posts_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -63,10 +68,7 @@ class AppRouter {
         path: RouteNames.main,
         builder: (context, state) => MainNavigationPage(),
       ),
-      GoRoute(
-        path: RouteNames.createPost,
-        builder: (context, state) => PostCreationPage(),
-      ),
+
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
@@ -114,10 +116,7 @@ class AppRouter {
         path: RouteNames.main,
         builder: (context, state) => MainNavigationPage(),
       ),
-      GoRoute(
-        path: RouteNames.createPost,
-        builder: (context, state) => PostCreationPage(),
-      ),
+
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
@@ -127,13 +126,7 @@ class AppRouter {
               title: "Test",
             ),
       ),
-      // GoRoute(
-      //   path: RouteNames.profile,
-      //   builder: (context, state) {
-      //     final userId = state.extra as String;
-      //     return UserProfile(userId);
-      //   },
-      // ),
+
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
         path: RouteNames.addName,
@@ -161,7 +154,10 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.createPost,
-        builder: (context, state) => PostCreationPage(),
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return PostCreationPage();
+        },
       ),
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
@@ -233,6 +229,33 @@ class AppRouter {
       GoRoute(
         path: RouteNames.manageMyNetwrok,
         builder: (context, state) => ListPage(type: PageType.manageMyNetwork),
+      ),
+      GoRoute(
+        path: RouteNames.reactions,
+        builder: (context, state) {
+          final postId = state.extra as String;
+          final userId = state.extra as String;
+          return ReactionsPage(postId: postId);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.adminReports,
+        builder: (context, state) => const ReportsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.adminJobs,
+        builder: (context, state) => const JobListingsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.adminAnalytics,
+        builder: (context, state) => const AnalyticsPage(),
+      ),
+      GoRoute(
+        path: RouteNames.savedPosts,
+        builder: (context, state) {
+          final userId = state.extra as String;
+          return SavedPostsPage(userId: userId);
+        },
       ),
     ],
   );

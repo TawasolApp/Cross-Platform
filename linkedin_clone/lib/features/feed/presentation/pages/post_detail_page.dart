@@ -6,6 +6,7 @@ import '../widgets/post_card.dart';
 import '../widgets/add_comment_field.dart';
 import '../widgets/comment_list.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
+import '../widgets/reaction_summary_bar.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;
@@ -26,6 +27,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       final profile = Provider.of<ProfileProvider>(context, listen: false);
       profile.fetchProfile("");
       feedProvider.fetchComments(widget.postId);
+      feedProvider.getPostReactions(widget.postId);
     });
   }
 
@@ -33,9 +35,10 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
     final profile = Provider.of<ProfileProvider>(context);
-    final post = feedProvider.posts.firstWhereOrNull(
-      (p) => p.id == widget.postId,
-    );
+    final myId = profile.userId;
+    final post =
+        feedProvider.posts.firstWhereOrNull((p) => p.id == widget.postId) ??
+        feedProvider.userPosts.firstWhereOrNull((p) => p.id == widget.postId);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -60,8 +63,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
               : Column(
                 children: [
                   // Display the post using PostCard
-                  PostCard(post: post),
-
+                  PostCard(post: post, currentUserId: myId ?? ''),
+                  ReactionSummaryBar(postId: widget.postId),
                   //const Divider(height: 1),
 
                   // Comments Section
@@ -79,7 +82,7 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                             child: Text(feedProvider.errorMessage!),
                           );
                         }
-                        final myId = profile.userId;
+
                         print("myId: $myId");
                         print("${profile.profilePicture}");
 

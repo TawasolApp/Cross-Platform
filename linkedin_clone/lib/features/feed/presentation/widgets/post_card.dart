@@ -15,7 +15,7 @@ class PostCard extends StatelessWidget {
     } else if (duration.inHours < 24) {
       return '${duration.inHours}h';
     } else if (duration.inDays < 30) {
-      return '${(duration.inDays / 30).floor()}mon';
+      return '${duration.inDays}d';
     } else if (duration.inDays < 365) {
       return '${(duration.inDays / 30).floor()}mon';
     } else {
@@ -24,8 +24,8 @@ class PostCard extends StatelessWidget {
   }
 
   final PostEntity post;
-
-  const PostCard({super.key, required this.post});
+  final String currentUserId;
+  const PostCard({super.key, required this.post, required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +45,10 @@ class PostCard extends StatelessWidget {
               postTime: formatTimeAgo(post.timestamp),
               postId: post.id,
               postContent: post.content,
-              visibility: post.visibility ?? 'Public',
+              visibility: post.visibility,
               authorId: post.authorId,
+              currentUserId: currentUserId,
+              authorType: post.authorType,
             ),
             const SizedBox(height: 8),
             PostContent(

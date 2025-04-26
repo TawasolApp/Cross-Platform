@@ -12,8 +12,8 @@ class PostActionsBottomSheet extends StatelessWidget {
   final String authorTitle;
   final String visibility;
   final BuildContext rootContext;
-  // final String authorId;
-  // final String currentUserId;
+  final String authorId;
+  final String currentUserId;
 
   const PostActionsBottomSheet({
     super.key,
@@ -24,15 +24,17 @@ class PostActionsBottomSheet extends StatelessWidget {
     required this.authorTitle,
     required this.visibility,
     required this.rootContext,
-    // required this.authorId,
-    // required this.currentUserId,
+    required this.authorId,
+    required this.currentUserId,
   });
 
   @override
   Widget build(BuildContext context) {
-    final feedProvider = Provider.of<FeedProvider>(context);
-    final isSaved =
-        feedProvider.posts.firstWhere((p) => p.id == postId).isSaved;
+    final feedProvider = Provider.of<FeedProvider>(context, listen: false);
+    final post =
+        feedProvider.posts.firstWhere((p) => p.id == postId) ??
+        feedProvider.userPosts.firstWhere((p) => p.id == postId);
+    final isSaved = post.isSaved;
 
     return SafeArea(
       child: Column(
@@ -42,7 +44,6 @@ class PostActionsBottomSheet extends StatelessWidget {
           Container(height: 4, width: 40, color: Colors.grey[300]),
           const SizedBox(height: 16),
 
-          // Save/Unsave Post
           ListTile(
             leading: Icon(
               isSaved ? Icons.bookmark : Icons.bookmark_border,
@@ -73,52 +74,71 @@ class PostActionsBottomSheet extends StatelessWidget {
             },
           ),
 
-          // Edit Post
+          if (authorId == currentUserId) ...[
+            // Edit Post
+            ListTile(
+              leading: const Icon(Icons.edit),
+              title: const Text('Edit'),
+              onTap: () {
+                Navigator.pop(context);
+                // Navigate to the edit screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => PostCreationPage(
+                          postId: postId,
+                          initialContent: postContent,
+                          visibility: visibility,
+                          authorImage: authorImage,
+                          authorName: authorName,
+                          authorTitle: authorTitle,
+                        ),
+                  ),
+                );
+              },
+            ),
+          ],
+
+          // Report Post
           ListTile(
-            leading: const Icon(Icons.edit),
-            title: const Text('Edit'),
+            leading: const Icon(Icons.report),
+            title: const Text('Report'),
             onTap: () {
               Navigator.pop(context);
-              // Navigate to the edit screen
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => PostCreationPage(
-                        postId: postId,
-                        initialContent: postContent,
-                        visibility: visibility,
-                        authorImage: authorImage,
-                        authorName: authorName,
-                        authorTitle: authorTitle,
-                      ),
+              // Handle report action here (Privacy and Security module)
+              ScaffoldMessenger.of(rootContext).showSnackBar(
+                const SnackBar(
+                  content: Text("Post reported successfully"),
+                  backgroundColor: Colors.red,
                 ),
               );
             },
           ),
 
-          // Delete Post
-          ListTile(
-            leading: const Icon(Icons.delete_outline),
-            title: const Text("Delete post"),
-            onTap: () {
-              Navigator.pop(context);
-              showDeletePostDialog(
-                context: context,
-                onDelete: () async {
-                  await feedProvider.deletePost(postId);
-                  final message = feedProvider.errorMessage;
-                  ScaffoldMessenger.of(rootContext).showSnackBar(
-                    SnackBar(
-                      content: Text(message ?? 'Post deleted successfully'),
-                      backgroundColor:
-                          message == null ? Colors.green : Colors.red,
-                    ),
-                  );
-                },
-              );
-            },
-          ),
+          if (authorId == currentUserId) ...[
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: const Text("Delete post"),
+              onTap: () {
+                Navigator.pop(context);
+                showDeletePostDialog(
+                  context: context,
+                  onDelete: () async {
+                    await feedProvider.deletePost(postId);
+                    final message = feedProvider.errorMessage;
+                    ScaffoldMessenger.of(rootContext).showSnackBar(
+                      SnackBar(
+                        content: Text(message ?? 'Post deleted successfully'),
+                        backgroundColor:
+                            message == null ? Colors.green : Colors.red,
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ],
         ],
       ),
     );

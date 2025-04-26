@@ -6,6 +6,7 @@ import '../../domain/entities/post_entity.dart';
 import '../data_sources/feed_remote_data_source.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../data/models/post_model.dart';
+import '../models/reaction_model.dart';
 
 class FeedRepositoryImpl implements FeedRepository {
   final FeedRemoteDataSource remoteDataSource;
@@ -13,12 +14,17 @@ class FeedRepositoryImpl implements FeedRepository {
   FeedRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<Failure, List<PostEntity>>> getPosts({
+  Future<Either<Failure, List<PostEntity>>> getPosts(
+    String userId, {
     int? page,
     int limit = 10,
   }) async {
     try {
-      final result = await remoteDataSource.getPosts(page: page, limit: limit);
+      final result = await remoteDataSource.getPosts(
+        userId,
+        page: page,
+        limit: limit,
+      );
 
       return result.fold((failure) => Left(failure), (posts) {
         final entities = posts.map((post) => post.toEntity()).toList();
@@ -30,7 +36,8 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, PostEntity>> createPost({
+  Future<Either<Failure, PostEntity>> createPost(
+    String userId, {
     required String content,
     List<String>? media,
     List<String>? taggedUsers,
@@ -39,6 +46,7 @@ class FeedRepositoryImpl implements FeedRepository {
     bool isSilentRepost = false,
   }) async {
     final result = await remoteDataSource.createPost(
+      userId,
       content: content,
       media: media,
       taggedUsers: taggedUsers,
@@ -55,9 +63,9 @@ class FeedRepositoryImpl implements FeedRepository {
 
   // Delete a Post
   @override
-  Future<Either<Failure, Unit>> deletePost(String postId) async {
+  Future<Either<Failure, Unit>> deletePost(String userId, String postId) async {
     try {
-      await remoteDataSource.deletePost(postId);
+      await remoteDataSource.deletePost(userId, postId);
       return const Right(unit);
     } on ServerException {
       return Left(ServerFailure("Failed to delete post"));
@@ -68,10 +76,10 @@ class FeedRepositoryImpl implements FeedRepository {
 
   // Save a Post
   @override
-  Future<Either<Failure, Unit>> savePost(String postId) async {
+  Future<Either<Failure, Unit>> savePost(String userId, String postId) async {
     try {
       print("Repository: Saving post with ID: $postId");
-      await remoteDataSource.savePost(postId);
+      await remoteDataSource.savePost(userId, postId);
       return const Right(unit);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -81,10 +89,10 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> unsavePost(String postId) async {
+  Future<Either<Failure, Unit>> unsavePost(String userId, String postId) async {
     try {
       print("Repository: Deleting saved post with ID: $postId");
-      await remoteDataSource.unsavePost(postId);
+      await remoteDataSource.unsavePost(userId, postId);
       return const Right(unit);
     } catch (e) {
       print("Repository Error deleting saved post: $e");
@@ -93,13 +101,15 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> reactToPost({
+  Future<Either<Failure, Unit>> reactToPost(
+    String userId, {
     required String postId,
     required Map<String, bool> reactions,
     required String postType,
   }) async {
     try {
       await remoteDataSource.reactToPost(
+        userId,
         postId: postId,
         reactions: reactions,
         postType: postType,
@@ -113,20 +123,29 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, List<Map<String, dynamic>>>> getPostReactions(
-    String postId,
-  ) async {
+  Future<Either<Failure, List<ReactionModel>>> getPostReactions(
+    String userId,
+    String postId, {
+    String type = 'All',
+  }) async {
     try {
-      final reactions = await remoteDataSource.getPostReactions(postId);
+      final reactions = await remoteDataSource.getPostReactions(
+        userId,
+        postId,
+        type: type,
+      );
       return Right(reactions);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
     } catch (e) {
-      return Left(ServerFailure(e.toString()));
+      return Left(ServerFailure("Unexpected error: ${e.toString()}"));
     }
   }
 
   // Edit a Post
   @override
-  Future<Either<Failure, Unit>> editPost({
+  Future<Either<Failure, Unit>> editPost(
+    String userId, {
     required String postId,
     required String content,
     required List<String>? media,
@@ -139,6 +158,7 @@ class FeedRepositoryImpl implements FeedRepository {
       );
 
       await remoteDataSource.editPost(
+        userId,
         postId: postId,
         content: content,
         media: media ?? [],
@@ -160,7 +180,8 @@ class FeedRepositoryImpl implements FeedRepository {
 
   // Add a Comment
   @override
-  Future<Either<Failure, CommentModel>> addComment({
+  Future<Either<Failure, CommentModel>> addComment(
+    String userId, {
     required String postId,
     required String content,
     List<String>? taggedUsers,
@@ -168,6 +189,7 @@ class FeedRepositoryImpl implements FeedRepository {
   }) async {
     print("Repository: Adding comment to post with ID: $postId");
     final comment = await remoteDataSource.addComment(
+      userId,
       postId: postId,
       content: content,
       isReply: isReply,
@@ -181,12 +203,14 @@ class FeedRepositoryImpl implements FeedRepository {
   // Fetch Comments
   @override
   Future<Either<Failure, List<CommentModel>>> fetchComments(
+    String userId,
     String postId, {
     int page = 1,
     int limit = 10,
   }) async {
     try {
       final comments = await remoteDataSource.fetchComments(
+        userId,
         postId,
         page: page,
         limit: limit,
@@ -200,7 +224,8 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> editComment({
+  Future<Either<Failure, Unit>> editComment(
+    String userId, {
     required String commentId,
     required String content,
     List<String>? tagged,
@@ -208,6 +233,7 @@ class FeedRepositoryImpl implements FeedRepository {
   }) async {
     try {
       await remoteDataSource.editComment(
+        userId,
         commentId: commentId,
         content: content,
         tagged: tagged ?? [],
@@ -229,12 +255,17 @@ class FeedRepositoryImpl implements FeedRepository {
 
   @override
   Future<Either<Failure, List<PostEntity>>> getUserPosts(
+    String companyId,
     String userId, {
-    int? page,
+    int page = 1,
     int limit = 10,
   }) async {
     try {
+      print(
+        "Repository: Fetching user posts with companyId: $companyId, userId: $userId, page: $page, limit: $limit",
+      );
       final result = await remoteDataSource.getUserPosts(
+        companyId,
         userId,
         page: page,
         limit: limit,
@@ -250,9 +281,12 @@ class FeedRepositoryImpl implements FeedRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> deleteComment(String commentId) async {
+  Future<Either<Failure, Unit>> deleteComment(
+    String userId,
+    String commentId,
+  ) async {
     try {
-      await remoteDataSource.deleteComment(commentId);
+      await remoteDataSource.deleteComment(userId, commentId);
       return const Right(unit);
     } on UnauthorizedException {
       return Left(UnauthorizedFailure("Unauthorized access"));
@@ -264,6 +298,29 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(ServerFailure());
     } catch (e) {
       return Left(UnexpectedFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> getSavedPosts(
+    String companyId, {
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final result = await remoteDataSource.getSavedPosts(
+        companyId,
+        page: page,
+        limit: limit,
+      );
+      return result.fold((failure) => Left(failure), (posts) {
+        final entities = posts.map((post) => post).toList();
+        return Right(entities);
+      });
+    } on ServerException {
+      return Left(ServerFailure('Failed to load saved posts'));
+    } catch (e) {
+      return Left(ServerFailure('Failed to load saved posts'));
     }
   }
 }

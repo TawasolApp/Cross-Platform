@@ -55,6 +55,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -126,6 +127,15 @@ import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
 
+import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reports_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/resolve_report_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_job_listings_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/delete_job_listing_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_analytics_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/data/repositories/admin_repository_impl.dart';
+import 'package:linkedin_clone/features/admin_panel/data/data_sources/admin_remote_data_source.dart';
+
 void main() {
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
@@ -158,7 +168,10 @@ void main() {
   final AuthRemoteDataSource dataSource =
       useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
-  final AuthRepository authRepository = AuthRepositoryImpl(dataSource);
+  final AuthRepository authRepository = AuthRepositoryImpl(
+    dataSource,
+    dataSourceProfile,
+  );
   final loginUseCase = LoginUseCase(authRepository);
   final registerUseCase = RegisterUseCase(authRepository);
   final forgotPassUseCase = ForgotPassUseCase(authRepository);
@@ -183,7 +196,13 @@ void main() {
   final unsavePostUseCase = UnsavePostUseCase(repository);
   final getUserPostsUseCase = GetUserPostsUseCase(repository);
   final deleteCommentUseCase = DeleteCommentUseCase(repository);
+  final getSavedPostsUsecase = GetSavedPostsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
+
+  //////admin
+  final adminRemoteDataSource = AdminRemoteDataSource(dio);
+  final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
+
   runApp(
     MultiProvider(
       providers: [
@@ -219,11 +238,11 @@ void main() {
                 reactToPostUseCase: reactToPostUseCase,
                 editCommentUseCase: editCommentUseCase,
                 getPostReactionsUseCase: getPostReactionsUseCase,
-
                 unsavePostUseCase: unsavePostUseCase,
                 getUserPostsUseCase: getUserPostsUseCase,
                 deleteCommentUseCase: deleteCommentUseCase,
-              )..fetchPosts(),
+                getSavedPostsUseCase: getSavedPostsUsecase,
+              ),
         ),
 
         ChangeNotifierProvider(
@@ -409,6 +428,11 @@ void main() {
                   companyRepository:
                       companyrepos, // Using the existing repository here
                 ),
+                uploadImageUseCase: UploadImageUseCase(
+                  mediaRepository: MediaRepository(
+                    mediaRemoteDataSource: MediaRemoteDataSource(),
+                  ),
+                ),
               ),
         ),
         ChangeNotifierProvider(create: (_) => CompanyProvider()),
@@ -452,6 +476,24 @@ void main() {
                     mediaRemoteDataSource: MediaRemoteDataSource(),
                   ),
                 ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => AdminProvider(
+                getReportsUseCase: GetReportsUseCase(adminRepository),
+                resolveReportUseCase: ResolveReportUseCase(adminRepository),
+                getJobListingsUseCase: GetJobListingsUseCase(adminRepository),
+                deleteJobListingUseCase: DeleteJobListingUseCase(
+                  adminRepository,
+                ),
+                getUserAnalyticsUseCase: GetUserAnalyticsUseCase(
+                  adminRepository,
+                ),
+                getPostAnalyticsUseCase: GetPostAnalyticsUseCase(
+                  adminRepository,
+                ),
+                getJobAnalyticsUseCase: GetJobAnalyticsUseCase(adminRepository),
               ),
         ),
       ],

@@ -7,8 +7,8 @@ class UnsavePostUseCase {
 
   UnsavePostUseCase(this.repository);
 
-  Future<Either<Failure, Unit>> call(String postId) {
+  Future<Either<Failure, Unit>> call(String userId, String postId) {
     print("Use Case: Calling repository to unsave post with ID: $postId");
-    return repository.unsavePost(postId);
+    return repository.unsavePost(userId, postId);
   }
 }

@@ -14,7 +14,7 @@ Future<void> showDeletePostDialog({
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         content: const Text(
-          'Are you sure you want to permanently remove this post from LinkedIn?',
+          'Are you sure you want to permanently remove this post from Tawasol?',
         ),
         actions: [
           TextButton(

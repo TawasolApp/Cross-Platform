@@ -9,10 +9,11 @@ class GetNewsFeedUseCase {
 
   GetNewsFeedUseCase(this.feedRepository);
 
-  Future<Either<Failure, List<PostEntity>>> execute({
+  Future<Either<Failure, List<PostEntity>>> execute(
+    String userId, {
     required int page,
     required int limit,
   }) {
-    return feedRepository.getPosts(page: page, limit: limit);
+    return feedRepository.getPosts(userId, page: page, limit: limit);
   }
 }

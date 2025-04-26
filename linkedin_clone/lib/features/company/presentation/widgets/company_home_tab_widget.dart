@@ -6,6 +6,7 @@ import 'package:linkedin_clone/features/feed/presentation/widgets/post_card.dart
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class CompanyHomeTab extends StatefulWidget {
   final String companyId; // Accept companyId as a parameter
@@ -22,8 +23,11 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final feedProvider = Provider.of<FeedProvider>(context, listen: false);
+      final profile = Provider.of<ProfileProvider>(context, listen: false);
+      profile.fetchProfile("");
       if (feedProvider.posts.isEmpty && !feedProvider.isLoading) {
-        feedProvider.fetchUserPosts(widget.companyId); 
+        feedProvider.fetchUserPosts(widget.companyId);
+        print("Fetching posts for companyId: ${widget.companyId}");
       }
     });
   }
@@ -32,7 +36,8 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
   Widget build(BuildContext context) {
     final provider = Provider.of<CompanyProvider>(context);
     final feedProvider = Provider.of<FeedProvider>(context);
-
+    final profile = Provider.of<ProfileProvider>(context);
+    final myId = profile.userId;
     print('Jobs length: ${provider.jobs.length}');
     String fullText =
         provider.company?.overview?.isNotEmpty ?? false
@@ -197,7 +202,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                             ),
                             child: Container(
                               width: 200, // Add a width constraint
-                              child: PostCard(post: post), // Render PostCard
+                              //child: PostCard(post: post, ), // Render PostCard
                             ),
                           );
                         },
@@ -212,7 +217,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                     DefaultTabController.of(
                       context,
                     ).animateTo(2); // Index 2 for "Posts" tab
-                                   },
+                  },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

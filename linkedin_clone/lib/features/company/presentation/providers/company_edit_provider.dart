@@ -3,9 +3,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_image_use_case.dart';
 
 class EditCompanyDetailsProvider with ChangeNotifier {
   final UpdateCompanyDetails updateCompanyDetails;
+  final UploadImageUseCase uploadImageUseCase;
   bool _isLoading = false;
   String _errorMessage = "";
   List<User> companyAdmins = [];
@@ -36,6 +38,7 @@ class EditCompanyDetailsProvider with ChangeNotifier {
 
   EditCompanyDetailsProvider({
     required this.updateCompanyDetails,
+    required this.uploadImageUseCase,
   });
 
   Future<void> updateDetails(
@@ -43,19 +46,47 @@ class EditCompanyDetailsProvider with ChangeNotifier {
     String companyId,
   ) async {
     _isLoading = true;
-    _errorMessage = ""; // Reset any previous error
+    _errorMessage = "";
     notifyListeners();
 
     try {
-      await updateCompanyDetails.execute(
-        updatedCompany,
-        companyId,
-      ); // Pass the companyId to the use case
-      _isLoading = false;
-      notifyListeners();
+      // ✅ Upload logo image if provided
+      String? logoUrl =
+          _logoImage != null
+              ? await uploadImageUseCase.execute(_logoImage!)
+              : null;
+
+      // ✅ Upload banner image if provided
+      String? bannerUrl =
+          _bannerImage != null
+              ? await uploadImageUseCase.execute(_bannerImage!)
+              : null;
+
+      final newCompany = UpdateCompanyEntity(
+        name: updatedCompany.name,
+        description: updatedCompany.description,
+        companySize: updatedCompany.companySize,
+        location: updatedCompany.location,
+        email: updatedCompany.email,
+        companyType: updatedCompany.companyType,
+        industry: updatedCompany.industry,
+        overview: updatedCompany.overview,
+        founded: updatedCompany.founded,
+        website: updatedCompany.website,
+        address: updatedCompany.address,
+        contactNumber: updatedCompany.contactNumber,
+        logo: logoUrl ?? updatedCompany.logo,
+        banner: bannerUrl ?? updatedCompany.banner,
+        isVerified: updatedCompany.isVerified,
+      );
+
+      await updateCompanyDetails.execute(newCompany, companyId);
+      print("✅ Company updated successfully");
     } catch (e) {
+      _errorMessage = "❌ Failed to update: $e";
+      print(_errorMessage);
+    } finally {
       _isLoading = false;
-      _errorMessage = e.toString();
       notifyListeners();
     }
   }

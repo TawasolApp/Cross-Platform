@@ -219,7 +219,7 @@ class EditCompanyScreen extends StatelessWidget {
                                             0.25,
                                         height:
                                             MediaQuery.of(context).size.width *
-                                            0.25, 
+                                            0.25,
                                         fit: BoxFit.cover,
                                       ),
                                     )
@@ -277,7 +277,7 @@ class EditCompanyScreen extends StatelessWidget {
                                 () => provider.pickImage(
                                   ImageSource.gallery,
                                   false,
-                                ), 
+                                ),
                             child: Stack(
                               alignment: Alignment.bottomRight,
                               children: [
@@ -291,7 +291,7 @@ class EditCompanyScreen extends StatelessWidget {
                                             0.75,
                                         height:
                                             MediaQuery.of(context).size.width *
-                                            0.25, 
+                                            0.25,
                                         fit: BoxFit.cover,
                                       ),
                                     )
@@ -363,12 +363,12 @@ class EditCompanyScreen extends StatelessWidget {
                                     address: addressController.text,
                                     contactNumber: contactNumberController.text,
                                     logo:
-                                        logoImage?.path ??
-                                        company.logo, 
+                                        provider.logoImage?.path ??
+                                        company.logo,
                                     banner:
-                                        bannerImage?.path ??
-                                        company
-                                            .banner, 
+                                        provider.bannerImage?.path ??
+                                        company.banner,
+
                                     isVerified: company.isVerified,
                                   );
                                   await provider.updateDetails(
