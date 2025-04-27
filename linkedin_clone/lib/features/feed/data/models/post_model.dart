@@ -29,6 +29,8 @@ class PostModel extends PostEntity {
     super.isConnected = false,
     super.isEdited = false,
     super.isSilentRepost = false,
+    super.parentPost,
+    super.parentPostId,
   });
 
   factory PostModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,11 @@ class PostModel extends PostEntity {
       isConnected: json['isConnected'] ?? false,
       isEdited: json['isEdited'] ?? false,
       isSilentRepost: json['isSilentRepost'] ?? false,
+      parentPost:
+          json['parentPost'] != null
+              ? PostModel.fromJson(json['parentPost'])
+              : null,
+      parentPostId: json['parentPostId'] ?? '',
     );
   }
 
@@ -85,6 +92,8 @@ class PostModel extends PostEntity {
       isConnected: isConnected,
       isEdited: isEdited,
       isSilentRepost: isSilentRepost,
+      parentPost: parentPost,
+      parentPostId: parentPostId,
     );
   }
 }

@@ -5,8 +5,16 @@ import '../widgets/post_card.dart';
 
 class SavedPostsPage extends StatefulWidget {
   final String userId;
-
-  const SavedPostsPage({super.key, required this.userId});
+  final String? profileImage;
+  final String profileName;
+  final String? profileTitle;
+  const SavedPostsPage({
+    super.key,
+    required this.userId,
+    this.profileImage,
+    required this.profileName,
+    this.profileTitle,
+  });
 
   @override
   State<SavedPostsPage> createState() => _SavedPostsPageState();
@@ -42,7 +50,13 @@ class _SavedPostsPageState extends State<SavedPostsPage> {
                 itemCount: posts.length,
                 itemBuilder: (context, index) {
                   final post = posts[index];
-                  return PostCard(post: post, currentUserId: widget.userId);
+                  return PostCard(
+                    post: post,
+                    currentUserId: widget.userId,
+                    profileImage: widget.profileImage,
+                    profileName: widget.profileName,
+                    profileTitle: widget.profileTitle,
+                  );
                 },
               ),
     );

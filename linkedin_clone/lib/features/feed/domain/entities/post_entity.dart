@@ -23,6 +23,8 @@ class PostEntity {
   final bool isConnected;
   final bool isEdited;
   final bool isSilentRepost;
+  final PostEntity? parentPost; // For reposting
+  final String? parentPostId; // For reposting
 
   PostEntity({
     required this.id,
@@ -47,6 +49,8 @@ class PostEntity {
     this.isConnected = false,
     this.isEdited = false,
     this.isSilentRepost = false,
+    this.parentPost,
+    this.parentPostId,
   });
 
   PostEntity copyWith({
@@ -72,6 +76,8 @@ class PostEntity {
     bool? isConnected,
     bool? isEdited,
     bool? isSilentRepost,
+    PostEntity? parentPost,
+    String? parentPostId,
   }) {
     return PostEntity(
       id: id ?? this.id,
@@ -98,6 +104,8 @@ class PostEntity {
       isConnected: isConnected ?? this.isConnected,
       isEdited: isEdited ?? this.isEdited,
       isSilentRepost: isSilentRepost ?? this.isSilentRepost,
+      parentPost: parentPost ?? this.parentPost,
+      parentPostId: parentPostId ?? this.parentPostId,
     );
   }
 }

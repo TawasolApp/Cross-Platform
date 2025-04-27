@@ -12,8 +12,8 @@ class PostCreationPage extends StatefulWidget {
   final String? authorTitle;
   final String? authorImage;
   final String? visibility;
-  final String? parentPostId; // For reposting
-  final bool? isSilentRepost; // For reposting
+  final String? parentPostId;
+  final bool? isSilentRepost;
 
   const PostCreationPage({
     super.key,
@@ -103,6 +103,8 @@ class PostCreationPageState extends State<PostCreationPage> {
                           await feedProvider.createPost(
                             content: content,
                             visibility: feedProvider.visibility,
+                            parentPostId: widget.parentPostId,
+                            isSilentRepost: widget.isSilentRepost ?? false,
                           );
                           if (feedProvider.errorMessage != null) {
                             if (context.mounted) {

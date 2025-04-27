@@ -54,6 +54,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/list_pag
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
@@ -126,6 +127,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecas
 import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
 
 import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reports_usecase.dart';
@@ -197,6 +199,7 @@ void main() {
   final getUserPostsUseCase = GetUserPostsUseCase(repository);
   final deleteCommentUseCase = DeleteCommentUseCase(repository);
   final getSavedPostsUsecase = GetSavedPostsUseCase(repository);
+  final getPostbyIdUseCase = FetchPostByIdUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
 
   //////admin
@@ -242,6 +245,7 @@ void main() {
                 getUserPostsUseCase: getUserPostsUseCase,
                 deleteCommentUseCase: deleteCommentUseCase,
                 getSavedPostsUseCase: getSavedPostsUsecase,
+                fetchPostByIdUseCase: getPostbyIdUseCase,
               ),
         ),
 

@@ -19,6 +19,7 @@ import '../../domain/usecases/delete_comment_usecase.dart';
 import '../../data/models/reaction_model.dart';
 import '../../../../core/services/token_service.dart';
 import '../../domain/usecases/get_saved_posts_usecase.dart';
+import '../../domain/usecases/get_post_by_id_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -35,6 +36,7 @@ class FeedProvider extends ChangeNotifier {
   final GetUserPostsUseCase getUserPostsUseCase;
   final DeleteCommentUseCase deleteCommentUseCase;
   final GetSavedPostsUseCase getSavedPostsUseCase;
+  final FetchPostByIdUseCase fetchPostByIdUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -51,6 +53,7 @@ class FeedProvider extends ChangeNotifier {
     required this.getUserPostsUseCase,
     required this.deleteCommentUseCase,
     required this.getSavedPostsUseCase,
+    required this.fetchPostByIdUseCase,
   });
 
   //String _currentUserId;
@@ -100,7 +103,7 @@ class FeedProvider extends ChangeNotifier {
 
   Future<String> get userId async {
     final isCompany = await TokenService.getIsCompany();
-    return isCompany == false
+    return isCompany == true
         ? await TokenService.getCompanyId() ?? ''
         : await TokenService.getUserId() ?? '';
   }
@@ -600,6 +603,28 @@ class FeedProvider extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<PostEntity?> fetchPostById(String postId) async {
+    try {
+      final userId =
+          await this.userId; // companyId or userId based on TokenService logic
+      final result = await fetchPostByIdUseCase(userId: userId, postId: postId);
+
+      return result.fold(
+        (failure) {
+          print('❌Prov: Failed to fetch parent post: ${failure.message}');
+          return null;
+        },
+        (post) {
+          print('✅ Prov: Parent post fetched: ${post.id}');
+          return post;
+        },
+      );
+    } catch (e) {
+      print('❌ Prov: Exception while fetching parent post: $e');
+      return null;
     }
   }
 }

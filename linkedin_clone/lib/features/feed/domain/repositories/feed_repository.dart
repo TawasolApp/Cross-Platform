@@ -74,4 +74,8 @@ abstract class FeedRepository {
     int page,
     int limit,
   });
+  Future<Either<Failure, PostEntity>> fetchPostById({
+    required String userId,
+    required String postId,
+  });
 }

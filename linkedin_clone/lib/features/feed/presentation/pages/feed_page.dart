@@ -52,7 +52,13 @@ class _FeedPageState extends State<FeedPage> {
                 itemCount: feedProvider.posts.length,
                 itemBuilder: (context, index) {
                   final post = feedProvider.posts[index];
-                  return PostCard(post: post, currentUserId: myId ?? '');
+                  return PostCard(
+                    post: post,
+                    currentUserId: myId ?? '',
+                    profileImage: profile.profilePicture,
+                    profileName: profile.fullName,
+                    profileTitle: profile.headline,
+                  );
                 },
               ),
       floatingActionButton: FloatingActionButton(

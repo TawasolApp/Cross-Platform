@@ -81,6 +81,10 @@ abstract class FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
+  Future<PostModel> fetchPostById({
+    required String userId,
+    required String postId,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -193,7 +197,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         ),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final postModel = PostModel.fromJson(response.data);
         return Right(postModel);
       } else {
@@ -206,7 +210,9 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         } else if (e.response!.statusCode == 401) {
           return Left(UnauthorizedFailure("Unauthorized access"));
         } else {
-          return Left(ServerFailure("Server error: ${e.response!.data}"));
+          return Left(
+            ServerFailure("Data Source Server error: ${e.response!.data}"),
+          );
         }
       }
       return Left(NetworkFailure("Network error: ${e.message}"));
@@ -623,5 +629,58 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     } catch (e) {
       return Left(NetworkFailure('Failed to connect to server: $e'));
     }
+  }
+
+  @override
+  Future<PostModel> fetchPostById({
+    required String userId,
+    required String postId,
+  }) async {
+    final token = await _getToken();
+    final response = await dio.get(
+      'https://tawasolapp.me/api/posts/$userId/$postId',
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data;
+      print('📦 API Response Body: ${response.data}');
+
+      if (data is List && data.isNotEmpty) {
+        return PostModel.fromJson(data.first); // ✅ Take first item from list
+      } else {
+        throw Exception('Unexpected response: Empty list or wrong format.');
+      }
+    } else if (response.statusCode == 404) {
+      throw Exception('Post not found.');
+    } else {
+      throw Exception('Failed to fetch post. Status: ${response.statusCode}');
+    }
+    // if (data is Map<String, dynamic>) {
+    //   return PostModel.fromJson(data);
+    // } else {
+    //   throw Exception(
+    //     'Unexpected response format: Expected Map<String, dynamic>',
+    //   );
+    // }
+    // } else {
+    //   throw Exception('Failed to fetch post: ${response.statusCode}');
+    // }
+    // } on DioException catch (e) {
+    //   if (e.response != null) {
+    //     throw Exception(
+    //       'Dio error: ${e.response!.statusCode} - ${e.response!.data}',
+    //     );
+    //   } else {
+    //     throw Exception('Dio error: ${e.message}');
+    //   }
+    // } catch (e) {
+    //   throw Exception('Unexpected error: $e');
+    // }
   }
 }

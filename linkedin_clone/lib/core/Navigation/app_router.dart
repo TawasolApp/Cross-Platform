@@ -155,8 +155,13 @@ class AppRouter {
       GoRoute(
         path: RouteNames.createPost,
         builder: (context, state) {
-          final userId = state.extra as String;
-          return PostCreationPage();
+          final extra = state.extra as Map<String, dynamic>?;
+          //final userId = state.extra as String;
+          final userId = extra?['userId'] as String?;
+          return PostCreationPage(
+            parentPostId: extra?['parentPostId'] as String?,
+            isSilentRepost: extra?['isSilentRepost'] as bool? ?? false,
+          );
         },
       ),
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
@@ -250,13 +255,13 @@ class AppRouter {
         path: RouteNames.adminAnalytics,
         builder: (context, state) => const AnalyticsPage(),
       ),
-      GoRoute(
-        path: RouteNames.savedPosts,
-        builder: (context, state) {
-          final userId = state.extra as String;
-          return SavedPostsPage(userId: userId);
-        },
-      ),
+      // GoRoute(
+      //   path: RouteNames.savedPosts,
+      //   builder: (context, state) {
+      //     final userId = state.extra as String;
+      //     return SavedPostsPage(userId: userId);
+      //   },
+      // ),
     ],
   );
 }

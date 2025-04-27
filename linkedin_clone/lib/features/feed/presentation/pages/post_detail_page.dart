@@ -63,7 +63,13 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
               : Column(
                 children: [
                   // Display the post using PostCard
-                  PostCard(post: post, currentUserId: myId ?? ''),
+                  PostCard(
+                    post: post,
+                    currentUserId: myId ?? '',
+                    profileImage: profile.profilePicture,
+                    profileName: profile.fullName,
+                    profileTitle: profile.headline,
+                  ),
                   ReactionSummaryBar(postId: widget.postId),
                   //const Divider(height: 1),
 

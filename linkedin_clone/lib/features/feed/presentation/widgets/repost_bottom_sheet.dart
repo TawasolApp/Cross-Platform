@@ -3,8 +3,23 @@ import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
+import '../../../../core/services/token_service.dart';
+import '../pages/create_post_page.dart';
 
-void showRepostBottomSheet(BuildContext context, String postId) {
+Future<String> get userId async {
+  final isCompany = await TokenService.getIsCompany();
+  return isCompany == false
+      ? await TokenService.getCompanyId() ?? ''
+      : await TokenService.getUserId() ?? '';
+}
+
+void showRepostBottomSheet(
+  BuildContext context,
+  String postId,
+  String? profileImage,
+  String profileName,
+  String? profileTitle,
+) {
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -23,11 +38,29 @@ void showRepostBottomSheet(BuildContext context, String postId) {
                 subtitle: const Text(
                   "Create a new post with this post attached",
                 ),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(context);
-                  context.push(
-                    RouteNames.createPost,
-                    extra: {"parentPostId": postId, "isSilentRepost": false},
+                  final resolvedUserId = await userId;
+                  // context.push(
+                  //   RouteNames.createPost,
+                  //   extra: {
+                  //     "userId": resolvedUserId,
+                  //     "parentPostId": postId,
+                  //     "isSilentRepost": false,
+                  //   },
+                  // );
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => PostCreationPage(
+                            authorImage: profileImage,
+                            authorName: profileName,
+                            authorTitle: profileTitle,
+                            parentPostId: postId,
+                            isSilentRepost: false,
+                          ),
+                    ),
                   );
                 },
               ),
