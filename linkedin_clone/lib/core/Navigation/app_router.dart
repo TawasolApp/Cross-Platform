@@ -27,6 +27,7 @@ import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page
 import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/job_listings_page.dart';
@@ -262,6 +263,10 @@ class AppRouter {
       //     return SavedPostsPage(userId: userId);
       //   },
       // ),
+      GoRoute(
+        path: RouteNames.notifications,
+        builder: (context, state) => const NotificationsListPage(),
+      ),
     ],
   );
 }

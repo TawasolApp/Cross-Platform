@@ -9,6 +9,8 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
+import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
+import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 import '../../../../core/services/token_service.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -28,6 +30,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     MyNetworkPage(), // Will be replaced by Connections module
     // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompaniesListScreen(),
+    NotificationsListPage(),
     SettingsPage(), // Will be replaced by Settings module
   ];
 
@@ -182,11 +185,22 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: "Jobs",
           ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.notifications_outlined),
+            label: "Notifications",
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: "Settings",
           ),
         ],
         type: BottomNavigationBarType.fixed,
+        selectedFontSize: 12,
+        unselectedFontSize: 10,
+        iconSize: 24,
+        showUnselectedLabels: true,
+        enableFeedback: true,
+        // Allow labels to take more space
+        landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
       ),
     );
   }

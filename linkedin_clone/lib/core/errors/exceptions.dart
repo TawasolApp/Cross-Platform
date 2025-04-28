@@ -53,3 +53,11 @@ class ForbiddenException implements Exception {
   @override
   String toString() => "ForbiddenException: $message";
 }
+
+class AuthException implements Exception {
+  final String message;
+  AuthException([this.message = "Authentication failed"]);
+
+  @override
+  String toString() => "AuthException: $message";
+}
