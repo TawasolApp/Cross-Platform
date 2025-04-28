@@ -15,6 +15,7 @@ class PostFooter extends StatefulWidget {
   final String? profileImage;
   final String profileName;
   final String? profileTitle;
+  final bool showRepostButton;
 
   const PostFooter({
     super.key,
@@ -24,6 +25,7 @@ class PostFooter extends StatefulWidget {
     this.profileImage = '',
     required this.profileName,
     this.profileTitle = '',
+    this.showRepostButton = false,
   });
 
   @override
@@ -124,7 +126,7 @@ class _PostFooterState extends State<PostFooter> {
                 Icon(
                   Icons.loop,
                   size: 20,
-                  color: isSilentRepost ? Colors.blue : Colors.grey,
+                  color: widget.showRepostButton ? Colors.blue : Colors.grey,
                 ),
                 const SizedBox(height: 2),
                 Text(

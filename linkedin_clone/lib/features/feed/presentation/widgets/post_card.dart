@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
 import 'post_header.dart';
@@ -29,7 +30,7 @@ class PostCard extends StatelessWidget {
   final String? profileImage;
   final String profileName;
   final String? profileTitle;
-
+  final bool isEmbedded; // Add this line to define the isEmbedded variable
   const PostCard({
     super.key,
     required this.post,
@@ -37,8 +38,9 @@ class PostCard extends StatelessWidget {
     required this.profileImage,
     required this.profileName,
     required this.profileTitle,
+    this.isEmbedded =
+        false, // Add this line to initialize the isEmbedded variable
   });
-
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -47,60 +49,69 @@ class PostCard extends StatelessWidget {
     final isRepostWithThoughts =
         post.isSilentRepost == false && post.parentPost != null;
 
-    return Card(
-      color: isDarkMode ? Colors.grey[900] : Colors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isSilentRepost)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  "${post.authorName} reposted",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: isDarkMode ? Colors.grey[300] : Colors.grey,
-                  ),
+    final mainContent = Padding(
+      padding:
+          isSilentRepost || isEmbedded
+              ? EdgeInsets.symmetric(horizontal: 8, vertical: 0)
+              : const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (isSilentRepost)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
+              child: Text(
+                "${post.authorName} reposted this",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: isDarkMode ? Colors.grey[300] : Colors.grey,
                 ),
               ),
-            if (!isSilentRepost)
-              PostHeader(
-                profileImage: post.authorPicture ?? '',
-                authorName: post.authorName,
-                authorTitle: post.authorBio,
-                postTime: formatTimeAgo(post.timestamp),
-                postId: post.id,
-                postContent: post.content,
-                visibility: post.visibility,
-                authorId: post.authorId,
-                currentUserId: currentUserId,
-                authorType: post.authorType,
-              ),
-            const SizedBox(height: 8),
-            // if (isSilentRepost && post.parentPost != null)
-            //   PostCard(
-            //     post: post.parentPost!,
-            //     currentUserId: currentUserId,
-            //     profileImage: post.parentPost!.authorPicture ?? '',
-            //     profileName: post.parentPost!.authorName,
-            //     profileTitle: post.parentPost!.authorBio,
-            //   ),
-            if (!isSilentRepost)
-              PostContent(
-                content: post.content,
-                imageUrl:
-                    post.media != null && post.media!.isNotEmpty
-                        ? post.media!.first
-                        : null,
-              ),
-            if (isRepostWithThoughts)
-              MiniPostCard(post: post, currentUserId: currentUserId),
-            const SizedBox(height: 8),
-            ReactionSummaryBar(post: post),
-            const Divider(height: 2, color: Colors.grey),
+            ),
+          if (isSilentRepost)
+            const Divider(
+              color: CupertinoColors.lightBackgroundGray,
+              height: 2,
+            ),
+
+          if (!isSilentRepost)
+            PostHeader(
+              profileImage: post.authorPicture ?? '',
+              authorName: post.authorName,
+              authorTitle: post.authorBio,
+              postTime: formatTimeAgo(post.timestamp),
+              postId: post.id,
+              postContent: post.content,
+              visibility: post.visibility,
+              authorId: post.authorId,
+              currentUserId: currentUserId,
+              authorType: post.authorType,
+            ),
+          const SizedBox(height: 8),
+          if (isSilentRepost && post.parentPost != null)
+            PostCard(
+              post: post.parentPost!,
+              currentUserId: currentUserId,
+              profileImage: post.parentPost!.authorPicture ?? '',
+              profileName: post.parentPost!.authorName,
+              profileTitle: post.parentPost!.authorBio,
+              isEmbedded: true, // 🛑 VERY IMPORTANT
+            ),
+          if (!isSilentRepost)
+            PostContent(
+              content: post.content,
+              imageUrl:
+                  post.media != null && post.media!.isNotEmpty
+                      ? post.media!.first
+                      : null,
+            ),
+          if (isRepostWithThoughts)
+            MiniPostCard(post: post, currentUserId: currentUserId),
+          const SizedBox(height: 8),
+          ReactionSummaryBar(post: post),
+          if (!isSilentRepost) const Divider(height: 2, color: Colors.grey),
+          if (!isSilentRepost)
             PostFooter(
               post: post,
               comments: post.comments,
@@ -108,10 +119,92 @@ class PostCard extends StatelessWidget {
               profileImage: profileImage,
               profileName: profileName,
               profileTitle: profileTitle,
+              showRepostButton: post.authorId == currentUserId && !isEmbedded,
+              // (post.authorId == currentUserId ||
+              //     post.isSilentRepost == true) &&
+              // post.parentPost != null,
             ),
-          ],
-        ),
+        ],
       ),
     );
+
+    if (isEmbedded) {
+      return mainContent;
+    }
+
+    return Card(
+      color: isDarkMode ? Colors.grey[900] : Colors.white,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: mainContent,
+    );
   }
+
+  //   return Card(
+  //     color: isDarkMode ? Colors.grey[900] : Colors.white,
+  //     margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  //     child: Padding(
+  //       padding: isSilentRepost ? EdgeInsets.zero : EdgeInsets.all(10),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           if (isSilentRepost)
+  //             Padding(
+  //               padding: const EdgeInsets.symmetric(
+  //                 horizontal: 12,
+  //                 vertical: 2,
+  //               ),
+  //               child: Text(
+  //                 "${post.authorName} reposted",
+  //                 style: TextStyle(
+  //                   fontSize: 13,
+  //                   color: isDarkMode ? Colors.grey[300] : Colors.grey,
+  //                 ),
+  //               ),
+  //             ),
+  //           if (!isSilentRepost)
+  //             PostHeader(
+  //               profileImage: post.authorPicture ?? '',
+  //               authorName: post.authorName,
+  //               authorTitle: post.authorBio,
+  //               postTime: formatTimeAgo(post.timestamp),
+  //               postId: post.id,
+  //               postContent: post.content,
+  //               visibility: post.visibility,
+  //               authorId: post.authorId,
+  //               currentUserId: currentUserId,
+  //               authorType: post.authorType,
+  //             ),
+  //           const SizedBox(height: 8),
+  //           // if (isSilentRepost && post.parentPost != null)
+  //           //   EmbeddedPostCard(
+  //           //     post: post.parentPost!,
+  //           //     currentUserId: currentUserId,
+  //           //   ),
+  //           if (!isSilentRepost)
+  //             PostContent(
+  //               content: post.content,
+  //               imageUrl:
+  //                   post.media != null && post.media!.isNotEmpty
+  //                       ? post.media!.first
+  //                       : null,
+  //             ),
+  //           if (isRepostWithThoughts)
+  //             MiniPostCard(post: post, currentUserId: currentUserId),
+  //           const SizedBox(height: 8),
+  //           ReactionSummaryBar(post: post),
+  //           if (!isSilentRepost) const Divider(height: 2, color: Colors.grey),
+  //           if (!isSilentRepost)
+  //             PostFooter(
+  //               post: post,
+  //               comments: post.comments,
+  //               shares: post.shares,
+  //               profileImage: profileImage,
+  //               profileName: profileName,
+  //               profileTitle: profileTitle,
+  //             ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 }
