@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/admin_provider.dart';
-import '../widgets/user_reporting_stats.dart';
+import 'user_reporting_stats_page.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -22,9 +22,6 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AdminProvider>(context);
-    print("userAnalytics = ${provider.userAnalytics}");
-    print("postAnalytics = ${provider.postAnalytics}");
-    print("jobAnalytics = ${provider.jobAnalytics}");
 
     return Scaffold(
       appBar: AppBar(title: const Text("Admin Analytics Dashboard")),
@@ -34,23 +31,18 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
               : provider.errorMessage != null
               ? Center(child: Text(provider.errorMessage!))
               : SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      "Admin Analytics Dashboard",
+                      "Summary",
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Track engagement, posts, and job performance across the platform for the past 30 days.",
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -77,23 +69,44 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 30),
                     const Text(
                       "Most Active Users",
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    ...provider.userAnalytics?.mostActiveUsers.map(
-                          (user) => ListTile(
-                            leading: const CircleAvatar(),
-                            title: Text(user.userId),
-                            subtitle: Text("Score: ${user.activityScore}"),
+                    const SizedBox(height: 10),
+                    if (provider.userAnalytics?.mostActiveUsers.isNotEmpty ??
+                        false)
+                      ...provider.userAnalytics!.mostActiveUsers.map(
+                        (user) => ListTile(
+                          leading: const CircleAvatar(),
+                          title: Text(user.userId),
+                          subtitle: Text(
+                            "Activity Score: ${user.activityScore}",
                           ),
-                        ) ??
-                        [const Text("No data available")],
-                    UserReportingStats(
-                      userId: provider.userAnalytics!.mostReportedUser,
-                      reportCount: provider.userAnalytics!.userReportedCount,
+                        ),
+                      )
+                    else
+                      const Text("No active users found."),
+                    const SizedBox(height: 40),
+                    const Divider(),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.bar_chart),
+                        label: const Text("View User Reporting Stats"),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const UserReportingStatsPage(),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -115,10 +128,10 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width / 3 - 20;
+    final width = MediaQuery.of(context).size.width / 3 - 24;
     return Container(
       width: width,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(12),
@@ -128,15 +141,15 @@ class _SummaryCard extends StatelessWidget {
           Text(
             count,
             style: const TextStyle(
-              fontSize: 20,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             label,
-            style: const TextStyle(fontSize: 12, color: Colors.white70),
+            style: const TextStyle(fontSize: 13, color: Colors.white70),
             textAlign: TextAlign.center,
           ),
         ],
