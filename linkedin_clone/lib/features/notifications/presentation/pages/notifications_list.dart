@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
 import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
@@ -20,7 +21,16 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
         context,
         listen: false,
       );
-      provider.initialize();
+      if(TokenService.getIsCompany() == true)
+      {
+        final companyId = TokenService.getCompanyId().toString();
+        provider.initialize(companyId);
+      }
+      else
+      {
+        final userId = TokenService.getUserId().toString();
+        provider.initialize(userId);
+      }
     });
   }
 
@@ -45,9 +55,20 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       provider.resetErrors();
-                      provider.initialize();
+                      final isCompany = await TokenService.getIsCompany();
+                      if(isCompany == true)
+                      {
+                        final companyId = (await TokenService.getCompanyId()).toString();
+                        provider.initialize(companyId);
+                      }
+                      else
+                      {
+                        final userId = (await TokenService.getUserId()).toString();
+                        provider.initialize(userId);
+                      }
+
                     },
                     child: const Text('Retry'),
                   ),
@@ -64,7 +85,16 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
 
           return RefreshIndicator(
             onRefresh: () async {
-              await provider.getNotifications();
+              if(TokenService.getIsCompany() == true)
+              {
+                final companyId = (await TokenService.getCompanyId()).toString();
+                provider.getNotifications(companyId);
+              }
+              else
+              {
+                final userId = (await TokenService.getUserId()).toString();
+                provider.getNotifications(userId);
+              }
             },
             child: ListView.builder(
               itemCount: notifications.length,
@@ -72,10 +102,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
                 final notification = notifications[index];
                 return NotificationItem(
                   notification: notification,
-                  onTap: () {
-                    provider.markNotificationAsRead(
-                      notification.notificationId,
-                    );
+                  onTap: (notification) {
                     _handleNotificationTap(context, notification);
                   },
                 );

@@ -1,21 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
+import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
 
 class NotificationItem extends StatelessWidget {
   final Notifications notification;
-  final VoidCallback onTap;
+  final Function(Notifications)? onTap;
 
-  const NotificationItem({
-    Key? key,
-    required this.notification,
-    required this.onTap,
-  }) : super(key: key);
+  const NotificationItem({Key? key, required this.notification, this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: () {
+        final provider = Provider.of<NotificationsProvider>(
+          context,
+          listen: false,
+        );
+        if(TokenService.getIsCompany() == true)
+        {
+          final companyId = TokenService.getCompanyId().toString();
+           provider.markNotificationAsRead(companyId, notification.notificationId);
+        }
+        else
+        {
+          final userId = TokenService.getUserId().toString();
+           provider.markNotificationAsRead(userId, notification.notificationId);
+        }
+        
+        if (onTap != null) {
+          onTap!(notification);
+        }
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         color: notification.isRead ? null : Colors.blue.withOpacity(0.1),

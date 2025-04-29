@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/errors/exceptions.dart';
@@ -11,13 +12,10 @@ class NotificationRepositoryImpl implements NotificationRepository {
   NotificationRepositoryImpl({required this.notificationDataSource});
 
   @override
-  Future<Either<Failure, List<Notifications>>> getNotifications() async {
+  Future<Either<Failure, List<Notifications>>> getNotifications(String companyId) async {
     try {
-      final notificationModels =
-          await notificationDataSource.getNotifications();
-      return right(
-        notificationModels.map((model) => model.toEntity()).toList(),
-      );
+      final notificationModels = await notificationDataSource.getNotifications(companyId);
+      return right(notificationModels.map((model) => model.toEntity()).toList());
     } on ServerException catch (e) {
       return left(Failure(message: e.message, errorCode: 500));
     } on AuthException catch (e) {
@@ -30,9 +28,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, int>> getUnseenNotificationsCount() async {
+  Future<Either<Failure, int>> getUnseenNotificationsCount(String companyId) async {
     try {
-      final count = await notificationDataSource.getUnseenNotificationsCount();
+      final count = await notificationDataSource.getUnseenNotificationsCount(companyId);
       return right(count);
     } on ServerException catch (e) {
       return left(Failure(message: e.message, errorCode: 500));
@@ -46,11 +44,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<Either<Failure, void>> markNotificationAsRead(
-    String notificationId,
-  ) async {
+  Future<Either<Failure, void>> markNotificationAsRead(String companyId, String notificationId) async {
     try {
-      await notificationDataSource.markNotificationAsRead(notificationId);
+      await notificationDataSource.markNotificationAsRead(companyId, notificationId);
       return right(null);
     } on ServerException catch (e) {
       return left(Failure(message: e.message, errorCode: 500));
@@ -97,32 +93,47 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Stream<Either<Failure, Notifications>> get notificationStream {
+    return notificationDataSource.notificationStream.map<Either<Failure, Notifications>>(
+      (model) {
+        return right(model.toEntity());
+      },
+    ).handleError(
+      (error, stackTrace) {
+        // Instead of throwing inside handleError, we manually emit an error
+        // But handleError cannot transform the stream type
+        // So we have to "catchError" later
+      },
+    ).transform<Either<Failure, Notifications>>(
+      StreamTransformer.fromHandlers(
+        handleError: (error, stackTrace, sink) {
+          if (error is ServerException) {
+            sink.add(left(Failure(message: error.message, errorCode: 500)));
+          } else if (error is AuthException) {
+            sink.add(left(Failure(message: error.message, errorCode: 401)));
+          } else if (error is NetworkException) {
+            sink.add(left(Failure(message: error.message, errorCode: 503)));
+          } else {
+            sink.add(left(Failure(message: error.toString(), errorCode: 500)));
+          }
+        },
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> subscribeToNotifications(String companyId) async {
     try {
-      return notificationDataSource.notificationStream
-          .map((model) {
-            return right<Failure, Notifications>(model.toEntity());
-          })
-          .handleError((error) {
-            if (error is ServerException) {
-              return left<Failure, Notifications>(
-                Failure(message: error.message, errorCode: 500),
-              );
-            } else if (error is AuthException) {
-              return left<Failure, Notifications>(
-                Failure(message: error.message, errorCode: 401),
-              );
-            } else if (error is NetworkException) {
-              return left<Failure, Notifications>(
-                Failure(message: error.message, errorCode: 503),
-              );
-            } else {
-              return left<Failure, Notifications>(
-                Failure(message: error.toString(), errorCode: 500),
-              );
-            }
-          });
+      await notificationDataSource.subscribeToNotifications(companyId);
+      return right(null);
+    } on ServerException catch (e) {
+      return left(Failure(message: e.message, errorCode: 500));
+    } on AuthException catch (e) {
+      return left(Failure(message: e.message, errorCode: 401));
+    } on NetworkException catch (e) {
+      return left(Failure(message: e.message, errorCode: 503));
     } catch (e) {
-      return Stream.value(left(Failure(message: e.toString(), errorCode: 500)));
+      return left(Failure(message: e.toString(), errorCode: 500));
     }
   }
+
 }

@@ -62,6 +62,7 @@ import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_accou
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_all_companies.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/subscribe_to_notifications_usecase.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -180,6 +181,7 @@ void main() async{
   final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(notificationsRepository);
   final getFcmTokenUseCase = GetFcmTokenUseCase(notificationsRepository);
   final initializeFcmUseCase = InitializeFcmUseCase(notificationsRepository);
+  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(notificationsRepository);
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -191,7 +193,7 @@ void main() async{
   final AuthRemoteDataSource dataSource =
       useMock ? MockAuthRemoteDataSource() : AuthRemoteDataSourceImpl();
 
-  final AuthRepository authRepository = AuthRepositoryImpl(dataSource);
+  final AuthRepository authRepository = AuthRepositoryImpl(dataSource, dataSourceProfile);
   final loginUseCase = LoginUseCase(authRepository);
   final registerUseCase = RegisterUseCase(authRepository);
   final forgotPassUseCase = ForgotPassUseCase(authRepository);
@@ -245,7 +247,8 @@ ChangeNotifierProvider(
             getUnseenNotificationsCountUseCase: getUnseenNotificationsCountUseCase,
             getFcmTokenUseCase: getFcmTokenUseCase,
             initializeFcmUseCase: initializeFcmUseCase,
-          )..initialize(),
+            subscribeToNotificationsUseCase: subscribeToNotificationsUseCase,
+          )
         ),
         ChangeNotifierProvider(
           create:

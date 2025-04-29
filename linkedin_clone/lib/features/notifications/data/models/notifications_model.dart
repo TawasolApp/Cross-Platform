@@ -9,6 +9,7 @@ class NotificationsModel {
   final String userName;
   final String profilePicture;
   final String referenceId;
+  final String rootItemId; // 'Post', 'Comment', 'Message', etc.
   final String senderType; // 'User' or 'Company'
   final String type; // 'React', 'Comment', 'UserConnection', 'Message'
   final String content;
@@ -20,6 +21,7 @@ class NotificationsModel {
     required this.userName,
     required this.profilePicture,
     required this.referenceId,
+    required this.rootItemId,
     required this.senderType,
     required this.type,
     required this.content,
@@ -34,6 +36,7 @@ class NotificationsModel {
       userName: data['userName'] ?? '',
       profilePicture: data['profilePicture'] ?? '',
       referenceId: data['referenceId'] ?? '',
+      rootItemId: data['rootItemId'] ?? '',
       senderType: data['senderType'] ?? 'User',
       type: data['type'] ?? 'Message',
       content: data['content'] ?? '',
@@ -52,6 +55,7 @@ class NotificationsModel {
           'New Notification',
       profilePicture: message.data['profilePicture'] ?? '',
       referenceId: message.data['referenceId'] ?? '',
+      rootItemId: message.data['rootItemId'] ?? '',
       senderType: message.data['senderType'] ?? 'User',
       type: message.data['type'] ?? 'Message',
       content: message.notification?.body ?? message.data['content'] ?? '',
@@ -69,6 +73,7 @@ class NotificationsModel {
           json['refrenceId'] ??
           json['referenceId'] ??
           '', // Handle both spellings
+      rootItemId: json['rootItemId'] ?? '',
       senderType: json['senderType'] ?? 'User',
       type: json['type'] ?? 'Message',
       content: json['content'] ?? '',
@@ -86,6 +91,7 @@ class NotificationsModel {
       'userName': userName,
       'profilePicture': profilePicture,
       'referenceId': referenceId,
+      'rootItemId': rootItemId,
       'senderType': senderType,
       'type': type,
       'content': content,
@@ -99,6 +105,7 @@ class NotificationsModel {
       'userName': userName,
       'profilePicture': profilePicture,
       'referenceId': referenceId,
+      'rootItemId': rootItemId,
       'senderType': senderType,
       'type': type,
       'content': content,
@@ -119,6 +126,7 @@ class NotificationsModel {
         'userName': userName,
         'profilePicture': profilePicture,
         'referenceId': referenceId,
+        'rootItemId': rootItemId,
         'senderType': senderType,
         'type': type,
         'click_action': 'FLUTTER_NOTIFICATION_CLICK',
@@ -132,6 +140,7 @@ class NotificationsModel {
       userName: userName,
       profilePicture: profilePicture,
       referenceId: referenceId,
+      rootItemId: rootItemId,
       senderType: senderType,
       type: type,
       content: content,

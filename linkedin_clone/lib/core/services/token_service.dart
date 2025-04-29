@@ -2,7 +2,34 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TokenService {
   static const _tokenKey = 'auth_token';
+  static const _userIdKey = 'user_id';
+  static const _companyIdKey = 'company_id';
+  static const _isCompany = 'is_company';
 
+  static Future<void> saveCompanyId(String companyId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_companyIdKey, companyId);
+  }
+  static Future<String?> getCompanyId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_companyIdKey);
+  }
+  static Future<void> saveIsCompany(bool isCompany) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isCompany, isCompany);
+  }
+  static Future<bool?> getIsCompany() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_isCompany);
+  }
+  static Future<void> saveUserId(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_userIdKey, userId);
+  }
+  static Future<String?> getUserId(){
+    final prefs = SharedPreferences.getInstance();
+    return prefs.then((prefs) => prefs.getString(_userIdKey));
+  }
   static Future<void> saveToken(String token) async {
     print("Token saved is=  $token***********  ");
     final prefs = await SharedPreferences.getInstance();
@@ -46,22 +73,5 @@ class TokenService {
     return prefs.getString('refresh_token');
   }
 
-  static Future<String> getUserId() async {
-    final token = await getToken();
-    if (token == null) {
-      throw Exception('Token not available');
-    }
 
-    // Extract user ID from token (implementation depends on your token structure)
-    // For example, if using JWT:
-    // final parts = token.split('.');
-    // if (parts.length != 3) {
-    //   throw Exception('Invalid token format');
-    // }
-    // final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
-    // return payload['userId'] as String;
-
-    // Placeholder - replace with actual implementation
-    return "current-user-id";
-  }
 }

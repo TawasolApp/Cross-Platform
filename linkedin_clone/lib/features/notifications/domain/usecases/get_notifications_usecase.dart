@@ -5,13 +5,13 @@ import 'package:linkedin_clone/features/notifications/domain/entities/notificati
 import 'package:linkedin_clone/features/notifications/domain/repositories/notifications_repository.dart';
 
 class GetNotificationsUseCase
-    implements UseCase<List<Notifications>, NoParams> {
+    implements UseCase<List<Notifications>, String> {
   final NotificationRepository notificationRepository;
 
   GetNotificationsUseCase(this.notificationRepository);
 
   @override
-  Future<Either<Failure, List<Notifications>>> call(NoParams params) async {
-    return await notificationRepository.getNotifications();
+  Future<Either<Failure, List<Notifications>>> call(String companyId) async {
+    return await notificationRepository.getNotifications(companyId);
   }
 }

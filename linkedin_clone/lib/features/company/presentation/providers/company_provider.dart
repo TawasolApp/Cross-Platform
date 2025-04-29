@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
@@ -14,7 +15,6 @@ import 'package:linkedin_clone/features/company/domain/entities/user.dart';
 import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/entities/job.dart';
-
 
 class CompanyProvider with ChangeNotifier {
   Company? _company;
@@ -101,14 +101,16 @@ class CompanyProvider with ChangeNotifier {
     _isLoading = true;
     safeNotify();
     print('CompanyID is:$companyId');
+
     _company = await _getCompanyDetails.execute(companyId);
+    await TokenService.saveCompanyId(companyId); //saves company id
 
     await fetchFollowStatus(companyId);
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
+    await TokenService.saveIsCompany(isViewingAsUser);
+
     _isLoading = false;
     safeNotify();
   }
@@ -145,20 +147,17 @@ class CompanyProvider with ChangeNotifier {
     safeNotify();
   }
 
-  void toggleViewMode() {
+  void toggleViewMode() async {
     isViewingAsUser = !isViewingAsUser;
+    await TokenService.saveIsCompany(isViewingAsUser);
     notifyListeners();
   }
 
-  Future<List<User>> fetchFriendsFollowingCompany(
-    String companyId,
-  ) async {
+  Future<List<User>> fetchFriendsFollowingCompany(String companyId) async {
     _isLoading = true;
     safeNotify();
 
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
 
     _isLoading = false;
     safeNotify();
@@ -277,9 +276,7 @@ class CompanyProvider with ChangeNotifier {
       }
 
       if (followersList.isNotEmpty) {
-        _followers.addAll(
-          followersList,
-        ); 
+        _followers.addAll(followersList);
       } else {
         _isAllFollowersLoaded = true;
       }
@@ -307,7 +304,6 @@ class CompanyProvider with ChangeNotifier {
       if (newFollowers.isEmpty) {
         _isAllFollowersLoaded = true;
       } else {
-
         _currentFollowersPage = nextPage;
       }
     } catch (e) {

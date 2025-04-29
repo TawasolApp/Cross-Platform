@@ -9,6 +9,7 @@ import 'package:linkedin_clone/features/notifications/domain/usecases/get_notifi
 import 'package:linkedin_clone/features/notifications/domain/usecases/get_unseen_notifications_count_usecase.dart';
 import 'package:linkedin_clone/features/notifications/domain/usecases/initialize_fcm_usecase.dart';
 import 'package:linkedin_clone/features/notifications/domain/usecases/mark_notification_as_read_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/subscribe_to_notifications_usecase.dart';
 
 class NotificationsProvider extends ChangeNotifier {
   final GetNotificationsUseCase _getNotificationsUseCase;
@@ -16,6 +17,7 @@ class NotificationsProvider extends ChangeNotifier {
   final GetUnseenNotificationsCountUseCase _getUnseenNotificationsCountUseCase;
   final GetFcmTokenUseCase _getFcmTokenUseCase;
   final InitializeFcmUseCase _initializeFcmUseCase;
+  final SubscribeToNotificationsUseCase _subscribeToNotificationsUseCase;
 
   NotificationsProvider({
     required GetNotificationsUseCase getNotificationsUseCase,
@@ -24,11 +26,13 @@ class NotificationsProvider extends ChangeNotifier {
     getUnseenNotificationsCountUseCase,
     required GetFcmTokenUseCase getFcmTokenUseCase,
     required InitializeFcmUseCase initializeFcmUseCase,
+    required SubscribeToNotificationsUseCase subscribeToNotificationsUseCase,
   }) : _getNotificationsUseCase = getNotificationsUseCase,
        _markNotificationAsReadUseCase = markNotificationAsReadUseCase,
        _getUnseenNotificationsCountUseCase = getUnseenNotificationsCountUseCase,
        _getFcmTokenUseCase = getFcmTokenUseCase,
-       _initializeFcmUseCase = initializeFcmUseCase;
+       _initializeFcmUseCase = initializeFcmUseCase,
+       _subscribeToNotificationsUseCase = subscribeToNotificationsUseCase;
 
   List<Notifications> _notifications = [];
   List<Notifications> get notifications => _notifications;
@@ -48,10 +52,26 @@ class NotificationsProvider extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  Future<void> initialize() async {
-    await initializeFcm();
-    await getNotifications();
-    await getUnseenNotificationsCount();
+  StreamSubscription<Either<Failure, Notifications>>? _notificationSubscription;
+
+  Future<void> initialize(String companyId) async {
+    _isLoading = true;
+    _hasError = false;
+    notifyListeners();
+
+    try {
+      await initializeFcm();
+      // await getNotifications(companyId);
+      // await getUnseenNotificationsCount(companyId);
+      await subscribeToCompanyNotifications(companyId);
+      _subscribeToNotificationStream();
+    } catch (e) {
+      _hasError = true;
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> initializeFcm() async {
@@ -89,12 +109,12 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getNotifications() async {
+  Future<void> getNotifications(String companyId) async {
     _isLoading = true;
     _hasError = false;
     notifyListeners();
 
-    final result = await _getNotificationsUseCase(NoParams());
+    final result = await _getNotificationsUseCase(companyId);
 
     result.fold(
       (failure) {
@@ -110,8 +130,8 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getUnseenNotificationsCount() async {
-    final result = await _getUnseenNotificationsCountUseCase(NoParams());
+  Future<void> getUnseenNotificationsCount(String companyId) async {
+    final result = await _getUnseenNotificationsCountUseCase(companyId);
 
     result.fold(
       (failure) {
@@ -125,8 +145,16 @@ class NotificationsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> markNotificationAsRead(String notificationId) async {
-    final result = await _markNotificationAsReadUseCase(notificationId);
+  Future<void> markNotificationAsRead(
+    String companyId,
+    String notificationId,
+  ) async {
+    final result = await _markNotificationAsReadUseCase(
+      MarkNotificationAsReadParams(
+        companyId: companyId,
+        notificationId: notificationId,
+      ),
+    );
 
     result.fold(
       (failure) {
@@ -147,6 +175,7 @@ class NotificationsProvider extends ChangeNotifier {
             userName: notification.userName,
             profilePicture: notification.profilePicture,
             referenceId: notification.referenceId,
+            rootItemId: notification.rootItemId,
             senderType: notification.senderType,
             type: notification.type,
             content: notification.content,
@@ -163,9 +192,58 @@ class NotificationsProvider extends ChangeNotifier {
     );
   }
 
+  // Add a new method to subscribe to company notifications on the server
+  Future<void> subscribeToCompanyNotifications(String companyId) async {
+    final result = await _subscribeToNotificationsUseCase(companyId);
+
+    result.fold(
+      (failure) {
+        _hasError = true;
+        _errorMessage = failure.message;
+      },
+      (_) {
+        // Successfully subscribed to notifications on the server
+      },
+    );
+  }
+
+  // Renamed from _subscribeToNotifications to better reflect its purpose
+  void _subscribeToNotificationStream() {
+    // Cancel existing subscription if any
+    _notificationSubscription?.cancel();
+
+    // Set up new subscription to the notification stream
+    _notificationSubscription = _subscribeToNotificationsUseCase.stream.listen(
+      (notificationResult) {
+        notificationResult.fold(
+          (failure) {
+            _hasError = true;
+            _errorMessage = failure.message;
+          },
+          (notification) {
+            _notifications.insert(0, notification);
+            _unseenNotificationsCount++;
+          },
+        );
+        notifyListeners();
+      },
+      onError: (error) {
+        _hasError = true;
+        _errorMessage = error.toString();
+        notifyListeners();
+      },
+    );
+  }
+
   void resetErrors() {
     _hasError = false;
     _errorMessage = '';
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _notificationSubscription?.cancel();
+    super.dispose();
   }
 }
