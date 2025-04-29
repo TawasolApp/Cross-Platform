@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/admin_placeholder.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/add_email_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/add_name_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/check_your_email_page.dart';
@@ -39,6 +40,10 @@ class AppRouter {
     initialLocation: RouteNames.onboarding, // Start at onboarding
 
     routes: [
+            GoRoute(
+        path: RouteNames.adminMain,
+        builder: (context, state) => AdminPlaceholderPage(),
+      ),
       GoRoute(
         path: RouteNames.onboarding,
         builder: (context, state) => OnboardingPage(),

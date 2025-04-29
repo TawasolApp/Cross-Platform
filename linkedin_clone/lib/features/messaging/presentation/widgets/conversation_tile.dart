@@ -5,32 +5,63 @@ class ConversationTile extends StatelessWidget {
   final ConversationEntity conversation;
   final VoidCallback onTap;
 
-  const ConversationTile({super.key, required this.conversation, required this.onTap});
+  const ConversationTile({
+    super.key,
+    required this.conversation,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final user = conversation.otherParticipant;
+    final message = conversation.lastMessage;
+
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(conversation.otherParticipantProfilePic),
+        backgroundImage: NetworkImage(user.profilePicture),
       ),
-      title: Text(conversation.otherParticipantName),
-      subtitle: Text(conversation.lastMessageText),
+      title: Text('${user.firstName} ${user.lastName}'),
+      subtitle: Text(message.messageText),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(conversation.lastMessageTime),
+          Text(
+            _formatTime(message.dateTime),
+            style: const TextStyle(fontSize: 12),
+          ),
           if (conversation.unseenCount > 0)
-            CircleAvatar(
-              radius: 8,
-              backgroundColor: Colors.red,
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Colors.red,
+                shape: BoxShape.circle,
+              ),
               child: Text(
                 '${conversation.unseenCount}',
-                style: TextStyle(color: Colors.white, fontSize: 10),
+                style: const TextStyle(color: Colors.white, fontSize: 10),
               ),
             ),
         ],
       ),
       onTap: onTap,
     );
+  }
+
+  String _formatTime(String dateTime) {
+    try {
+      final dt = DateTime.parse(dateTime);
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final msgDay = DateTime(dt.year, dt.month, dt.day);
+
+      if (msgDay == today) {
+        return '${dt.hour}:${dt.minute.toString().padLeft(2, '0')}';
+      } else {
+        return '${dt.month}/${dt.day}';
+      }
+    } catch (_) {
+      return '';
+    }
   }
 }

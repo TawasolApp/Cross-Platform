@@ -5,7 +5,17 @@ class TokenService {
   static const _userIdKey = 'user_id';
   static const _companyIdKey = 'company_id';
   static const _isCompany = 'is_company';
+  static const _isAdmin = 'is_admin';
 
+
+  static Future<void> saveIsAdmin(bool isAdmin) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_isAdmin, isAdmin);
+  }
+  static Future<bool?> getIsAdmin() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_isAdmin);
+  }
   static Future<void> saveCompanyId(String companyId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_companyIdKey, companyId);

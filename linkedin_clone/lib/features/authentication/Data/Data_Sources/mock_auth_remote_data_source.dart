@@ -8,7 +8,7 @@ class MockAuthRemoteDataSource implements AuthRemoteDataSource {
 
     // You can add fake credential check here
     if (email == "test@example.com" && password == "123456") {
-      return UserModel(token: 'mock_token_abc');
+      return UserModel(token: 'mock_token_abc',role: "customer");
     } else {
       throw Exception("Invalid credentials");
     }
@@ -29,7 +29,7 @@ class MockAuthRemoteDataSource implements AuthRemoteDataSource {
         password == "123456" &&
         recaptchaToken == "mock-captcha-token") {
       print("User registered successfully");
-      return UserModel(token: 'new_mock_token_xyz');
+      return UserModel(token: 'new_mock_token_xyz',role: 'customer');
     } else {
       throw Exception("Invalid registration details");
     }

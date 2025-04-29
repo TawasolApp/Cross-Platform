@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/navigation/route_names.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
@@ -158,7 +159,12 @@ class _LoginPageState extends State<LoginPage> {
                   if (!context.mounted) return;
 
                   if (success) {
-                    context.go(RouteNames.main);
+                    final bool? isAdmin = await TokenService.getIsAdmin();
+                    if(isAdmin != null && isAdmin){
+                    context.go(RouteNames.adminMain);
+                    }else{
+                      context.go(RouteNames.main);
+                    }
                   } else {
                     print("Login failed");
                     showModalBottomSheet(

@@ -4,6 +4,7 @@ import 'package:linkedin_clone/features/authentication/Domain/Entities/user_enti
 import 'package:fpdart/fpdart.dart';
 import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/features/authentication/Domain/Repository/auth_repository.dart';
+import 'package:linkedin_clone/features/company/presentation/screens/company_add_admins_screen.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -22,10 +23,23 @@ class AuthRepositoryImpl implements AuthRepository {
 
       //Save token after API success
       await TokenService.saveToken(userModel.token);
-      final profileModel = await profileRemoteDataSource.getProfile("");
-      await TokenService.saveUserId(profileModel.userId);
+     
+      print("Token saved: ${userModel.token}");
+      if(userModel.role=="customer"){
+        final profileModel = await profileRemoteDataSource.getProfile("");
+        await TokenService.saveUserId(profileModel.userId);
+        await TokenService.saveIsAdmin(false);
+      }
+      else {
+        print("User is Admin so no profile");
+        await TokenService.saveUserId("");
+        await TokenService.saveIsAdmin(true);
+      }
+      
+      
       return Right(userModel as UserEntity);
     } catch (e) {
+      print("Login error: $e");
       return Left(ServerFailure());
     }
   }

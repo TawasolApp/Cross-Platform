@@ -1,41 +1,51 @@
 import 'package:linkedin_clone/features/messaging/data/data_sources/conversation_remote_data_source.dart';
 import 'package:linkedin_clone/features/messaging/data/models/conversation_model.dart';
+import 'package:linkedin_clone/features/messaging/data/models/message_model.dart';
+import 'package:linkedin_clone/features/messaging/data/models/user_preview_model.dart';
 
-class MockConversationRemoteDataSource implements ConversationRemoteDataSource {
+class MockConversationDataSource implements ConversationRemoteDataSource {
+  @override
   Future<List<ConversationModel>> fetchConversations() async {
-    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+    await Future.delayed(Duration(milliseconds: 500)); // Simulate network delay
+
     return [
       ConversationModel(
-        id: 'conv1',
-        lastMessageText: 'Hey, how are you?',
-        lastMessageTime: '3:30 AM',
-        otherParticipantName: 'Nour Nader',
-        otherParticipantProfilePic: 'https://randomuser.me/api/portraits/women/1.jpg',
+        id: 'convo1',
+        lastMessage: MessageModel(
+          id: 'msg1',
+          senderId: 'user1',
+          conversationId: 'convo1',
+          messageText: 'Hey, how are you?',
+          media: [],
+          status: 'Sent',
+          dateTime: '2025-04-26T16:40:12.772Z',
+        ),
         unseenCount: 2,
+        otherParticipant: UserPreviewModel(
+          id: 'user2',
+          firstName: 'Jane',
+          lastName: 'Doe',
+          profilePicture: 'https://avatars.githubusercontent.com/u/24987750',
+        ),
       ),
       ConversationModel(
-        id: 'conv2',
-        lastMessageText: 'Let\'s catch up over coffee!',
-        lastMessageTime: 'Wednesday',
-        otherParticipantName: 'Jana M.',
-        otherParticipantProfilePic: 'https://randomuser.me/api/portraits/women/2.jpg',
+        id: 'convo2',
+        lastMessage: MessageModel(
+          id: 'msg2',
+          senderId: 'user3',
+          conversationId: 'convo2',
+          messageText: 'Let’s meet tomorrow.',
+          media: [],
+          status: 'Sent',
+          dateTime: '2025-04-25T14:15:00.000Z',
+        ),
         unseenCount: 0,
-      ),
-      ConversationModel(
-        id: 'conv3',
-        lastMessageText: 'Hi there, Omar! Interested in a new job?',
-        lastMessageTime: 'Apr 20',
-        otherParticipantName: 'LinkedIn Offer',
-        otherParticipantProfilePic: 'https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png',
-        unseenCount: 1,
-      ),
-      ConversationModel(
-        id: 'conv4',
-        lastMessageText: 'Flexible 1K USD per week opportunity',
-        lastMessageTime: 'Apr 11',
-        otherParticipantName: 'Phoebe R.',
-        otherParticipantProfilePic: 'https://randomuser.me/api/portraits/women/3.jpg',
-        unseenCount: 0,
+        otherParticipant: UserPreviewModel(
+          id: 'user2',
+          firstName: 'Jane',
+          lastName: 'Doe',
+          profilePicture: 'https://avatars.githubusercontent.com/u/24987750',
+        ),
       ),
     ];
   }

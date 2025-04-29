@@ -26,7 +26,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     );
 
     if (response.statusCode == 201) {
+    
+      print("Login successful: ${response.body}");
       print(UserModel.fromJson(json.decode(response.body)).token);
+      print(UserModel.fromJson(json.decode(response.body)).role);
       return UserModel.fromJson(json.decode(response.body));
     } else {
       throw Exception("Invalid credentials: ${response.body}");
@@ -105,7 +108,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         "captchaToken": captchaToken,
       }),
     );
-    UserModel userModel = new UserModel(token: "test-token");
+    UserModel userModel = new UserModel(token: "test-token",role: "customer");
     if (response.statusCode == 201) {
       print("[SUCCESS] Registration successful: ${response.body}");
       return userModel;

@@ -248,7 +248,7 @@ void main() async{
       providers: [
           ChangeNotifierProvider(
             create: (_) => ConversationListProvider(
-             GetConversationsUseCase(MockConversationRemoteDataSource())
+             GetConversationsUseCase(MockConversationDataSource())
             )..fetchConversations(), 
           ),
 
