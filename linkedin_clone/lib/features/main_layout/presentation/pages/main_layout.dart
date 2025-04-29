@@ -9,8 +9,11 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
+import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
 import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/services/token_service.dart';
 
 class MainNavigationPage extends StatefulWidget {
@@ -80,9 +83,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
+    final messagingProvider = Provider.of<ConversationListProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: null,
       drawer: Drawer(
         child: ListView(
           padding: const EdgeInsets.all(16),
@@ -168,6 +171,30 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         ),
       ),
       body: _pages[_currentIndex],
+      appBar: AppBar(
+        
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+              // Implement search functionality
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.message),
+            onPressed: () {
+            messagingProvider.fetchConversations();
+             Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ConversationListPage(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onItemTapped,

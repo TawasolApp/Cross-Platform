@@ -64,6 +64,10 @@ import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_accou
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_all_companies.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
+import 'package:linkedin_clone/features/messaging/data/data_sources/conversation_remote_data_source.dart';
+import 'package:linkedin_clone/features/messaging/data/data_sources/mock_conversation_remote_data_source.dart';
+import 'package:linkedin_clone/features/messaging/domain/usecases/get_conversations_usecase.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -242,6 +246,12 @@ void main() async{
   runApp(
     MultiProvider(
       providers: [
+          ChangeNotifierProvider(
+            create: (_) => ConversationListProvider(
+             GetConversationsUseCase(MockConversationRemoteDataSource())
+            )..fetchConversations(), 
+          ),
+
         ChangeNotifierProvider(
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),

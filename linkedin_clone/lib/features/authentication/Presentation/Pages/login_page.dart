@@ -20,6 +20,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String email = '';
   String password = '';
+  bool isPasswordVisible = false; // Add this state variable
 
   @override
   Widget build(BuildContext context) {
@@ -109,8 +110,19 @@ class _LoginPageState extends State<LoginPage> {
               CustomTextField(
                 keyboardType: TextInputType.visiblePassword,
                 hintText: "Password",
-                isPassword: true,
+                isPassword: !isPasswordVisible, // Toggle password visibility
                 onChanged: (value) => password = value,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: isDarkMode ? const Color(0xFFE5E5E5) : Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isPasswordVisible = !isPasswordVisible;
+                    });
+                  },
+                ),
               ),
               const SizedBox(height: 10),
 
@@ -148,6 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                   if (success) {
                     context.go(RouteNames.main);
                   } else {
+                    print("Login failed");
                     showModalBottomSheet(
                       context: context,
                       backgroundColor: Colors.transparent,

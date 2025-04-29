@@ -38,12 +38,6 @@ class _FeedPageState extends State<FeedPage> {
     final profileTitle = profile.headline;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("News Feed"),
-        backgroundColor: isDarkMode ? Colors.black : Colors.white,
-        foregroundColor: isDarkMode ? Colors.white : Colors.black,
-        elevation: 0.5,
-      ),
       body:
           feedProvider.isLoading
               ? const Center(child: CircularProgressIndicator())
