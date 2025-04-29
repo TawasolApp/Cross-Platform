@@ -34,6 +34,7 @@ import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_p
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/job_listings_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/analytics_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/saved_posts_page.dart';
+import 'package:linkedin_clone/features/admin_panel/presentation/pages/admin_panel_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -271,6 +272,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.notifications,
         builder: (context, state) => const NotificationsListPage(),
+      ),
+      GoRoute(
+        path: RouteNames.adminPanel,
+        builder: (context, state) => const AdminPanelPage(),
       ),
     ],
   );

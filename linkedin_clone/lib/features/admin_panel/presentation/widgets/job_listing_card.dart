@@ -36,6 +36,13 @@ class JobListingCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: const Text("Delete"),
             ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              key: ValueKey('ignoreJobBtn_${job.id}'),
+              onPressed: () => provider.ignoreJob(job.id),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+              child: const Text("Ignore"),
+            ),
           ],
         ),
       ),
