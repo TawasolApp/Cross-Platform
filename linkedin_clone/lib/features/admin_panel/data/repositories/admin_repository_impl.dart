@@ -1,8 +1,12 @@
+import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/entities/report_entity.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/repositories/admin_repository.dart';
 import '../data_sources/admin_remote_data_source.dart';
 import '../../domain/entities/job_listing_entity.dart';
-import '../../domain/entities/analytics_entity.dart';
+import '../../domain/entities/post_analytics_entity.dart';
+import '../../domain/entities/job_analytics_entity.dart';
+import '../../domain/entities/user_analytics_entity.dart';
+import 'package:dartz/dartz.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final AdminRemoteDataSource remoteDataSource;
@@ -34,17 +38,25 @@ class AdminRepositoryImpl implements AdminRepository {
   }
 
   @override
-  Future<UserAnalytics> getUserAnalytics() {
-    return remoteDataSource.getUserAnalytics();
+  Future<Either<Failure, UserAnalytics>> getUserAnalytics() async {
+    final result = await remoteDataSource.getUserAnalytics();
+    return result.map<UserAnalytics>((model) => model);
   }
 
   @override
-  Future<PostAnalytics> getPostAnalytics() {
-    return remoteDataSource.getPostAnalytics();
+  Future<Either<Failure, PostAnalytics>> getPostAnalytics() async {
+    final result = await remoteDataSource.getPostAnalytics();
+    return result.map<PostAnalytics>((model) => model);
   }
 
   @override
-  Future<JobAnalytics> getJobAnalytics() {
-    return remoteDataSource.getJobAnalytics();
+  Future<Either<Failure, JobAnalytics>> getJobAnalytics() async {
+    final result = await remoteDataSource.getJobAnalytics();
+    return result.map<JobAnalytics>((model) => model);
+  }
+
+  @override
+  Future<Either<Failure, String>> ignoreFlaggedJob(String jobId) {
+    return remoteDataSource.ignoreFlaggedJob(jobId);
   }
 }

@@ -5,8 +5,13 @@ import '../../domain/usecases/resolve_report_usecase.dart';
 import '../../domain/entities/job_listing_entity.dart';
 import '../../domain/usecases/get_job_listings_usecase.dart';
 import '../../domain/usecases/delete_job_listing_usecase.dart';
-import '../../domain/entities/analytics_entity.dart';
-import '../../domain/usecases/get_analytics_usecase.dart';
+import '../../domain/usecases/get_user_analytics_usecase.dart';
+import '../../domain/usecases/get_post_analytics_usecase.dart';
+import '../../domain/usecases/get_job_analytics_usecase.dart';
+import '../../domain/entities/user_analytics_entity.dart';
+import '../../domain/entities/post_analytics_entity.dart';
+import '../../domain/entities/job_analytics_entity.dart';
+import '../../domain/usecases/ignore_flagged_job_usecase.dart';
 
 class AdminProvider with ChangeNotifier {
   final GetReportsUseCase getReportsUseCase;
@@ -16,6 +21,7 @@ class AdminProvider with ChangeNotifier {
   final GetUserAnalyticsUseCase getUserAnalyticsUseCase;
   final GetPostAnalyticsUseCase getPostAnalyticsUseCase;
   final GetJobAnalyticsUseCase getJobAnalyticsUseCase;
+  final IgnoreFlaggedJobUseCase ignoreFlaggedJobUseCase;
 
   AdminProvider({
     required this.getReportsUseCase,
@@ -25,6 +31,7 @@ class AdminProvider with ChangeNotifier {
     required this.getPostAnalyticsUseCase,
     required this.getUserAnalyticsUseCase,
     required this.getJobAnalyticsUseCase,
+    required this.ignoreFlaggedJobUseCase,
   });
 
   UserAnalytics? userAnalytics;
@@ -88,15 +95,55 @@ class AdminProvider with ChangeNotifier {
 
   Future<void> fetchAnalytics() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
-      userAnalytics = await getUserAnalyticsUseCase();
-      postAnalytics = await getPostAnalyticsUseCase();
-      jobAnalytics = await getJobAnalyticsUseCase();
-    } catch (_) {}
+      final userResult = await getUserAnalyticsUseCase();
+      userResult.fold(
+        (failure) {
+          errorMessage = failure.message;
+          print("provider1: Error fetching user analytics: ${failure.message}");
+        },
+        (data) {
+          userAnalytics = data;
+          print(
+            "provider: User analytics fetched successfully: ${data.totalUsers}",
+          );
+        },
+      );
+
+      final postResult = await getPostAnalyticsUseCase();
+      postResult.fold(
+        (failure) => errorMessage ??= failure.message,
+        (data) => postAnalytics = data,
+      );
+
+      final jobResult = await getJobAnalyticsUseCase();
+      jobResult.fold(
+        (failure) => errorMessage ??= failure.message,
+        (data) => jobAnalytics = data,
+      );
+    } catch (e, stack) {
+      errorMessage = "Provider: Unexpected error occurred: $e";
+      print("Provider: Error fetching analytics: $e\n$stack");
+    }
 
     isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> ignoreJob(String jobId) async {
+    final result = await ignoreFlaggedJobUseCase(jobId);
+    result.fold(
+      (failure) {
+        errorMessage = failure.message;
+        notifyListeners();
+      },
+      (message) {
+        jobListings.removeWhere((job) => job.id == jobId);
+        notifyListeners();
+      },
+    );
   }
 }

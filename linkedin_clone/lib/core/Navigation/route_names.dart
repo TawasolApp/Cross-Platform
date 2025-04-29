@@ -33,4 +33,5 @@ class RouteNames {
   static const String adminJobs = '/admin/jobs';
   static const String adminAnalytics = '/admin/analytics';
   static const String savedPosts = '/saved_posts';
+  static const String adminPanel = '/admin_panel';
 }
