@@ -42,8 +42,8 @@ class AppRouter {
 
     routes: [
             GoRoute(
-        path: RouteNames.adminMain,
-        builder: (context, state) => AdminPlaceholderPage(),
+        path: RouteNames.adminPanel,
+        builder: (context, state) => AdminPanelPage(),
       ),
       GoRoute(
         path: RouteNames.onboarding,

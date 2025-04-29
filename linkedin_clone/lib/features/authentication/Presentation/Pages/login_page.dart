@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                   if (success) {
                     final bool? isAdmin = await TokenService.getIsAdmin();
                     if(isAdmin != null && isAdmin){
-                    context.go(RouteNames.adminMain);
+                    context.go(RouteNames.adminPanel);
                     }else{
                       context.go(RouteNames.main);
                     }
