@@ -41,4 +41,10 @@ abstract class ConnectionsRepository {
     int page = 0,
     int limit = 0,
   });
+
+  Future<bool> endorseSkill(String userId, String skillName);
+  Future<bool> removeEndorsement(String userId, String skillName);
+
+  Future<int> getFollowersCount();
+  Future<int> getFollowingsCount();
 }

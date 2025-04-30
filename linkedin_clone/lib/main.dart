@@ -37,6 +37,8 @@ import 'package:linkedin_clone/features/connections/domain/usecases/block/block_
 import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
@@ -53,7 +55,6 @@ import 'package:linkedin_clone/features/connections/presentations/pages/invitati
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
@@ -257,21 +258,22 @@ void main() async {
   final adminRemoteDataSource = AdminRemoteDataSourceImpl(dio);
   final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
   final conversationDataSource = MockConversationDataSource();
-  final messagingRepository = ConversationRepositoryImpl(conversationDataSource);
+  final messagingRepository = ConversationRepositoryImpl(
+    conversationDataSource,
+  );
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => ChatProvider(
-             GetChatUseCase(messagingRepository)
-            ),
-          ),
-          ChangeNotifierProvider(
-            create: (_) => ConversationListProvider(
-             GetConversationsUseCase(messagingRepository)
-            ),
-          ),
+          create: (_) => ChatProvider(GetChatUseCase(messagingRepository)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ConversationListProvider(
+                GetConversationsUseCase(messagingRepository),
+              ),
+        ),
 
         ChangeNotifierProvider(
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
@@ -369,6 +371,20 @@ void main() async {
                   ),
                 ),
                 WithdrawConnectionRequestUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                RemoveEndorsementUsecase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                EndorseSkillUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),

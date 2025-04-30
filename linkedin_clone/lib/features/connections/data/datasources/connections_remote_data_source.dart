@@ -744,4 +744,160 @@ class ConnectionsRemoteDataSource {
       rethrow;
     }
   }
+
+  ///////////////////Endorse skill
+  Future<bool> endosreSkill(String userId, String skillName) async {
+    try {
+      final token = await initToken();
+      final response = await client.post(
+        Uri.parse('${baseUrl}connections/$userId/endorse-skill'),
+        headers: {'Authorization': 'Bearer $token'},
+        body: jsonEncode({'skillName': skillName}),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :endosreSkill: 400 invalid input",
+        );
+      } else if (response.statusCode == 403) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :endosreSkill: 403 Users are not connected, cannot endorse skill",
+        );
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :endosreSkill: 500 Failed",
+        );
+      } else if (response.statusCode == 404) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :endosreSkill: 404 not found",
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :endosreSkill: 401 Authentication failed",
+        );
+      } else if (response.statusCode == 409) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :endosreSkill: 401 Already endorsed",
+        );
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :endosreSkill: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception('Unknown error ${response.statusCode}');
+      }
+    } catch (e) {
+      print('\nConnectionsRemoteDataSource :endosreSkill: ${e.toString()}\n');
+      return false;
+    }
+  }
+
+  Future<bool> removeEndorsment(String userId, String skillName) async {
+    try {
+      final token = await initToken();
+      final response = await client.delete(
+        Uri.parse('${baseUrl}connections/$userId/endorsment/$skillName'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
+
+      if (response.statusCode == 204) {
+        return true;
+      } else if (response.statusCode == 400) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeEndorsment: 400 invalid input",
+        );
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeEndorsment: 500 Failed",
+        );
+      } else if (response.statusCode == 404) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeEndorsment: 404 not found",
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :removeEndorsment: 401 Authentication failed",
+        );
+      } else {
+        print(
+          'ConnectionsRemoteDataSource :removeEndorsment: ${response.statusCode}',
+        );
+        // Handle other status codes as needed
+        throw Exception('Unknown error ${response.statusCode}');
+      }
+    } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :removeEndorsment: ${e.toString()}\n',
+      );
+      return false;
+    }
+  }
+
+  Future<int> getFollowersCount() async {
+    try {
+      final token = await initToken();
+      final response = await client.get(
+        Uri.parse('${baseUrl}connections/follower/count'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return jsonResponse['count'] as int;
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          'ConnectionsRemoteDataSource :getFollowersCount: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getFollowersCount: 401 Authentication failed",
+        );
+      } else {
+        throw Exception('Unknown error ${response.statusCode}');
+      }
+    } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getFollowersCount: ${e.toString()}\n',
+      );
+      rethrow;
+    }
+  }
+
+  Future<int> getFollowingsCount() async {
+    try {
+      final token = await initToken();
+      final response = await client.get(
+        Uri.parse('${baseUrl}connections/following/count'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body);
+        return jsonResponse['count'] as int;
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          'ConnectionsRemoteDataSource :getFollowingCount: 500 Failed',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :getFollowingCount: 401 Authentication failed",
+        );
+      } else {
+        throw Exception('Unknown error ${response.statusCode}');
+      }
+    } catch (e) {
+      print(
+        '\nConnectionsRemoteDataSource :getFollowingCount: ${e.toString()}\n',
+      );
+      rethrow;
+    }
+  }
 }

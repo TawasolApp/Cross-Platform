@@ -256,67 +256,22 @@ class NetworksProvider with ChangeNotifier {
   }
 
   Future<int> getFollowingsCount() async {
-    return 0;
-    // try {
-    //   List<ConnectionsUserEntity>? tempFollowingList;
-    //   int tempCurrentPage = 1;
-    //   tempFollowingList = await getFollowingListUseCase.call(
-    //     page: tempCurrentPage,
-    //     limit: 300,
-    //   );
-    //   List<ConnectionsUserEntity>? newTempFollowingList =
-    //       await getFollowingListUseCase.call(page: tempCurrentPage);
-    //   if (newTempFollowingList.isNotEmpty) {
-    //     tempFollowingList.addAll(newTempFollowingList);
-    //   }
-    //   while (newTempFollowingList!.isNotEmpty) {
-    //     tempCurrentPage++;
-    //     newTempFollowingList = await getFollowingListUseCase.call(
-    //       page: tempCurrentPage,
-    //       limit: 300,
-    //     );
-    //     tempFollowingList.addAll(newTempFollowingList);
-    //   }
-
-    //   return tempFollowingList.length;
-    // } catch (e) {
-    //   print('\nNetworksProvider: getFollowingsCount $e\n');
-    //   return -1;
-    // } finally {
-    //   notifyListeners();
-    // }
+    try {
+      return await getFollowingsCount.call();
+    } catch (e) {
+      print('\nNetworksProvider: getFollowingsCount $e\n');
+      _error = e.toString();
+      return -1; // Return -1 if there was an error
+    }
   }
 
   Future<int> getFollowersCount() async {
-    return 0;
-
-    // try {
-    //   List<ConnectionsUserEntity>? tempFollowersList;
-    //   int tempCurrentPage = 1;
-    //   tempFollowersList = await getFollowersListUseCase.call(
-    //     page: tempCurrentPage,
-    //     limit: 300,
-    //   );
-    //   List<ConnectionsUserEntity>? newTempFollowersList =
-    //       await getFollowersListUseCase.call(page: tempCurrentPage);
-    //   if (newTempFollowersList.isNotEmpty) {
-    //     tempFollowersList.addAll(newTempFollowersList);
-    //   }
-    //   while (newTempFollowersList!.isNotEmpty) {
-    //     tempCurrentPage++;
-    //     newTempFollowersList = await getFollowersListUseCase.call(
-    //       page: tempCurrentPage,
-    //       limit: 300,
-    //     );
-    //     tempFollowersList.addAll(newTempFollowersList);
-    //   }
-
-    //   return tempFollowersList.length;
-    // } catch (e) {
-    //   print('\nNetworksProvider: getFollowersCount $e\n');
-    //   return -1;
-    // } finally {
-    //   notifyListeners();
-    // }
+    try {
+      return await getFollowersCount.call();
+    } catch (e) {
+      print('\nNetworksProvider: getFollowersCount $e\n');
+      _error = e.toString();
+      return -1; // Return -1 if there was an error
+    }
   }
 }

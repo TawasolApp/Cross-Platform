@@ -144,7 +144,7 @@ class _ListPageState extends State<ListPage> {
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.connectionsList!.length,
+                        count: provider.getConnectionsCount() as int? ?? 0,
                         connectionsProvider: provider,
                       );
                     },
@@ -163,7 +163,7 @@ class _ListPageState extends State<ListPage> {
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.followersList!.length,
+                        count: provider.getFollowersCount() as int? ?? 0,
                       );
                     },
                   ),
@@ -181,7 +181,7 @@ class _ListPageState extends State<ListPage> {
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.followingList!.length,
+                        count: provider.getFollowingsCount() as int? ?? 0,
                       );
                     },
                   ),

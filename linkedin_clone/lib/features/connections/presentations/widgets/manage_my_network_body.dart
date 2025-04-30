@@ -26,8 +26,6 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
   @override
   void initState() {
     super.initState();
-    widget.connectionsProvider?.getConnectionsCount();
-    // Initialization logic if needed later
   }
 
   @override
@@ -44,8 +42,8 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToConnections(context);
             },
-            count: -1, //TODOL: Add logic to get connections count
-            // widget.connectionsProvider?.getConnectionsCount() as int? ?? 0,
+            count:
+                widget.connectionsProvider?.getConnectionsCount() as int? ?? 0,
           ),
           Divider(
             height: 1,
@@ -60,8 +58,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToFollowing(context);
             },
-            count:
-                -1, // widget.networksProvider?.getFollowingsCount() as int? ?? 0,
+            count: widget.networksProvider?.getFollowingsCount() as int? ?? 0,
           ),
           Divider(
             height: 1,
@@ -76,25 +73,12 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToFollowers(context);
             },
-            count:
-                -1, // widget.networksProvider?.getFollowersCount() as int? ?? 0,
+            count: widget.networksProvider?.getFollowersCount() as int? ?? 0,
           ),
           Divider(
             height: 1,
             thickness: 1,
             color: Theme.of(context).dividerColor,
-          ),
-
-          /// Pages
-          ManageMyNetworkCard(
-            title: 'Pages',
-            icon: Icons.apartment,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Pages feature is under development')),
-              );
-            },
-            count: -1, // TODO: Add logic to get pages count
           ),
         ],
       ),

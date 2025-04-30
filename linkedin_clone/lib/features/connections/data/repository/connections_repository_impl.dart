@@ -205,4 +205,44 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<bool> endorseSkill(String userId, String skillName) async {
+    try {
+      bool endorsed = await remoteDataSource.endosreSkill(userId, skillName);
+      return endorsed;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> removeEndorsement(String userId, String skillName) async {
+    try {
+      bool removed = await remoteDataSource.removeEndorsment(userId, skillName);
+      return removed;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getFollowersCount() async {
+    try {
+      final count = await remoteDataSource.getFollowersCount();
+      return count;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getFollowingsCount() async {
+    try {
+      final count = await remoteDataSource.getFollowingsCount();
+      return count;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
