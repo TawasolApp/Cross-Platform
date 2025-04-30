@@ -17,21 +17,45 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text("Experience"),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: Text(
+          "Experience",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: theme.primaryColor,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.primaryColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
           if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: CircularProgressIndicator(),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.0,
+                  color: theme.primaryColor,
+                ),
+              ),
             ),
         ],
       ),
       body: _buildBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _addExperience(context),
-        child: const Icon(Icons.add),
+        backgroundColor: theme.primaryColor,
+        elevation: 4,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }
@@ -44,18 +68,94 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
         }
 
         if (provider.experiences!.isEmpty) {
-          return const Center(child: Text("No experiences added yet"));
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.work_outline, size: 60, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text(
+                  "No experiences added yet",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Tap the + button to add your work experience",
+                  style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                ),
+              ],
+            ),
+          );
         }
 
         return RefreshIndicator(
           onRefresh: () => provider.fetchProfile(provider.userId),
-          child: ListView.builder(
+          color: Theme.of(context).primaryColor,
+          child: ListView(
             padding: const EdgeInsets.all(16.0),
-            itemCount: provider.experiences!.length,
-            itemBuilder: (context, index) {
-              final experience = provider.experiences![index];
-              return _buildExperienceCard(context, experience, index, provider);
-            },
+            children: [
+              // Header section
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.work_outline,
+                          color: Theme.of(context).primaryColor,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          "Work Experience",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Manage your professional experience history",
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // List of experiences
+              ...provider.experiences!.asMap().entries.map(
+                (entry) => _buildExperienceCard(
+                  context,
+                  entry.value,
+                  entry.key,
+                  provider,
+                ),
+              ),
+            ],
           ),
         );
       },
@@ -104,99 +204,278 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
       experience.locationType,
     );
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      color: Colors.white,
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading:
-            experience.companyLogo != null
-                ? CircleAvatar(
-                  backgroundImage: NetworkImage(experience.companyLogo!),
-                )
-                : const CircleAvatar(child: Icon(Icons.business)),
-        title: Text(
-          experience.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Company with employment type
-            Row(
+    final dates =
+        experience.endDate != null
+            ? "${experience.startDate} - ${experience.endDate}"
+            : "${experience.startDate} - Present";
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => _editExperience(context, experience),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(experience.company),
-                const Text(" · ", style: TextStyle(color: Colors.grey)),
-                Text(
-                  formattedEmploymentType,
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ],
-            ),
-            // Location with location type if available
-            if (experience.location != null && experience.location!.isNotEmpty)
-              Row(
-                children: [
-                  Text(
-                    experience.location!,
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
-                  if (experience.locationType != null &&
-                      experience.locationType!.isNotEmpty) ...[
-                    const Text(
-                      " · ",
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 1,
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child:
+                          experience.companyLogo != null
+                              ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  experience.companyLogo!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                              : Icon(
+                                Icons.business,
+                                size: 35,
+                                color: Colors.grey[400],
+                              ),
                     ),
-                    Text(
-                      formattedLocationType,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            experience.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          // Company with employment type
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  experience.company,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const Text(
+                                " · ",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                formattedEmploymentType,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          // Location with location type if available
+                          if (experience.location != null &&
+                              experience.location!.isNotEmpty)
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.location_on_outlined,
+                                  size: 14,
+                                  color: Colors.grey[600],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  experience.location!,
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                if (experience.locationType != null &&
+                                    experience.locationType!.isNotEmpty) ...[
+                                  const Text(
+                                    " · ",
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  Text(
+                                    formattedLocationType,
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          const SizedBox(height: 4),
+                          // Date range with calendar icon
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.calendar_today_outlined,
+                                size: 14,
+                                color: Colors.grey[600],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                dates,
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 13,
+                                ),
+                              ),
+                              if (experience.endDate == null) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green[50],
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                      color: Colors.green[200]!,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    "Current",
+                                    style: TextStyle(
+                                      color: Colors.green[800],
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      onSelected: (value) async {
+                        if (value == "edit") {
+                          await _editExperience(context, experience);
+                        } else if (value == "delete") {
+                          await _deleteExperience(context, index, provider);
+                        }
+                      },
+                      color: Colors.white,
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      icon: Icon(Icons.more_vert, color: Colors.grey[700]),
+                      itemBuilder:
+                          (context) => [
+                            PopupMenuItem(
+                              value: "edit",
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit_outlined,
+                                    size: 18,
+                                    color: Colors.grey[700],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text("Edit"),
+                                ],
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: "delete",
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.delete_outline,
+                                    size: 18,
+                                    color: Colors.red,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    "Delete",
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                    ),
+                  ],
+                ),
+
+                // Description
+                if (experience.description != null &&
+                    experience.description!.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Text(
+                    experience.description!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[800],
+                      height: 1.4,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (experience.description!.length > 150) ...[
+                    const SizedBox(height: 4),
+                    GestureDetector(
+                      onTap: () => _editExperience(context, experience),
+                      child: Text(
+                        "See more",
+                        style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                      ),
                     ),
                   ],
                 ],
-              ),
-            // Date range
-            Text(
-              experience.endDate != null
-                  ? "${experience.startDate} - ${experience.endDate}"
-                  : "${experience.startDate} - Present",
-              style: const TextStyle(color: Colors.grey),
-            ),
-            // Description
-            if (experience.description != null &&
-                experience.description!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 4.0),
-                child: Text(
-                  experience.description!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ),
-          ],
-        ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) async {
-            if (value == "edit") {
-              await _editExperience(context, experience);
-            } else if (value == "delete") {
-              await _deleteExperience(context, index, provider);
-            }
-          },
-          color: Colors.white,
-          elevation: 3,
-          itemBuilder:
-              (context) => [
-                const PopupMenuItem(value: "edit", child: Text("Edit")),
-                const PopupMenuItem(
-                  value: "delete",
-                  child: Text("Delete", style: TextStyle(color: Colors.red)),
-                ),
               ],
+            ),
+          ),
         ),
-        onTap: () => _editExperience(context, experience),
       ),
     );
   }
@@ -251,18 +530,25 @@ class _ExperienceListPageState extends State<ExperienceListPage> {
           (context) => AlertDialog(
             title: const Text("Delete Experience"),
             content: const Text(
-              "Are you sure you want to remove this experience?",
+              "Are you sure you want to remove this experience? This action cannot be undone.",
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text("Cancel"),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
                 child: const Text(
                   "Delete",
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ],

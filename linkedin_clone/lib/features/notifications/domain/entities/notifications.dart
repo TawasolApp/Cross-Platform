@@ -7,7 +7,7 @@ class Notifications extends Equatable {
   final String referenceId;
   final String rootItemId;
   final String senderType; // 'User' or 'Company'
-  final String type; // 'React', 'Comment', 'UserConnection', 'Message'
+  final String type; // 'React', 'Comment', 'UserConnection', 'Message', 'JobOffer'
   final String content;
   final bool isRead;
   final DateTime timestamp;
