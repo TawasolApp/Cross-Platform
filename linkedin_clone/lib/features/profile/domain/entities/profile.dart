@@ -23,6 +23,7 @@ class Profile extends Equatable {
   final int? connectionCount;
   final String connectStatus;
   final String followStatus;
+  final bool isPremium;
 
   const Profile({
     required this.userId,
@@ -43,6 +44,7 @@ class Profile extends Equatable {
     this.connectionCount,
     this.connectStatus = "Owner",
     this.followStatus = "Owner",
+    this.isPremium = false,
   });
 
   // Get full name
@@ -67,6 +69,7 @@ class Profile extends Equatable {
     int? connectionCount,
     String? connectStatus,
     String? followStatus,
+    bool? isPremium,
   }) {
     return Profile(
       userId: userId ?? this.userId,
@@ -87,6 +90,7 @@ class Profile extends Equatable {
       connectionCount: connectionCount ?? this.connectionCount,
       connectStatus: connectStatus ?? this.connectStatus,
       followStatus: followStatus ?? this.followStatus,
+      isPremium: isPremium ?? this.isPremium,
     );
   }
 
@@ -110,5 +114,6 @@ class Profile extends Equatable {
     connectionCount,
     connectStatus,
     followStatus,
+    isPremium,
   ];
 }

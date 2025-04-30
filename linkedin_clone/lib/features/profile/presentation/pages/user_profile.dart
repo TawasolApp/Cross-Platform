@@ -238,7 +238,7 @@ class _UserProfileState extends State<UserProfile> {
                           isPending ? 'Pending' : 'Connect',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                         if (isPending) ...[
@@ -323,7 +323,7 @@ class _UserProfileState extends State<UserProfile> {
                           isFollowing ? 'Following' : 'Follow',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                         if (isFollowing) ...[

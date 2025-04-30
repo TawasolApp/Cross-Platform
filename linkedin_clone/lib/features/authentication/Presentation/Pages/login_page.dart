@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/navigation/route_names.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
@@ -8,6 +9,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Widgets/logi
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/authentication/presentation/widgets/social_login_buttons.dart';
 import 'package:linkedin_clone/features/authentication/presentation/widgets/primary_button.dart';
+import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -25,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final notificationProvider = Provider.of<NotificationsProvider>(context);
     final theme = Theme.of(context);
     final textColor = theme.textTheme.bodyMedium?.color;
     final primaryColor = theme.colorScheme.primary;
@@ -158,6 +161,10 @@ class _LoginPageState extends State<LoginPage> {
                   if (!context.mounted) return;
 
                   if (success) {
+                    await TokenService.getUserId().then((id) async {
+                      // Subscribe to company notifications
+                      await notificationProvider.subscribeToNotifications(id!);
+                    });
                     context.go(RouteNames.main);
                   } else {
                     print("Login failed");

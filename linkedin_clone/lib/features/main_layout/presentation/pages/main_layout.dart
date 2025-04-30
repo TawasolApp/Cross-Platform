@@ -13,6 +13,7 @@ import 'package:linkedin_clone/features/messaging/presentation/pages/conversatio
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
 import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
+import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/services/token_service.dart';
 
@@ -83,7 +84,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final messagingProvider = Provider.of<ConversationListProvider>(context, listen: false);
+    final messagingProvider = Provider.of<ConversationListProvider>(
+      context,
+      listen: false,
+    );
+    final notificationsProvider = Provider.of<NotificationsProvider>(context);
 
     return Scaffold(
       drawer: Drawer(
@@ -172,7 +177,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       ),
       body: _pages[_currentIndex],
       appBar: AppBar(
-        
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -183,12 +187,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           IconButton(
             icon: const Icon(Icons.message),
             onPressed: () {
-            messagingProvider.fetchConversations();
-             Navigator.push(
+              messagingProvider.fetchConversations();
+              Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ConversationListPage(),
-                ),
+                MaterialPageRoute(builder: (context) => ConversationListPage()),
               );
             },
           ),
@@ -200,8 +202,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         onTap: _onItemTapped,
         selectedItemColor: theme.colorScheme.primary,
         unselectedItemColor: theme.unselectedWidgetColor,
-        backgroundColor: theme.scaffoldBackgroundColor,
-        items: const [
+        backgroundColor: Colors.white,
+        items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
@@ -212,8 +214,79 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: "Jobs",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_outlined),
+            icon: Stack(
+              children: [
+                const Icon(Icons.notifications_outlined),
+                if (notificationsProvider.unseenNotificationsCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(minWidth: 12, minHeight: 12),
+                      child:
+                          notificationsProvider.unseenNotificationsCount > 9
+                              ? Text(
+                                '9+',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                              : Text(
+                                '${notificationsProvider.unseenNotificationsCount}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                    ),
+                  ),
+              ],
+            ),
             label: "Notifications",
+            activeIcon: Stack(
+              children: [
+                const Icon(Icons.notifications),
+                if (notificationsProvider.unseenNotificationsCount > 0)
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      constraints: BoxConstraints(minWidth: 12, minHeight: 12),
+                      child:
+                          notificationsProvider.unseenNotificationsCount > 9
+                              ? Text(
+                                '9+',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                              : Text(
+                                '${notificationsProvider.unseenNotificationsCount}',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                    ),
+                  ),
+              ],
+            ),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
