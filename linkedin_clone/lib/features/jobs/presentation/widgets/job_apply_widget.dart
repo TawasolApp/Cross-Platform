@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class ApplyForJobWidget extends StatelessWidget {
   final String companyName;
-  final String jobId; // You must pass the jobId now!
+  final String jobId;
 
   ApplyForJobWidget({required this.companyName, required this.jobId});
 
@@ -74,27 +74,32 @@ class ApplyForJobWidget extends StatelessWidget {
       final provider = Provider.of<ApplyJobProvider>(context, listen: false);
 
       final application = ApplyForJobEntity(
-        jobId: jobId, 
+        jobId: jobId,
         phoneNumber: _phoneNumber.phoneNumber ?? '',
-        resumeURL: '', // If not required anymore, just empty string
+        resumeURL: '',
       );
 
-      final success = await provider.applyForJob(application);
+      bool success = await provider.applyForJob(application);
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? 'Application Submitted Successfully!'
+                : 'Application Failed ',
+          ),
+          backgroundColor: success ? Colors.green : Colors.red,
+        ),
+      );
+
+      // Delay then close screen
+      await Future.delayed(const Duration(milliseconds: 500));
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Application Submitted Successfully')),
-        );
+        // Close the screen if the application was successful
         Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to submit application')),
-        );
+        // Optionally, you can keep the screen open for the user to try again
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all required fields')),
-      );
     }
   }
 }

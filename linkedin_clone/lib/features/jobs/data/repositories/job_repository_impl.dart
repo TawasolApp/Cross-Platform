@@ -1,5 +1,6 @@
 import 'package:linkedin_clone/features/jobs/data/model/create_job_model.dart';
 import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/application_entity.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/apply_for_job_entity.dart';
 
 import '../../domain/repositories/job_repository.dart';
@@ -68,6 +69,14 @@ Future<bool> deleteJob(String jobId) {
 @override
 Future<bool> applyForJob(ApplyForJobEntity application) {
   return remoteDataSource.applyForJob(application);
+}
+@override
+Future<List<ApplicationEntity>> getApplicants(String jobId,{int page = 1, int limit = 5}) {
+  return remoteDataSource.getApplicants(jobId,page: page, limit: limit);
+}
+@override
+Future<bool> updateApplicationStatus(String applicationId, String newStatus) {
+  return remoteDataSource.updateApplicationStatus(applicationId, newStatus);
 }
 
 }

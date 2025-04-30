@@ -3,19 +3,22 @@ import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/pages/job_applicants_page.dart';
 import 'package:linkedin_clone/features/jobs/presentation/widgets/job_apply_widget.dart';
 
 class CompanyJobDetailsScreen extends StatefulWidget {
   final Job job;
   final CompanyProvider companyProvider;
   final String companyId;
+  final bool isManager;
 
-  const CompanyJobDetailsScreen({
-    Key? key,
+  CompanyJobDetailsScreen({
+    super.key,
     required this.job,
     required this.companyProvider,
     required this.companyId,
-  }) : super(key: key);
+    this.isManager = false, // Default value = false if viewed from
+  });
 
   @override
   _JobDetailsScreenState createState() => _JobDetailsScreenState();
@@ -205,7 +208,45 @@ class _JobDetailsScreenState extends State<CompanyJobDetailsScreen> {
                     SizedBox(height: 20),
                     Divider(thickness: 1, color: Colors.grey[300]),
                     SizedBox(height: 12),
+                    const SizedBox(height: 16),
+                  if(widget.isManager)
+                    // See Applicants Button
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Navigating to applicants screen...'),
+                            duration: Duration(
+                              milliseconds: 500,
+                            ), // Optional: make it very fast
+                          ),
+                        );
 
+                        // Push after showing the SnackBar
+                        Future.delayed(Duration(milliseconds: 500), () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => ApplicantsScreen(jobId: widget.job.id),
+                            ),
+                          );
+                        });
+                      },
+                      child: const Center(
+                        child: Text(
+                          "See Applicants",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ),
                     // Job Description
                     Text(
                       "About the job",

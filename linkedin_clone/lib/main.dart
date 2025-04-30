@@ -58,7 +58,10 @@ import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
 import 'package:linkedin_clone/features/jobs/domain/usecases/apply_for_job_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/get_applicants_use_case.dart';
 import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/update_application_status_use_case.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_applicants_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -465,6 +468,22 @@ void main() {
           create:
               (_) => ApplyJobProvider(
                 applyForJobUseCase: ApplyForJobUseCase(repository: jobrepos),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ApplicantsProvider(
+                getApplicantsUseCase: GetApplicantsUseCase(
+                  repository: JobRepositoryImpl(
+                    remoteDataSource: JobRemoteDataSource(),
+
+                  ),
+                ),
+                updateStatusUseCase: UpdateApplicationStatusUseCase(
+                  repository: JobRepositoryImpl(
+                    remoteDataSource: JobRemoteDataSource(),
+                  ),
+                ),
               ),
         ),
       ],

@@ -6,8 +6,13 @@ import 'package:linkedin_clone/core/utils/time_ago.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final Job job;
+  final bool isManager; 
 
-  const JobDetailsScreen({super.key, required this.job});
+  const JobDetailsScreen({
+    super.key,
+    required this.job,
+    this.isManager = false, // Default value = false if viewed from 
+  });
 
   @override
   State<JobDetailsScreen> createState() => _JobDetailsScreenState();
@@ -99,7 +104,9 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                   // Location, Time, Applicants
                   RichText(
                     text: TextSpan(
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.grey[600],
+                      ),
                       children: [
                         TextSpan(
                           text:
@@ -108,7 +115,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         TextSpan(
                           text:
                               "${formatNumber(job.applicantCount)} clicked apply",
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(color: Colors.green[600]),
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(color: Colors.green[600]),
                         ),
                       ],
                     ),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:linkedin_clone/features/jobs/data/model/application_model.dart';
 import 'package:linkedin_clone/features/jobs/data/model/create_job_model.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/apply_for_job_entity.dart';
 import '../model/job_model.dart';
@@ -82,19 +83,26 @@ class JobRemoteDataSource {
     final token = await TokenService.getToken();
 
     final Map<String, String> queryParams = {
+      'page': page.toString(),
+      'limit': limit.toString(),
       if (keyword != null && keyword.isNotEmpty) 'keyword': keyword,
       if (location != null && location.isNotEmpty) 'location': location,
       if (industry != null && industry.isNotEmpty) 'industry': industry,
       if (experienceLevel != null && experienceLevel.isNotEmpty)
         'experienceLevel': experienceLevel,
       if (company != null && company.isNotEmpty) 'company': company,
-      if (minSalary != null) 'minSalary': minSalary.toString(),
-      if (maxSalary != null) 'maxSalary': maxSalary.toString(),
+      if (minSalary != null && minSalary > 0)
+        'minSalary': minSalary.toStringAsFixed(0),
+      if (maxSalary != null && maxSalary > 0)
+        'maxSalary': maxSalary.toStringAsFixed(0),
     };
 
     final uri = Uri.parse(
-      '$baseUrl/jobs?page=$page&limit=$limit',
+      '$baseUrl/jobs',
     ).replace(queryParameters: queryParams);
+
+    print('page: $page');
+    print('limit: $limit');
     print('🔍 Searching jobs with query: $queryParams');
     try {
       final response = await http.get(
@@ -109,7 +117,8 @@ class JobRemoteDataSource {
       print('📥 Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonList = json.decode(response.body);
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> jsonList = jsonResponse['jobs'] ?? [];
         print('🔍 Search Results: $jsonList');
         return jsonList.map((e) => JobModel.fromJson(e)).toList();
       } else {
@@ -121,37 +130,119 @@ class JobRemoteDataSource {
     }
   }
 
-Future<bool> deleteJob(String jobId) async {
-  final token = await TokenService.getToken();
+  Future<bool> deleteJob(String jobId) async {
+    final token = await TokenService.getToken();
 
-  final response = await http.delete(
-    Uri.parse('$baseUrl/jobs/$jobId'),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    },
-  );
+    final response = await http.delete(
+      Uri.parse('$baseUrl/jobs/$jobId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
 
-  return response.statusCode == 200 || response.statusCode == 204;
-}
-Future<bool> applyForJob(ApplyForJobEntity application) async {
-  final token = await TokenService.getToken();
+    return response.statusCode == 200 || response.statusCode == 204;
+  }
 
-  // final response = await http.post(
-  //   Uri.parse('https://tawasolapp.me/api/jobs/${application.jobId}/apply'),
-  //   headers: {
-  //     'Authorization': 'Bearer $token',
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: jsonEncode({
-  //     "jobId": application.jobId,
-  //     "phoneNumber": application.phoneNumber,
-  //     "resumeURL": application.resumeURL,
-  //   }),
-  // );
+  Future<bool> applyForJob(ApplyForJobEntity application) async {
+    final token = await TokenService.getToken();
+    print('resumeURL: ${application.resumeURL}');
+    final resumeURL = 'https://example.com/resume.pdf'; //remove later
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/jobs/apply'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "jobId": application.jobId,
+          "phoneNumber": application.phoneNumber,
+          "resumeURL": resumeURL, //change this to application.resumeURL
+        }),
+      );
 
-  // return response.statusCode == 200 || response.statusCode == 201;
-  return true; 
-}
+      print(
+        '📥 Apply for Job Response: ${response.statusCode} - ${response.body}',
+      );
 
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Application Submitted Successfully');
+        return true;
+      } else {
+        print('❌ Failed to apply for job: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ Error applying for job: $e');
+      return false;
+    }
+  }
+
+  Future<List<ApplicationModel>> getApplicants(
+    String jobId, {
+    int page = 1,
+    int limit = 5,
+  }) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final Map<String, String> queryParams = {
+        'page': page.toString(),
+        'limit': limit.toString(),
+        jobId: jobId,
+      };
+
+      final uri = Uri.parse(
+        '$baseUrl/jobs/$jobId/applicants',
+      ).replace(queryParameters: queryParams);
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+        '📥 Get Applicants Response: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> jsonList = jsonResponse['applications'] ?? [];
+        return jsonList.map((e) => ApplicationModel.fromJson(e)).toList();
+      } else {
+        throw Exception('Failed to fetch applicants: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error getting applicants: $e');
+      throw Exception('Error getting applicants: $e');
+    }
+  }
+
+  Future<bool> updateApplicationStatus(
+    String applicationId,
+    String newStatus,
+  ) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final response = await http.patch(
+        Uri.parse('$baseUrl/jobs/applications/$applicationId/status'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'status': newStatus}),
+      );
+
+      print('📤 Status Update: ${response.statusCode} - ${response.body}');
+      return response.statusCode == 200;
+    } catch (e) {
+      print('❌ Failed to update status: $e');
+      return false;
+    }
+  }
 }

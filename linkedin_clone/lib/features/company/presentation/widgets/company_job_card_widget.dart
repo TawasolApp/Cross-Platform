@@ -34,6 +34,7 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                     job: widget.job,
                     companyProvider: companyProvider,
                     companyId: widget.companyId,
+                    isManager: companyProvider.isManager,
                   ),
             ),
           );

@@ -573,10 +573,21 @@ class CompanyProfileScreen extends StatelessWidget {
                                             ),
                                             onPressed: () async {
                                               final Uri url = Uri.parse(
-                                                provider.company!.website ??
-                                                    "https://www.google.com",
+                                                context
+                                                            .read<
+                                                              CompanyProvider
+                                                            >()
+                                                            .company!
+                                                            .website
+                                                            ?.isEmpty ??
+                                                        true
+                                                    ? "https://www.google.com"
+                                                    : context
+                                                        .read<CompanyProvider>()
+                                                        .company!
+                                                        .website!,
                                               );
-
+                                              
                                               await launchUrl(url);
                                             },
                                             child: Row(
