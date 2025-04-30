@@ -66,7 +66,11 @@ import 'package:linkedin_clone/features/company/domain/usecases/get_all_companie
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
 import 'package:linkedin_clone/features/messaging/data/data_sources/conversation_remote_data_source.dart';
 import 'package:linkedin_clone/features/messaging/data/data_sources/mock_conversation_remote_data_source.dart';
+import 'package:linkedin_clone/features/messaging/data/repository/conversation_repository.dart';
+import 'package:linkedin_clone/features/messaging/domain/repository/repository_impl.dart';
+import 'package:linkedin_clone/features/messaging/domain/usecases/get_chat_use_case.dart';
 import 'package:linkedin_clone/features/messaging/domain/usecases/get_conversations_usecase.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/chat_provider.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -252,14 +256,21 @@ void main() async {
   //////admin
   final adminRemoteDataSource = AdminRemoteDataSourceImpl(dio);
   final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
+  final conversationDataSource = MockConversationDataSource();
+  final messagingRepository = ConversationRepositoryImpl(conversationDataSource);
 
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+            create: (_) => ChatProvider(
+             GetChatUseCase(messagingRepository)
+            ),
+          ),
           ChangeNotifierProvider(
             create: (_) => ConversationListProvider(
-             GetConversationsUseCase(MockConversationDataSource())
-            )..fetchConversations(), 
+             GetConversationsUseCase(messagingRepository)
+            ),
           ),
 
         ChangeNotifierProvider(

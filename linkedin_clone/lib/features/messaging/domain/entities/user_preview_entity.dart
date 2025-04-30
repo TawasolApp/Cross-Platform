@@ -13,6 +13,8 @@ class UserPreviewEntity extends Equatable {
     required this.profilePicture,
   });
 
+  String get getId => id;
+
   @override
   List<Object?> get props => [
         id,

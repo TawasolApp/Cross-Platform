@@ -25,7 +25,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await TokenService.saveToken(userModel.token);
      
       print("Token saved: ${userModel.token}");
-      if(userModel.role=="customer"){
+      if(userModel.role!="admin"){
         final profileModel = await profileRemoteDataSource.getProfile("");
         await TokenService.saveUserId(profileModel.userId);
         await TokenService.saveIsAdmin(false);

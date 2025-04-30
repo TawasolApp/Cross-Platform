@@ -1,12 +1,13 @@
+import 'package:linkedin_clone/features/messaging/data/repository/conversation_repository.dart';
+
 import '../entities/conversation_entity.dart';
 import '../../data/data_sources/conversation_remote_data_source.dart';
 
 class GetConversationsUseCase {
-  final ConversationRemoteDataSource remoteDataSource;
-
-  GetConversationsUseCase(this.remoteDataSource);
+  final ConversationRepository repository;
+  GetConversationsUseCase(this.repository);
 
   Future<List<ConversationEntity>> call() async {
-    return await remoteDataSource.fetchConversations();
+    return await repository.fetchConversations();
   }
 }
