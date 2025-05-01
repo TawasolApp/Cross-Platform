@@ -104,11 +104,17 @@ class PostCreationPageState extends State<PostCreationPage> {
                           }
                         } else {
                           // Creating a new post
+                          final isActuallyRepost = widget.parentPostId != null;
+                          print("isActuallyRepost: $isActuallyRepost");
+                          print("parentPostId: ${widget.parentPostId}");
                           await feedProvider.createPost(
                             content: content,
                             visibility: feedProvider.visibility,
                             parentPostId: widget.parentPostId,
-                            isSilentRepost: widget.isSilentRepost ?? false,
+                            isSilentRepost:
+                                isActuallyRepost
+                                    ? (widget.isSilentRepost ?? false)
+                                    : false,
                             media:
                                 uploadedImageUrl != null
                                     ? [uploadedImageUrl!]

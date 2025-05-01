@@ -127,7 +127,10 @@ class _PostFooterState extends State<PostFooter> {
                 Icon(
                   Icons.loop,
                   size: 20,
-                  color: widget.showRepostButton ? Colors.blue : Colors.grey,
+                  color:
+                      widget.post.parentPost != null
+                          ? Colors.blue
+                          : Colors.grey,
                 ),
                 const SizedBox(height: 2),
                 Text(
