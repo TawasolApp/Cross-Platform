@@ -3,7 +3,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'page_type_enum.dart';
+import 'enums.dart';
 import 'online_dot.dart';
 
 class UserAvatar extends StatelessWidget {

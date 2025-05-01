@@ -47,4 +47,9 @@ abstract class ConnectionsRepository {
 
   Future<int> getFollowersCount();
   Future<int> getFollowingsCount();
+  Future<List<ConnectionsUserEntity>> preformSearch({
+    String? searchWord,
+    int page = 0,
+    int limit = 0,
+  });
 }

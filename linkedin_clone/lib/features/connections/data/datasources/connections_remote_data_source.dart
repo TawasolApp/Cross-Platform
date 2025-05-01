@@ -901,4 +901,63 @@ class ConnectionsRemoteDataSource {
       rethrow;
     }
   }
+
+  Future<List<ConnectionsUserEntity>> preformSearch({
+    String? searchWord,
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      print('🤩🤩🤩🍫🍫🍫🍫🍫🤩Search word: $searchWord');
+      final token = await initToken();
+      final response = await client
+          .get(
+            Uri.parse(
+              '${baseUrl}connections/users?page=$page&limit=$limit&name=$searchWord',
+            ),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception('Request Timeout');
+            },
+          );
+      print('❤️❤️❤️❤️❤️response: ${response.body}');
+      if (response.statusCode == 200) {
+        print(
+          '❤️❤️❤️👩🏻‍💻👩🏻‍💻👩🏻‍💻👩🏻‍💻👩🏻‍💻❤️response: ${response.body}  $searchWord',
+        );
+        final jsonResponse = jsonDecode(response.body);
+
+        if (jsonResponse is List<dynamic>) {
+          return jsonResponse
+              .map((json) => ConnectionsUserModel.fromJson(json))
+              .toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else if (response.statusCode == 500) {
+        throw Exception(
+          'ConnectionsRemoteDataSource :preformSearch: 500 Failed',
+        );
+      } else if (response.statusCode == 400) {
+        throw Exception(
+          'ConnectionsRemoteDataSource :preformSearch: 400 No query parameter was provided',
+        );
+      } else if (response.statusCode == 401) {
+        throw Exception(
+          "ConnectionsRemoteDataSource :preformSearch: 401 Authentication failed",
+        );
+      } else {
+        throw Exception('Unknown error ${response.statusCode}');
+      }
+    } catch (e) {
+      print('\nConnectionsRemoteDataSource :preformSearch: ${e.toString()}\n');
+      rethrow;
+    }
+  }
 }

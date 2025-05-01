@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/linkedin_iconic_button.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/linkedin_iconic_button.dart';
 
 class NoInternetConnection extends StatelessWidget {
   final VoidCallback onRetry;

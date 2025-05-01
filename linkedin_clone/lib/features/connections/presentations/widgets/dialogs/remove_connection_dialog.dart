@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import '../provider/connections_provider.dart';
+import '../../provider/connections_provider.dart';
 import "error_dialog.dart";
 
 class RemoveConnectionDialog extends StatelessWidget {

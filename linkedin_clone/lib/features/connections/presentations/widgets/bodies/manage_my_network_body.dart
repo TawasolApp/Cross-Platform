@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_card.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/manage_my_network_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 
 class ManageMyNetworkBody extends StatefulWidget {
   final ConnectionsProvider? connectionsProvider;
@@ -27,12 +25,9 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.networksProvider?.getFollowingsCount();
-      widget.networksProvider?.getFollowersCount();
-      widget.connectionsProvider?.getConnectionsCount("");
-    });
-    print("❤️❤️❤️❤️${widget.connectionsProvider?.connectionsCount}");
+    widget.networksProvider?.getFollowingsCount();
+    widget.networksProvider?.getFollowersCount();
+    widget.connectionsProvider?.getConnectionsCount("");
   }
 
   @override

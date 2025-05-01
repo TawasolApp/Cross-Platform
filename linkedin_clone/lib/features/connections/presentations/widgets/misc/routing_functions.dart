@@ -32,3 +32,7 @@ void goToFollowing(BuildContext context) {
 void goToManageMyNetwork(BuildContext context) {
   GoRouter.of(context).push(RouteNames.manageMyNetwrok);
 }
+
+void goToGeneralSeachPage(BuildContext context) {
+  GoRouter.of(context).push(RouteNames.generalSearch);
+}

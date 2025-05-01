@@ -245,4 +245,22 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       rethrow;
     }
   }
+
+  Future<List<ConnectionsUserEntity>> preformSearch({
+    String? searchWord,
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      print('🤩🤩🤩🤩🤩😡😡😡😡😡🤩🤩 preformSearch: $searchWord');
+      final searchList = await remoteDataSource.preformSearch(
+        searchWord: searchWord,
+        page: page,
+        limit: limit,
+      );
+      return searchList;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

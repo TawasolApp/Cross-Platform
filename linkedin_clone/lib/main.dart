@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
 import 'package:linkedin_clone/core/Navigation/app_router.dart';
 import 'package:linkedin_clone/features/authentication/Data/Data_Sources/auth_remote_data_source.dart';
@@ -53,10 +55,12 @@ import 'package:linkedin_clone/features/connections/domain/usecases/connect/acce
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/search_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
@@ -133,7 +137,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usec
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
-import 'features/connections/presentations/widgets/page_type_enum.dart';
+import 'features/connections/presentations/widgets/misc/enums.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
@@ -263,7 +267,9 @@ void main() async {
   final messagingRepository = ConversationRepositoryImpl(
     conversationDataSource,
   );
-
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('appBox');
   runApp(
     MultiProvider(
       providers: [
@@ -606,6 +612,18 @@ void main() async {
                 getJobAnalyticsUseCase: GetJobAnalyticsUseCase(adminRepository),
                 ignoreFlaggedJobUseCase: IgnoreFlaggedJobUseCase(
                   adminRepository,
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => SearchProvider(
+                SearchUserUsecase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
                 ),
               ),
         ),

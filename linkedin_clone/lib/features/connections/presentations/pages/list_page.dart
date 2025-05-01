@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/list_page_appbar.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/manage_my_network_body.dart';
 
 import 'package:provider/provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/dialogs/no_internet_connection.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 

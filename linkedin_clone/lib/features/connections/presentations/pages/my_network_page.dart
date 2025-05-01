@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/grow_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/search_bar.dart'
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/grow_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/search_bar.dart'
     as search_bar;
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_avatar.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:provider/provider.dart';
-import '../widgets/routing_functions.dart';
+import '../widgets/misc/routing_functions.dart';
 
 class MyNetworkPage extends StatefulWidget {
   const MyNetworkPage({super.key});

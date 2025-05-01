@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:provider/provider.dart';
-import '../provider/connections_provider.dart';
-import 'no_internet_connection.dart';
+import '../../provider/connections_provider.dart';
+import '../dialogs/no_internet_connection.dart';
 
 class InvitationsBody extends StatefulWidget {
   final PageType cardType;

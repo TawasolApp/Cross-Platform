@@ -7,13 +7,13 @@ import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/cconfirmable_action_button.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_avatar.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/cconfirmable_action_button.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
 import 'user_card_info.dart';
-import 'pending_requests_actions.dart';
-import 'connections_list_actions.dart';
-import 'page_type_enum.dart';
-import '../widgets/routing_functions.dart';
+import '../pending_requests_actions.dart';
+import '../connections_list_actions.dart';
+import '../misc/enums.dart';
+import '../misc/routing_functions.dart';
 
 class UserCard extends StatelessWidget {
   final String userId;

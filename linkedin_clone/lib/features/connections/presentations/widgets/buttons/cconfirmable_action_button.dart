@@ -1,8 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'confirmation_dialog.dart';
-import 'error_dialog.dart';
+import '../dialogs/confirmation_dialog.dart';
+import '../dialogs/error_dialog.dart';
 
 class ConfirmableActionButton extends StatelessWidget {
   final String buttonText;

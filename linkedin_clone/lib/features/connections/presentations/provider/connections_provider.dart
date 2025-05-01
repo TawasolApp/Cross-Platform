@@ -351,6 +351,8 @@ class ConnectionsProvider with ChangeNotifier {
       print('getMyUserId: Error fetching ConnectionsCount: $failure');
       return -1;
     }, (profile) => profile.connectionCount!);
+    print("ana 3ayzak tehfaz shakly ALALALALALA 😡😡😡😡");
+    print(result);
     print('Connections count: $connectionsCount');
     notifyListeners();
   }

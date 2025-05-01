@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/label_card.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/my_network_invitations_card.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/people_you_may_know_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/label_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/my_network_invitations_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/people_you_may_know_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 
 class GrowBody extends StatefulWidget {
   const GrowBody({super.key});

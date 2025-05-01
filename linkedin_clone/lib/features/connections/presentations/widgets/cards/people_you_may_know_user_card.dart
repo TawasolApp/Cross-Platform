@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/error_dialog.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/linkedin_iconic_button.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/people_you_may_know_user_card_info.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_avatar.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/dialogs/error_dialog.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/linkedin_iconic_button.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/people_you_may_know_user_card_info.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
 import 'package:provider/provider.dart';
 
 class PeopleYouMayKnowUserCard extends StatelessWidget {
