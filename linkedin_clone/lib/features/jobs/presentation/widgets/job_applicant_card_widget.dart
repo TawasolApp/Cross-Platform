@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/application_entity.dart';
-import 'package:linkedin_clone/features/jobs/presentation/pages/job_applicant_cv_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class JobApplicantCard extends StatelessWidget {
   final ApplicationEntity applicant;
@@ -79,14 +79,24 @@ class JobApplicantCard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => PdfViewerScreen(pdfUrl: applicant.resumeUrl),
-                      ),
+                  onPressed: () async {
+                    final modifiedUrl = applicant.resumeUrl.replaceAll(
+                      '.pdf',
+                      '',
                     );
+                    final googleViewerUrl =
+                        'https://drive.google.com/viewerng/viewer?embedded=true&url=${Uri.encodeComponent(modifiedUrl)}';
+
+                    if (await canLaunchUrl(Uri.parse(googleViewerUrl))) {
+                      await launchUrl(
+                        Uri.parse(googleViewerUrl),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Could not open resume')),
+                      );
+                    }
                   },
                   icon: const Icon(Icons.picture_as_pdf),
                   label: const Text('View Resume'),

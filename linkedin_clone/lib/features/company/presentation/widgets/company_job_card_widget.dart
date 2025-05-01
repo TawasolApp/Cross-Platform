@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/presentation/widgets/company_job_details.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
 import 'package:provider/provider.dart';
@@ -27,13 +27,25 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
     return Material(
       color: Colors.white,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
+        onTap: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => JobDetailsScreen(job: widget.job),
+              builder: (_) => JobDetailsScreen(job: widget.job),
             ),
           );
+
+          if (result == true) {
+            // ✅ Trigger jobs refresh
+              await Provider.of<CompanyProvider>(
+                context,
+                listen: false,
+              ).fetchRecentJobs(widget.companyId,reset: true);
+              await Provider.of<JobSearchProvider>(
+                context,
+                listen: false,
+              ).fetchJobs(reset: true);
+          }
         },
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),

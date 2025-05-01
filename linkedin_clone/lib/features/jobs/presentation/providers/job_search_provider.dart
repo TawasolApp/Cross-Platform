@@ -63,7 +63,6 @@ class JobSearchProvider extends ChangeNotifier {
     } catch (e) {
       print("Error fetching jobs: $e");
     }
-
     _isLoading = false;
     notifyListeners();
   }

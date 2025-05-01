@@ -113,7 +113,6 @@ class CompanyAboutWidget extends StatelessWidget {
                                               (_) => CompanyProfileScreen(
                                                 companyId:
                                                     relatedCompany.companyId!,
-                                                title: relatedCompany.name,
                                               ),
                                         ),
                                       );

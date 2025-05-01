@@ -112,7 +112,7 @@ class CompanyProvider with ChangeNotifier {
     _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
-    await TokenService.saveIsCompany(isViewingAsUser);
+    await TokenService.saveIsCompany(!isViewingAsUser);
 
     _isLoading = false;
     safeNotify();
@@ -173,7 +173,11 @@ class CompanyProvider with ChangeNotifier {
     String companyId, {
     int page = 1,
     int limit = 4,
+    bool reset = false,
   }) async {
+    if (reset) {
+      resetJobs();
+    }
     // Start the loading process
     _isLoadingJobs = true;
     safeNotify();
@@ -263,7 +267,7 @@ class CompanyProvider with ChangeNotifier {
   Future<List<User>> fetchFollowers(
     String companyId, {
     int page = 1,
-    int limit = 2,
+    int limit = 10,
   }) async {
     _isLoadingFollowers = true;
     safeNotify();
@@ -274,7 +278,7 @@ class CompanyProvider with ChangeNotifier {
         page: page,
         limit: limit,
       );
-
+      print('Followers List: $followersList');
       if (followersList.isEmpty) {
         _isAllFollowersLoaded = true;
         return [];

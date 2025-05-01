@@ -100,7 +100,6 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                               builder:
                                   (context) => CompanyProfileScreen(
                                     companyId: company.companyId!,
-                                    title: company.name,
                                   ),
                             ),
                           );

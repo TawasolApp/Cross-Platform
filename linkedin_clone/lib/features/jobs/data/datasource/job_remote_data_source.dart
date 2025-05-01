@@ -37,39 +37,7 @@ class JobRemoteDataSource {
       throw Exception('Failed to load recent jobs: $e');
     }
   }
-
-  Future<bool> addJob(CreateJobModel job, String companyId) async {
-    final token = await TokenService.getToken();
-    try {
-      // Convert job model to JSON format
-      final jobData = job.toJson();
-      print('Job Data: $jobData');
-      // Send the POST request to add the job
-      final response = await http.post(
-        Uri.parse('$baseUrl/companies/$companyId/jobs'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: json.encode(jobData), // Convert jobData map to JSON string
-      );
-      print('Response: ${response.body}');
-      // Handle the response
-      if (response.statusCode == 201) {
-        print('Job added successfully');
-        return true;
-      } else {
-        // Handle errors, such as bad request or server issues
-        print('Failed to add job. Status Code: ${response.statusCode}');
-        return false;
-      }
-    } catch (e) {
-      print('Error adding job: $e');
-      return false;
-    }
-  }
-
-  Future<List<JobModel>> searchJobs({
+Future<List<JobModel>> searchJobs({
     String? keyword,
     String? location,
     String? industry,
@@ -129,6 +97,38 @@ class JobRemoteDataSource {
       throw Exception('Error searching jobs: $e');
     }
   }
+  Future<bool> addJob(CreateJobModel job, String companyId) async {
+    final token = await TokenService.getToken();
+    try {
+      // Convert job model to JSON format
+      final jobData = job.toJson();
+      print('Job Data: $jobData');
+      // Send the POST request to add the job
+      final response = await http.post(
+        Uri.parse('$baseUrl/companies/$companyId/jobs'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(jobData), // Convert jobData map to JSON string
+      );
+      print('Response: ${response.body}');
+      // Handle the response
+      if (response.statusCode == 201) {
+        print('Job added successfully');
+        return true;
+      } else {
+        // Handle errors, such as bad request or server issues
+        print('Failed to add job. Status Code: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error adding job: $e');
+      return false;
+    }
+  }
+
+  
 
   Future<bool> deleteJob(String jobId) async {
     final token = await TokenService.getToken();
@@ -147,34 +147,34 @@ class JobRemoteDataSource {
   Future<bool> applyForJob(ApplyForJobEntity application) async {
     final token = await TokenService.getToken();
     print('resumeURL: ${application.resumeURL}');
-    final resumeURL = 'https://example.com/resume.pdf'; //remove later
+
     try {
+      // Build the request body dynamically
+      final body = {
+        "jobId": application.jobId,
+        "phoneNumber": application.phoneNumber,
+      };
+
+      // Only add resumeURL if it's not empty
+      if (application.resumeURL.trim().isNotEmpty) {
+        body["resumeURL"] = application.resumeURL.trim();
+      }
+
       final response = await http.post(
         Uri.parse('$baseUrl/jobs/apply'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          "jobId": application.jobId,
-          "phoneNumber": application.phoneNumber,
-          "resumeURL": resumeURL, //change this to application.resumeURL
-        }),
+        body: jsonEncode(body),
       );
 
-      print(
-        '📥 Apply for Job Response: ${response.statusCode} - ${response.body}',
-      );
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}");
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ Application Submitted Successfully');
-        return true;
-      } else {
-        print('❌ Failed to apply for job: ${response.statusCode}');
-        return false;
-      }
+      return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-      print('❌ Error applying for job: $e');
+      print("❌ Error applying for job: $e");
       return false;
     }
   }
@@ -284,9 +284,7 @@ class JobRemoteDataSource {
         },
       );
 
-      print(
-        'Unsave Job Response: ${response.statusCode} - ${response.body}',
-      );
+      print('Unsave Job Response: ${response.statusCode} - ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 204) {
         return true;

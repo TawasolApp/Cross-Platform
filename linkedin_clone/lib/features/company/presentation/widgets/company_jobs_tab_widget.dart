@@ -84,8 +84,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                                     ),
                               ),
                             );
-                            if(result==true)
-                            {
+                            if (result == true) {
                               companyProvider.resetJobs();
                               companyProvider.fetchRecentJobs(widget.companyId);
                             }

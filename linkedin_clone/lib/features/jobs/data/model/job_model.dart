@@ -72,7 +72,7 @@ class JobModel extends Job {
       companyDescription: json['companyDescription'] ?? '',
       applicationLink: json['applicationLink'] ?? '',
       isSaved: json['isSaved'] ?? false,
-      status: json['status'] ?? 'Pending',
+      status: json['status'] ?? '',
     );
   }
 

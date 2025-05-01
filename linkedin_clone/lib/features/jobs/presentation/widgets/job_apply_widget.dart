@@ -1,18 +1,40 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/apply_for_job_entity.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
 import 'package:provider/provider.dart';
 
-class ApplyForJobWidget extends StatelessWidget {
+class ApplyForJobWidget extends StatefulWidget {
   final String companyName;
   final String jobId;
 
-  ApplyForJobWidget({required this.companyName, required this.jobId});
+  const ApplyForJobWidget({
+    required this.companyName,
+    required this.jobId,
+    Key? key,
+  }) : super(key: key);
 
+  @override
+  State<ApplyForJobWidget> createState() => _ApplyForJobWidgetState();
+}
+
+class _ApplyForJobWidgetState extends State<ApplyForJobWidget> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
-  PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'EG'); // Default country code
+  PhoneNumber _phoneNumber = PhoneNumber(isoCode: 'EG');
+
+  XFile? _selectedCV;
+  String? _uploadedCVUrl;
+  String _cvFileName = 'No file selected';
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +43,7 @@ class ApplyForJobWidget extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Text(
-          'Apply for $companyName',
+          'Apply for ${widget.companyName}',
           style: const TextStyle(color: Color.fromARGB(255, 21, 98, 161)),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
@@ -39,10 +61,6 @@ class ApplyForJobWidget extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              const SizedBox(height: 16),
-
-              const SizedBox(height: 16),
-              // Phone Number
               InternationalPhoneNumberInput(
                 onInputChanged: (PhoneNumber number) {
                   _phoneNumber = number;
@@ -55,8 +73,30 @@ class ApplyForJobWidget extends StatelessWidget {
                 ),
                 countries: [],
               ),
+
               const SizedBox(height: 24),
-              // Submit Button
+              Text(
+                'Upload Your CV (PDF)',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  if (_uploadedCVUrl != null)
+                    Expanded(
+                      child: Text(_cvFileName, overflow: TextOverflow.ellipsis),
+                    ),
+                  TextButton(
+                    onPressed: () async {
+                      print('📤 Upload button pressed');
+                      await _pickAndUploadCV(context); 
+                    },
+                    child: const Text('Upload CV'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () => _applyForJob(context),
                 child: const Text('Submit Application'),
@@ -68,17 +108,48 @@ class ApplyForJobWidget extends StatelessWidget {
     );
   }
 
-  // Handle form submission
-  void _applyForJob(BuildContext context) async {
+  Future<void> _pickAndUploadCV(BuildContext context) async {
+    print('📤 Upload CV function triggered');
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null && result.files.single.path != null) {
+      final path = result.files.single.path!;
+      final pickedFile = XFile(path);
+      print('📁 File picked: ${pickedFile.name}');
+
+      final mediaProvider = Provider.of<MediaRepository>(
+        context,
+        listen: false,
+      );
+      try {
+        final url = await mediaProvider.uploadDocument(pickedFile);
+        setState(() {
+          _uploadedCVUrl = url;
+          _cvFileName = pickedFile.name;
+        });
+        print('✅ Upload completed. URL: $url');
+      } catch (e) {
+        print('❌ Upload failed: $e');
+      }
+    } else {
+      print('❌ No file selected');
+    }
+  }
+
+  Future<void> _applyForJob(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       final provider = Provider.of<ApplyJobProvider>(context, listen: false);
 
       final application = ApplyForJobEntity(
-        jobId: jobId,
+        jobId: widget.jobId,
         phoneNumber: _phoneNumber.phoneNumber ?? '',
-        resumeURL: '',
+        resumeURL: _uploadedCVUrl ?? '',
       );
-
+    print('📄 Applying for job with application CV URL: ${application.resumeURL}');
       bool success = await provider.applyForJob(application);
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -86,19 +157,16 @@ class ApplyForJobWidget extends StatelessWidget {
           content: Text(
             success
                 ? 'Application Submitted Successfully!'
-                : 'Application Failed ',
+                : 'Application Failed',
           ),
           backgroundColor: success ? Colors.green : Colors.red,
         ),
       );
 
-      // Delay then close screen
-      await Future.delayed(const Duration(milliseconds: 500));
       if (success) {
-        // Close the screen if the application was successful
-        Navigator.pop(context);
-      } else {
-        // Optionally, you can keep the screen open for the user to try again
+        await Future.delayed(const Duration(milliseconds: 500));
+          Navigator.pop(context, true); 
+
       }
     }
   }

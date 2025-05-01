@@ -489,6 +489,12 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => SavedJobsProvider(repository: jobrepos),
         ),
+        Provider<MediaRepository>(
+          create:
+              (_) => MediaRepository(
+                mediaRemoteDataSource: MediaRemoteDataSource(),
+              ),
+        ),
       ],
       child: const MyApp(),
     ),

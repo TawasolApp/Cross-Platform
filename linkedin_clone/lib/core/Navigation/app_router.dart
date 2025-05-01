@@ -125,7 +125,6 @@ class AppRouter {
         builder:
             (context, state) => CompanyProfileScreen(
               companyId: "elsewedy-electric",
-              title: "Test",
             ),
       ),
 

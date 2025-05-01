@@ -173,7 +173,7 @@ Widget buildUserTile(User user, {VoidCallback? onTap}) {
             ? CircleAvatar(backgroundImage: NetworkImage(imageUrl))
             : const CircleAvatar(child: Icon(Icons.person)),
     title: Text('${user.firstName} ${user.lastName}'),
-    subtitle: Text(user.headline),
+    subtitle: Text(user.headline!),
     trailing:
         onTap != null
             ? IconButton(

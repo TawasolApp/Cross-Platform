@@ -10,4 +10,7 @@ class MediaRepository {
   Future<String> uploadImage(XFile imageFile) {
     return mediaRemoteDataSource.uploadImage(imageFile);
   }
+  Future<String> uploadDocument(XFile documentFile) {
+    return mediaRemoteDataSource.uploadDocument(documentFile);
+  }
 }
