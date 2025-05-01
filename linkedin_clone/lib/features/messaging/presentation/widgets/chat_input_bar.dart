@@ -13,6 +13,7 @@ class _ChatInputBarState extends State<ChatInputBar> {
   final _controller = TextEditingController();
 
   void _handleSend() {
+    print('Sending message: ${_controller.text}');
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       widget.onSend(text);

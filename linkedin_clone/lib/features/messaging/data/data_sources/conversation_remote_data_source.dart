@@ -17,6 +17,8 @@ class ConversationRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
+      print('Response: ${response.body}');
+      print("conversations fetched");
       final data = jsonDecode(response.body)['data'] as List;
       return data.map((item) => ConversationModel.fromJson(item)).toList();
     } else {
