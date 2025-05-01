@@ -12,6 +12,7 @@ class CommentEntity {
   final DateTime timestamp;
   final bool isReply;
   final int repliesCount;
+  final String reactType;
 
   CommentEntity({
     required this.id,
@@ -27,5 +28,6 @@ class CommentEntity {
     required this.timestamp,
     required this.isReply,
     required this.repliesCount,
+    required this.reactType,
   });
 }

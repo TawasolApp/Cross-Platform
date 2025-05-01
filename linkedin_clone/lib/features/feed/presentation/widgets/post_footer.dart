@@ -39,6 +39,7 @@ class _PostFooterState extends State<PostFooter> {
       builder:
           (_) => ReactionPopup(
             postId: widget.post.id,
+            postType: "Post",
             onReactionSelected: (reaction) {
               setState(() {});
             },

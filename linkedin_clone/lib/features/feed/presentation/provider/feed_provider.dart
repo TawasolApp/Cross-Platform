@@ -22,6 +22,7 @@ import '../../domain/usecases/get_saved_posts_usecase.dart';
 import '../../domain/usecases/get_post_by_id_usecase.dart';
 import '../../domain/usecases/get_reposts_usecase.dart';
 import '../../domain/entities/comment_entity.dart';
+import 'package:collection/collection.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -139,11 +140,18 @@ class FeedProvider extends ChangeNotifier {
   List<ReactionModel> _postReactions = [];
   List<ReactionModel> get postReactions => _postReactions;
 
+  Map<String, List<ReactionModel>> _commentReactions = {};
+  Map<String, List<ReactionModel>> get commentReactions => _commentReactions;
+
   bool _isReactionsLoading = false;
   bool get isReactionsLoading => _isReactionsLoading;
 
   String? _reactionsError;
   String? get reactionsError => _reactionsError;
+
+  CommentEntity? getCommentById(String id) {
+    return _comments.firstWhereOrNull((c) => c.id == id);
+  }
 
   Future<String> get userId async {
     final isCompany = await TokenService.getIsCompany();
@@ -499,6 +507,10 @@ class FeedProvider extends ChangeNotifier {
   }
 
   Future<void> fetchReplies(String commentId, {bool refresh = false}) async {
+    if (_isLoading) {
+      print("Fetch replies already in progress, skipping...");
+      return;
+    }
     if (_loadingReplies.contains(commentId)) {
       print("Already loading replies for $commentId");
       return;
@@ -649,7 +661,11 @@ class FeedProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> getPostReactions(String postId, {String type = 'All'}) async {
+  Future<void> getPostReactions(
+    String postId, {
+    String type = 'All',
+    String postType = 'Post',
+  }) async {
     _isReactionsLoading = true;
     _reactionsError = null;
     notifyListeners();
