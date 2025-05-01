@@ -14,11 +14,11 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_em
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
-import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
-import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
+import 'package:linkedin_clone/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
@@ -59,6 +59,14 @@ import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_
 import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/apply_for_job_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/get_applicants_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/update_application_status_use_case.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_applicants_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
@@ -552,6 +560,39 @@ ChangeNotifierProvider(
                     mediaRemoteDataSource: MediaRemoteDataSource(),
                   ),
                 ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => JobSearchProvider(searchJobs: SearchJobs(jobrepos)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ApplyJobProvider(
+                applyForJobUseCase: ApplyForJobUseCase(repository: jobrepos),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ApplicantsProvider(
+                getApplicantsUseCase: GetApplicantsUseCase(
+                  repository: JobRepositoryImpl(
+                    remoteDataSource: JobRemoteDataSource(),
+                  ),
+                ),
+                updateStatusUseCase: UpdateApplicationStatusUseCase(
+                  repository: JobRepositoryImpl(
+                    remoteDataSource: JobRemoteDataSource(),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SavedJobsProvider(repository: jobrepos),
+        ),
+        Provider<MediaRepository>(
+          create:
+              (_) => MediaRepository(
+                mediaRemoteDataSource: MediaRemoteDataSource(),
               ),
         ),
         ChangeNotifierProvider(

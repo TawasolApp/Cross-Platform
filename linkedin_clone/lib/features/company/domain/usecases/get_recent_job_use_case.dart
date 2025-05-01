@@ -1,5 +1,5 @@
-import '../entities/job.dart';
-import '../repositories/job_repository.dart';
+import '../../../jobs/domain/entities/job_entity.dart';
+import '../../../jobs/domain/repositories/job_repository.dart';
 
 class GetRecentJobs {
   final JobRepository repository;

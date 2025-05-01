@@ -37,9 +37,7 @@ class FullRelatedCompaniesScreen extends StatelessWidget {
             },
             child: ListView.separated(
               padding: EdgeInsets.all(16),
-              itemCount:
-                  provider.relatedCompanies.length +
-                  1, 
+              itemCount: provider.relatedCompanies.length + 1,
               separatorBuilder: (_, __) => Divider(thickness: 1),
               itemBuilder: (context, index) {
                 if (index < provider.relatedCompanies.length) {
@@ -64,7 +62,6 @@ class FullRelatedCompaniesScreen extends StatelessWidget {
                           builder:
                               (_) => CompanyProfileScreen(
                                 companyId: company.companyId!,
-                                title: company.name,
                               ),
                         ),
                       );

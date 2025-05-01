@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 
 class JobAnalyticsScreen extends StatefulWidget {

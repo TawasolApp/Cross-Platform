@@ -16,6 +16,7 @@ import 'package:linkedin_clone/features/notifications/presentation/pages/notific
 import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/services/token_service.dart';
+import 'package:linkedin_clone/features/jobs/presentation/pages/jobs_search_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -32,9 +33,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   final List<Widget> _pages = [
     FeedPage(), // Will be replaced by News Feed module
     MyNetworkPage(), // Will be replaced by Connections module
-    // Will be replaced by Jobs module and company accessed through jobs and news feed in next phases
     CompaniesListScreen(),
     NotificationsListPage(),
+    JobSearchPage(),
     SettingsPage(), // Will be replaced by Settings module
   ];
 
@@ -210,9 +211,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: "My Network",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.work_outline),
-            label: "Jobs",
+            icon: Icon(Icons.business),
+            label: "Comapnies",
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Jobs"),
           BottomNavigationBarItem(
             icon: Stack(
               children: [

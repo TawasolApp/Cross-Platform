@@ -130,7 +130,6 @@ class AppRouter {
         builder:
             (context, state) => CompanyProfileScreen(
               companyId: "elsewedy-electric",
-              title: "Test",
             ),
       ),
 
@@ -278,5 +277,6 @@ class AppRouter {
         builder: (context, state) => const AdminPanelPage(),
       ),
     ],
+    
   );
 }

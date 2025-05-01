@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/presentation/widgets/job_details.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/company_provider.dart';
 
@@ -85,13 +85,10 @@ class RecentJobsWidget extends StatelessWidget {
                               MaterialPageRoute(
                                 builder:
                                     (context) => JobDetailsScreen(
-                                      job: job, 
-                                      companyProvider: companyProvider,
-                                      companyId:
-                                          companyProvider.company?.companyId ??
-                                          '',
-                                    ),
+                                  job: job,
                               ),
+                                ),
+                              
                             );
                           },
                           style: ElevatedButton.styleFrom(

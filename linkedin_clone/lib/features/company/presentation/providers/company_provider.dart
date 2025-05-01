@@ -3,18 +3,19 @@ import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
-import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
+import 'package:linkedin_clone/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
-import 'package:linkedin_clone/features/company/domain/usecases/create_job_posting_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/create_job_posting_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_company_details_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_company_followers_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_friends_following_company_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/entities/user.dart';
-import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_use_case.dart';
-import 'package:linkedin_clone/features/company/domain/entities/job.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/delete_job_use_case.dart';
 
 class CompanyProvider with ChangeNotifier {
   Company? _company;
@@ -26,7 +27,7 @@ class CompanyProvider with ChangeNotifier {
   bool _isLoadingJobs = false;
   bool isManager = false;
   bool _disposed = false;
-  bool isViewingAsUser = false;
+  bool isViewingAsUser = true;
   List<User> _followers = [];
   List<User> get followers => _followers;
   bool _isAllFollowersLoaded = false;
@@ -92,6 +93,9 @@ class CompanyProvider with ChangeNotifier {
           remoteDataSource: CompanyRemoteDataSource(),
         ),
       );
+  final DeleteJob _deleteJob = DeleteJob(
+    JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
+  );
 
   final UserRemoteDataSource _userRemoteDataSource = UserRemoteDataSource();
 
@@ -109,7 +113,7 @@ class CompanyProvider with ChangeNotifier {
     _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
-    await TokenService.saveIsCompany(isViewingAsUser);
+    await TokenService.saveIsCompany(!isViewingAsUser);
 
     _isLoading = false;
     safeNotify();
@@ -149,7 +153,9 @@ class CompanyProvider with ChangeNotifier {
 
   void toggleViewMode() async {
     isViewingAsUser = !isViewingAsUser;
-    await TokenService.saveIsCompany(isViewingAsUser);
+    await TokenService.saveIsCompany(!isViewingAsUser);
+    var tokenIsCompnay = await TokenService.getIsCompany();
+    print('Token isCompany: $tokenIsCompnay');
     notifyListeners();
   }
 
@@ -168,7 +174,11 @@ class CompanyProvider with ChangeNotifier {
     String companyId, {
     int page = 1,
     int limit = 4,
+    bool reset = false,
   }) async {
+    if (reset) {
+      resetJobs();
+    }
     // Start the loading process
     _isLoadingJobs = true;
     safeNotify();
@@ -258,7 +268,7 @@ class CompanyProvider with ChangeNotifier {
   Future<List<User>> fetchFollowers(
     String companyId, {
     int page = 1,
-    int limit = 2,
+    int limit = 10,
   }) async {
     _isLoadingFollowers = true;
     safeNotify();
@@ -269,7 +279,7 @@ class CompanyProvider with ChangeNotifier {
         page: page,
         limit: limit,
       );
-
+      print('Followers List: $followersList');
       if (followersList.isEmpty) {
         _isAllFollowersLoaded = true;
         return [];
@@ -298,7 +308,7 @@ class CompanyProvider with ChangeNotifier {
     safeNotify();
 
     try {
-      final nextPage = _currentFollowersPage + 1; // Don't increment yet
+      final nextPage = _currentFollowersPage + 1;
 
       List<User> newFollowers = await fetchFollowers(companyId, page: nextPage);
       if (newFollowers.isEmpty) {
@@ -312,6 +322,17 @@ class CompanyProvider with ChangeNotifier {
       _isLoadingFollowers = false;
       safeNotify();
     }
+  }
+
+  Future<bool> deleteJob(String jobId) async {
+    final success = await _deleteJob(jobId);
+
+    if (success) {
+      _jobs.removeWhere((job) => job.id == jobId);
+      safeNotify();
+    }
+
+    return success;
   }
 
   void resetJobs() {

@@ -1,5 +1,5 @@
 import 'package:linkedin_clone/features/company/domain/entities/create_job_entity.dart';
-import 'package:linkedin_clone/features/company/domain/repositories/job_repository.dart';
+import 'package:linkedin_clone/features/jobs/domain/repositories/job_repository.dart';
 
 class CreateJob {
   final JobRepository repository;

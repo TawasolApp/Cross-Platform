@@ -202,7 +202,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                             ),
                             child: Container(
                               width: 200, // Add a width constraint
-                              //child: PostCard(post: post, ), // Render PostCard
+                              //child: PostCard(post: post,), // Render PostCard
                             ),
                           );
                         },

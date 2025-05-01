@@ -41,13 +41,13 @@ class AddJobScreen extends StatelessWidget {
             children: [
               _buildTextField(
                 _positionController,
-                "Job Position",
+                "Job Position*",
                 isRequired: true,
               ),
               _buildTextField(_industryController, "Industry"),
               _buildTextField(
                 _locationController,
-                "Location",
+                "Location*",
                 isRequired: true,
               ),
               _buildTextField(
@@ -62,7 +62,7 @@ class AddJobScreen extends StatelessWidget {
               ),
               _buildDropdown(
                 controller: _experienceLevelController,
-                label: "Experience Level",
+                label: "Experience Level*",
                 items: [
                   "Internship",
                   "Entry Level",
@@ -80,7 +80,7 @@ class AddJobScreen extends StatelessWidget {
               // Location Type Dropdown (required)
               _buildDropdown(
                 controller: _locationTypeController,
-                label: "Location Type",
+                label: "Location Type*",
                 items: ['On-site', 'Remote', 'Hybrid'],
                 isRequired: true,
               ),
@@ -89,7 +89,7 @@ class AddJobScreen extends StatelessWidget {
               // Employment Type Dropdown (required)
               _buildDropdown(
                 controller: _employmentTypeController,
-                label: "Employment Type",
+                label: "Employment Type*",
                 items: ['Full-time', 'Part-time', 'Contract'],
                 isRequired: true,
               ),
