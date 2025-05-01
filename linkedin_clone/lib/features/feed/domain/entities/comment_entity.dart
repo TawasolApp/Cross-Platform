@@ -10,6 +10,7 @@ class CommentEntity {
   final int reactCount;
   final List<CommentEntity> replies;
   final DateTime timestamp;
+  final bool isReply;
 
   CommentEntity({
     required this.id,
@@ -23,5 +24,6 @@ class CommentEntity {
     required this.replies,
     required this.reactCount,
     required this.timestamp,
+    required this.isReply,
   });
 }

@@ -40,7 +40,14 @@ class PostHeader extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            context.go(RouteNames.profile, extra: authorId);
+            if (authorType == "User") {
+              context.push(RouteNames.profile, extra: authorId);
+            } else {
+              context.push(
+                RouteNames.companyProfile,
+                extra: {'companyId': authorId, 'companyTitle': authorTitle},
+              );
+            }
           },
           child:
               authorType == "User"

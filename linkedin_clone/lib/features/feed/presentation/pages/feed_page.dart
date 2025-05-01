@@ -5,6 +5,8 @@ import '../widgets/post_card.dart';
 import 'create_post_page.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
 import '../../../../core/services/token_service.dart';
+import '../widgets/paginated_listview.dart';
+import '../../domain/entities/post_entity.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({super.key});
@@ -38,23 +40,25 @@ class _FeedPageState extends State<FeedPage> {
     final profileTitle = profile.headline;
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      body:
-          feedProvider.isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                padding: const EdgeInsets.only(top: 10),
-                itemCount: feedProvider.posts.length,
-                itemBuilder: (context, index) {
-                  final post = feedProvider.posts[index];
-                  return PostCard(
-                    post: post,
-                    currentUserId: myId ?? '',
-                    profileImage: profile.profilePicture,
-                    profileName: profile.fullName,
-                    profileTitle: profile.headline,
-                  );
-                },
-              ),
+      body: PaginatedListView<PostEntity>(
+        items: feedProvider.posts,
+        isLoading: feedProvider.isLoading,
+        hasMore: feedProvider.hasMorePosts,
+        errorMessage: feedProvider.errorMessage,
+        onFetchMore: () => feedProvider.fetchPosts(),
+        onRefresh: () => feedProvider.fetchPosts(refresh: true),
+        itemBuilder: (context, post, index) {
+          // padding: const EdgeInsets.only(top: 10),
+          //final post = feedProvider.posts[index];
+          return PostCard(
+            post: post,
+            currentUserId: myId ?? '',
+            profileImage: profile.profilePicture,
+            profileName: profile.fullName,
+            profileTitle: profile.headline,
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           final result = await Navigator.push(

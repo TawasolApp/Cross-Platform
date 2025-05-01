@@ -15,6 +15,7 @@ import 'package:linkedin_clone/features/notifications/domain/entities/notificati
 import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/services/token_service.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -27,6 +28,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
   String? _userId;
   bool _loadingId = true;
+  String? _profileName;
 
   final List<Widget> _pages = [
     FeedPage(), // Will be replaced by News Feed module
@@ -40,6 +42,14 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final profile = Provider.of<ProfileProvider>(context, listen: false);
+      profile.fetchProfile("").then((_) {
+        setState(() {
+          _profileName = profile.fullName;
+        });
+      });
+    });
     _loadCompanyId();
   }
 
@@ -74,16 +84,24 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   void _goToSavedPosts() {
     if (_userId == null) return;
-
+    print("🔁 Attempting to push to /savedPosts with:");
+    print("🔹 userId: $_userId");
+    print("🔹 profileName: $_profileName");
     Navigator.pop(context); // close drawer
-    context.push(RouteNames.savedPosts, extra: _userId);
+    context.push(
+      RouteNames.savedPosts,
+      extra: {'userId': _userId, 'profileName': _profileName},
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final messagingProvider = Provider.of<ConversationListProvider>(context, listen: false);
+    final messagingProvider = Provider.of<ConversationListProvider>(
+      context,
+      listen: false,
+    );
 
     return Scaffold(
       drawer: Drawer(
@@ -172,7 +190,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       ),
       body: _pages[_currentIndex],
       appBar: AppBar(
-        
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -183,12 +200,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           IconButton(
             icon: const Icon(Icons.message),
             onPressed: () {
-            messagingProvider.fetchConversations();
-             Navigator.push(
+              messagingProvider.fetchConversations();
+              Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ConversationListPage(),
-                ),
+                MaterialPageRoute(builder: (context) => ConversationListPage()),
               );
             },
           ),

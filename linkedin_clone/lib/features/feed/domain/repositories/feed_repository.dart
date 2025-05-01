@@ -78,4 +78,11 @@ abstract class FeedRepository {
     required String userId,
     required String postId,
   });
+
+  Future<Either<Failure, List<PostEntity>>> getReposts({
+    required String userId,
+    required String postId,
+    int page,
+    int limit,
+  });
 }

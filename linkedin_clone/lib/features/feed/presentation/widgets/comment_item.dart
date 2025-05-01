@@ -5,11 +5,13 @@ import '../../domain/entities/comment_entity.dart';
 class CommentItem extends StatelessWidget {
   final CommentEntity comment;
   final String currentUserId;
+  final bool isReply;
 
   const CommentItem({
     super.key,
     required this.comment,
     required this.currentUserId,
+    this.isReply = false,
   });
 
   String formatTimeAgo(DateTime timestamp) {
@@ -21,7 +23,7 @@ class CommentItem extends StatelessWidget {
     } else if (duration.inHours < 24) {
       return '${duration.inHours}h';
     } else if (duration.inDays < 30) {
-      return '${(duration.inDays / 30).floor()}mon';
+      return '${(duration.inDays / 30).floor()}d';
     } else if (duration.inDays < 365) {
       return '${(duration.inDays / 30).floor()}mon';
     } else {
@@ -31,9 +33,9 @@ class CommentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("comitem ${currentUserId} ${comment.authorId}");
+    print("comitem : userid:${currentUserId} authorid:${comment.authorId}");
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+      padding: EdgeInsets.fromLTRB(isReply ? 32.0 : 8.0, 4.0, 8.0, 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -44,10 +46,7 @@ class CommentItem extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 12.0,
-              ),
+              padding: EdgeInsets.fromLTRB(isReply ? 32.0 : 8.0, 4.0, 8.0, 4.0),
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 221, 212, 212),
                 borderRadius: BorderRadius.circular(5),
