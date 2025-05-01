@@ -3,29 +3,31 @@ import 'package:linkedin_clone/core/errors/failures.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
 import 'package:linkedin_clone/features/notifications/domain/repositories/notifications_repository.dart';
-class GetNotificationsUseCase
-    implements UseCase<List<Notifications>, GetNotificationsParams> {
+
+class GetUnreadNotificationsUseCase
+    implements UseCase<List<Notifications>, GetUnreadNotificationsParams> {
   final NotificationRepository notificationRepository;
 
-  GetNotificationsUseCase(this.notificationRepository);
+  GetUnreadNotificationsUseCase(this.notificationRepository);
 
   @override
-  Future<Either<Failure, List<Notifications>>> call(GetNotificationsParams params) async {
-    return await notificationRepository.getNotifications(
+  Future<Either<Failure, List<Notifications>>> call(GetUnreadNotificationsParams params) async {
+    return await notificationRepository.getUnreadNotifications(
       params.id,
       page: params.page,
       limit: params.limit,
     );
   }
 }
-class GetNotificationsParams {
+
+class GetUnreadNotificationsParams {
   final String id;
   final int page;
   final int limit;
 
-  GetNotificationsParams({
+  GetUnreadNotificationsParams({
     required this.id,
-    this.page = 1,
-    this.limit = 10,
+    required this.page,
+    required this.limit,
   });
 }

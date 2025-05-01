@@ -72,6 +72,8 @@ import 'package:linkedin_clone/features/messaging/domain/usecases/get_chat_use_c
 import 'package:linkedin_clone/features/messaging/domain/usecases/get_conversations_usecase.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/chat_provider.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/get_unread_notifications_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/subscribe_to_notifications_usecase.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -169,7 +171,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  NotificationsRemoteDataSourceImpl(baseUrl: 'ttps://tawasolapp.me/api').initializeFcm();
 
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
@@ -192,24 +198,16 @@ void main() async {
   final ProfileRemoteDataSourceImpl dataSourceProfile =
       ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
 
-  // Initialize notifications components
-  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(
-    baseUrl: 'https://tawasolapp.me/api',
-  );
-  final notificationsRepository = NotificationRepositoryImpl(
-    notificationDataSource: notificationsRemoteDataSource,
-  );
-  final getNotificationsUseCase = GetNotificationsUseCase(
-    notificationsRepository,
-  );
-  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(
-    notificationsRepository,
-  );
-  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(
-    notificationsRepository,
-  );
+// Initialize notifications components
+  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
+  final notificationsRepository = NotificationRepositoryImpl(notificationDataSource: notificationsRemoteDataSource);
+  final getNotificationsUseCase = GetNotificationsUseCase(notificationsRepository);
+  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(notificationsRepository);
+  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(notificationsRepository);
+  final getUnreadNotificationsUseCase = GetUnreadNotificationsUseCase(notificationsRepository);
   final getFcmTokenUseCase = GetFcmTokenUseCase(notificationsRepository);
   final initializeFcmUseCase = InitializeFcmUseCase(notificationsRepository);
+  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(notificationsRepository);
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -291,16 +289,16 @@ void main() async {
                 resendEmailUsecase: resendEmailUsecase,
               ),
         ),
-        ChangeNotifierProvider(
-          create:
-              (_) => NotificationsProvider(
-                getNotificationsUseCase: getNotificationsUseCase,
-                markNotificationAsReadUseCase: markNotificationAsReadUseCase,
-                getUnseenNotificationsCountUseCase:
-                    getUnseenNotificationsCountUseCase,
-                getFcmTokenUseCase: getFcmTokenUseCase,
-                initializeFcmUseCase: initializeFcmUseCase,
-              )..initialize(),
+ChangeNotifierProvider(
+          create: (_) => NotificationsProvider(
+            getNotificationsUseCase: getNotificationsUseCase,
+            markNotificationAsReadUseCase: markNotificationAsReadUseCase,
+            getUnseenNotificationsCountUseCase: getUnseenNotificationsCountUseCase,
+            getUnreadNotificationsUseCase: getUnreadNotificationsUseCase,
+            getFcmTokenUseCase: getFcmTokenUseCase,
+            initializeFcmUseCase: initializeFcmUseCase,
+            subscribeToNotificationsUseCase: subscribeToNotificationsUseCase,
+          )/*..initialize(),*/
         ),
         ChangeNotifierProvider(
           create:

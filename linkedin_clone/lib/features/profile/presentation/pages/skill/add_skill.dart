@@ -14,12 +14,16 @@ class _AddSkillPageState extends State<AddSkillPage> {
   final _formKey = GlobalKey<FormState>();
   final _skillController = TextEditingController();
   final _positionController = TextEditingController();
+  final _skillFocusNode = FocusNode();
+  final _positionFocusNode = FocusNode();
   bool _isSaving = false;
 
   @override
   void dispose() {
     _skillController.dispose();
     _positionController.dispose();
+    _skillFocusNode.dispose();
+    _positionFocusNode.dispose();
     super.dispose();
   }
 
@@ -66,137 +70,213 @@ class _AddSkillPageState extends State<AddSkillPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text("Add Skill"),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        title: Text(
+          "Add Skill",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: theme.primaryColor,
+          ),
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.primaryColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
-          TextButton(
+          TextButton.icon(
             onPressed: _isSaving ? null : _saveSkill,
-            child:
+            icon:
                 _isSaving
-                    ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                    ? SizedBox(
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
-                        color: Colors.white,
+                        color: theme.primaryColor,
                       ),
                     )
-                    : const Text(
-                      "Save",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    : Icon(Icons.check, color: theme.primaryColor),
+            label: Text(
+              "Save",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor,
+              ),
+            ),
           ),
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.symmetric(vertical: 16),
             children: [
-              // Skill Icon Placeholder
-              Card(
-                shape: const CircleBorder(),
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundColor: Colors.white,
-                    child: const Icon(
-                      Icons.code,
-                      size: 40,
-                      color: Colors.blueGrey,
+              // Skill Icon Section
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.grey[200],
+                        child: Icon(
+                          Icons.code,
+                          size: 50,
+                          color: Colors.grey[600],
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 12),
+                    if (_skillController.text.isNotEmpty)
+                      Text(
+                        _skillController.text,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    if (_positionController.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _positionController.text,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 24),
 
-              // Skill Name
-              Card(
-                color: Colors.white,
-                elevation: 1,
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(
+              const SizedBox(height: 12),
+
+              // Skill Info Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
-                  ),
-                  child: TextFormField(
-                    controller: _skillController,
-                    decoration: const InputDecoration(
-                      labelText: "Skill Name*",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                    ),
-                    validator:
-                        (value) => value?.isEmpty ?? true ? "Required" : null,
-                  ),
-                ),
-              ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Skill Information",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                      ),
 
-              // Position field (optional)
-              Card(
-                color: Colors.white,
-                elevation: 1,
-                margin: const EdgeInsets.only(bottom: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8.0,
-                    vertical: 4.0,
-                  ),
-                  child: TextFormField(
-                    controller: _positionController,
-                    decoration: const InputDecoration(
-                      labelText: "Where did you use this skill? (Optional)",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                    ),
-                    // No validator since it's optional
+                      // Skill Name Field
+                      _buildTextField(
+                        controller: _skillController,
+                        focusNode: _skillFocusNode,
+                        label: "Skill Name",
+                        icon: Icons.lightbulb_outline,
+                        required: true,
+                        hint: "Example: Flutter Development",
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Position Field (Where Used)
+                      _buildTextField(
+                        controller: _positionController,
+                        focusNode: _positionFocusNode,
+                        label: "Where did you use this skill?",
+                        icon: Icons.work_outline,
+                        required: false,
+                        hint: "Example: Software Developer at ABC Corp",
+                      ),
+                    ],
                   ),
                 ),
               ),
 
               // Save Button
-              SizedBox(
-                width: double.infinity,
+              Padding(
+                padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _saveSkill,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 2,
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
                   ),
                   child:
                       _isSaving
-                          ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2.0,
-                              color: Colors.white,
-                            ),
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                "Saving...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           )
                           : const Text(
                             "Save Skill",
                             style: TextStyle(
                               fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                 ),
@@ -205,6 +285,61 @@ class _AddSkillPageState extends State<AddSkillPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool required = false,
+    String? hint,
+    FocusNode? focusNode,
+  }) {
+    return TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      decoration: InputDecoration(
+        labelText: required ? "$label *" : label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.grey[600]),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+            width: 2,
+          ),
+        ),
+      ),
+      validator:
+          required
+              ? (value) =>
+                  value?.trim().isEmpty ?? true
+                      ? "This field is required"
+                      : null
+              : null,
+      style: const TextStyle(fontSize: 15),
+      onChanged: (_) => setState(() {}),
     );
   }
 }

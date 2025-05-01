@@ -534,41 +534,38 @@ class ProfileHeader extends StatelessWidget {
   }
 
   Widget _buildPendingButtons(BuildContext context, ProfileProvider provider) {
-    final isFollowing = provider.followStatus == 'Following';
-    final networksProvider = Provider.of<NetworksProvider>(
-      context,
-      listen: false,
-    );
-    final connectionsProvider = Provider.of<ConnectionsProvider>(
-      context,
-      listen: false,
-    );
+  final isFollowing = provider.followStatus == 'Following';
+  final isPrivateProfile = provider.visibility == 'private' || 
+                         provider.visibility == 'connections_only';
+  final networksProvider = Provider.of<NetworksProvider>(context, listen: false);
+  final connectionsProvider = Provider.of<ConnectionsProvider>(context, listen: false);
 
-    return Row(
-      children: [
-        // Pending button - now clickable to withdraw request
-        Expanded(
-          child: SizedBox(
-            height: 36,
-            child: ElevatedButton(
-              onPressed: () async {
-                // Withdraw connection request
-                if (provider.userId == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Cannot withdraw request: User ID is missing',
-                      ),
-                    ),
-                  );
-                  return;
-                }
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      if (!isPrivateProfile) ...[
+        Row(
+          children: [
+            // Pending button - now clickable to withdraw request
+            Expanded(
+              child: SizedBox(
+                height: 36,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    // Withdraw connection request
+                    if (provider.userId == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Cannot withdraw request: User ID is missing'),
+                        ),
+                      );
+                      return;
+                    }
 
-                // Show confirmation dialog
-                final shouldWithdraw = await showDialog<bool>(
-                  context: context,
-                  builder:
-                      (context) => AlertDialog(
+                    // Show confirmation dialog
+                    final shouldWithdraw = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
                         title: const Text('Withdraw Connection Request'),
                         content: const Text(
                           'Are you sure you want to withdraw your connection request?',
@@ -587,136 +584,140 @@ class ProfileHeader extends StatelessWidget {
                           ),
                         ],
                       ),
-                );
-
-                if (shouldWithdraw == true) {
-                  // Show loading indicator
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Withdrawing connection request...'),
-                    ),
-                  );
-
-                  // Call the withdraw connection request function
-                  final success = await connectionsProvider
-                      .withdrawConnectionRequest(provider.userId!);
-
-                  // Show result
-                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        success
-                            ? 'Connection request withdrawn'
-                            : 'Failed to withdraw connection request',
-                      ),
-                      backgroundColor: success ? Colors.green : Colors.red,
-                    ),
-                  );
-
-                  // Refresh profile if successful
-                  if (success) {
-                    await provider.fetchProfile(provider.userId);
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[200],
-                foregroundColor: Colors.black87,
-                textStyle: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontSize: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Pending'),
-                  SizedBox(width: 4),
-                  Icon(Icons.hourglass_top, size: 16),
-                ],
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        // Follow/Following button for pending connections
-        Expanded(
-          child: SizedBox(
-            height: 36,
-            child: ElevatedButton(
-              onPressed: () async {
-                if (provider.userId == null) return;
-
-                if (isFollowing) {
-                  // Unfollow action
-                  final success = await networksProvider.unfollowUser(
-                    provider.userId!,
-                  );
-                  if (!success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to unfollow'),
-                        backgroundColor: Colors.red,
-                      ),
                     );
-                  }
-                } else {
-                  // Follow action
-                  final success = await networksProvider.followUser(
-                    provider.userId!,
-                  );
-                  if (!success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to follow'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-                await provider.fetchProfile(provider.userId);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isFollowing ? Colors.grey[200] : Colors.white,
-                foregroundColor:
-                    isFollowing
-                        ? Colors.black87
-                        : Theme.of(context).primaryColor,
-                textStyle: Theme.of(
-                  context,
-                ).textTheme.labelLarge?.copyWith(fontSize: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                  side: BorderSide(
-                    color:
-                        isFollowing
-                            ? Colors.transparent
-                            : Theme.of(context).primaryColor,
-                    width: 1.5,
+
+                    if (shouldWithdraw == true) {
+                      // Show loading indicator
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Withdrawing connection request...'),
+                        ),
+                      );
+
+                      // Call the withdraw connection request function
+                      final success = await connectionsProvider
+                          .withdrawConnectionRequest(provider.userId!);
+
+                      // Show result
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            success
+                                ? 'Connection request withdrawn'
+                                : 'Failed to withdraw connection request',
+                          ),
+                          backgroundColor: success ? Colors.green : Colors.red,
+                        ),
+                      );
+
+                      // Refresh profile if successful
+                      if (success) {
+                        await provider.fetchProfile(provider.userId);
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[200],
+                    foregroundColor: Colors.black87,
+                    textStyle: Theme.of(context)
+                        .textTheme
+                        .labelLarge
+                        ?.copyWith(fontSize: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Pending'),
+                      SizedBox(width: 4),
+                      Icon(Icons.hourglass_top, size: 16),
+                    ],
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 8),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(isFollowing ? 'Following' : 'Follow'),
-                  if (isFollowing) ...[
-                    const SizedBox(width: 4),
-                    const Icon(Icons.check, size: 16),
-                  ],
-                ],
               ),
             ),
-          ),
+            const SizedBox(width: 8),
+            // Follow/Following button for pending connections
+            Expanded(
+              child: SizedBox(
+                height: 36,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (provider.userId == null) return;
+
+                    if (isFollowing) {
+                      // Unfollow action
+                      final success = await networksProvider
+                          .unfollowUser(provider.userId!);
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to unfollow'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    } else {
+                      // Follow action
+                      final success = await networksProvider
+                          .followUser(provider.userId!);
+                      if (!success) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to follow'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
+                    await provider.fetchProfile(provider.userId);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isFollowing ? Colors.grey[200] : Colors.white,
+                    foregroundColor: isFollowing
+                        ? Colors.black87
+                        : Theme.of(context).primaryColor,
+                    textStyle: Theme.of(context)
+                        .textTheme
+                        .labelLarge
+                        ?.copyWith(fontSize: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      side: BorderSide(
+                        color: isFollowing
+                            ? Colors.transparent
+                            : Theme.of(context).primaryColor,
+                        width: 1.5,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(isFollowing ? 'Following' : 'Follow'),
+                      if (isFollowing) ...[
+                        const SizedBox(width: 4),
+                        const Icon(Icons.check, size: 16),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+      ] else ...[
+        _buildLimitedAccessMessage(context),
       ],
-    );
-  }
+      const SizedBox(height: 8), // Add bottom padding for visual balance
+    ],
+  );
+}
 
   Widget _buildRequestButtons(BuildContext context, ProfileProvider provider) {
     final isFollowing = provider.followStatus == 'Following';

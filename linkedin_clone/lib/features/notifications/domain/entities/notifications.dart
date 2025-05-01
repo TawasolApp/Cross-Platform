@@ -5,8 +5,9 @@ class Notifications extends Equatable {
   final String userName;
   final String profilePicture;
   final String referenceId;
+  final String rootItemId;
   final String senderType; // 'User' or 'Company'
-  final String type; // 'React', 'Comment', 'UserConnection', 'Message'
+  final String type; // 'React', 'Comment', 'UserConnection', 'Message', 'JobOffer'
   final String content;
   final bool isRead;
   final DateTime timestamp;
@@ -16,6 +17,7 @@ class Notifications extends Equatable {
     required this.userName,
     required this.profilePicture,
     required this.referenceId,
+    required this.rootItemId,
     required this.senderType,
     required this.type,
     required this.content,
@@ -29,6 +31,7 @@ class Notifications extends Equatable {
     userName,
     profilePicture,
     referenceId,
+    rootItemId,
     senderType,
     type,
     content,

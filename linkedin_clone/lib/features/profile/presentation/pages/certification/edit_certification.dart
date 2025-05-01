@@ -33,9 +33,11 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
   String? _selectedCompanyLogo;
   Company? _selectedCompany;
   bool _isCustomCompany = false;
+  bool _initialDataLoaded = false;
 
   // Focus node for company field
   final _companyFocusNode = FocusNode();
+  final _nameFocusNode = FocusNode();
 
   bool _isCurrentlyValid = false;
   bool _isSaving = false;
@@ -44,18 +46,28 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
   void initState() {
     super.initState();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeCertification();
+    });
+
     _issuingOrgController.addListener(_onCompanyTextChanged);
     _debouncer.values.listen(_searchCompanies);
 
     _companyFocusNode.addListener(_onCompanyFocusChange);
+    _nameFocusNode.addListener(_onFocusChange);
+  }
 
-    // Initialize with existing certification if editing
-    if (widget.certification != null) {
+  void _initializeCertification() {
+    if (widget.certification != null && !_initialDataLoaded) {
       final cert = widget.certification!;
       _nameController.text = cert.name;
       _issuingOrgController.text = cert.company;
       _issueDateController.text = cert.issueDate;
+      
+      // Set validity based on whether expiry date exists
       _isCurrentlyValid = cert.expiryDate == null;
+      
+      // Only set expiry date text if certificate expires
       _expiryDateController.text =
           cert.expiryDate ?? (_isCurrentlyValid ? 'Present' : '');
 
@@ -63,6 +75,32 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
       _selectedCompanyId = cert.companyId;
       _selectedCompanyLogo = cert.companyLogo;
       _isCustomCompany = cert.companyId == null;
+
+      // If there's a company ID, try to fetch details
+      if (cert.companyId != null && !_isCustomCompany) {
+        final companyProvider = Provider.of<CompanyListProvider>(
+          context,
+          listen: false,
+        );
+        companyProvider.resetProvider();
+        companyProvider.fetchCompanies(cert.company).then((_) {
+          if (companyProvider.companies.isNotEmpty) {
+            final matchedCompany = companyProvider.companies.firstWhere(
+              (company) => company.companyId == cert.companyId,
+              orElse: () => companyProvider.companies.first,
+            );
+
+            if (mounted) {
+              setState(() {
+                _selectedCompany = matchedCompany;
+                _isCustomCompany = false;
+              });
+            }
+          }
+        });
+      }
+
+      _initialDataLoaded = true;
     }
   }
 
@@ -72,7 +110,13 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
     _issuingOrgController.dispose();
     _issueDateController.dispose();
     _expiryDateController.dispose();
+
+    _companyFocusNode.removeListener(_onCompanyFocusChange);
+    _nameFocusNode.removeListener(_onFocusChange);
+
     _companyFocusNode.dispose();
+    _nameFocusNode.dispose();
+
     _issuingOrgController.removeListener(_onCompanyTextChanged);
     super.dispose();
   }
@@ -86,6 +130,18 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
     } else if (!_companyFocusNode.hasFocus) {
       Future.delayed(const Duration(milliseconds: 200), () {
         if (mounted && !_companyFocusNode.hasFocus) {
+          setState(() {
+            _showCompanyResults = false;
+          });
+        }
+      });
+    }
+  }
+
+  void _onFocusChange() {
+    if (!_companyFocusNode.hasFocus && _showCompanyResults) {
+      Future.delayed(const Duration(milliseconds: 200), () {
+        if (mounted) {
           setState(() {
             _showCompanyResults = false;
           });
@@ -199,7 +255,7 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
     try {
       final provider = Provider.of<ProfileProvider>(context, listen: false);
 
-      // Make sure to set expiryDate to null when certification doesn't expire
+      // Set expiryDate to null when certification doesn't expire
       String? expiryDate;
       if (!_isCurrentlyValid) {
         expiryDate = _expiryDateController.text;
@@ -212,7 +268,7 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
         companyLogo: _isCustomCompany ? null : _selectedCompanyLogo,
         companyId: _isCustomCompany ? null : _selectedCompanyId,
         issueDate: _issueDateController.text,
-        expiryDate: expiryDate, // Use the correctly processed expiryDate
+        expiryDate: expiryDate,
       );
 
       if (widget.certification != null) {
@@ -231,7 +287,7 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
             duration: Duration(seconds: 2),
           ),
         );
-        Navigator.pop(context, true); // Return success flag
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
@@ -478,353 +534,559 @@ class _EditCertificationPageState extends State<EditCertificationPage> {
     return const SizedBox.shrink();
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool required = false,
+    String? hint,
+    FocusNode? focusNode,
+  }) {
+    return TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      decoration: InputDecoration(
+        labelText: required ? "$label *" : label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.grey[600]),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+            width: 2,
+          ),
+        ),
+      ),
+      validator:
+          required
+              ? (value) =>
+                  value?.trim().isEmpty ?? true
+                      ? "This field is required"
+                      : null
+              : null,
+      style: const TextStyle(fontSize: 15),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
+        elevation: 0,
         title: Text(
           widget.certification != null
               ? "Edit Certification"
               : "Add Certification",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: theme.primaryColor,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.primaryColor),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
-          TextButton(
+          TextButton.icon(
             onPressed: _isSaving ? null : _saveCertification,
-            child:
+            icon:
                 _isSaving
-                    ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                    ? SizedBox(
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
-                        color: Colors.white,
+                        color: theme.primaryColor,
                       ),
                     )
-                    : const Text(
-                      "Save",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    : Icon(Icons.check, color: theme.primaryColor),
+            label: Text(
+              "Save",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor,
+              ),
+            ),
           ),
         ],
       ),
       body: GestureDetector(
         onTap: () {
-          // Close dropdown when tapping elsewhere
-          if (_showCompanyResults) {
-            setState(() {
-              _showCompanyResults = false;
-            });
-          }
           FocusScope.of(context).unfocus();
+          setState(() {
+            _showCompanyResults = false;
+          });
         },
         behavior: HitTestBehavior.translucent,
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Organization Logo Placeholder
-                Card(
-                  shape: const CircleBorder(),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.white,
-                      backgroundImage:
-                          _selectedCompanyLogo != null
-                              ? NetworkImage(_selectedCompanyLogo!)
-                              : null,
-                      child:
-                          _selectedCompanyLogo == null
-                              ? const Icon(
-                                Icons.verified,
-                                size: 40,
-                                color: Colors.blueGrey,
-                              )
-                              : null,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Certification Name
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: "Certification Name*",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      validator:
-                          (value) => value?.isEmpty ?? true ? "Required" : null,
-                    ),
-                  ),
-                ),
-
-                // Issuing Organization with search
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            children: [
+              // Organization Logo Section
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
                   children: [
-                    Card(
-                      color: Colors.white,
-                      elevation: 1,
-                      margin: EdgeInsets.zero,
-                      shape:
-                          _showCompanyResults
-                              ? const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(12),
-                                ),
-                              )
-                              : RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        child: TextFormField(
-                          controller: _issuingOrgController,
-                          focusNode: _companyFocusNode,
-                          decoration: InputDecoration(
-                            labelText: "Issuing Organization*",
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (_issuingOrgController.text.isNotEmpty)
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.clear,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _issuingOrgController.text = '';
-                                        _selectedCompany = null;
-                                        _selectedCompanyId = null;
-                                        _selectedCompanyLogo = null;
-                                        _isCustomCompany = false;
-                                      });
-                                    },
-                                  ),
-                                IconButton(
-                                  icon: Icon(
-                                    _showCompanyResults
-                                        ? Icons.arrow_drop_up
-                                        : Icons.arrow_drop_down,
-                                    color: Colors.blueGrey,
-                                  ),
-                                  onPressed: () {
-                                    // Don't show empty results
-                                    if (_issuingOrgController.text.isEmpty)
-                                      return;
-
-                                    setState(() {
-                                      _showCompanyResults =
-                                          !_showCompanyResults;
-                                      if (_showCompanyResults) {
-                                        _searchCompanies(
-                                          _issuingOrgController.text,
-                                        );
-                                      }
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 5,
                           ),
-                          onTap: () {
-                            // Only show results if there's text to search
-                            if (_issuingOrgController.text.isNotEmpty) {
-                              setState(() {
-                                _showCompanyResults = true;
-                              });
-                            }
-                          },
-                          validator:
-                              (value) =>
-                                  value?.isEmpty ?? true ? "Required" : null,
-                        ),
+                        ],
                       ),
-                    ),
-                    _buildCompanyResults(),
-                    _buildCompanySelectionIndicator(),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Issue Date
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _issueDateController,
-                      decoration: const InputDecoration(
-                        labelText: "Issue Date* (YYYY-MM)",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      readOnly: true,
-                      onTap: () => _selectDate(context, _issueDateController),
-                      validator:
-                          (value) => value?.isEmpty ?? true ? "Required" : null,
-                    ),
-                  ),
-                ),
-
-                // Expiry Date - Updated to match education end date pattern
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _expiryDateController,
-                      decoration: InputDecoration(
-                        labelText:
-                            "Expiry Date" +
-                            (_isCurrentlyValid ? " (No Expiry)" : " (YYYY-MM)"),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                        ),
-                        suffixIcon:
-                            _isCurrentlyValid
-                                ? const Icon(
-                                  Icons.lock_outline,
-                                  color: Colors.grey,
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.grey[200],
+                        backgroundImage:
+                            _selectedCompanyLogo != null
+                                ? NetworkImage(_selectedCompanyLogo!)
+                                : null,
+                        child:
+                            _selectedCompanyLogo == null
+                                ? Icon(
+                                  Icons.verified,
+                                  size: 55,
+                                  color: Colors.grey[400],
                                 )
                                 : null,
                       ),
-                      readOnly: true,
-                      enabled: !_isCurrentlyValid,
-                      onTap:
-                          () =>
-                              _isCurrentlyValid
-                                  ? null
-                                  : _selectDate(context, _expiryDateController),
-                      validator: (value) {
-                        if (!_isCurrentlyValid && (value?.isEmpty ?? true)) {
-                          return "Required unless certificate does not expire";
-                        }
-                        return null;
-                      },
                     ),
+                    const SizedBox(height: 12),
+                    if (_nameController.text.isNotEmpty)
+                      Text(
+                        _nameController.text,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    if (_issuingOrgController.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _issuingOrgController.text,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Certification Information Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Certification Information",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                      ),
+
+                      // Certification Name
+                      _buildTextField(
+                        controller: _nameController,
+                        focusNode: _nameFocusNode,
+                        label: "Certification Name",
+                        icon: Icons.card_membership,
+                        required: true,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Issuing Organization Field with Search
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            controller: _issuingOrgController,
+                            focusNode: _companyFocusNode,
+                            decoration: InputDecoration(
+                              labelText: "Issuing Organization *",
+                              prefixIcon: Icon(
+                                Icons.business,
+                                color: Colors.grey[600],
+                              ),
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (_issuingOrgController.text.isNotEmpty)
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        color: Colors.grey,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _issuingOrgController.text = '';
+                                          _selectedCompany = null;
+                                          _selectedCompanyId = null;
+                                          _selectedCompanyLogo = null;
+                                          _isCustomCompany = false;
+                                          _showCompanyResults = false;
+                                        });
+                                      },
+                                    ),
+                                  IconButton(
+                                    icon: Icon(
+                                      _showCompanyResults
+                                          ? Icons.arrow_drop_up
+                                          : Icons.arrow_drop_down,
+                                      color: Colors.grey[600],
+                                    ),
+                                    onPressed: () {
+                                      if (_issuingOrgController.text.isEmpty) {
+                                        // If empty, show a hint
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Start typing to search for organizations',
+                                            ),
+                                            behavior: SnackBarBehavior.floating,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        _showCompanyResults =
+                                            !_showCompanyResults;
+                                        if (_showCompanyResults) {
+                                          // Re-trigger search when manually showing dropdown
+                                          _searchCompanies(
+                                            _issuingOrgController.text,
+                                          );
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: theme.primaryColor,
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: theme.colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              // Only show results if there's text to search
+                              if (_issuingOrgController.text.isNotEmpty) {
+                                _searchCompanies(_issuingOrgController.text);
+                                setState(() {
+                                  _showCompanyResults = true;
+                                });
+                              }
+                            },
+                            validator:
+                                (value) =>
+                                    value?.isEmpty ?? true
+                                        ? "This field is required"
+                                        : null,
+                          ),
+                          if (_showCompanyResults) _buildCompanyResults(),
+                          _buildCompanySelectionIndicator(),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
+              ),
 
-                Card(
+              // Certification Duration Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  elevation: 0,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Switch(
-                          value: _isCurrentlyValid,
-                          onChanged: (value) {
-                            setState(() {
-                              _isCurrentlyValid = value;
-                              // Update expiry date field when switch changes
-                              if (value) {
-                                _expiryDateController.text = "No Expiry";
-                              } else {
-                                _expiryDateController.clear();
-                              }
-                            });
-                          },
-                          activeColor: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Certification Duration",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
                         ),
-                        const Text(
+                      ),
+
+                      // Issue Date Field
+                      TextFormField(
+                        controller: _issueDateController,
+                        decoration: InputDecoration(
+                          labelText: "Issue Date *",
+                          hintText: "YYYY-MM",
+                          prefixIcon: Icon(
+                            Icons.calendar_today,
+                            color: Colors.grey[600],
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: theme.primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () => _selectDate(context, _issueDateController),
+                        validator:
+                            (value) =>
+                                value?.isEmpty ?? true
+                                    ? "This field is required"
+                                    : null,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Expiry Date Field
+                      TextFormField(
+                        controller: _expiryDateController,
+                        decoration: InputDecoration(
+                          labelText:
+                              "Expiry Date" +
+                              (_isCurrentlyValid ? " (No Expiry)" : " *"),
+                          hintText: _isCurrentlyValid ? "No Expiry" : "YYYY-MM",
+                          prefixIcon: Icon(
+                            Icons.calendar_today,
+                            color: Colors.grey[600],
+                          ),
+                          suffixIcon:
+                              _isCurrentlyValid
+                                  ? const Icon(
+                                    Icons.lock_outline,
+                                    color: Colors.grey,
+                                  )
+                                  : null,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: theme.primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        readOnly: true,
+                        enabled: !_isCurrentlyValid,
+                        onTap:
+                            () =>
+                                _isCurrentlyValid
+                                    ? null
+                                    : _selectDate(
+                                      context,
+                                      _expiryDateController,
+                                    ),
+                        validator: (value) {
+                          if (!_isCurrentlyValid && (value?.isEmpty ?? true)) {
+                            return "Required unless certificate does not expire";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // No Expiry Switch
+                      SwitchListTile(
+                        title: const Text(
                           "This certificate does not expire",
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Save Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isSaving ? null : _saveCertification,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        value: _isCurrentlyValid,
+                        onChanged: (value) {
+                          setState(() {
+                            _isCurrentlyValid = value;
+                            // Clear expiry date when "no expiry" is selected
+                            if (value) {
+                              // Set display text for user clarity - will be cleared before saving
+                              _expiryDateController.text = "No Expiry";
+                            } else {
+                              _expiryDateController.clear();
+                            }
+                          });
+                        },
+                        activeColor: theme.primaryColor,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                        ),
                       ),
-                      elevation: 2,
-                      backgroundColor: Theme.of(context).primaryColor,
-                    ),
-                    child:
-                        _isSaving
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                color: Colors.white,
-                              ),
-                            )
-                            : Text(
-                              widget.certification != null
-                                  ? "Update Certification"
-                                  : "Save Certification",
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              // Save Button
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _saveCertification,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 2,
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
+                  ),
+                  child:
+                      _isSaving
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                "Saving...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )
+                          : Text(
+                            widget.certification != null
+                                ? "Update Certification"
+                                : "Save Certification",
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
