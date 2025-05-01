@@ -14,6 +14,7 @@ class CommentModel extends CommentEntity {
     required super.reactCount,
     required super.timestamp,
     required super.isReply,
+    required super.repliesCount,
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +35,7 @@ class CommentModel extends CommentEntity {
           [], // Fix here
       reactCount: json['reactCount'] ?? 0,
       timestamp: DateTime.tryParse(json['timestamp']) ?? DateTime.now(),
+      repliesCount: json['repliesCount'] ?? 0,
     );
   }
 
@@ -51,6 +53,7 @@ class CommentModel extends CommentEntity {
       'reactCount': reactCount,
       'timestamp': timestamp.toIso8601String(),
       'isReply': isReply,
+      'repliesCount': repliesCount,
     };
   }
 
@@ -67,6 +70,7 @@ class CommentModel extends CommentEntity {
     List<String>? taggedUsers,
     List<CommentModel>? replies,
     bool? isReply,
+    int? repliesCount,
   }) {
     return CommentModel(
       id: id ?? this.id,
@@ -81,6 +85,7 @@ class CommentModel extends CommentEntity {
       taggedUsers: taggedUsers ?? this.taggedUsers,
       replies: replies ?? this.replies,
       isReply: isReply ?? this.isReply,
+      repliesCount: repliesCount ?? this.repliesCount,
     );
   }
 }

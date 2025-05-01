@@ -6,9 +6,7 @@ import '../widgets/post_card.dart';
 import '../widgets/add_comment_field.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
 import '../widgets/reaction_summary_bar.dart';
-import '../widgets/paginated_listview.dart';
-import '../../data/models/comment_model.dart';
-import '../widgets/comment_item.dart';
+import '../widgets/comment_list.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;
@@ -93,24 +91,9 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                         return Center(child: Text(feedProvider.errorMessage!));
                       }
 
-                      return PaginatedListView<CommentModel>(
-                        items: feedProvider.comments,
-                        isLoading: feedProvider.isLoading,
-                        hasMore: feedProvider.hasMoreComments,
-                        errorMessage: feedProvider.errorMessage,
-                        onFetchMore:
-                            () => feedProvider.fetchComments(widget.postId),
-                        onRefresh:
-                            () => feedProvider.fetchComments(
-                              widget.postId,
-                              refresh: true,
-                            ),
-                        itemBuilder:
-                            (context, comment, index) => CommentItem(
-                              comment: comment,
-                              currentUserId: profile.userId ?? '',
-                              isReply: comment.isReply,
-                            ),
+                      return CommentList(
+                        postId: widget.postId,
+                        currentUserId: profile.userId ?? '',
                       );
                     },
                   ),

@@ -21,6 +21,7 @@ import '../../../../core/services/token_service.dart';
 import '../../domain/usecases/get_saved_posts_usecase.dart';
 import '../../domain/usecases/get_post_by_id_usecase.dart';
 import '../../domain/usecases/get_reposts_usecase.dart';
+import '../../domain/entities/comment_entity.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -80,6 +81,10 @@ class FeedProvider extends ChangeNotifier {
   bool _hasMoreComments = true;
   bool get hasMoreComments => _hasMoreComments;
 
+  final Map<String, int> _repliesPage = {};
+  final Map<String, bool> _repliesHasMore = {};
+  final Set<String> _loadingReplies = {};
+
   String? _lastFetchedRepostPostId;
 
   int _paginationLimit = 10; // Global limit
@@ -105,6 +110,8 @@ class FeedProvider extends ChangeNotifier {
 
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
+
+  Map<String, List<CommentEntity>> repliesByCommentId = {};
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -489,6 +496,52 @@ class FeedProvider extends ChangeNotifier {
     );
     _isLoading = false;
     notifyListeners();
+  }
+
+  Future<void> fetchReplies(String commentId, {bool refresh = false}) async {
+    if (_loadingReplies.contains(commentId)) {
+      print("Already loading replies for $commentId");
+      return;
+    }
+
+    if (refresh || !repliesByCommentId.containsKey(commentId)) {
+      repliesByCommentId[commentId] = [];
+      _repliesPage[commentId] = 1;
+      _repliesHasMore[commentId] = true;
+    }
+
+    if (_repliesHasMore[commentId] == false) return;
+
+    _loadingReplies.add(commentId);
+    notifyListeners();
+
+    final userId = await this.userId;
+
+    final result = await fetchCommentsUseCase(
+      userId,
+      commentId,
+      page: _repliesPage[commentId]!,
+      limit: _paginationLimit,
+    );
+
+    result.fold(
+      (failure) {
+        print("Failed to fetch replies for $commentId: ${failure.message}");
+        _loadingReplies.remove(commentId);
+        notifyListeners();
+      },
+      (data) {
+        final list = repliesByCommentId[commentId] ?? [];
+        repliesByCommentId[commentId] = [...list, ...data];
+        if (data.length < _paginationLimit) {
+          _repliesHasMore[commentId] = false;
+        } else {
+          _repliesPage[commentId] = _repliesPage[commentId]! + 1;
+        }
+        _loadingReplies.remove(commentId);
+        notifyListeners();
+      },
+    );
   }
 
   Future<void> editComment({
