@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
 import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
 import 'package:linkedin_clone/features/notifications/presentation/widgets/notification_item.dart';
+import 'package:linkedin_clone/core/Navigation/app_router.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkedin_clone/core/Navigation/route_names.dart';
 
 class NotificationsListPage extends StatefulWidget {
   const NotificationsListPage({Key? key}) : super(key: key);
@@ -38,13 +42,14 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
 
       // Set up scroll controller for pagination
       _notificationsScrollController.addListener(() {
-        final maxScroll = _notificationsScrollController.position.maxScrollExtent;
+        final maxScroll =
+            _notificationsScrollController.position.maxScrollExtent;
         final currentScroll = _notificationsScrollController.position.pixels;
         const scrollThreshold = 200.0;
 
         // Detect if we need to load more
-        if (maxScroll - currentScroll <= scrollThreshold && 
-            !provider.isLoadingMore && 
+        if (maxScroll - currentScroll <= scrollThreshold &&
+            !provider.isLoadingMore &&
             provider.hasMore) {
           provider.getNotifications(_userId, loadMore: true);
         }
@@ -101,15 +106,16 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
                 Positioned(
                   bottom: 20,
                   right: 20,
-                    child: FloatingActionButton.small(
-                    onPressed: () => _notificationsScrollController.animateTo(
-                      0,
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeOut,
-                    ),
+                  child: FloatingActionButton.small(
+                    onPressed:
+                        () => _notificationsScrollController.animateTo(
+                          0,
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeOut,
+                        ),
                     child: const Icon(
                       Icons.keyboard_arrow_up_rounded,
-                      
+
                       color: Colors.white,
                       size: 24,
                     ),
@@ -174,7 +180,8 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: notification.isRead ? Colors.white : Colors.blue.withOpacity(0.1),
+          color:
+              notification.isRead ? Colors.white : Colors.blue.withOpacity(0.1),
           border: Border(
             bottom: BorderSide(color: Colors.grey.shade300, width: 1),
           ),
@@ -204,17 +211,25 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
   ) {
     // Navigate based on notification type
     switch (notification.type) {
-      case 'Post':
+      case 'React':
         // Navigate to post details
-        // Navigator.push(context, MaterialPageRoute(builder: (_) => PostDetailsPage(postId: notification.referenceId)));
+        context.push(RouteNames.postDetails, extra: notification.rootItemId);
         break;
-      case 'Connection':
+      case 'Comment':
+        // Navigate to post details with comment focus
+        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        break;
+      case 'UserConnection':
         // Navigate to profile
-        // Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage(userId: notification.referenceId)));
+        context.push(RouteNames.profile, extra: notification.referenceId);
         break;
       case 'Message':
-        // Navigate to messages
-        // Navigator.push(context, MaterialPageRoute(builder: (_) => MessagesPage(chatId: notification.referenceId)));
+        // Navigate to messages - implement this when you have the messages route
+        // context.push(RouteNames.messages, extra: notification.referenceId);
+        break;
+      case 'JobOffer':
+        // Navigate to job details - implement this when you have the job details route
+        // context.push(RouteNames.jobDetails, extra: notification.referenceId);
         break;
       default:
         // Default action

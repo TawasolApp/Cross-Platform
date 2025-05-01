@@ -134,9 +134,9 @@ class EducationModel extends Equatable {
     if (companyId != null) {
       data['companyId'] = companyId;
     }
-    if (endDate != null) {
-      data['endDate'] = endDate;
-    }
+   
+    data['endDate'] = endDate;
+
 
     return data;
   }

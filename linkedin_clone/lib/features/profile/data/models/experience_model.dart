@@ -100,9 +100,9 @@ class ExperienceModel extends Equatable {
     if (location != null) {
       data['location'] = location;
     }
-    if (endDate != null) {
-      data['endDate'] = endDate;
-    }
+    
+    data['endDate'] = endDate;
+    
     if (description != null) {
       data['description'] = description;
     }
