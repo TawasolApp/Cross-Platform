@@ -26,6 +26,13 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.networksProvider?.getFollowingsCount();
+      widget.networksProvider?.getFollowersCount();
+      widget.connectionsProvider?.getConnectionsCount("");
+    });
+    print("❤️❤️❤️❤️${widget.connectionsProvider?.connectionsCount}");
   }
 
   @override
@@ -42,8 +49,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToConnections(context);
             },
-            count:
-                widget.connectionsProvider?.getConnectionsCount() as int? ?? 0,
+            count: widget.connectionsProvider?.connectionsCount ?? 0,
           ),
           Divider(
             height: 1,
@@ -58,7 +64,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToFollowing(context);
             },
-            count: widget.networksProvider?.getFollowingsCount() as int? ?? 0,
+            count: widget.networksProvider?.followingsCount ?? 0,
           ),
           Divider(
             height: 1,
@@ -73,7 +79,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToFollowers(context);
             },
-            count: widget.networksProvider?.getFollowersCount() as int? ?? 0,
+            count: widget.networksProvider?.followersCount ?? 0,
           ),
           Divider(
             height: 1,

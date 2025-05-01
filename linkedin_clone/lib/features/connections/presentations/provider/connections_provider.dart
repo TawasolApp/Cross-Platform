@@ -34,7 +34,7 @@ class ConnectionsProvider with ChangeNotifier {
   String _selectedFilter = 'Recently added';
   int receivedRequestsCount = 0;
   int sentRequestsCount = 0;
-  int connectionsCount = 0;
+  int _connectionsCount = 0;
 
   // Getters
   String? get errorMain => _errorMain;
@@ -49,6 +49,7 @@ class ConnectionsProvider with ChangeNotifier {
   int get currentPageSecondary => _currentPageSecondary;
   String get selectedFilter => _selectedFilter;
   String get activeFilter => _activeFilter;
+  int get connectionsCount => _connectionsCount;
 
   // UseCases
   final GetConnectionsUseCase getConnectionsUseCase;
@@ -342,16 +343,19 @@ class ConnectionsProvider with ChangeNotifier {
     return endorsed;
   }
 
-  //TODO: implement
-  Future<int> getConnectionsCount() async {
-    final result = await getProfileUseCase.call("");
-    int connectionsCount = result.fold((failure) {
+  Future<void> getConnectionsCount(String userId) async {
+    print('getConnectionsCount called with userId: $userId');
+    print('before : Connections count: $connectionsCount');
+    final result = await getProfileUseCase.call(userId);
+    _connectionsCount = result.fold((failure) {
       print('getMyUserId: Error fetching ConnectionsCount: $failure');
       return -1;
     }, (profile) => profile.connectionCount!);
-    return connectionsCount;
+    print('Connections count: $connectionsCount');
+    notifyListeners();
   }
 
+  //TODO: implement
   Future<void> getReceivedConnectionRequestsCount() async {
     receivedRequestsCount = 0;
   }

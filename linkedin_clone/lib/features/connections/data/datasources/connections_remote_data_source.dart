@@ -837,9 +837,10 @@ class ConnectionsRemoteDataSource {
 
   Future<int> getFollowersCount() async {
     try {
+      print('getFollowersCount called');
       final token = await initToken();
       final response = await client.get(
-        Uri.parse('${baseUrl}connections/follower/count'),
+        Uri.parse('${baseUrl}connections/followers/count'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',

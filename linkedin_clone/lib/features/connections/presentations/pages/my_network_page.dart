@@ -5,6 +5,8 @@ import 'package:linkedin_clone/features/connections/presentations/widgets/search
     as search_bar;
 import 'package:linkedin_clone/features/connections/presentations/widgets/user_avatar.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:provider/provider.dart';
 import '../widgets/routing_functions.dart';
 
@@ -17,13 +19,21 @@ class MyNetworkPage extends StatefulWidget {
 
 class _MyNetworkPageState extends State<MyNetworkPage> {
   ProfileProvider? profileProvider;
+  NetworksProvider? networksProvider;
+  ConnectionsProvider? connectionsProvider;
+  String? myProfilePircture;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+      networksProvider = Provider.of<NetworksProvider>(context, listen: false);
+      connectionsProvider = Provider.of<ConnectionsProvider>(
+        context,
+        listen: false,
+      );
       profileProvider!.fetchProfile("");
-      print(profileProvider!.profilePicture);
+      myProfilePircture = profileProvider!.profilePicture;
     });
   }
 
@@ -38,13 +48,12 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
           title: const search_bar.SearchBar(),
           leading: InkWell(
             onTap: () {
-              goToProfile(context, userId: profileProvider!.userId ?? "");
+              goToProfile(context, userId: "");
             },
             child: Consumer<ProfileProvider>(
               builder:
                   (context, profileProvider, child) => UserAvatar(
-                    profilePicture:
-                        profileProvider.profilePicture ?? 'not available',
+                    profilePicture: myProfilePircture ?? 'not available',
                     isOnline: false,
                     cardType: PageType.manageMyNetwork,
                     avatarSize: MediaQuery.of(context).size.width * 0.1,

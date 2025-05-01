@@ -39,8 +39,10 @@ import 'package:linkedin_clone/features/connections/domain/usecases/block/unbloc
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followings_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/remove_connection_usecase.dart';
@@ -446,6 +448,20 @@ void main() async {
                   ),
                 ),
                 GetPeopleYouMayKnowUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetFollowersCountUsecase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetFollowingsCountUsecase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),

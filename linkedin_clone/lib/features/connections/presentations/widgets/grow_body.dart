@@ -53,7 +53,7 @@ class _GrowBodyState extends State<GrowBody> {
               refreshRec: true,
               refreshSent: true,
             );
-            await networksProvider?.getPeopleYouMayKnowList(isInitial: true);
+            await networksProvider.getPeopleYouMayKnowList(isInitial: true);
           },
           color: Theme.of(context).primaryColor,
           child: SingleChildScrollView(
