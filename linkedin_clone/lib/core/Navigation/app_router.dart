@@ -278,16 +278,7 @@ class AppRouter {
           return RepostsPage(postId: postId);
         },
       ),
-      GoRoute(
-        path: RouteNames.companyProfile,
-        builder: (context, state) {
-          final data = state.extra as Map<String, String>;
-          return CompanyProfileScreen(
-            companyId: data['companyId']!,
-            title: data['companyTitle']!,
-          );
-        },
-      ),
+
     ],
   );
 }
