@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
@@ -16,7 +17,6 @@ import 'package:linkedin_clone/features/company/domain/usecases/get_recent_job_u
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/jobs/domain/usecases/delete_job_use_case.dart';
 
-
 class CompanyProvider with ChangeNotifier {
   Company? _company;
   List<User> _friendsFollowing = [];
@@ -27,7 +27,7 @@ class CompanyProvider with ChangeNotifier {
   bool _isLoadingJobs = false;
   bool isManager = false;
   bool _disposed = false;
-  bool isViewingAsUser = false;
+  bool isViewingAsUser = true;
   List<User> _followers = [];
   List<User> get followers => _followers;
   bool _isAllFollowersLoaded = false;
@@ -93,11 +93,9 @@ class CompanyProvider with ChangeNotifier {
           remoteDataSource: CompanyRemoteDataSource(),
         ),
       );
-final DeleteJob _deleteJob = DeleteJob(
-  JobRepositoryImpl(
-    remoteDataSource: JobRemoteDataSource(),
-  ),
-);
+  final DeleteJob _deleteJob = DeleteJob(
+    JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
+  );
 
   final UserRemoteDataSource _userRemoteDataSource = UserRemoteDataSource();
 
@@ -108,13 +106,14 @@ final DeleteJob _deleteJob = DeleteJob(
     safeNotify();
     print('CompanyID is:$companyId');
     _company = await _getCompanyDetails.execute(companyId);
+    await TokenService.saveCompanyId(companyId); //saves company id
 
     await fetchFollowStatus(companyId);
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
     _jobs = await fetchRecentJobs(companyId);
     isManager = _company?.isManager ?? false;
+    await TokenService.saveIsCompany(isViewingAsUser);
+
     _isLoading = false;
     safeNotify();
   }
@@ -151,20 +150,19 @@ final DeleteJob _deleteJob = DeleteJob(
     safeNotify();
   }
 
-  void toggleViewMode() {
+  void toggleViewMode() async {
     isViewingAsUser = !isViewingAsUser;
+    await TokenService.saveIsCompany(!isViewingAsUser);
+    var tokenIsCompnay = await TokenService.getIsCompany();
+    print('Token isCompany: $tokenIsCompnay');
     notifyListeners();
   }
 
-  Future<List<User>> fetchFriendsFollowingCompany(
-    String companyId,
-  ) async {
+  Future<List<User>> fetchFriendsFollowingCompany(String companyId) async {
     _isLoading = true;
     safeNotify();
 
-    _friendsFollowing = await _getFriendsFollowingCompany.execute(
-      companyId,
-    );
+    _friendsFollowing = await _getFriendsFollowingCompany.execute(companyId);
 
     _isLoading = false;
     safeNotify();
@@ -283,9 +281,7 @@ final DeleteJob _deleteJob = DeleteJob(
       }
 
       if (followersList.isNotEmpty) {
-        _followers.addAll(
-          followersList,
-        ); 
+        _followers.addAll(followersList);
       } else {
         _isAllFollowersLoaded = true;
       }
@@ -307,13 +303,12 @@ final DeleteJob _deleteJob = DeleteJob(
     safeNotify();
 
     try {
-      final nextPage = _currentFollowersPage + 1; // Don't increment yet
+      final nextPage = _currentFollowersPage + 1;
 
       List<User> newFollowers = await fetchFollowers(companyId, page: nextPage);
       if (newFollowers.isEmpty) {
         _isAllFollowersLoaded = true;
       } else {
-
         _currentFollowersPage = nextPage;
       }
     } catch (e) {
@@ -323,16 +318,17 @@ final DeleteJob _deleteJob = DeleteJob(
       safeNotify();
     }
   }
-Future<bool> deleteJob(String jobId) async {
-  final success = await _deleteJob(jobId);
 
-  if (success) {
-    _jobs.removeWhere((job) => job.id == jobId);
-    safeNotify();
+  Future<bool> deleteJob(String jobId) async {
+    final success = await _deleteJob(jobId);
+
+    if (success) {
+      _jobs.removeWhere((job) => job.id == jobId);
+      safeNotify();
+    }
+
+    return success;
   }
-
-  return success;
-}
 
   void resetJobs() {
     _jobs.clear();

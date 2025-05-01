@@ -64,6 +64,7 @@ import 'package:linkedin_clone/features/jobs/domain/usecases/update_application_
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_applicants_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
@@ -476,7 +477,6 @@ void main() {
                 getApplicantsUseCase: GetApplicantsUseCase(
                   repository: JobRepositoryImpl(
                     remoteDataSource: JobRemoteDataSource(),
-
                   ),
                 ),
                 updateStatusUseCase: UpdateApplicationStatusUseCase(
@@ -485,6 +485,9 @@ void main() {
                   ),
                 ),
               ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SavedJobsProvider(repository: jobrepos),
         ),
       ],
       child: const MyApp(),

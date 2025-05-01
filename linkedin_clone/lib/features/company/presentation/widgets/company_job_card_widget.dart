@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_job_details.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
 
@@ -16,12 +18,12 @@ class CompanyJobCard extends StatefulWidget {
 }
 
 class _CompanyJobCardState extends State<CompanyJobCard> {
-  bool isBookmarked = false;
-
   @override
   Widget build(BuildContext context) {
+    final job = widget.job;
     final companyProvider = Provider.of<CompanyProvider>(context);
-
+    final savedJobsProvider = context.watch<SavedJobsProvider>();
+    final isSaved = savedJobsProvider.isSaved(job.id);
     return Material(
       color: Colors.white,
       child: InkWell(
@@ -29,13 +31,7 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (context) => CompanyJobDetailsScreen(
-                    job: widget.job,
-                    companyProvider: companyProvider,
-                    companyId: widget.companyId,
-                    isManager: companyProvider.isManager,
-                  ),
+              builder: (context) => JobDetailsScreen(job: widget.job),
             ),
           );
         },
@@ -59,25 +55,25 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          isBookmarked
+                          isSaved
                               ? Icons.bookmark
                               : Icons.bookmark_add_outlined,
+                          color: isSaved ? Colors.blue : Colors.grey,
                         ),
-                        onPressed: () {
-                          setState(() => isBookmarked = !isBookmarked);
+                        onPressed: () async {
+                          await savedJobsProvider.toggleSave(job.id);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
-                                isBookmarked
-                                    ? "Job saved"
-                                    : "Job removed from saved",
-                                style: const TextStyle(color: Colors.white),
+                                savedJobsProvider.isSaved(job.id)
+                                    ? '✅ Job saved'
+                                    : '❌ Job removed from saved',
                               ),
                               backgroundColor:
-                                  isBookmarked
-                                      ? const Color.fromARGB(238, 72, 165, 75)
-                                      : const Color.fromARGB(223, 210, 58, 47),
-                              duration: const Duration(seconds: 2),
+                                  savedJobsProvider.isSaved(job.id)
+                                      ? Colors.green
+                                      : Colors.orange,
+                              duration: const Duration(seconds: 1),
                             ),
                           );
                         },

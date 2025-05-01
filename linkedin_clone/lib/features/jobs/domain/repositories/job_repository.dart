@@ -30,7 +30,7 @@ abstract class JobRepository {
     int limit = 5,
   });
   // Future<List<Job>> getSavedJobs(String userId,{int page = 1, int limit = 4});
-  // Future<bool> saveJob(String jobId,String userId);
-  // Future<bool> unsaveJob(String jobId,String userId);
   Future<bool> updateApplicationStatus(String applicationId, String newStatus);
+Future<bool> saveJob(String jobId);
+Future<bool> unsaveJob(String jobId);
 }

@@ -245,4 +245,58 @@ class JobRemoteDataSource {
       return false;
     }
   }
+
+  Future<bool> saveJob(String jobId) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final response = await http.patch(
+        Uri.parse('$baseUrl/jobs/$jobId/save'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(' Save Job Response: ${response.statusCode} - ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        print('❌ Failed to save job. Status: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ Exception during saveJob: $e');
+      return false;
+    }
+  }
+
+  Future<bool> unsaveJob(String jobId) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/jobs/$jobId/unsave'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+        'Unsave Job Response: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return true;
+      } else {
+        print('❌ Failed to unsave job. Status: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('❌ Exception during unsaveJob: $e');
+      return false;
+    }
+  }
 }

@@ -78,5 +78,14 @@ Future<List<ApplicationEntity>> getApplicants(String jobId,{int page = 1, int li
 Future<bool> updateApplicationStatus(String applicationId, String newStatus) {
   return remoteDataSource.updateApplicationStatus(applicationId, newStatus);
 }
+@override
+Future<bool> saveJob(String jobId) {
+  return remoteDataSource.saveJob(jobId);
+}
+
+@override
+Future<bool> unsaveJob(String jobId) {
+  return remoteDataSource.unsaveJob(jobId);
+}
 
 }

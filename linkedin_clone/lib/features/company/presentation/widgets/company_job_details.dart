@@ -9,15 +9,13 @@ import 'package:linkedin_clone/features/jobs/presentation/widgets/job_apply_widg
 class CompanyJobDetailsScreen extends StatefulWidget {
   final Job job;
   final CompanyProvider companyProvider;
-  final String companyId;
-  final bool isManager;
+  final bool isViewingAsUser;
 
   CompanyJobDetailsScreen({
     super.key,
     required this.job,
     required this.companyProvider,
-    required this.companyId,
-    this.isManager = false, // Default value = false if viewed from
+    this.isViewingAsUser = true, required String companyId, // Default value = true
   });
 
   @override
@@ -110,6 +108,50 @@ class _JobDetailsScreenState extends State<CompanyJobDetailsScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        if (!widget.isViewingAsUser)
+                          GestureDetector(
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Navigating to applicants screen...',
+                                  ),
+                                  duration: Duration(milliseconds: 400),
+                                ),
+                              );
+
+                              Future.delayed(
+                                const Duration(milliseconds: 500),
+                                () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (_) => ApplicantsScreen(
+                                            jobId: widget.job.id,
+                                          ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Icon(Icons.people_alt, color: Colors.green),
+                                SizedBox(width: 6),
+                                Text(
+                                  "See Applicants",
+                                  style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    decoration: TextDecoration.underline,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                     ),
                     SizedBox(height: 8),
@@ -209,44 +251,7 @@ class _JobDetailsScreenState extends State<CompanyJobDetailsScreen> {
                     Divider(thickness: 1, color: Colors.grey[300]),
                     SizedBox(height: 12),
                     const SizedBox(height: 16),
-                  if(widget.isManager)
-                    // See Applicants Button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Navigating to applicants screen...'),
-                            duration: Duration(
-                              milliseconds: 500,
-                            ), // Optional: make it very fast
-                          ),
-                        );
 
-                        // Push after showing the SnackBar
-                        Future.delayed(Duration(milliseconds: 500), () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (_) => ApplicantsScreen(jobId: widget.job.id),
-                            ),
-                          );
-                        });
-                      },
-                      child: const Center(
-                        child: Text(
-                          "See Applicants",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
-                      ),
-                    ),
                     // Job Description
                     Text(
                       "About the job",

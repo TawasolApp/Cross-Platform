@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
+import 'package:linkedin_clone/features/jobs/presentation/pages/job_applicants_page.dart';
 import 'package:linkedin_clone/features/jobs/presentation/widgets/job_apply_widget.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final Job job;
-  final bool isManager; 
-
   const JobDetailsScreen({
     super.key,
     required this.job,
-    this.isManager = false, // Default value = false if viewed from 
   });
 
   @override
@@ -22,6 +21,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   bool isSaved = false;
   bool isExpanded = false;
   bool showBottomNav = false;
+  bool _canSeeApplicants = false;
   late ScrollController _scrollController;
 
   @override
@@ -29,6 +29,17 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
     super.initState();
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+    Future.microtask(() async {
+      final tokenCompanyId = await TokenService.getCompanyId();
+      final tokenIsCompany=await TokenService.getIsCompany();
+      print("Token Company ID: $tokenCompanyId");
+      print("Token Is Company: $tokenIsCompany");
+      if (tokenCompanyId != null && tokenCompanyId == widget.job.companyId&& tokenIsCompany==true) {
+        setState(() {
+          _canSeeApplicants = true;
+        });
+      }
+    });
   }
 
   @override
@@ -90,8 +101,53 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (_canSeeApplicants)
+                        GestureDetector(
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Navigating to applicants screen...',
+                                ),
+                                duration: Duration(milliseconds: 400),
+                              ),
+                            );
+
+                            Future.delayed(
+                              const Duration(milliseconds: 500),
+                              () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) => ApplicantsScreen(
+                                          jobId: widget.job.id,
+                                        ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.people_alt, color: Colors.green),
+                              SizedBox(width: 6),
+                              Text(
+                                "See Applicants",
+                                style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                     ],
                   ),
+
                   const SizedBox(height: 8),
 
                   // Job Position

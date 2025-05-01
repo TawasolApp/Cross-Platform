@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
+import 'package:provider/provider.dart';
 
 class JobCard extends StatefulWidget {
   final Job job;
@@ -13,12 +15,11 @@ class JobCard extends StatefulWidget {
 }
 
 class _JobCardState extends State<JobCard> {
-  bool isBookmarked = false;
-
   @override
   Widget build(BuildContext context) {
     final job = widget.job;
-
+    final savedJobsProvider = context.watch<SavedJobsProvider>();
+    final isSaved = savedJobsProvider.isSaved(job.id);
     return Material(
       color: Colors.white,
       child: InkWell(
@@ -72,22 +73,26 @@ class _JobCardState extends State<JobCard> {
                       ],
                     ),
                   ),
-                  // Bookmark icon
+                  // Save/Unsave Job
                   IconButton(
                     icon: Icon(
-                      isBookmarked ? Icons.bookmark : Icons.bookmark_outline,
+                      isSaved ? Icons.bookmark : Icons.bookmark_outline,
+                      color: isSaved ? Colors.blue : Colors.grey[700],
                     ),
-                    onPressed: () {
-                      setState(() => isBookmarked = !isBookmarked);
+                    onPressed: () async {
+                      await savedJobsProvider.toggleSave(job.id);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            isBookmarked
-                                ? 'Job saved'
-                                : 'Job removed from saved',
+                            savedJobsProvider.isSaved(job.id)
+                                ? '✅ Job saved'
+                                : '❌ Job removed from saved',
                           ),
                           backgroundColor:
-                              isBookmarked ? Colors.green : Colors.orange,
+                              savedJobsProvider.isSaved(job.id)
+                                  ? Colors.green
+                                  : Colors.orange,
+                          duration: const Duration(seconds: 1),
                         ),
                       );
                     },
