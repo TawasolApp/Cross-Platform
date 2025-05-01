@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_posts_tab.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/recent_jobs_widget.dart';
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
@@ -202,18 +201,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                             ),
                             child: Container(
                               width: 200, // Add a width constraint
-                              child: FutureBuilder<String?>(
-                                future: TokenService.getCompanyId(),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return Center(child: CircularProgressIndicator());
-                                  }
-                                  if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-                                    return Center(child: Text("Error loading user ID"));
-                                  }
-                                  //return PostCard(post: post, currentUserId: snapshot.data!); // Render PostCard
-                                },
-                              ),
+                              //child: PostCard(post: post,), // Render PostCard
                             ),
                           );
                         },
