@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/post_entity.dart';
 import '../../../../core/utils/reaction_type.dart';
+import '../../../../core/Navigation/route_names.dart';
+import 'package:go_router/go_router.dart';
 
 class ReactionSummaryBar extends StatelessWidget {
   final PostEntity post;
@@ -69,9 +71,14 @@ class ReactionSummaryBar extends StatelessWidget {
                 const SizedBox(width: 8),
               ],
               if (post.shares > 0)
-                Text(
-                  "${post.shares} reposts",
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                GestureDetector(
+                  onTap: () {
+                    context.push(RouteNames.repostPage, extra: post.id);
+                  },
+                  child: Text(
+                    "${post.shares} reposts",
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                  ),
                 ),
             ],
           ),

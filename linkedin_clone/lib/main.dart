@@ -146,6 +146,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_reposts_usecase.dart';
 
 import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reports_usecase.dart';
@@ -257,6 +258,7 @@ void main() async {
   final deleteCommentUseCase = DeleteCommentUseCase(repository);
   final getSavedPostsUsecase = GetSavedPostsUseCase(repository);
   final getPostbyIdUseCase = FetchPostByIdUseCase(repository);
+  final getRepostsUseCase = GetRepostsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
 
   //////admin
@@ -326,6 +328,7 @@ ChangeNotifierProvider(
                 deleteCommentUseCase: deleteCommentUseCase,
                 getSavedPostsUseCase: getSavedPostsUsecase,
                 fetchPostByIdUseCase: getPostbyIdUseCase,
+                getRepostsUseCase: getRepostsUseCase,
               ),
         ),
 

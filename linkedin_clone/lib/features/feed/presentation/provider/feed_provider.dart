@@ -20,6 +20,9 @@ import '../../data/models/reaction_model.dart';
 import '../../../../core/services/token_service.dart';
 import '../../domain/usecases/get_saved_posts_usecase.dart';
 import '../../domain/usecases/get_post_by_id_usecase.dart';
+import '../../domain/usecases/get_reposts_usecase.dart';
+import '../../domain/entities/comment_entity.dart';
+import 'package:collection/collection.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -37,6 +40,7 @@ class FeedProvider extends ChangeNotifier {
   final DeleteCommentUseCase deleteCommentUseCase;
   final GetSavedPostsUseCase getSavedPostsUseCase;
   final FetchPostByIdUseCase fetchPostByIdUseCase;
+  final GetRepostsUseCase getRepostsUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -54,7 +58,37 @@ class FeedProvider extends ChangeNotifier {
     required this.deleteCommentUseCase,
     required this.getSavedPostsUseCase,
     required this.fetchPostByIdUseCase,
+    required this.getRepostsUseCase,
   });
+
+  // Pagination state control
+  int _postsPage = 1;
+  bool _hasMorePosts = true;
+  bool get hasMorePosts => _hasMorePosts;
+
+  int _savedPostsPage = 1;
+  bool _hasMoreSavedPosts = true;
+  bool get hasMoreSavedPosts => _hasMoreSavedPosts;
+
+  int _userPostsPage = 1;
+  bool _hasMoreUserPosts = true;
+  bool get hasMoreUserPosts => _hasMoreUserPosts;
+
+  int _repostsPage = 1;
+  bool _hasMoreReposts = true;
+  bool get hasMoreReposts => _hasMoreReposts;
+
+  int _commentsPage = 1;
+  bool _hasMoreComments = true;
+  bool get hasMoreComments => _hasMoreComments;
+
+  final Map<String, int> _repliesPage = {};
+  final Map<String, bool> _repliesHasMore = {};
+  final Set<String> _loadingReplies = {};
+
+  String? _lastFetchedRepostPostId;
+
+  int _paginationLimit = 10; // Global limit
 
   //String _currentUserId;
   List<PostEntity> _posts = [];
@@ -66,8 +100,19 @@ class FeedProvider extends ChangeNotifier {
   List<PostEntity> _savedPosts = [];
   List<PostEntity> get savedPosts => _savedPosts;
 
+  List<PostEntity> _reposts = [];
+  List<PostEntity> get reposts => _reposts;
+
+  bool _isLoadingReposts = false;
+  bool get isLoadingReposts => _isLoadingReposts;
+
+  String? _repostsError;
+  String? get repostsError => _repostsError;
+
   List<CommentModel> _comments = [];
   List<CommentModel> get comments => _comments;
+
+  Map<String, List<CommentEntity>> repliesByCommentId = {};
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -95,11 +140,18 @@ class FeedProvider extends ChangeNotifier {
   List<ReactionModel> _postReactions = [];
   List<ReactionModel> get postReactions => _postReactions;
 
+  Map<String, List<ReactionModel>> _commentReactions = {};
+  Map<String, List<ReactionModel>> get commentReactions => _commentReactions;
+
   bool _isReactionsLoading = false;
   bool get isReactionsLoading => _isReactionsLoading;
 
   String? _reactionsError;
   String? get reactionsError => _reactionsError;
+
+  CommentEntity? getCommentById(String id) {
+    return _comments.firstWhereOrNull((c) => c.id == id);
+  }
 
   Future<String> get userId async {
     final isCompany = await TokenService.getIsCompany();
@@ -124,12 +176,18 @@ class FeedProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> fetchPosts({int page = 1, int limit = 10}) async {
+  Future<void> fetchPosts({bool refresh = false}) async {
     if (_isLoading) {
       print("Fetch already in progress, skipping...");
       print("fetchPosts called from: ${StackTrace.current}");
 
       return;
+    }
+
+    if (refresh) {
+      _posts = [];
+      _postsPage = 1;
+      _hasMorePosts = true;
     }
 
     _isLoading = true;
@@ -139,7 +197,11 @@ class FeedProvider extends ChangeNotifier {
 
     try {
       final userId = await this.userId;
-      final result = await getPostsUseCase(userId, page: page, limit: limit);
+      final result = await getPostsUseCase(
+        userId,
+        page: _postsPage,
+        limit: _paginationLimit,
+      );
       result.fold(
         (failure) {
           _errorMessage = failure.message;
@@ -148,7 +210,11 @@ class FeedProvider extends ChangeNotifier {
           notifyListeners();
         },
         (posts) {
-          _posts = List<PostEntity>.from(posts);
+          //_posts = List<PostEntity>.from(posts);
+          if (posts.length < _paginationLimit) _hasMorePosts = false;
+
+          _posts.addAll(posts);
+          _postsPage++;
 
           ///
           print("Posts fetched successfully, count: ${_posts.length}");
@@ -168,18 +234,24 @@ class FeedProvider extends ChangeNotifier {
 
   Future<void> fetchUserPosts(
     String searchUser, {
-    int page = 1,
-    int limit = 10,
+    //bool refresh = false,
     bool forceRefresh = false,
   }) async {
-    // Skip fetching if already fetched same userId and not forced
+    if (_isLoading) {
+      print("Fetch user posts already in progress, skipping...");
+      return;
+    }
     if (!forceRefresh && _lastFetchedUserId == searchUser) {
       print("🟡 Skipping fetch — already fetched userId: $userId");
       return;
     }
 
-    _lastFetchedUserId = searchUser;
-    _userPosts = []; // Clear previous posts
+    if (forceRefresh || _lastFetchedUserId != searchUser) {
+      _lastFetchedUserId = searchUser;
+      _userPosts = [];
+      _userPostsPage = 1;
+      _hasMoreUserPosts = true;
+    }
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -192,8 +264,8 @@ class FeedProvider extends ChangeNotifier {
       final result = await getUserPostsUseCase(
         userId,
         searchUser,
-        page: page,
-        limit: limit,
+        page: _userPostsPage,
+        limit: _paginationLimit,
       );
 
       result.fold(
@@ -202,7 +274,10 @@ class FeedProvider extends ChangeNotifier {
           print("❌ Error fetching posts: $_errorMessage");
         },
         (posts) {
-          _userPosts = List<PostEntity>.from(posts);
+          if (posts.length < _paginationLimit) _hasMoreUserPosts = false;
+          _userPosts.addAll(posts);
+          _userPostsPage++;
+          // _userPosts = List<PostEntity>.from(posts);
 
           print("✅ Posts fetched: ${_userPosts.length}");
         },
@@ -377,7 +452,9 @@ class FeedProvider extends ChangeNotifier {
         print("Failed to add comment: $failure");
       },
       (comment) async {
-        comments.add(comment);
+        final updatedComment = comment.copyWith(isReply: isReply);
+
+        comments.add(updatedComment);
         print("Provider: Comment added successfully: ${comment.content}");
         final postIndex = _posts.indexWhere((post) => post.id == postId);
         if (postIndex != -1) {
@@ -388,11 +465,16 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> fetchComments(
-    String postId, {
-    int page = 1,
-    int limit = 10,
-  }) async {
+  Future<void> fetchComments(String postId, {bool refresh = false}) async {
+    if (_isLoading) {
+      print("Fetch comments already in progress, skipping...");
+      return;
+    }
+    if (refresh) {
+      _comments = [];
+      _commentsPage = 1;
+      _hasMoreComments = true;
+    }
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -401,19 +483,74 @@ class FeedProvider extends ChangeNotifier {
     final result = await fetchCommentsUseCase(
       userId,
       postId,
-      page: page,
-      limit: limit,
+      page: _commentsPage,
+      limit: _paginationLimit,
     );
 
     result.fold(
       (failure) {
         _errorMessage = failure.message;
-        _isLoading = false;
+        // _isLoading = false;
+        // notifyListeners();
+      },
+      (data) {
+        if (data.length < _paginationLimit) _hasMoreComments = false;
+        _comments.addAll(data);
+        _commentsPage++;
+        // _comments = data;
+        // _isLoading = false;
+        // notifyListeners();
+      },
+    );
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> fetchReplies(String commentId, {bool refresh = false}) async {
+    if (_isLoading) {
+      print("Fetch replies already in progress, skipping...");
+      return;
+    }
+    if (_loadingReplies.contains(commentId)) {
+      print("Already loading replies for $commentId");
+      return;
+    }
+
+    if (refresh || !repliesByCommentId.containsKey(commentId)) {
+      repliesByCommentId[commentId] = [];
+      _repliesPage[commentId] = 1;
+      _repliesHasMore[commentId] = true;
+    }
+
+    if (_repliesHasMore[commentId] == false) return;
+
+    _loadingReplies.add(commentId);
+    notifyListeners();
+
+    final userId = await this.userId;
+
+    final result = await fetchCommentsUseCase(
+      userId,
+      commentId,
+      page: _repliesPage[commentId]!,
+      limit: _paginationLimit,
+    );
+
+    result.fold(
+      (failure) {
+        print("Failed to fetch replies for $commentId: ${failure.message}");
+        _loadingReplies.remove(commentId);
         notifyListeners();
       },
       (data) {
-        _comments = data;
-        _isLoading = false;
+        final list = repliesByCommentId[commentId] ?? [];
+        repliesByCommentId[commentId] = [...list, ...data];
+        if (data.length < _paginationLimit) {
+          _repliesHasMore[commentId] = false;
+        } else {
+          _repliesPage[commentId] = _repliesPage[commentId]! + 1;
+        }
+        _loadingReplies.remove(commentId);
         notifyListeners();
       },
     );
@@ -524,7 +661,11 @@ class FeedProvider extends ChangeNotifier {
     });
   }
 
-  Future<void> getPostReactions(String postId, {String type = 'All'}) async {
+  Future<void> getPostReactions(
+    String postId, {
+    String type = 'All',
+    String postType = 'Post',
+  }) async {
     _isReactionsLoading = true;
     _reactionsError = null;
     notifyListeners();
@@ -576,7 +717,16 @@ class FeedProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> fetchSavedPosts({int page = 1, int limit = 10}) async {
+  Future<void> fetchSavedPosts({bool refresh = false}) async {
+    if (_isLoading) {
+      print("Fetch saved posts already in progress, skipping...");
+      return;
+    }
+    if (refresh) {
+      _savedPosts = [];
+      _savedPostsPage = 1;
+      _hasMoreSavedPosts = true;
+    }
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -585,17 +735,20 @@ class FeedProvider extends ChangeNotifier {
       final userId = await this.userId;
       final result = await getSavedPostsUseCase(
         userId,
-        page: page,
-        limit: limit,
+        page: _savedPostsPage,
+        limit: _paginationLimit,
       );
 
       result.fold(
         (failure) {
           _errorMessage = failure.message;
-          _savedPosts = [];
+          //_savedPosts = [];
         },
         (posts) {
-          _savedPosts = List<PostEntity>.from(posts);
+          if (posts.length < _paginationLimit) _hasMoreSavedPosts = false;
+          _savedPosts.addAll(posts);
+          _savedPostsPage++;
+          //_savedPosts = List<PostEntity>.from(posts);
         },
       );
     } catch (e) {
@@ -626,5 +779,50 @@ class FeedProvider extends ChangeNotifier {
       print('❌ Prov: Exception while fetching parent post: $e');
       return null;
     }
+  }
+
+  Future<void> fetchReposts(String postId, {bool refresh = false}) async {
+    if (_isLoadingReposts) {
+      print("Fetch reposts already in progress, skipping...");
+      return;
+    }
+    final isNewPost = _lastFetchedRepostPostId != postId;
+    if (refresh || isNewPost) {
+      _reposts = [];
+      _repostsPage = 1;
+      _hasMoreReposts = true;
+      _lastFetchedRepostPostId = postId;
+    }
+    if (!_hasMoreReposts) {
+      print("No more reposts to fetch, skipping...");
+      return;
+    }
+    _isLoadingReposts = true;
+    _repostsError = null;
+    notifyListeners();
+    final userId = await this.userId;
+
+    final result = await getRepostsUseCase(
+      userId: userId,
+      postId: postId,
+      page: _repostsPage,
+      limit: _paginationLimit,
+    );
+
+    result.fold(
+      (failure) {
+        _repostsError = failure.message;
+        if (isNewPost || refresh) _reposts = [];
+      },
+      (data) {
+        if (data.length < _paginationLimit) _hasMoreReposts = false;
+        _reposts.addAll(data);
+        _repostsPage++;
+        //_reposts = data;
+      },
+    );
+
+    _isLoadingReposts = false;
+    notifyListeners();
   }
 }

@@ -85,6 +85,12 @@ abstract class FeedRemoteDataSource {
     required String userId,
     required String postId,
   });
+  Future<Either<Failure, List<PostModel>>> getReposts({
+    required String userId,
+    required String postId,
+    int page,
+    int limit,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -682,5 +688,36 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     // } catch (e) {
     //   throw Exception('Unexpected error: $e');
     // }
+  }
+
+  @override
+  Future<Either<Failure, List<PostModel>>> getReposts({
+    required String userId,
+    required String postId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final token = await _getToken();
+      final response = await dio.get(
+        'https://tawasolapp.me/api/posts/$userId/$postId/reposts',
+        queryParameters: {'page': page, 'limit': limit},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      final posts =
+          (response.data as List)
+              .map((json) => PostModel.fromJson(json))
+              .toList();
+
+      return Right(posts);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

@@ -339,4 +339,24 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(ServerFailure('Repo: Failed to fetch post by ID: $e'));
     }
   }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> getReposts({
+    required String userId,
+    required String postId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final result = await remoteDataSource.getReposts(
+      userId: userId,
+      postId: postId,
+      page: page,
+      limit: limit,
+    );
+
+    return result.fold(
+      (failure) => Left(failure),
+      (models) => Right(models.map((e) => e.toEntity()).toList()),
+    );
+  }
 }

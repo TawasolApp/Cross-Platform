@@ -35,6 +35,7 @@ import 'package:linkedin_clone/features/admin_panel/presentation/pages/job_listi
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/analytics_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/saved_posts_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/admin_panel_page.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/reposts_page.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -52,8 +53,14 @@ class AppRouter {
       GoRoute(path: RouteNames.login, builder: (context, state) => LoginPage()),
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
-        path: RouteNames.addName,
-        builder: (context, state) => AddNamePage(),
+        path: RouteNames.savedPosts,
+        name: 'savedPosts',
+        builder: (context, state) {
+          final extraData = state.extra as Map<String, String?>; // 👈
+          final userId = extraData['userId']!;
+          final profileName = extraData['profileName']!;
+          return SavedPostsPage(userId: userId, profileName: profileName);
+        },
       ),
       GoRoute(
         path: RouteNames.addEmail,
@@ -77,10 +84,7 @@ class AppRouter {
       ),
 
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
-      GoRoute(
-        path: RouteNames.companyPage,
-        builder: (context, state) => CompaniesListScreen(),
-      ),
+
       GoRoute(
         path: RouteNames.profile,
         builder: (context, state) {
@@ -98,7 +102,6 @@ class AppRouter {
           return UserProfile(userId: userId);
         },
       ),
-      GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
         path: RouteNames.addName,
         builder: (context, state) => AddNamePage(),
@@ -170,7 +173,6 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
         builder: (context, state) => CompaniesListScreen(),
@@ -261,13 +263,6 @@ class AppRouter {
         path: RouteNames.adminAnalytics,
         builder: (context, state) => const AnalyticsPage(),
       ),
-      // GoRoute(
-      //   path: RouteNames.savedPosts,
-      //   builder: (context, state) {
-      //     final userId = state.extra as String;
-      //     return SavedPostsPage(userId: userId);
-      //   },
-      // ),
       GoRoute(
         path: RouteNames.notifications,
         builder: (context, state) => const NotificationsListPage(),
@@ -276,7 +271,23 @@ class AppRouter {
         path: RouteNames.adminPanel,
         builder: (context, state) => const AdminPanelPage(),
       ),
+      GoRoute(
+        path: RouteNames.repostPage,
+        builder: (context, state) {
+          final postId = state.extra as String;
+          return RepostsPage(postId: postId);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.companyProfile,
+        builder: (context, state) {
+          final data = state.extra as Map<String, String>;
+          return CompanyProfileScreen(
+            companyId: data['companyId']!,
+            title: data['companyTitle']!,
+          );
+        },
+      ),
     ],
-    
   );
 }

@@ -15,7 +15,7 @@ class CommentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        AddCommentField(postId: postId),
+        AddCommentField(postId: postId, isReply: false),
         const Divider(),
         CommentList(
           postId: postId,

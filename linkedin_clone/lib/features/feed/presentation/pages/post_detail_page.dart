@@ -4,9 +4,9 @@ import 'package:collection/collection.dart';
 import '../provider/feed_provider.dart';
 import '../widgets/post_card.dart';
 import '../widgets/add_comment_field.dart';
-import '../widgets/comment_list.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
 import '../widgets/reaction_summary_bar.dart';
+import '../widgets/comment_list.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;
@@ -40,7 +40,17 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
         feedProvider.posts.firstWhereOrNull((p) => p.id == widget.postId) ??
         feedProvider.userPosts.firstWhereOrNull((p) => p.id == widget.postId);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
+    if (post == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Post Details")),
+        body: Center(
+          child: Text(
+            "Post not found",
+            style: TextStyle(color: isDarkMode ? Colors.white : Colors.black),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: isDarkMode ? Colors.black : Colors.white,
       resizeToAvoidBottomInset: true,
@@ -50,60 +60,63 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
         foregroundColor: isDarkMode ? Colors.white : Colors.black,
         elevation: 0.5,
       ),
-      body:
-          post == null
-              ? Center(
-                child: Text(
-                  "Post not found",
-                  style: TextStyle(
-                    color: isDarkMode ? Colors.white : Colors.black,
+      body: Stack(
+        children: [
+          // Scrollable post + comments
+          Padding(
+            padding: const EdgeInsets.only(
+              bottom: 60,
+            ), // leave room for AddCommentField
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      PostCard(
+                        post: post,
+                        currentUserId: myId ?? '',
+                        profileImage: profile.profilePicture,
+                        profileName: profile.fullName,
+                        profileTitle: profile.headline,
+                      ),
+                      ReactionSummaryBar(postId: widget.postId),
+                    ],
                   ),
                 ),
-              )
-              : Column(
-                children: [
-                  // Display the post using PostCard
-                  PostCard(
-                    post: post,
-                    currentUserId: myId ?? '',
-                    profileImage: profile.profilePicture,
-                    profileName: profile.fullName,
-                    profileTitle: profile.headline,
+                SliverFillRemaining(
+                  hasScrollBody: true,
+                  child: Consumer<FeedProvider>(
+                    builder: (context, feedProvider, child) {
+                      if (feedProvider.errorMessage != null) {
+                        return Center(child: Text(feedProvider.errorMessage!));
+                      }
+
+                      return CommentList(
+                        postId: widget.postId,
+                        currentUserId: profile.userId ?? '',
+                      );
+                    },
                   ),
-                  ReactionSummaryBar(postId: widget.postId),
-                  //const Divider(height: 1),
+                ),
+              ],
+            ),
+          ),
 
-                  // Comments Section
-                  Expanded(
-                    child: Consumer<FeedProvider>(
-                      builder: (context, feedProvider, child) {
-                        if (feedProvider.isLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (feedProvider.errorMessage != null) {
-                          return Center(
-                            child: Text(feedProvider.errorMessage!),
-                          );
-                        }
-
-                        print("myId: $myId");
-                        print("${profile.profilePicture}");
-
-                        return CommentList(
-                          postId: widget.postId,
-                          currentUserId: profile.userId ?? '',
-                        );
-                      },
-                    ),
-                  ),
-
-                  // Add Comment Field
-                  SafeArea(child: AddCommentField(postId: widget.postId)),
-                ],
+          // Fixed comment input at bottom
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(
+              child: AddCommentField(
+                key: const ValueKey("main-comment"),
+                postId: widget.postId,
+                isReply: false,
               ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

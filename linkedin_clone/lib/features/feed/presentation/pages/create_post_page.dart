@@ -34,7 +34,7 @@ class PostCreationPage extends StatefulWidget {
 class PostCreationPageState extends State<PostCreationPage> {
   late final TextEditingController _postCreationController;
   bool _isPostCreationButtonActive = false;
-
+  String? uploadedImageUrl;
   @override
   void initState() {
     super.initState();
@@ -78,6 +78,10 @@ class PostCreationPageState extends State<PostCreationPage> {
                             postId: widget.postId!,
                             content: content,
                             visibility: feedProvider.visibility,
+                            media:
+                                uploadedImageUrl != null
+                                    ? [uploadedImageUrl!]
+                                    : null,
                           );
                           if (feedProvider.errorMessage != null) {
                             if (context.mounted) {
@@ -100,11 +104,21 @@ class PostCreationPageState extends State<PostCreationPage> {
                           }
                         } else {
                           // Creating a new post
+                          final isActuallyRepost = widget.parentPostId != null;
+                          print("isActuallyRepost: $isActuallyRepost");
+                          print("parentPostId: ${widget.parentPostId}");
                           await feedProvider.createPost(
                             content: content,
                             visibility: feedProvider.visibility,
                             parentPostId: widget.parentPostId,
-                            isSilentRepost: widget.isSilentRepost ?? false,
+                            isSilentRepost:
+                                isActuallyRepost
+                                    ? (widget.isSilentRepost ?? false)
+                                    : false,
+                            media:
+                                uploadedImageUrl != null
+                                    ? [uploadedImageUrl!]
+                                    : null,
                           );
                           if (feedProvider.errorMessage != null) {
                             if (context.mounted) {
@@ -173,8 +187,32 @@ class PostCreationPageState extends State<PostCreationPage> {
                 });
               },
             ),
+            if (uploadedImageUrl != null) ...[
+              const SizedBox(height: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  uploadedImageUrl!,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                  errorBuilder:
+                      (context, error, stackTrace) => const Icon(
+                        Icons.broken_image,
+                        size: 50,
+                        color: Colors.grey,
+                      ),
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
-            const PostCreationFooter(),
+            PostCreationFooter(
+              onImageUploaded: (url) {
+                setState(() {
+                  uploadedImageUrl = url;
+                });
+              },
+            ),
           ],
         ),
       ),

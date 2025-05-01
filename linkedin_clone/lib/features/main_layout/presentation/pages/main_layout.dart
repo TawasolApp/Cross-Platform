@@ -17,6 +17,7 @@ import 'package:linkedin_clone/features/notifications/presentation/provider/noti
 import 'package:provider/provider.dart';
 import '../../../../core/services/token_service.dart';
 import 'package:linkedin_clone/features/jobs/presentation/pages/jobs_search_page.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -29,6 +30,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
   String? _userId;
   bool _loadingId = true;
+  String? _profileName;
 
   final List<Widget> _pages = [
     FeedPage(), // Will be replaced by News Feed module
@@ -42,6 +44,14 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final profile = Provider.of<ProfileProvider>(context, listen: false);
+      profile.fetchProfile("").then((_) {
+        setState(() {
+          _profileName = profile.fullName;
+        });
+      });
+    });
     _loadCompanyId();
   }
 
@@ -76,9 +86,14 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   void _goToSavedPosts() {
     if (_userId == null) return;
-
+    print("🔁 Attempting to push to /savedPosts with:");
+    print("🔹 userId: $_userId");
+    print("🔹 profileName: $_profileName");
     Navigator.pop(context); // close drawer
-    context.push(RouteNames.savedPosts, extra: _userId);
+    context.push(
+      RouteNames.savedPosts,
+      extra: {'userId': _userId, 'profileName': _profileName},
+    );
   }
 
   @override

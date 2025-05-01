@@ -13,6 +13,9 @@ class CommentModel extends CommentEntity {
     required super.replies,
     required super.reactCount,
     required super.timestamp,
+    required super.isReply,
+    required super.repliesCount,
+    required super.reactType,
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +26,7 @@ class CommentModel extends CommentEntity {
       authorName: json['authorName'] ?? '',
       authorPicture: json['authorPicture'] ?? '',
       authorBio: json['authorBio'] ?? '',
+      isReply: json['isReply'] ?? false,
       content: json['content'] ?? '',
       taggedUsers: List<String>.from(json['taggedUsers'] ?? []), // Fix here
       replies:
@@ -32,6 +36,8 @@ class CommentModel extends CommentEntity {
           [], // Fix here
       reactCount: json['reactCount'] ?? 0,
       timestamp: DateTime.tryParse(json['timestamp']) ?? DateTime.now(),
+      repliesCount: json['repliesCount'] ?? 0,
+      reactType: json['reactType'] ?? 'None', // Fix here
     );
   }
 
@@ -48,6 +54,9 @@ class CommentModel extends CommentEntity {
       'replies': replies.map((x) => (x as CommentModel).toJson()).toList(),
       'reactCount': reactCount,
       'timestamp': timestamp.toIso8601String(),
+      'isReply': isReply,
+      'repliesCount': repliesCount,
+      'reactType': reactType,
     };
   }
 
@@ -63,6 +72,9 @@ class CommentModel extends CommentEntity {
     DateTime? timestamp,
     List<String>? taggedUsers,
     List<CommentModel>? replies,
+    bool? isReply,
+    int? repliesCount,
+    String? reactType,
   }) {
     return CommentModel(
       id: id ?? this.id,
@@ -76,6 +88,9 @@ class CommentModel extends CommentEntity {
       timestamp: timestamp ?? this.timestamp,
       taggedUsers: taggedUsers ?? this.taggedUsers,
       replies: replies ?? this.replies,
+      isReply: isReply ?? this.isReply,
+      repliesCount: repliesCount ?? this.repliesCount,
+      reactType: reactType ?? this.reactType,
     );
   }
 }
