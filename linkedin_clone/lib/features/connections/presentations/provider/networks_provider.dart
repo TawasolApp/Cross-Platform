@@ -7,7 +7,9 @@ import 'package:linkedin_clone/features/connections/domain/usecases/block/block_
 import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followings_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
 import '../../domain/entities/connections_user_entity.dart';
@@ -19,6 +21,8 @@ class NetworksProvider with ChangeNotifier {
   String? _error; // Tracks the error message, if any
   int _currentPage = 1;
   bool _hasMore = true; // Indicates if there are more items to load
+  int _followersCount = 0;
+  int _followingsCount = 0;
 
   bool get isBusy => _isBusy;
   bool get isLoading => _isLoading;
@@ -26,6 +30,8 @@ class NetworksProvider with ChangeNotifier {
   int get currentPage => _currentPage;
   bool get hasMore => _hasMore;
   bool get hasError => _error != null;
+  int get followersCount => _followersCount;
+  int get followingsCount => _followingsCount;
 
   List<ConnectionsUserEntity>? followingList;
   List<ConnectionsUserEntity>? followersList;
@@ -40,6 +46,8 @@ class NetworksProvider with ChangeNotifier {
   BlockUserUseCase blockUserUseCase;
   UnblockUserUseCase unblockUserUseCase;
   GetPeopleYouMayKnowUseCase getPeopleYouMayKnowUseCase;
+  GetFollowersCountUsecase getFollowersCountUsecase;
+  GetFollowingsCountUsecase getFollowingsCountUsecase;
 
   NetworksProvider(
     this.getFollowingListUseCase,
@@ -50,12 +58,15 @@ class NetworksProvider with ChangeNotifier {
     this.blockUserUseCase,
     this.unblockUserUseCase,
     this.getPeopleYouMayKnowUseCase,
+    this.getFollowersCountUsecase,
+    this.getFollowingsCountUsecase,
   );
 
   Future<void> getFollowingList({bool isInitial = false}) async {
     if (_isBusy) return;
     _isBusy = true;
     try {
+      getFollowingsCount();
       _isLoading = true;
       _error = null;
       if (isInitial) {
@@ -94,6 +105,7 @@ class NetworksProvider with ChangeNotifier {
     if (_isBusy) return;
     _isBusy = true;
     try {
+      getFollowersCount();
       _isLoading = true;
       _error = null;
       if (isInitial) {
@@ -255,68 +267,28 @@ class NetworksProvider with ChangeNotifier {
     }
   }
 
-  Future<int> getFollowingsCount() async {
-    return 0;
-    // try {
-    //   List<ConnectionsUserEntity>? tempFollowingList;
-    //   int tempCurrentPage = 1;
-    //   tempFollowingList = await getFollowingListUseCase.call(
-    //     page: tempCurrentPage,
-    //     limit: 300,
-    //   );
-    //   List<ConnectionsUserEntity>? newTempFollowingList =
-    //       await getFollowingListUseCase.call(page: tempCurrentPage);
-    //   if (newTempFollowingList.isNotEmpty) {
-    //     tempFollowingList.addAll(newTempFollowingList);
-    //   }
-    //   while (newTempFollowingList!.isNotEmpty) {
-    //     tempCurrentPage++;
-    //     newTempFollowingList = await getFollowingListUseCase.call(
-    //       page: tempCurrentPage,
-    //       limit: 300,
-    //     );
-    //     tempFollowingList.addAll(newTempFollowingList);
-    //   }
-
-    //   return tempFollowingList.length;
-    // } catch (e) {
-    //   print('\nNetworksProvider: getFollowingsCount $e\n');
-    //   return -1;
-    // } finally {
-    //   notifyListeners();
-    // }
+  Future<void> getFollowingsCount() async {
+    try {
+      _followingsCount = await getFollowingsCountUsecase.call();
+    } catch (e) {
+      print('\nNetworksProvider: getFollowingsCount $e\n');
+      _error = e.toString();
+      _followingsCount = -1; // Return -1 if there was an error
+    } finally {
+      notifyListeners();
+    }
   }
 
-  Future<int> getFollowersCount() async {
-    return 0;
-
-    // try {
-    //   List<ConnectionsUserEntity>? tempFollowersList;
-    //   int tempCurrentPage = 1;
-    //   tempFollowersList = await getFollowersListUseCase.call(
-    //     page: tempCurrentPage,
-    //     limit: 300,
-    //   );
-    //   List<ConnectionsUserEntity>? newTempFollowersList =
-    //       await getFollowersListUseCase.call(page: tempCurrentPage);
-    //   if (newTempFollowersList.isNotEmpty) {
-    //     tempFollowersList.addAll(newTempFollowersList);
-    //   }
-    //   while (newTempFollowersList!.isNotEmpty) {
-    //     tempCurrentPage++;
-    //     newTempFollowersList = await getFollowersListUseCase.call(
-    //       page: tempCurrentPage,
-    //       limit: 300,
-    //     );
-    //     tempFollowersList.addAll(newTempFollowersList);
-    //   }
-
-    //   return tempFollowersList.length;
-    // } catch (e) {
-    //   print('\nNetworksProvider: getFollowersCount $e\n');
-    //   return -1;
-    // } finally {
-    //   notifyListeners();
-    // }
+  Future<void> getFollowersCount() async {
+    try {
+      print('Getting followers count...');
+      _followersCount = await getFollowersCountUsecase.call();
+    } catch (e) {
+      print('\nNetworksProvider: getFollowersCount $e\n');
+      _error = e.toString();
+      _followersCount = -1; // Return -1 if there was an error
+    } finally {
+      notifyListeners();
+    }
   }
 }

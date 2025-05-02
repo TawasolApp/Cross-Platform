@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 
 class SearchBar extends StatelessWidget {
   const SearchBar({super.key});
@@ -7,12 +8,7 @@ class SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Search bar tapped!'),
-            duration: Duration(seconds: 2),
-          ),
-        );
+        goToGeneralSeachPage(context);
       },
       child: Row(
         children: [

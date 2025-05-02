@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_card.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/routing_functions.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/manage_my_network_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 
 class ManageMyNetworkBody extends StatefulWidget {
   final ConnectionsProvider? connectionsProvider;
@@ -26,8 +24,10 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
   @override
   void initState() {
     super.initState();
-    widget.connectionsProvider?.getConnectionsCount();
-    // Initialization logic if needed later
+
+    widget.networksProvider?.getFollowingsCount();
+    widget.networksProvider?.getFollowersCount();
+    widget.connectionsProvider?.getConnectionsCount("");
   }
 
   @override
@@ -44,8 +44,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToConnections(context);
             },
-            count: -1, //TODOL: Add logic to get connections count
-            // widget.connectionsProvider?.getConnectionsCount() as int? ?? 0,
+            count: widget.connectionsProvider?.connectionsCount ?? 0,
           ),
           Divider(
             height: 1,
@@ -60,8 +59,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToFollowing(context);
             },
-            count:
-                -1, // widget.networksProvider?.getFollowingsCount() as int? ?? 0,
+            count: widget.networksProvider?.followingsCount ?? 0,
           ),
           Divider(
             height: 1,
@@ -76,25 +74,12 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
             onTap: () {
               goToFollowers(context);
             },
-            count:
-                -1, // widget.networksProvider?.getFollowersCount() as int? ?? 0,
+            count: widget.networksProvider?.followersCount ?? 0,
           ),
           Divider(
             height: 1,
             thickness: 1,
             color: Theme.of(context).dividerColor,
-          ),
-
-          /// Pages
-          ManageMyNetworkCard(
-            title: 'Pages',
-            icon: Icons.apartment,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Pages feature is under development')),
-              );
-            },
-            count: -1, // TODO: Add logic to get pages count
           ),
         ],
       ),

@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'error_dialog.dart';
+import 'dialogs/error_dialog.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 
 class PendingRequestsActions extends StatelessWidget {

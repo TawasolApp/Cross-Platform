@@ -12,8 +12,10 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/login_
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_verification_page.dart.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/general_search_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/manage_my_network_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/general_search_card.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/change_password.dart';
@@ -27,7 +29,7 @@ import '../../features/authentication/presentation/pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page.dart';
 import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
 import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_page.dart';
@@ -42,7 +44,7 @@ class AppRouter {
     initialLocation: RouteNames.onboarding, // Start at onboarding
 
     routes: [
-            GoRoute(
+      GoRoute(
         path: RouteNames.adminPanel,
         builder: (context, state) => AdminPanelPage(),
       ),
@@ -270,6 +272,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.adminPanel,
         builder: (context, state) => const AdminPanelPage(),
+      ),
+      GoRoute(
+        path: RouteNames.generalSearch,
+        builder: (context, state) => const GeneralSearchPage(),
       ),
       GoRoute(
         path: RouteNames.repostPage,

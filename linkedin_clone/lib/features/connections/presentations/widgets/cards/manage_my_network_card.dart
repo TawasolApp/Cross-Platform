@@ -21,6 +21,7 @@ class ManageMyNetworkCard extends StatelessWidget {
         MediaQuery.of(context).size.width * 0.1 > 50
             ? 50
             : MediaQuery.of(context).size.width * 0.1;
+    print("ManageMyNetworkCard count: $count $title");
     return Material(
       color: Theme.of(context).colorScheme.onSecondary,
       borderRadius: BorderRadius.zero,

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/label_card.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/label_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:provider/provider.dart';
-import 'routing_functions.dart';
+import '../misc/routing_functions.dart';
 
 class MyNetworksInvitationsCard extends StatefulWidget {
   // ignore: use_super_parameters

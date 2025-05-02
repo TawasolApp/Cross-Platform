@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/list_page_appbar.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/manage_my_network_body.dart';
 
 import 'package:provider/provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/no_internet_connection.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/user_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/dialogs/no_internet_connection.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 
@@ -44,9 +44,12 @@ class _ListPageState extends State<ListPage> {
     switch (widget.type) {
       case PageType.followers:
         networksProvider?.getFollowersList(isInitial: true);
+        networksProvider?.getFollowersCount();
         break;
       case PageType.following:
         networksProvider?.getFollowingList(isInitial: true);
+        networksProvider?.getFollowingsCount();
+
         break;
       case PageType.blocked:
         networksProvider?.getBlockedList(isInitial: true);
@@ -57,8 +60,10 @@ class _ListPageState extends State<ListPage> {
             isInitial: true,
             id: widget.userId!,
           );
+          connectionsProvider?.getConnectionsCount(widget.userId!);
         } else {
           connectionsProvider?.getConnections(isInitial: true);
+          connectionsProvider?.getConnectionsCount("");
         }
         break;
       default:
@@ -144,7 +149,7 @@ class _ListPageState extends State<ListPage> {
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.connectionsList!.length,
+                        count: provider.connectionsCount as int? ?? 0,
                         connectionsProvider: provider,
                       );
                     },
@@ -163,7 +168,7 @@ class _ListPageState extends State<ListPage> {
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.followersList!.length,
+                        count: provider.followersCount as int? ?? 0,
                       );
                     },
                   ),
@@ -181,7 +186,7 @@ class _ListPageState extends State<ListPage> {
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.followingList!.length,
+                        count: provider.followingsCount as int? ?? 0,
                       );
                     },
                   ),

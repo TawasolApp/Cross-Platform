@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print, prefer_final_fields, curly_braces_in_flow_control_structures
 
 import 'package:flutter/foundation.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/profile/data/repository/profile_repository_impl.dart';
@@ -13,6 +14,8 @@ import '../../domain/usecases/connect/get_sent_connection_requests_usecase.dart'
 import '../../domain/usecases/connect/accept_ignore_connection_request_usecase.dart';
 import '../../domain/usecases/connect/send_connection_request_usecase.dart';
 import '../../domain/usecases/connect/withdraw_connection_request_usecase.dart';
+import '../../domain/usecases/endorse/endorse_skill_usecase.dart';
+import '../../domain/usecases/endorse/remove_endorsement_usecase.dart';
 
 class ConnectionsProvider with ChangeNotifier {
   // Variables
@@ -31,7 +34,7 @@ class ConnectionsProvider with ChangeNotifier {
   String _selectedFilter = 'Recently added';
   int receivedRequestsCount = 0;
   int sentRequestsCount = 0;
-  int connectionsCount = 0;
+  int _connectionsCount = 0;
 
   // Getters
   String? get errorMain => _errorMain;
@@ -46,6 +49,7 @@ class ConnectionsProvider with ChangeNotifier {
   int get currentPageSecondary => _currentPageSecondary;
   String get selectedFilter => _selectedFilter;
   String get activeFilter => _activeFilter;
+  int get connectionsCount => _connectionsCount;
 
   // UseCases
   final GetConnectionsUseCase getConnectionsUseCase;
@@ -57,6 +61,9 @@ class ConnectionsProvider with ChangeNotifier {
   acceptIgnoreConnectionRequestUseCase;
   final SendConnectionRequestUseCase sendConnectionRequestUseCase;
   final WithdrawConnectionRequestUseCase withdrawConnectionRequestUsecase;
+  final EndorseSkillUseCase endorseSkillUseCase;
+  final RemoveEndorsementUsecase removeEndorsementUsecase;
+
   final GetProfileUseCase getProfileUseCase = GetProfileUseCase(
     ProfileRepositoryImpl(
       profileRemoteDataSource: ProfileRemoteDataSourceImpl(
@@ -64,6 +71,7 @@ class ConnectionsProvider with ChangeNotifier {
       ),
     ),
   );
+
   // Constructor
   ConnectionsProvider(
     this.getConnectionsUseCase,
@@ -73,6 +81,8 @@ class ConnectionsProvider with ChangeNotifier {
     this.acceptIgnoreConnectionRequestUseCase,
     this.sendConnectionRequestUseCase,
     this.withdrawConnectionRequestUsecase,
+    this.removeEndorsementUsecase,
+    this.endorseSkillUseCase,
   );
 
   Future<String> getMyUserId() async {
@@ -314,7 +324,6 @@ class ConnectionsProvider with ChangeNotifier {
 
   Future<bool> sendConnectionRequest(String userId) async {
     final sent = await sendConnectionRequestUseCase.call(userId);
-    print("🤍🤍🤍🤍🤍🤍sent: $sent");
     return sent;
   }
 
@@ -324,94 +333,32 @@ class ConnectionsProvider with ChangeNotifier {
     return withdrawn;
   }
 
-  /////TODO: should be removed after backend implementation for connections count
-  ///
-  Future<void> getConnectionsCount({String? id}) async {
-    //connectionsCount = 0;
-    // try {
-    //   print(
-    //     'ConnectionsProvider: getConnectionsCount id: $id, connectionsCount: $connectionsCount',
-    //   );
-    //   String userId = id ?? await getMyUserId();
-    //   List<ConnectionsUserEntity>? tempConnectionsList;
-    //   int tempCurrentPage = 1;
-    //   tempConnectionsList = await getConnectionsUseCase.call(
-    //     page: tempCurrentPage,
-    //     limit: 300,
-    //     sortBy: 1,
-    //     userId: userId,
-    //   );
-    //   print(
-    //     'ConnectionsProvider: getConnectionsCount tempConnectionsList: $tempConnectionsList',
-    //   );
-    //   List<ConnectionsUserEntity>? newTempConnectionsList =
-    //       await getConnectionsUseCase.call(
-    //         page: tempCurrentPage,
-    //         limit: 300,
-    //         sortBy: 1,
-    //         userId: userId,
-    //       );
-    //   print(
-    //     'ConnectionsProvider: getConnectionsCount tempConnectionsList: $tempConnectionsList',
-    //   );
-    //   if (newTempConnectionsList.isNotEmpty) {
-    //     tempConnectionsList.addAll(newTempConnectionsList);
-    //   }
-    //   while (newTempConnectionsList!.isNotEmpty) {
-    //     tempCurrentPage++;
-    //     newTempConnectionsList = await getConnectionsUseCase.call(
-    //       page: tempCurrentPage,
-    //       limit: 300,
-    //       sortBy: 1,
-    //       userId: userId,
-    //     );
-    //     tempConnectionsList.addAll(newTempConnectionsList);
-    //   }
-
-    //   connectionsCount = tempConnectionsList.length;
-    // } catch (e) {
-    //   print('\nConnectionsProvider: getConnectionsCount $e\n');
-    //   connectionsCount = -1;
-    // } finally {
-    //   print(
-    //     'ConnectionsProvider: getConnectionsCount finally connectionsCount: $connectionsCount',
-    //   );
-    //   notifyListeners();
-    // }
+  Future<bool> endorseSkill(String userId, String skillId) async {
+    final endorsed = await endorseSkillUseCase.call(userId, skillId);
+    return endorsed;
   }
 
+  Future<bool> removeEndorsment(String userId, String skillId) async {
+    final endorsed = await removeEndorsementUsecase.call(userId, skillId);
+    return endorsed;
+  }
+
+  Future<void> getConnectionsCount(String userId) async {
+    print('getConnectionsCount called with userId: $userId');
+    print('before : Connections count: $connectionsCount');
+    final result = await getProfileUseCase.call(userId);
+    _connectionsCount = result.fold((failure) {
+      print('getMyUserId: Error fetching ConnectionsCount: $failure');
+      return -1;
+    }, (profile) => profile.connectionCount!);
+    print("ana 3ayzak tehfaz shakly ALALALALALA 😡😡😡😡");
+    print(result);
+    print('Connections count: $connectionsCount');
+    notifyListeners();
+  }
+
+  //TODO: implement
   Future<void> getReceivedConnectionRequestsCount() async {
     receivedRequestsCount = 0;
-    //   try {
-    //     List<ConnectionsUserEntity>? tempReceivedConnectionsList;
-    //     int tempCurrentPage = 1;
-    //     tempReceivedConnectionsList = await getReceivedConnectionRequestsUseCase
-    //         .call(page: tempCurrentPage, limit: 300);
-    //     List<ConnectionsUserEntity>? newTempReceivedConnectionsList =
-    //         await getReceivedConnectionRequestsUseCase.call(
-    //           page: tempCurrentPage,
-    //           limit: 300,
-    //         );
-    //     if (newTempReceivedConnectionsList.isNotEmpty) {
-    //       tempReceivedConnectionsList.addAll(newTempReceivedConnectionsList);
-    //     }
-    //     while (newTempReceivedConnectionsList!.isNotEmpty) {
-    //       tempCurrentPage++;
-    //       newTempReceivedConnectionsList =
-    //           await getReceivedConnectionRequestsUseCase.call(
-    //             page: tempCurrentPage,
-    //             limit: 300,
-    //           );
-    //       tempReceivedConnectionsList.addAll(newTempReceivedConnectionsList);
-    //     }
-
-    //     receivedRequestsCount = tempReceivedConnectionsList.length;
-    //   } catch (e) {
-    //     print('\nConnectionsProvider: getReceivedConnectionRequestsCount $e\n');
-    //     receivedRequestsCount = -1;
-    //   } finally {
-    //     notifyListeners();
-    //   }
-    // }
   }
 }

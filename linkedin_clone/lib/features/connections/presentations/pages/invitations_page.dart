@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/invitations_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/page_type_enum.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/invitations_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
 import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 
@@ -50,20 +50,6 @@ class _InvitationsPageState extends State<InvitationsPage> {
               Navigator.pop(context);
             },
           ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                onPressed: () {
-                  // Settings action if needed
-                },
-                icon: Icon(
-                  Icons.settings,
-                  color: Theme.of(context).textTheme.titleLarge?.color,
-                ),
-              ),
-            ),
-          ],
           backgroundColor: Theme.of(context).colorScheme.onSecondary,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),

@@ -1,7 +1,7 @@
 // ignore_for_file: use_super_parameters
 
 import 'package:flutter/material.dart';
-import 'pop_up_menu_user.dart';
+import 'dialogs/pop_up_menu_user.dart';
 
 class ConnectionsListActions extends StatelessWidget {
   final String userId;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../provider/connections_provider.dart';
+import '../../provider/connections_provider.dart';
 import 'remove_connection_dialog.dart';
 
 class PopUpMenuUser extends StatelessWidget {

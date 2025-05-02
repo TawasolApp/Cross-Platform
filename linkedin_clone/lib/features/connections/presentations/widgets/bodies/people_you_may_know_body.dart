@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/people_you_may_know_user_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/cards/people_you_may_know_user_card.dart';
 import 'package:provider/provider.dart';
 
 class PeopleYouMayKnowBody extends StatefulWidget {
