@@ -6,13 +6,17 @@ class PostAnalyticsModel extends PostAnalytics {
     required int totalShares,
     required int totalComments,
     required int totalReacts,
-    required String topPostId,
+    required String postWithMostInteractions,
+    required int postReportedCount,
+    required String mostReportedPost,
   }) : super(
          totalPosts: totalPosts,
          totalShares: totalShares,
          totalComments: totalComments,
          totalReacts: totalReacts,
-         topPostId: topPostId,
+         postWithMostInteractions: postWithMostInteractions,
+         postReportedCount: postReportedCount,
+         mostReportedPost: mostReportedPost,
        );
 
   factory PostAnalyticsModel.fromJson(Map<String, dynamic> json) {
@@ -21,7 +25,9 @@ class PostAnalyticsModel extends PostAnalytics {
       totalShares: json['totalShares'] ?? 0,
       totalComments: json['totalComments'] ?? 0,
       totalReacts: json['totalReacts'] ?? 0,
-      topPostId: json['topPostId'] ?? '',
+      postWithMostInteractions: json['postWithMostInteractions'] ?? '',
+      postReportedCount: json['postReportedCount'] ?? 0,
+      mostReportedPost: json['mostReportedPost'] ?? '',
     );
   }
 }

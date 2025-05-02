@@ -3,13 +3,17 @@ class PostAnalytics {
   final int totalShares;
   final int totalComments;
   final int totalReacts;
-  final String topPostId;
+  final String postWithMostInteractions;
+  final int postReportedCount;
+  final String mostReportedPost;
 
-  const PostAnalytics({
+  PostAnalytics({
     required this.totalPosts,
     required this.totalShares,
     required this.totalComments,
     required this.totalReacts,
-    required this.topPostId,
+    required this.postWithMostInteractions,
+    required this.postReportedCount,
+    required this.mostReportedPost,
   });
 }

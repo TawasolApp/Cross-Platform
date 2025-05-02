@@ -1,5 +1,6 @@
 import 'package:linkedin_clone/core/errors/failures.dart';
-import 'package:linkedin_clone/features/admin_panel/domain/entities/report_entity.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/entities/reported_post_entity.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/entities/reported_user_entity.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/repositories/admin_repository.dart';
 import '../data_sources/admin_remote_data_source.dart';
 import '../../domain/entities/job_listing_entity.dart';
@@ -7,6 +8,9 @@ import '../../domain/entities/post_analytics_entity.dart';
 import '../../domain/entities/job_analytics_entity.dart';
 import '../../domain/entities/user_analytics_entity.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
+import '../models/reported_post_model.dart';
+import '../models/reported_user_model.dart';
 
 class AdminRepositoryImpl implements AdminRepository {
   final AdminRemoteDataSource remoteDataSource;
@@ -14,17 +18,23 @@ class AdminRepositoryImpl implements AdminRepository {
   AdminRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<ReportEntity>> getReports({String? status, String? type}) {
-    return remoteDataSource.getReports(status: status, type: type);
+  Future<List<ReportedPost>> fetchReportedPosts({String? status}) {
+    return remoteDataSource.fetchReportedPosts(status: status);
   }
 
   @override
-  Future<void> resolveReport(String reportId, String action, String? comment) {
-    return remoteDataSource.resolveReport(
-      reportId: reportId,
-      action: action,
-      comment: comment,
-    );
+  Future<List<ReportedUser>> fetchReportedUsers({String? status}) {
+    return remoteDataSource.fetchReportedUsers(status: status);
+  }
+
+  @override
+  Future<void> resolveReport(String reportId, String action, String comment) {
+    return remoteDataSource.resolveReport(reportId, action, comment);
+  }
+
+  @override
+  Future<void> deleteReportedPost(String companyId, String postId) {
+    return remoteDataSource.deleteReportedPost(companyId, postId);
   }
 
   @override

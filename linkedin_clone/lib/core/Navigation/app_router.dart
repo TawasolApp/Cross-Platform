@@ -41,7 +41,7 @@ class AppRouter {
     initialLocation: RouteNames.onboarding, // Start at onboarding
 
     routes: [
-            GoRoute(
+      GoRoute(
         path: RouteNames.adminPanel,
         builder: (context, state) => AdminPanelPage(),
       ),
@@ -128,9 +128,8 @@ class AppRouter {
       GoRoute(
         path: RouteNames.companyPage,
         builder:
-            (context, state) => CompanyProfileScreen(
-              companyId: "elsewedy-electric",
-            ),
+            (context, state) =>
+                CompanyProfileScreen(companyId: "elsewedy-electric"),
       ),
 
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
@@ -277,6 +276,5 @@ class AppRouter {
         builder: (context, state) => const AdminPanelPage(),
       ),
     ],
-    
   );
 }

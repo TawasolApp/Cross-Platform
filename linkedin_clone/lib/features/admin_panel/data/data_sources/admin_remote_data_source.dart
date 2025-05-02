@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../models/report_model.dart';
+import '../models/reported_post_model.dart';
+import '../models/reported_user_model.dart';
 import '../models/job_listing_model.dart';
 
 import '../models/user_analytics_model.dart';
@@ -15,12 +16,10 @@ abstract class AdminRemoteDataSource {
   Future<Either<Failure, PostAnalyticsModel>> getPostAnalytics();
   Future<Either<Failure, JobAnalyticsModel>> getJobAnalytics();
   Future<Either<Failure, String>> ignoreFlaggedJob(String jobId);
-  Future<void> resolveReport({
-    required String reportId,
-    required String action,
-    String? comment,
-  });
-  Future<List<ReportModel>> getReports({String? status, String? type});
+  Future<void> resolveReport(String reportId, String action, String comment);
+  Future<void> deleteReportedPost(String companyId, String postId);
+  Future<List<ReportedPostModel>> fetchReportedPosts({String? status});
+  Future<List<ReportedUserModel>> fetchReportedUsers({String? status});
   Future<List<JobListingModel>> getFlaggedJobListings();
   Future<void> deleteJobListing(String jobId);
 }
@@ -36,36 +35,56 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   }
 
   @override
-  Future<List<ReportModel>> getReports({String? status, String? type}) async {
+  Future<List<ReportedPostModel>> fetchReportedPosts({String? status}) async {
+    final token = await _getToken();
+    final response = await dio.get(
+      'https://tawasolapp.me/api/admin/reports/posts',
+      queryParameters: status != null ? {'status': status} : null,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return (response.data as List)
+        .map((json) => ReportedPostModel.fromJson(json))
+        .toList();
+  }
+
+  @override
+  Future<List<ReportedUserModel>> fetchReportedUsers({String? status}) async {
+    final token = await _getToken();
+    final response = await dio.get(
+      'https://tawasolapp.me/api/admin/reports/users',
+      queryParameters: status != null ? {'status': status} : null,
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+    return (response.data as List)
+        .map((json) => ReportedUserModel.fromJson(json))
+        .toList();
+  }
+
+  @override
+  Future<void> resolveReport(
+    String reportId,
+    String action,
+    String comment,
+  ) async {
     try {
       final token = await _getToken();
-      final response = await dio.get(
-        'https://tawasolapp.me/api/admin/reports',
+      await dio.patch(
+        'https://tawasolapp.me/api/admin/reports/$reportId/resolve',
+        data: {"action": action, "comment": comment},
         options: Options(headers: {'Authorization': 'Bearer $token'}),
-        queryParameters: {
-          if (status != null) 'status': status,
-          if (type != null) 'type': type,
-        },
       );
-
-      final List data = response.data['reports'];
-      return data.map((json) => ReportModel.fromJson(json)).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch reports: $e');
+    } catch (e, stackTrace) {
+      print("Error resolving report: $e\n$stackTrace");
+      throw ServerException("Failed to resolve report");
     }
   }
 
   @override
-  Future<void> resolveReport({
-    required String reportId,
-    required String action,
-    String? comment,
-  }) async {
+  Future<void> deleteReportedPost(String companyId, String postId) async {
     final token = await _getToken();
-    await dio.post(
-      '/admin/reports/$reportId/resolve',
+    await dio.delete(
+      'https://tawasolapp.me/api/posts/$companyId/$postId',
       options: Options(headers: {'Authorization': 'Bearer $token'}),
-      data: {'action': action, if (comment != null) 'comment': comment},
     );
   }
 

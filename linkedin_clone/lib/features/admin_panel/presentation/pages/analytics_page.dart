@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/admin_provider.dart';
-import 'user_reporting_stats_page.dart';
+import 'user_analytics_page.dart';
+import 'post_analytics_page.dart';
+import 'job_analytics_page.dart';
+import '../../../profile/presentation/provider/profile_provider.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -15,6 +18,10 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
       Provider.of<AdminProvider>(context, listen: false).fetchAnalytics();
     });
   }
@@ -22,6 +29,9 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AdminProvider>(context);
+    final user = provider.userAnalytics;
+    final post = provider.postAnalytics;
+    final job = provider.jobAnalytics;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Admin Analytics Dashboard")),
@@ -30,7 +40,7 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
               ? const Center(child: CircularProgressIndicator())
               : provider.errorMessage != null
               ? Center(child: Text(provider.errorMessage!))
-              : SingleChildScrollView(
+              : Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,71 +52,64 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _SummaryCard(
-                          label: "Total Users",
-                          count:
-                              provider.userAnalytics?.totalUsers.toString() ??
-                              '-',
+                          label: "Users",
+                          count: user?.totalUsers.toString() ?? '-',
                           color: Colors.blue,
                         ),
                         _SummaryCard(
-                          label: "Total Posts",
-                          count:
-                              provider.postAnalytics?.totalPosts.toString() ??
-                              '-',
+                          label: "Posts",
+                          count: post?.totalPosts.toString() ?? '-',
                           color: Colors.green,
                         ),
                         _SummaryCard(
-                          label: "Total Jobs",
-                          count:
-                              provider.jobAnalytics?.totalJobs.toString() ??
-                              '-',
+                          label: "Jobs",
+                          count: job?.totalJobs.toString() ?? '-',
                           color: Colors.purple,
                         ),
                       ],
                     ),
                     const SizedBox(height: 30),
-                    const Text(
-                      "Most Active Users",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (provider.userAnalytics?.mostActiveUsers.isNotEmpty ??
-                        false)
-                      ...provider.userAnalytics!.mostActiveUsers.map(
-                        (user) => ListTile(
-                          leading: const CircleAvatar(),
-                          title: Text(user.userId),
-                          subtitle: Text(
-                            "Activity Score: ${user.activityScore}",
-                          ),
-                        ),
-                      )
-                    else
-                      const Text("No active users found."),
-                    const SizedBox(height: 40),
                     const Divider(),
                     const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.bar_chart),
-                        label: const Text("View User Reporting Stats"),
-                        onPressed: () {
-                          Navigator.push(
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.person),
+                      label: const Text("User Analytics"),
+                      onPressed:
+                          () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const UserReportingStatsPage(),
+                              builder: (_) => const UserAnalyticsPage(),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.post_add),
+                      label: const Text("Post Analytics"),
+                      onPressed:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PostAnalyticsPage(),
+                            ),
+                          ),
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.work),
+                      label: const Text("Job Analytics"),
+                      onPressed:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const JobAnalyticsPage(),
+                            ),
+                          ),
                     ),
                   ],
                 ),
