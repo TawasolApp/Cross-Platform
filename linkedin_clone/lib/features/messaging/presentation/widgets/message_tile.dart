@@ -29,7 +29,7 @@ class MessageBubble extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Text(
-          message.messageText,
+          message.text,
           style: TextStyle(color: textColor),
         ),
       ),

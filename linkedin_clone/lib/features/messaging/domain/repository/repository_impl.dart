@@ -16,6 +16,7 @@ class ConversationRepositoryImpl implements ConversationRepository {
 
   @override
   Future<List<ConversationEntity>> fetchConversations() {
+    print("fetching conversations from repo");
     return remoteDataSource.fetchConversations();
   }
 }

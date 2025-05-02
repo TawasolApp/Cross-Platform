@@ -264,7 +264,7 @@ void main() async {
   //////admin
   final adminRemoteDataSource = AdminRemoteDataSourceImpl(dio);
   final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
-  final conversationDataSource = MockConversationDataSource();
+  final conversationDataSource = ConversationRemoteDataSource();
   final messagingRepository = ConversationRepositoryImpl(conversationDataSource);
 
   runApp(

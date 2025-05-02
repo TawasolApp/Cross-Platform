@@ -8,6 +8,7 @@ class GetConversationsUseCase {
   GetConversationsUseCase(this.repository);
 
   Future<List<ConversationEntity>> call() async {
+    print("Fetching conversations from use case");
     return await repository.fetchConversations();
   }
 }

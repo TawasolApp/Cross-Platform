@@ -18,15 +18,18 @@ class ConversationTile extends StatelessWidget {
 
     return ListTile(
       leading: CircleAvatar(
-        backgroundImage: NetworkImage(user.profilePicture),
+        backgroundImage: user.profilePicture != null && user.profilePicture.isNotEmpty
+    ? NetworkImage(user.profilePicture!)
+    : const AssetImage('assets/images/profile_placeholder.png') as ImageProvider,
+
       ),
       title: Text('${user.firstName} ${user.lastName}'),
-      subtitle: Text(message.messageText),
+      subtitle: Text(message.text),
       trailing: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            _formatTime(message.dateTime),
+            _formatTime(message.sentAt),
             style: const TextStyle(fontSize: 12),
           ),
           if (conversation.unseenCount > 0)

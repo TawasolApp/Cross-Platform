@@ -6,17 +6,38 @@ import 'package:linkedin_clone/features/profile/presentation/provider/profile_pr
 import 'package:provider/provider.dart';
 import '../widgets/conversation_tile.dart';
 
-class ConversationListPage extends StatelessWidget {
+class ConversationListPage extends StatefulWidget {
   const ConversationListPage({super.key});
+
+  @override
+  State<ConversationListPage> createState() => _ConversationListPageState();
+}
+
+class _ConversationListPageState extends State<ConversationListPage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final conversationProvider = Provider.of<ConversationListProvider>(context);
     final chatProvider = Provider.of<ChatProvider>(context);
     final profileProvider = Provider.of<ProfileProvider>(context, listen: false);
+    
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Messages')),
+      appBar: AppBar(
+  leading: IconButton(
+    icon: const Icon(Icons.arrow_back),
+    onPressed: () {
+      Navigator.pop(context);
+    },
+  ),
+  title: const Text('Messages'),
+),
+
       body: conversationProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -33,6 +54,7 @@ class ConversationListPage extends StatelessWidget {
                       MaterialPageRoute(
                         builder: (context) => ChatPage(
                           conversationId: conversation.id,
+                          receiverId: conversation.otherParticipant.id,
                           userName: conversation.otherParticipant.firstName + ' ' + conversation.otherParticipant.lastName,
                           profileImageUrl: conversation.otherParticipant.profilePicture,
                         ),

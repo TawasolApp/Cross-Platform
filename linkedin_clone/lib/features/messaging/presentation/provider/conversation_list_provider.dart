@@ -22,6 +22,7 @@ class ConversationListProvider with ChangeNotifier {
     notifyListeners();
     try {
       conversations = await getConversationsUseCase.call();
+      print('Conversations loaded: ${conversations.length}');
     } catch (e) {
       print('Error loading conversations: $e');
     } finally {

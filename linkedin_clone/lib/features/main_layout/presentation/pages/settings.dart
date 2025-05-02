@@ -26,13 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
     // );
     // profileProvider.fetchProfile("");
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go(RouteNames.main),
-        ),
-      ),
+  
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

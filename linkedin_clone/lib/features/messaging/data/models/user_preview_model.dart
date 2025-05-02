@@ -18,9 +18,10 @@ class UserPreviewModel extends UserPreviewEntity {
       id: json['_id'] as String,
       firstName: json['firstName'] as String,
       lastName: json['lastName'] as String,
-      profilePicture: json['profilePicture'] as String,
+      profilePicture: json['profilePicture'] as String? ?? '',
     );
   }
+
 
   Map<String, dynamic> toJson() {
     return {

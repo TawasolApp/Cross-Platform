@@ -4,22 +4,24 @@ class MessageModel extends MessageEntity {
   MessageModel({
     required super.id,
     required super.senderId,
+    required super.recieverId,
     required super.conversationId,
-    required super.messageText,
+    required super.text,
     required super.media,
     required super.status, 
-    required super.dateTime,
+    required super.sentAt,
   });
 
   factory MessageModel.fromJson(Map<String, dynamic> json) {
     return MessageModel(
       id: json['_id'] as String,
       senderId: json['senderId'] as String,
+      recieverId: json['receiverId'] as String? ?? '',
       conversationId: json['conversationId'] as String,
-      messageText: json['messageText'] as String? ?? '',
+      text: json['text'] as String? ?? '',
       media: (json['media'] as List<dynamic>?)?.map((e) => e as String).toList() ?? [],
       status: json['status'] as String? ?? 'sent',
-      dateTime: json['dateTime'] as String, 
+      sentAt: json['sentAt'] as String, 
     );
   }
 
@@ -29,10 +31,10 @@ class MessageModel extends MessageEntity {
       '_id': id,
       'senderId': senderId,
       'conversationId': conversationId,
-      'messageText': messageText,
+      'text': text,
       'media': media,
       'status': status,
-      'dateTime': dateTime,
+      'sentAt': sentAt,
     };
   }
 }

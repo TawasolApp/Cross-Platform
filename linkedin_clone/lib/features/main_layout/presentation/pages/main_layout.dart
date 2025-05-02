@@ -36,8 +36,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     FeedPage(), // Will be replaced by News Feed module
     MyNetworkPage(), // Will be replaced by Connections module
     CompaniesListScreen(),
-    NotificationsListPage(),
     JobSearchPage(),
+    NotificationsListPage(),
+    
     SettingsPage(), // Will be replaced by Settings module
   ];
 
@@ -204,6 +205,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             icon: const Icon(Icons.message),
             onPressed: () {
               messagingProvider.fetchConversations();
+              print("Conversations gayat: ${messagingProvider.conversations.length}");
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ConversationListPage()),
@@ -227,7 +229,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
-            label: "Comapnies",
+            label: "Companies",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.work), label: "Jobs"),
           BottomNavigationBarItem(

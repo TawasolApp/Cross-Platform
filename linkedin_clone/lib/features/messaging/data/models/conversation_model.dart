@@ -22,13 +22,15 @@ class ConversationModel extends ConversationEntity {
       id: json['_id'] as String,
       lastMessage: MessageModel.fromJson({
         '_id': json['lastMessage']['_id'],
-        'senderId': json['lastMessage']['sender_id'],
-        'conversationId': json['lastMessage']['conversation_id'],
-        'messageText': json['lastMessage']['text'],
+        'senderId': json['lastMessage']['senderId'],
+        'receiverId': json['lastMessage']['receiverId'],
+        'conversationId': json['lastMessage']['conversationId'],
+        'text': json['lastMessage']['text'],
         'media': json['lastMessage']['media'],
         'status': json['lastMessage']['status'],
-        'dateTime': json['lastMessage']['sent_at'],
+        'sentAt': json['lastMessage']['sentAt'],
       }),
+
       unseenCount: json['unseenCount'] as int,
       otherParticipant: UserPreviewModel.fromJson(json['otherParticipant']),
     );

@@ -14,11 +14,12 @@ class MockConversationDataSource implements ConversationRemoteDataSource {
         lastMessage: MessageModel(
           id: 'msg1',
           senderId: 'user1',
+          recieverId: 'user2',
           conversationId: 'convo1',
-          messageText: 'Hey, how are you?',
+          text: 'Hey, how are you?',
           media: [],
           status: 'Sent',
-          dateTime: '2025-04-26T16:40:12.772Z',
+          sentAt: '2025-04-26T16:40:12.772Z',
         ),
         unseenCount: 2,
         otherParticipant: UserPreviewModel(
@@ -33,11 +34,12 @@ class MockConversationDataSource implements ConversationRemoteDataSource {
         lastMessage: MessageModel(
           id: 'msg2',
           senderId: 'user3',
+          recieverId: 'user4',
           conversationId: 'convo2',
-          messageText: 'Let’s meet tomorrow.',
+          text: 'Let’s meet tomorrow.',
           media: [],
           status: 'Sent',
-          dateTime: '2025-04-25T14:15:00.000Z',
+          sentAt: '2025-04-25T14:15:00.000Z',
         ),
         unseenCount: 0,
         otherParticipant: UserPreviewModel(
@@ -58,20 +60,22 @@ class MockConversationDataSource implements ConversationRemoteDataSource {
       MessageModel(
         id: 'msg1',
         senderId: 'user1',
+        recieverId: 'user2',
         conversationId: conversationId,
-        messageText: 'Hey, how are you?',
+        text: 'Hey, how are you?',
         media: [],
         status: 'Sent',
-        dateTime: '2025-04-26T16:40:12.772Z',
+        sentAt: '2025-04-26T16:40:12.772Z',
       ),
       MessageModel(
         id: 'msg2',
         senderId: 'user2',
+        recieverId: 'user1',
         conversationId: conversationId,
-        messageText: 'I am good, thanks! How about you?',
+        text: 'I am good, thanks! How about you?',
         media: [],
         status: 'Received',
-        dateTime: '2025-04-26T16:41:00.000Z',
+        sentAt: '2025-04-26T16:41:00.000Z',
       ),
     ];
   }

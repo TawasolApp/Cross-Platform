@@ -7,12 +7,14 @@ import 'package:linkedin_clone/core/services/token_service.dart'; // for getting
 
 class ChatPage extends StatefulWidget {
   final String conversationId;
+  final String receiverId; // Add this line
   final String userName;
   final String profileImageUrl;
 
   const ChatPage({
     super.key,
     required this.conversationId,
+    required this.receiverId, // Add this line
     required this.userName,
     required this.profileImageUrl,
   });
@@ -23,31 +25,35 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   String currentUserId = '';
+  late ChatProvider _chatProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _chatProvider = Provider.of<ChatProvider>(context, listen: false);
+  }
 
   @override
   void initState() {
-    _initChat();
     super.initState();
-    
+    _initChat();
   }
 
   Future<void> _initChat() async {
-    final provider = Provider.of<ChatProvider>(context, listen: false);
     final userId = await TokenService.getUserId();
     setState(() => currentUserId = userId ?? '');
 
-    provider.setConversationId(widget.conversationId);
-    provider.setUserName(widget.userName);
-    provider.setUserImage(widget.profileImageUrl);
-    provider.setCurrentUserId(currentUserId);
-
-    provider.fetchMessages(widget.conversationId);
-    provider.initSocket(currentUserId, widget.conversationId);
+    _chatProvider.setConversationId(widget.conversationId);
+    _chatProvider.setUserName(widget.userName);
+    _chatProvider.setUserImage(widget.profileImageUrl);
+    _chatProvider.setCurrentUserId(currentUserId);
+    _chatProvider.fetchMessages(widget.conversationId);
+    _chatProvider.initSocket(currentUserId, widget.conversationId);
   }
 
   @override
   void dispose() {
-    Provider.of<ChatProvider>(context, listen: false).disposeSocket();
+    _chatProvider.disposeSocket(); // ✅ SAFE
     super.dispose();
   }
 
@@ -57,7 +63,10 @@ class _ChatPageState extends State<ChatPage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back),
+        ),
         title: Row(
           children: [
             CircleAvatar(backgroundImage: NetworkImage(widget.profileImageUrl)),
@@ -89,8 +98,8 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 ChatInputBar(
                   onSend: (text) {
-                    provider.sendTextMessage(
-                      "6811533cb3b2dd6683917cc0",
+                    _chatProvider.sendTextMessage(
+                      widget.receiverId, // Replace with actual receiverId
                       text,
                     );
                   },
