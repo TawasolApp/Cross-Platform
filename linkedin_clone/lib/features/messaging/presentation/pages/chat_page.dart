@@ -97,7 +97,10 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                 ),
                 ChatInputBar(
-                  onSend: (text) {
+                  onSend: (text) async{
+                    final userId = await TokenService.getUserId() ?? '';
+                    print(userId);
+                    //print('Sending message to ${widget.receiverId}: $text');
                     _chatProvider.sendTextMessage(
                       widget.receiverId, // Replace with actual receiverId
                       text,

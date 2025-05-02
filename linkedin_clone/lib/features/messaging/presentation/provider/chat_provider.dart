@@ -62,10 +62,19 @@ class ChatProvider with ChangeNotifier {
 
     _socketService.connect(userId);
     _socketService.listenToMessages((data) {
+      print('📥 Socket message received: $data');
       final msg = MessageModel.fromJson(jsonDecode(data));
-      messages.insert(0, msg);
-      notifyListeners();
-    });
+
+      final alreadyExists = messages.any((m) => m.id == msg.id);
+      if (alreadyExists) {
+        print('⚠️ Duplicate message skipped: ${msg.id}');
+        return;
+      }
+
+  messages.insert(0, msg);
+  notifyListeners();
+});
+
     _socketService.markMessagesRead(conversationId);
   }
 
@@ -73,15 +82,28 @@ class ChatProvider with ChangeNotifier {
     _socketService.disconnect();
   }
 
-  void sendTextMessage(String recipientId, String text) {
-    print('Sending message: $text to $recipientId');
-    _socketService.sendMessage({
-      'receiverId': recipientId,
-      'text': text,
+void sendTextMessage(String recipientId, String text) {
+  final newMessage = MessageModel(
+    id: UniqueKey().toString(), // temporary ID for UI rendering
+    senderId: currentUserId,
+    recieverId: recipientId,
+    conversationId: conversationId,
+    text: text,
+    media: [],
+    status: 'Sent',
+    sentAt: DateTime.now().toIso8601String(),
+  );
 
-      
-    });
-  }
+  messages.insert(0, newMessage); // show instantly in UI
+  notifyListeners();
+
+  print('Sending message: $text to $recipientId');
+  _socketService.sendMessage({
+    'receiverId': recipientId,
+    'text': text,
+  });
+}
+
 
   void sendTyping(String receiverId) {
     _socketService.sendTyping({'receiverId': receiverId});
