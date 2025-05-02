@@ -10,18 +10,29 @@ import '../models/post_analytics_model.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/services/token_service.dart';
+import '../../../jobs/data/model/job_model.dart';
 
 abstract class AdminRemoteDataSource {
   Future<Either<Failure, UserAnalyticsModel>> getUserAnalytics();
   Future<Either<Failure, PostAnalyticsModel>> getPostAnalytics();
   Future<Either<Failure, JobAnalyticsModel>> getJobAnalytics();
-  Future<Either<Failure, String>> ignoreFlaggedJob(String jobId);
   Future<void> resolveReport(String reportId, String action, String comment);
   Future<void> deleteReportedPost(String companyId, String postId);
   Future<List<ReportedPostModel>> fetchReportedPosts({String? status});
   Future<List<ReportedUserModel>> fetchReportedUsers({String? status});
-  Future<List<JobListingModel>> getFlaggedJobListings();
-  Future<void> deleteJobListing(String jobId);
+  Future<Either<Failure, String>> ignoreFlaggedJob(String jobId);
+  Future<Either<Failure, List<JobModel>>> getJobListings({
+    required int page,
+    required int limit,
+    String? keyword,
+    String? location,
+    String? industry,
+    String? experienceLevel,
+    String? company,
+    double? minSalary,
+    double? maxSalary,
+  });
+  Future<Either<Failure, Unit>> deleteJobListing(String jobId);
 }
 
 class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
@@ -89,18 +100,59 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
   }
 
   @override
-  Future<List<JobListingModel>> getFlaggedJobListings() async {
-    final token = await _getToken();
-    final response = await dio.get(
-      'https://tawasolapp.me/api/admin/job-listings',
-      options: Options(headers: {'Authorization': 'Bearer $token'}),
-    );
-    final List data = response.data['job_listings'];
-    return data.map((json) => JobListingModel.fromJson(json)).toList();
+  Future<Either<Failure, List<JobModel>>> getJobListings({
+    required int page,
+    required int limit,
+    String? keyword,
+    String? location,
+    String? industry,
+    String? experienceLevel,
+    String? company,
+    double? minSalary,
+    double? maxSalary,
+  }) async {
+    try {
+      final token = await _getToken();
+
+      final response = await dio.get(
+        'https://tawasolapp.me/api/jobs',
+        queryParameters: {
+          'page': page,
+          'limit': limit,
+          if (keyword != null) 'keyword': keyword,
+          if (location != null) 'location': location,
+          if (industry != null) 'industry': industry,
+          if (experienceLevel != null) 'experienceLevel': experienceLevel,
+          if (company != null) 'company': company,
+          if (minSalary != null) 'minSalary': minSalary,
+          if (maxSalary != null) 'maxSalary': maxSalary,
+        },
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+
+      final jobs =
+          (response.data['jobs'] as List)
+              .map((e) => JobModel.fromJson(e))
+              .toList();
+
+      return Right(jobs);
+    } catch (e) {
+      return Left(ServerFailure("Failed to fetch jobs"));
+    }
   }
 
-  Future<void> deleteJobListing(String jobId) async {
-    await dio.delete('https://tawasolapp.me/api/admin/job-listings/$jobId');
+  @override
+  Future<Either<Failure, Unit>> deleteJobListing(String jobId) async {
+    try {
+      final token = await _getToken();
+      await dio.delete(
+        'https://tawasolapp.me/api/jobs/$jobId',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return const Right(unit);
+    } catch (e) {
+      return Left(ServerFailure("Failed to delete job"));
+    }
   }
 
   @override
@@ -186,7 +238,7 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
     try {
       final token = await _getToken();
       final response = await dio.patch(
-        '/admin/$jobId/ignore',
+        'https://tawasolapp.me/api/admin/$jobId/ignore',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       final message = response.data['message'] ?? 'Job ignored';

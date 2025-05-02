@@ -38,10 +38,10 @@ class JobModel extends Job {
          postedDate: postedDate,
          applicantCount: applicantCount,
          isOpen: isOpen,
-          companyId: companyId,
+         companyId: companyId,
          companyName: companyName,
          companyLogo: companyLogo,
-          companyAddress: companyAddress,
+         companyAddress: companyAddress,
          companyLocation: companyLocation,
          companyDescription: companyDescription,
          applicationLink: applicationLink,
@@ -100,7 +100,6 @@ class JobModel extends Job {
       'applicationLink': applicationLink,
       'isSaved': isSaved,
       'status': status,
-
     };
   }
 }

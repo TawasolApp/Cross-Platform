@@ -254,7 +254,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.adminJobs,
-        builder: (context, state) => const JobListingsPage(),
+        builder: (context, state) => const AdminJobListingsPage(),
       ),
       GoRoute(
         path: RouteNames.adminAnalytics,

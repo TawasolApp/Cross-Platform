@@ -37,7 +37,9 @@ class AdminPanelPage extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const JobListingsPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const AdminJobListingsPage(),
+                  ),
                 );
               },
             ),

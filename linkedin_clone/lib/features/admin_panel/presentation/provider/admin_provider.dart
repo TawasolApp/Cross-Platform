@@ -14,8 +14,9 @@ import '../../domain/entities/user_analytics_entity.dart';
 import '../../domain/entities/post_analytics_entity.dart';
 import '../../domain/entities/job_analytics_entity.dart';
 import '../../domain/usecases/ignore_flagged_job_usecase.dart';
-import '../../domain/usecases/resolve_report_usecase.dart';
 import '../../domain/usecases/delete_reported_post.dart';
+import '../../../jobs/domain/entities/job_entity.dart';
+import '../../../../core/errors/failures.dart';
 
 class AdminProvider with ChangeNotifier {
   final FetchReportedPosts getReportedPostsUseCase;
@@ -53,7 +54,12 @@ class AdminProvider with ChangeNotifier {
   List<ReportedPost> get reportedPosts => _reportedPosts;
   List<ReportedUser> _reportedUsers = [];
   List<ReportedUser> get reportedUsers => _reportedUsers;
-  List<JobListingEntity> jobListings = [];
+
+  List<Job> jobListings = [];
+  List<Job> get getJobListings => jobListings;
+  int _currentPage = 1;
+  bool hasMoreData = true;
+  final int _limit = 10;
 
   Future<void> fetchReportedPosts({String? status}) async {
     _isLoading = true;
@@ -116,22 +122,60 @@ class AdminProvider with ChangeNotifier {
     await fetchReportedPosts();
   }
 
-  Future<void> fetchJobListings() async {
+  Future<void> fetchJobListings({bool refresh = false}) async {
+    if (isLoading) return;
+
+    if (refresh) {
+      _currentPage = 1;
+      jobListings.clear();
+      hasMoreData = true;
+      notifyListeners();
+    }
+
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    try {
-      jobListings = await getJobListingsUseCase();
-    } catch (_) {}
+    final result = await getJobListingsUseCase(
+      page: _currentPage,
+      limit: _limit,
+    );
+
+    result.fold(
+      (failure) {
+        _errorMessage = _mapFailure(failure);
+        hasMoreData = false;
+      },
+      (newJobs) {
+        if (newJobs.length < _limit) hasMoreData = false;
+        jobListings.addAll(newJobs);
+        _currentPage++;
+      },
+    );
 
     _isLoading = false;
     notifyListeners();
   }
 
   Future<void> deleteJob(String jobId) async {
-    await deleteJobListingUseCase(jobId);
-    jobListings.removeWhere((job) => job.id == jobId);
-    notifyListeners();
+    final result = await deleteJobListingUseCase(jobId);
+
+    result.fold(
+      (failure) {
+        _errorMessage = _mapFailure(failure);
+        notifyListeners();
+      },
+      (_) {
+        jobListings.removeWhere((job) => job.id == jobId);
+        notifyListeners();
+      },
+    );
+  }
+
+  String _mapFailure(Failure failure) {
+    return failure is ServerFailure
+        ? failure.message
+        : "Unexpected error occurred.";
   }
 
   Future<void> fetchAnalytics() async {
@@ -174,11 +218,19 @@ class AdminProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void refreshJobs() {
+    fetchJobListings(refresh: true);
+  }
+
   Future<void> ignoreJob(String jobId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
     final result = await ignoreFlaggedJobUseCase(jobId);
     result.fold(
       (failure) {
         _errorMessage = failure.message;
+        _isLoading = false;
         notifyListeners();
       },
       (message) {
