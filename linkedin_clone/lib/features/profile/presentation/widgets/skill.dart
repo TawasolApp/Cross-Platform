@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/feed/presentation/widgets/repost_bottom_sheet.dart';
 import 'package:linkedin_clone/features/profile/domain/entities/skill.dart'
     as entity;
 import 'package:linkedin_clone/features/profile/presentation/pages/skill/endorsements_list.dart';
@@ -15,6 +17,8 @@ class SkillWidget extends StatelessWidget {
     // Get the connection status from the profile provider to check if user is a connection
     final profileProvider = Provider.of<ProfileProvider>(context);
     final isConnection = profileProvider.connectStatus == 'Connection';
+    final ConnectionsProvider conncectionProvider =
+        Provider.of<ConnectionsProvider>(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -99,12 +103,24 @@ class SkillWidget extends StatelessWidget {
           // Add Endorse button only if user is a connection
           if (isConnection)
             TextButton.icon(
-              onPressed: () {
-                // TODO: Implement endorsement functionality
-                // This would typically call an endorsement method in the profile provider
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Endorsed ${skill.skillName}')),
+              onPressed: () async {
+                bool result = await conncectionProvider.endorseSkill(
+                  profileProvider.userId!,
+                  skill.skillName,
                 );
+                if (result) {
+                  // Show success message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Endorsed ${skill.skillName}')),
+                  );
+                } else {
+                  // Show error message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to endorse ${skill.skillName}'),
+                    ),
+                  );
+                }
               },
               icon: Icon(
                 Icons.add_circle_outline,

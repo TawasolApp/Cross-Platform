@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart'
     show RouteNames;
+import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
 
 void goToInvitations(BuildContext context) {
   GoRouter.of(context).push(RouteNames.invitations);
@@ -35,4 +36,8 @@ void goToManageMyNetwork(BuildContext context) {
 
 void goToGeneralSeachPage(BuildContext context) {
   GoRouter.of(context).push(RouteNames.generalSearch);
+}
+
+void goToMessages(BuildContext context) {
+  MaterialPageRoute(builder: (context) => ConversationListPage());
 }
