@@ -31,20 +31,22 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => JobDetailsScreen(jobId: widget.job.id,),
+              builder: (_) => JobDetailsScreen(jobId: widget.job.id),
             ),
           );
 
+          if (!mounted) return; 
+
           if (result == true) {
-            // ✅ Trigger jobs refresh
-              await Provider.of<CompanyProvider>(
-                context,
-                listen: false,
-              ).fetchRecentJobs(widget.companyId,reset: true);
-              await Provider.of<JobSearchProvider>(
-                context,
-                listen: false,
-              ).fetchJobs(reset: true);
+            await Provider.of<CompanyProvider>(
+              context,
+              listen: false,
+            ).fetchRecentJobs(widget.companyId, reset: true);
+
+            await Provider.of<JobSearchProvider>(
+              context,
+              listen: false,
+            ).fetchJobs(reset: true);
           }
         },
         child: Padding(
