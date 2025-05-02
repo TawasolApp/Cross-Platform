@@ -48,6 +48,8 @@ class _ChatPageState extends State<ChatPage> {
     _chatProvider.setUserImage(widget.profileImageUrl);
     _chatProvider.setCurrentUserId(currentUserId);
     _chatProvider.fetchMessages(widget.conversationId);
+    print('Fetching messages for conversationId: ${widget.conversationId}');
+    print('Current userId: $currentUserId');
     _chatProvider.initSocket(currentUserId, widget.conversationId);
   }
 

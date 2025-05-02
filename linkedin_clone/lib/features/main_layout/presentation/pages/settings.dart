@@ -108,6 +108,14 @@ class _SettingsPageState extends State<SettingsPage> {
               context.go(RouteNames.deleteAccount);
             },
           ),
+                    ListTile(
+            leading: const Icon(Icons.block),
+            title: const Text("Blocked Users"),
+            onTap: () {
+              // Navigate to Admin Panel Page
+              context.push(RouteNames.adminPanel);
+            },
+          ),
           // Admin Panel Access (only for Admins)
           ListTile(
             leading: const Icon(Icons.admin_panel_settings),
