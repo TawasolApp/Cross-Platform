@@ -61,17 +61,27 @@ class ChatProvider with ChangeNotifier {
     currentUserId = userId;
 
     _socketService.connect(userId);
+    
     _socketService.listenToMessages((data) {
-      print('📥 Socket message received: $data');
-      final msg = MessageModel.fromJson(jsonDecode(data));
+      
+      final newMessage =MessageModel(
+        id: 'msg2',
+        senderId: 'user2',
+        recieverId: 'user1',
+        conversationId: conversationId,
+        text: data['text'],
+        media: [],
+        status: 'Received',
+        sentAt: data['sentAt'],
+      );
+      print('New message received: ${jsonEncode(data)}');
+      // final alreadyExists = messages.any((m) => m.id == newMessage.id);
+      // if (alreadyExists) {
+      //   print('⚠️ Duplicate message skipped: ${newMessage.id}');
+      //   return;
+      // }
 
-      final alreadyExists = messages.any((m) => m.id == msg.id);
-      if (alreadyExists) {
-        print('⚠️ Duplicate message skipped: ${msg.id}');
-        return;
-      }
-
-  messages.insert(0, msg);
+  messages.insert(0, newMessage);
   notifyListeners();
 });
 

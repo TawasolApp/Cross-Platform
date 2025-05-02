@@ -3,18 +3,19 @@ import 'package:linkedin_clone/features/messaging/presentation/provider/chat_pro
 import 'package:linkedin_clone/features/messaging/presentation/widgets/chat_input_bar.dart';
 import 'package:linkedin_clone/features/messaging/presentation/widgets/message_tile.dart';
 import 'package:provider/provider.dart';
-import 'package:linkedin_clone/core/services/token_service.dart'; // for getting userId
+import 'package:linkedin_clone/core/services/token_service.dart';
+
 
 class ChatPage extends StatefulWidget {
   final String conversationId;
-  final String receiverId; // Add this line
+  final String receiverId;
   final String userName;
   final String profileImageUrl;
 
   const ChatPage({
     super.key,
     required this.conversationId,
-    required this.receiverId, // Add this line
+    required this.receiverId,
     required this.userName,
     required this.profileImageUrl,
   });
@@ -25,13 +26,7 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   String currentUserId = '';
-  late ChatProvider _chatProvider;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _chatProvider = Provider.of<ChatProvider>(context, listen: false);
-  }
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -41,28 +36,24 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _initChat() async {
     final userId = await TokenService.getUserId();
-    setState(() => currentUserId = userId ?? '');
+    currentUserId = userId ?? '';
 
-    _chatProvider.setConversationId(widget.conversationId);
-    _chatProvider.setUserName(widget.userName);
-    _chatProvider.setUserImage(widget.profileImageUrl);
-    _chatProvider.setCurrentUserId(currentUserId);
-    _chatProvider.fetchMessages(widget.conversationId);
-    print('Fetching messages for conversationId: ${widget.conversationId}');
-    print('Current userId: $currentUserId');
-    _chatProvider.initSocket(currentUserId, widget.conversationId);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    chatProvider.setConversationId(widget.conversationId);
+    chatProvider.setUserName(widget.userName);
+    chatProvider.setUserImage(widget.profileImageUrl);
+    chatProvider.setCurrentUserId(currentUserId);
+    await chatProvider.fetchMessages(widget.conversationId);
+    chatProvider.initSocket(currentUserId, widget.conversationId);
   }
 
   @override
   void dispose() {
-    _chatProvider.disposeSocket(); // ✅ SAFE
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ChatProvider>(context);
-
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -71,7 +62,12 @@ class _ChatPageState extends State<ChatPage> {
         ),
         title: Row(
           children: [
-            CircleAvatar(backgroundImage: NetworkImage(widget.profileImageUrl)),
+            CircleAvatar(
+              backgroundImage: widget.profileImageUrl.isNotEmpty
+                  ? NetworkImage(widget.profileImageUrl)
+                  : const AssetImage('assets/images/profile_placeholder.png')
+                      as ImageProvider,
+            ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,34 +79,39 @@ class _ChatPageState extends State<ChatPage> {
           ],
         ),
       ),
-      body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    reverse: true,
-                    itemCount: provider.messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = provider.messages[index];
-                      final isMe = msg.senderId == currentUserId;
-                      return MessageBubble(message: msg, isMe: isMe);
-                    },
-                  ),
-                ),
-                ChatInputBar(
-                  onSend: (text) async{
-                    final userId = await TokenService.getUserId() ?? '';
-                    print(userId);
-                    //print('Sending message to ${widget.receiverId}: $text');
-                    _chatProvider.sendTextMessage(
-                      widget.receiverId, // Replace with actual receiverId
-                      text,
-                    );
+      body: Consumer<ChatProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  reverse: true,
+                  controller: _scrollController,
+                  itemCount: provider.messages.length,
+                  itemBuilder: (context, index) {
+                    final msg = provider.messages[index];
+                    final isMe = msg.senderId == currentUserId;
+                    return MessageBubble(message: msg, isMe: isMe);
                   },
                 ),
-              ],
-            ),
+              ),
+              ChatInputBar(
+                onSend: (text) async {
+                  final userId = await TokenService.getUserId() ?? '';
+                  Provider.of<ChatProvider>(context, listen: false).sendTextMessage(
+                    widget.receiverId,
+                    text,
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

@@ -10,21 +10,40 @@ class MessagingSocketService {
 
 
   void connect(String userId) {
-    socket = IO.io('https://tawasolapp.me', <String, dynamic>{
+  socket = IO.io(
+    'wss://tawasolapp.me',
+    <String, dynamic>{
       'transports': ['websocket'],
-    });
+      'upgrade': false, // Important for compatibility
+      'query': {'userId': userId}, // ✅ MATCH frontend
+      'withCredentials': true,     // ✅ MATCH frontend
+      'reconnection': true,
+      'reconnectionAttempts': 5,
+      'reconnectionDelay': 1000,
+    },
+  );
 
-    socket.connect();
+  socket.connect();
 
-    socket.onConnect((_) {
-      print('✅ Connected to Socket.IO');
-      print('🔑 Registering user: $userId');
-      socket.emit('register', userId);
-    });
+  socket.onConnect((_) {
+    print('✅ Connected to Socket.IO');
+    print('🔑 Registering user: $userId');
+    socket.emit('register', userId); // Optional if query is enough
+  });
 
-    socket.onConnectError((data) => print('❌ Socket connection error: $data'));
-    socket.onDisconnect((_) => print('🔌 Socket disconnected'));
-  }
+  socket.onDisconnect((reason) {
+    print('🔌 Socket disconnected: $reason'); // ADD THIS
+  });
+
+  socket.onConnectError((err) {
+    print('❌ Socket connection error: $err'); // ADD THIS
+  });
+
+  socket.onError((err) {
+    print('❗ General socket error: $err'); // ADD THIS
+  });
+}
+
 
   void listenToMessages(Function(dynamic) onMessage) {
     socket.on('receive_message', (data) {
@@ -33,9 +52,16 @@ class MessagingSocketService {
     });
   }
 
-  void sendMessage(Map<String, dynamic> message) {
-    socket.emit('send_message', message);
-  }
+ void sendMessage(Map<String, dynamic> message) {
+  socket.emitWithAck('send_message', message, ack: (data) {
+    print('🟢 Message ACK: $data');
+
+    if (data is Map && data['success'] != true) {
+      print('❌ Message send failed');
+    }
+  });
+}
+
 
   void sendTyping(dynamic payload) {
     socket.emit('typing', payload);
