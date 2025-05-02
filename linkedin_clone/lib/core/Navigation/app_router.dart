@@ -12,6 +12,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/login_
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_verification_page.dart.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/manage_my_network_body.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
@@ -278,7 +279,13 @@ class AppRouter {
           return RepostsPage(postId: postId);
         },
       ),
-
+      // GoRoute(
+      //   path: RouteNames.jobDetails,
+      //   builder: (context, state) {
+      //     final jobId = state.extra as String;
+      //     return JobDetailsScreen(jobId: jobId);
+      //   },
+      // )
     ],
   );
 }

@@ -36,4 +36,5 @@ class RouteNames {
   static const String adminPanel = '/admin_panel';
   static const String repostPage = '/reposts';
   static const String companyProfile = '/company_profile';
+  static const String jobDetails = '/job_details';
 }

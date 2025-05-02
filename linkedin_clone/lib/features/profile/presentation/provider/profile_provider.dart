@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/core/api/media.dart';
 import 'package:image_picker/image_picker.dart';
@@ -1227,6 +1228,48 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> hasEndorsedSkill(String skillName) async {
+  // Get the current user ID
+  final currentUserId = await TokenService.getUserId();
+  
+  if (currentUserId == null) {
+    return false;
+  }
+
+  // Check if we have the endorsements loaded for this skill
+  if (_currentEndorsements != null) {
+    return _currentEndorsements!.any((e) => e.userId == currentUserId);
+  }
+
+  // If endorsements aren't loaded, fetch them first
+  try {
+    _isLoadingEndorsements = true;
+    notifyListeners();
+
+    final params = GetSkillEndorsementsParams(
+      userId: _userId!, // The profile we're viewing
+      skillName: skillName,
+    );
+
+    final result = await getSkillEndorsementsUseCase.call(params);
+
+    return result.fold(
+      (failure) => false,
+      (endorsements) {
+        _currentEndorsements = endorsements;
+        return endorsements.any((e) => e.userId == currentUserId);
+      },
+    );
+  } catch (e) {
+    debugPrint('Error checking endorsement: $e');
+    return false;
+  } finally {
+    _isLoadingEndorsements = false;
+    notifyListeners();
+  }
+}
+
 
   // Helper methods
   void _setLoading(bool loading) {

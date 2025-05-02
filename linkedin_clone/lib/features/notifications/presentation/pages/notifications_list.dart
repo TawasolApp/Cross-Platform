@@ -17,7 +17,7 @@ class NotificationsListPage extends StatefulWidget {
 }
 
 class _NotificationsListPageState extends State<NotificationsListPage> {
-  String _userId = '';
+  String _id = '';
   final ScrollController _notificationsScrollController = ScrollController();
   bool _showScrollToTop = false;
 
@@ -33,9 +33,9 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
       // Get user ID
       final isCompany = await TokenService.getIsCompany();
       if (isCompany == true) {
-        _userId = (await TokenService.getCompanyId()).toString();
+        _id = (await TokenService.getCompanyId()).toString();
       } else {
-        _userId = (await TokenService.getUserId()).toString();
+        _id = (await TokenService.getUserId()).toString();
       }
 
       provider.initialize();
@@ -51,7 +51,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
         if (maxScroll - currentScroll <= scrollThreshold &&
             !provider.isLoadingMore &&
             provider.hasMore) {
-          provider.getNotifications(_userId, loadMore: true);
+          provider.getNotifications(_id, loadMore: true);
         }
 
         // Show/hide scroll-to-top button
@@ -84,7 +84,13 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
                   ElevatedButton(
                     onPressed: () async {
                       provider.resetErrors();
-                      await provider.getNotifications(_userId);
+                      final isCompany = await TokenService.getIsCompany();
+                      if (isCompany == true) {
+                        _id = (await TokenService.getCompanyId()).toString();
+                      } else {
+                        _id = (await TokenService.getUserId()).toString();
+                      }
+                      await provider.getNotifications(_id);
                     },
                     child: const Text('Retry'),
                   ),
@@ -141,9 +147,9 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        await provider.getNotifications(_userId);
-        await provider.getUnreadNotifications(_userId);
-        await provider.getUnseenNotificationsCount(_userId);
+        await provider.getNotifications(_id);
+        await provider.getUnreadNotifications(_id);
+        await provider.getUnseenNotificationsCount(_id);
       },
       child: ListView.builder(
         controller: scrollController,
@@ -172,7 +178,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
       onTap: () async {
         if (!notification.isRead) {
           await provider.markNotificationAsRead(
-            _userId,
+            _id,
             notification.notificationId,
           );
         }
@@ -213,11 +219,11 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
     switch (notification.type) {
       case 'React':
         // Navigate to post details
-        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        context.push(RouteNames.postDetails, extra: notification.referenceId);
         break;
       case 'Comment':
         // Navigate to post details with comment focus
-        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        context.push(RouteNames.postDetails, extra: notification.referenceId);
         break;
       case 'UserConnection':
         // Navigate to profile
