@@ -28,7 +28,7 @@ class _JobCardState extends State<JobCard> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => JobDetailsScreen(job: widget.job),
+              builder: (_) => JobDetailsScreen(jobId: widget.job.id),
             ),
           );
 

@@ -72,6 +72,7 @@ import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_cas
 import 'package:linkedin_clone/features/jobs/domain/usecases/update_application_status_use_case.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_applicants_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_details_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
@@ -665,6 +666,12 @@ ChangeNotifierProvider(
                     ),
                   ),
                 ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => JobDetailsProvider(
+                JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
               ),
         ),
       ],

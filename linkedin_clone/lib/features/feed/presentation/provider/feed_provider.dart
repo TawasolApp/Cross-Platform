@@ -237,11 +237,17 @@ class FeedProvider extends ChangeNotifier {
     //bool refresh = false,
     bool forceRefresh = false,
   }) async {
+<<<<<<< HEAD
     if (_isLoading) {
       print("Fetch user posts already in progress, skipping...");
       return;
     }
     if (!forceRefresh && _lastFetchedUserId == searchUser) {
+=======
+    print('Provider: Fetching user posts...');
+    // Skip fetching if already fetched same userId and not forced
+    if (!forceRefresh && _lastFetchedUserId == userId) {
+>>>>>>> origin/feature/jobsModule
       print("🟡 Skipping fetch — already fetched userId: $userId");
       return;
     }
@@ -291,7 +297,20 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
+<<<<<<< HEAD
   Future<void> createPost({
+=======
+  void resetUserPosts() {
+    _userPosts = [];
+    _isLoading = false;
+    _errorMessage = null;
+    _lastFetchedUserId = null;
+    notifyListeners();
+  }
+
+  Future<void> createPost(
+    String userId, {
+>>>>>>> origin/feature/jobsModule
     required String content,
     List<String>? media,
     List<String>? taggedUsers,

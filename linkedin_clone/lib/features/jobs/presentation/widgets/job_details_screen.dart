@@ -4,6 +4,7 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/jobs/presentation/pages/job_applicants_page.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_details_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/widgets/job_apply_widget.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
@@ -12,8 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:confetti/confetti.dart';
 
 class JobDetailsScreen extends StatefulWidget {
-  final Job job;
-  const JobDetailsScreen({super.key, required this.job});
+  final String jobId;
+  const JobDetailsScreen({super.key, required this.jobId});
 
   @override
   State<JobDetailsScreen> createState() => _JobDetailsScreenState();
@@ -30,26 +31,38 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
   @override
   void initState() {
     super.initState();
+
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 2),
     );
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
+
     Future.microtask(() async {
       final tokenCompanyId = await TokenService.getCompanyId();
       final tokenIsCompany = await TokenService.getIsCompany();
-      print("Token Company ID: $tokenCompanyId");
-      print("Token Is Company: $tokenIsCompany");
-      print('Job Status: ${widget.job.status}');
+      // Fetch job details
+      final jobProvider = Provider.of<JobDetailsProvider>(
+        context,
+        listen: false,
+      );
+      await jobProvider.fetchJob(widget.jobId);
+      final job = Provider.of<JobDetailsProvider>(context, listen: false).job;
+      if (job != null) {
+        print('Job Status: ${job.status}');
+        if (job.status.toLowerCase() == 'accepted') {
+          _confettiController.play();
+        }
+      }
       if (tokenCompanyId != null &&
-          tokenCompanyId == widget.job.companyId &&
+          tokenCompanyId == job?.companyId &&
           tokenIsCompany == true) {
         setState(() {
           _canSeeApplicants = true;
         });
       }
       // 🎉 Play confetti if accepted
-      if (widget.job.status.toLowerCase() == 'accepted') {
+      if (job?.status.toLowerCase() == 'accepted') {
         _confettiController.play();
       }
     });
@@ -74,7 +87,60 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final job = widget.job;
+    final jobProvider = context.watch<JobDetailsProvider>();
+
+    if (jobProvider.isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              Icon(Icons.work_outline, size: 60, color: Colors.blue),
+              SizedBox(height: 20),
+              CircularProgressIndicator(color: Colors.blue),
+              SizedBox(height: 16),
+              Text(
+                "Fetching job details...",
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (jobProvider.error != null) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, color: Colors.red, size: 60),
+              const SizedBox(height: 12),
+              Text(
+                jobProvider.error!,
+                style: const TextStyle(fontSize: 16, color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<JobDetailsProvider>().fetchJob(widget.jobId);
+                },
+                child: const Text("Retry"),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final job = jobProvider.job;
+
+    if (job == null) {
+      return const Center(child: Text('Job not found.'));
+    }
     final savedJobsProvider = context.watch<SavedJobsProvider>();
     final isSaved = savedJobsProvider.isSaved(job.id);
     return Stack(
@@ -163,9 +229,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder:
-                                            (_) => ApplicantsScreen(
-                                              jobId: widget.job.id,
-                                            ),
+                                            (_) =>
+                                                ApplicantsScreen(jobId: job.id),
                                       ),
                                     );
                                   },
