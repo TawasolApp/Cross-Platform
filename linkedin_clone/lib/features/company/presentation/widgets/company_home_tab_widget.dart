@@ -38,7 +38,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
       if (userId != null &&
           feedProvider.userPosts.isEmpty &&
           !feedProvider.isLoading) {
-        await feedProvider.fetchUserPosts(widget.companyId, widget.companyId);
+        await feedProvider.fetchUserPosts(widget.companyId);
       }
     });
   }

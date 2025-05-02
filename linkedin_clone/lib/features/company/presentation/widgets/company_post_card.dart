@@ -64,12 +64,18 @@ class CompanyPostCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 ReactionSummaryBar(post: post),
                 const Divider(height: 2),
-                PostFooter(
-                  post: post,
-                  comments: post.comments,
-                  shares: post.shares,
-                  userId: currentUserId,
-                ),
+            PostFooter(
+              post: post,
+              comments: post.comments,
+              shares: post.shares,
+              profileImage: post.authorPicture ?? '',
+              profileName: post.authorName,
+              profileTitle: post.authorBio,
+              showRepostButton: post.authorId == currentUserId ,
+              // (post.authorId == currentUserId ||
+              //     post.isSilentRepost == true) &&
+              // post.parentPost != null,
+            ),
               ],
             ),
           ),
