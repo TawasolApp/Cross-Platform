@@ -154,6 +154,7 @@ class FeedProvider extends ChangeNotifier {
     int limit = 10,
     bool forceRefresh = false,
   }) async {
+    print('Provider: Fetching user posts...');
     // Skip fetching if already fetched same userId and not forced
     if (!forceRefresh && _lastFetchedUserId == userId) {
       print("🟡 Skipping fetch — already fetched userId: $userId");
@@ -193,6 +194,14 @@ class FeedProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void resetUserPosts() {
+    _userPosts = [];
+    _isLoading = false;
+    _errorMessage = null;
+    _lastFetchedUserId = null;
+    notifyListeners();
   }
 
   Future<void> createPost(

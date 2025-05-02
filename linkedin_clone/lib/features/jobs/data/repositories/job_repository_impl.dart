@@ -13,15 +13,23 @@ class JobRepositoryImpl implements JobRepository {
   JobRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<Job>> getRecentJobs(String companyId,{int page = 1, int limit = 4}) async {
-    List<Job> jobs = await remoteDataSource.getRecentJobs(companyId,page: page,limit: limit);
+  Future<List<Job>> getRecentJobs(
+    String companyId, {
+    int page = 1,
+    int limit = 4,
+  }) async {
+    List<Job> jobs = await remoteDataSource.getRecentJobs(
+      companyId,
+      page: page,
+      limit: limit,
+    );
     print('Jobs at repository: ${jobs}');
     return jobs;
   }
 
   @override
   Future<bool> addJob(CreateJobEntity job, String companyId) async {
-   return await remoteDataSource.addJob(
+    return await remoteDataSource.addJob(
       CreateJobModel(
         position: job.position,
         industry: job.industry,
@@ -36,56 +44,68 @@ class JobRepositoryImpl implements JobRepository {
     );
   }
 
-@override
-Future<List<Job>> searchJobs({
-  String? keyword,
-  String? location,
-  String? industry,
-  String? experienceLevel,
-  String? company,
-  double? minSalary,
-  double? maxSalary,
-  int page = 1,
-  int limit = 5,
-}) {
-  return remoteDataSource.searchJobs(
-    keyword: keyword,
-    location: location,
-    industry: industry,
-    experienceLevel: experienceLevel,
-    company: company,
-    minSalary: minSalary,
-    maxSalary: maxSalary,
-    page: page,
-    limit: limit,
-  );
-}
+  @override
+  Future<List<Job>> searchJobs({
+    String? keyword,
+    String? location,
+    String? industry,
+    String? experienceLevel,
+    String? company,
+    double? minSalary,
+    double? maxSalary,
+    int page = 1,
+    int limit = 5,
+  }) {
+    return remoteDataSource.searchJobs(
+      keyword: keyword,
+      location: location,
+      industry: industry,
+      experienceLevel: experienceLevel,
+      company: company,
+      minSalary: minSalary,
+      maxSalary: maxSalary,
+      page: page,
+      limit: limit,
+    );
+  }
 
-@override
-Future<bool> deleteJob(String jobId) {
-  return remoteDataSource.deleteJob(jobId);
-}
+  @override
+  Future<bool> deleteJob(String jobId) {
+    return remoteDataSource.deleteJob(jobId);
+  }
 
-@override
-Future<bool> applyForJob(ApplyForJobEntity application) {
-  return remoteDataSource.applyForJob(application);
-}
-@override
-Future<List<ApplicationEntity>> getApplicants(String jobId,{int page = 1, int limit = 5}) {
-  return remoteDataSource.getApplicants(jobId,page: page, limit: limit);
-}
-@override
-Future<bool> updateApplicationStatus(String applicationId, String newStatus) {
-  return remoteDataSource.updateApplicationStatus(applicationId, newStatus);
-}
-@override
-Future<bool> saveJob(String jobId) {
-  return remoteDataSource.saveJob(jobId);
-}
+  @override
+  Future<bool> applyForJob(ApplyForJobEntity application) {
+    return remoteDataSource.applyForJob(application);
+  }
 
-@override
-Future<bool> unsaveJob(String jobId) {
-  return remoteDataSource.unsaveJob(jobId);
-}
+  @override
+  Future<List<ApplicationEntity>> getApplicants(
+    String jobId, {
+    int page = 1,
+    int limit = 5,
+  }) {
+    return remoteDataSource.getApplicants(jobId, page: page, limit: limit);
+  }
 
+  @override
+  Future<bool> updateApplicationStatus(String applicationId, String newStatus) {
+    return remoteDataSource.updateApplicationStatus(applicationId, newStatus);
+  }
+
+  @override
+  Future<bool> saveJob(String jobId) {
+    return remoteDataSource.saveJob(jobId);
+  }
+
+  @override
+  Future<bool> unsaveJob(String jobId) {
+    return remoteDataSource.unsaveJob(jobId);
+  }
+
+  @override
+  Future<Job> getJobById(String jobId) async {
+    final job = await remoteDataSource.getJobById(jobId);
+    return job;
+  }
 }

@@ -12,6 +12,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_edi
 import 'package:linkedin_clone/features/company/presentation/widgets/company_list_followers.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/company_page_tabs.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_create_screen.dart';
+import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -122,6 +123,8 @@ class CompanyProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+  
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(

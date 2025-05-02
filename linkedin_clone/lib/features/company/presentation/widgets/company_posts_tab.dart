@@ -15,15 +15,22 @@ class PostsTabWidget extends StatefulWidget {
 }
 
 class _PostsTabWidgetState extends State<PostsTabWidget> {
+  bool _hasReset = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && !_hasReset) {
+        context.read<FeedProvider>().resetUserPosts();
+        _hasReset = true;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
-
     return Consumer<CompanyProvider>(
       builder: (context, companyProvider, child) {
         // Fetch isManager from CompanyProvider

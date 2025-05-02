@@ -85,7 +85,7 @@ class RecentJobsWidget extends StatelessWidget {
                               MaterialPageRoute(
                                 builder:
                                     (context) => JobDetailsScreen(
-                                  job: job,
+                                  jobId: job.id,
                               ),
                                 ),
                               

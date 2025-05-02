@@ -37,7 +37,8 @@ class JobRemoteDataSource {
       throw Exception('Failed to load recent jobs: $e');
     }
   }
-Future<List<JobModel>> searchJobs({
+
+  Future<List<JobModel>> searchJobs({
     String? keyword,
     String? location,
     String? industry,
@@ -97,6 +98,7 @@ Future<List<JobModel>> searchJobs({
       throw Exception('Error searching jobs: $e');
     }
   }
+
   Future<bool> addJob(CreateJobModel job, String companyId) async {
     final token = await TokenService.getToken();
     try {
@@ -127,8 +129,6 @@ Future<List<JobModel>> searchJobs({
       return false;
     }
   }
-
-  
 
   Future<bool> deleteJob(String jobId) async {
     final token = await TokenService.getToken();
@@ -295,6 +295,36 @@ Future<List<JobModel>> searchJobs({
     } catch (e) {
       print('❌ Exception during unsaveJob: $e');
       return false;
+    }
+  }
+
+  Future<JobModel> getJobById(String jobId) async {
+    final token = await TokenService.getToken();
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/jobs/$jobId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      print(
+        '📥 Get Job By ID Response: ${response.statusCode} - ${response.body}',
+      );
+
+      if (response.statusCode == 200) {
+        final jsonMap = json.decode(response.body);
+        return JobModel.fromJson(jsonMap);
+      } else {
+        throw Exception(
+          'Failed to fetch job by ID. Status Code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('❌ Exception while fetching job by ID: $e');
+      throw Exception('Error fetching job by ID: $e');
     }
   }
 }
