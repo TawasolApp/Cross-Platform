@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 
 class ChatInputBar extends StatefulWidget {
   final void Function(String) onSend;
+  final void Function(String) onTyped;
 
-  const ChatInputBar({super.key, required this.onSend});
+  const ChatInputBar({
+    super.key,
+    required this.onSend,
+    required this.onTyped,
+  });
 
   @override
   State<ChatInputBar> createState() => _ChatInputBarState();
@@ -13,7 +18,6 @@ class _ChatInputBarState extends State<ChatInputBar> {
   final _controller = TextEditingController();
 
   void _handleSend() {
-    print('Sending message: ${_controller.text}');
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       widget.onSend(text);
@@ -30,9 +34,12 @@ class _ChatInputBarState extends State<ChatInputBar> {
           Expanded(
             child: TextField(
               controller: _controller,
+              onChanged: widget.onTyped, // ✅ Triggers typing event
               decoration: const InputDecoration(
                 hintText: "Write a message...",
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20))),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
               ),
             ),
           ),

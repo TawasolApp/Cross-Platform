@@ -15,6 +15,7 @@ class ChatProvider with ChangeNotifier {
   String userName = '';
   String userImage = '';
   String currentUserId = '';
+  bool isTyping = false;
 
   ChatProvider(this.getChatUseCase);
 
@@ -84,8 +85,18 @@ class ChatProvider with ChangeNotifier {
   messages.insert(0, newMessage);
   notifyListeners();
 });
+      _socketService.listenToTyping((data) {
+      print('✏️ Typing event: $data');
+      isTyping = true;
+      notifyListeners();
+      Future.delayed(const Duration(seconds: 2), () {
+        isTyping = false;
+        notifyListeners();
+      });
+    });
 
     _socketService.markMessagesRead(conversationId);
+    _socketService.markAllDelivered();
   }
 
   void disposeSocket() {
@@ -118,4 +129,43 @@ void sendTextMessage(String recipientId, String text) {
   void sendTyping(String receiverId) {
     _socketService.sendTyping({'receiverId': receiverId});
   }
+
+   void markMessagesFromOtherUserAsDelivered() {
+    for (int i = 0; i < messages.length; i++) {
+      if (messages[i].senderId != currentUserId && messages[i].status != 'Delivered') {
+        messages[i] = MessageModel(
+          id: messages[i].id,
+          senderId: messages[i].senderId,
+          recieverId: messages[i].recieverId,
+          conversationId: messages[i].conversationId,
+          text: messages[i].text,
+          media: messages[i].media,
+          status: 'Delivered',
+          sentAt: messages[i].sentAt,
+        );
+      }
+    }
+    notifyListeners();
+  }
+
+  // ✅ Optional: mark messages as Read
+  void markAllMessagesAsRead() {
+    for (int i = 0; i < messages.length; i++) {
+      if (messages[i].status != 'Read') {
+        messages[i] = MessageModel(
+          id: messages[i].id,
+          senderId: messages[i].senderId,
+          recieverId: messages[i].recieverId,
+          conversationId: messages[i].conversationId,
+          text: messages[i].text,
+          media: messages[i].media,
+          status: 'Read',
+          sentAt: messages[i].sentAt,
+        );
+      }
+    }
+    notifyListeners();
+  }
+
+
 }

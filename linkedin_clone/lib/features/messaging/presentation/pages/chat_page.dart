@@ -99,7 +99,21 @@ class _ChatPageState extends State<ChatPage> {
                   },
                 ),
               ),
+             if (provider.isTyping)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Typing...",
+                      style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                ),
               ChatInputBar(
+                onTyped: (text) {
+                  context.read<ChatProvider>().sendTyping(widget.receiverId);
+                },
                 onSend: (text) async {
                   final userId = await TokenService.getUserId() ?? '';
                   Provider.of<ChatProvider>(context, listen: false).sendTextMessage(

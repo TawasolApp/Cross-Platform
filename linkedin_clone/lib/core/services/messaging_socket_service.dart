@@ -52,6 +52,28 @@ class MessagingSocketService {
     });
   }
 
+    void listenToTyping(Function(dynamic) onTyping) {
+    socket.on('typing', (data) {
+      print('✏️ Typing received: $data');
+      onTyping(data);
+    });
+  }
+  // ✅ Delivered event listener
+  void listenToDelivered(Function(dynamic) onDelivered) {
+    socket.on('messages_delivered', (data) {
+      print('📬 Messages delivered: $data');
+      onDelivered(data);
+    });
+  }
+
+  // ✅ Read event listener
+  void listenToRead(Function(dynamic) onRead) {
+    socket.on('messages_read', (data) {
+      print('📖 Messages read: $data');
+      onRead(data);
+    });
+  }
+
  void sendMessage(Map<String, dynamic> message) {
   socket.emitWithAck('send_message', message, ack: (data) {
     print('🟢 Message ACK: $data');
