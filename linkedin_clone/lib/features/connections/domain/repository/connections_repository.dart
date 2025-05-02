@@ -31,12 +31,7 @@ abstract class ConnectionsRepository {
   Future<bool> withdrawConnectionRequest(String userId);
   Future<bool> unfollowUser(String userId);
   Future<bool> followUser(String userId);
-  Future<bool> blockUser(String userId);
-  Future<bool> unblockUser(String userId);
-  Future<List<ConnectionsUserEntity>> getBlockedList({
-    int page = 0,
-    int limit = 0,
-  });
+
   Future<List<PeopleYouMayKnowUserEntity>> getPeopleYouMayKnowList({
     int page = 0,
     int limit = 0,

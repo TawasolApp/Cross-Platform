@@ -6,7 +6,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_pro
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
@@ -38,7 +38,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     CompaniesListScreen(),
     JobSearchPage(),
     NotificationsListPage(),
-    
+
     SettingsPage(), // Will be replaced by Settings module
   ];
 
@@ -205,7 +205,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             icon: const Icon(Icons.message),
             onPressed: () {
               messagingProvider.fetchConversations();
-              print("Conversations gayat: ${messagingProvider.conversations.length}");
+              print(
+                "Conversations gayat: ${messagingProvider.conversations.length}",
+              );
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ConversationListPage()),

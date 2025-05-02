@@ -3,7 +3,7 @@ import 'package:linkedin_clone/features/connections/domain/entities/connections_
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/label_card.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:provider/provider.dart';
 import '../misc/routing_functions.dart';

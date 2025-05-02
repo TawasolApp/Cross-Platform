@@ -35,9 +35,14 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:linkedin_clone/features/company/presentation/providers/related_companies_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
+import 'package:linkedin_clone/features/privacy/data/datasources/privacy_remote_data_source.dart';
+import 'package:linkedin_clone/features/privacy/data/repository/privacy_repository_impl.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/report_post_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/report_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart';
@@ -89,6 +94,7 @@ import 'package:linkedin_clone/features/messaging/presentation/provider/chat_pro
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:linkedin_clone/features/notifications/domain/usecases/get_unread_notifications_usecase.dart';
 import 'package:linkedin_clone/features/notifications/domain/usecases/subscribe_to_notifications_usecase.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -147,7 +153,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usec
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
-import 'features/connections/presentations/widgets/misc/enums.dart';
+import 'features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
@@ -187,11 +193,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  NotificationsRemoteDataSourceImpl(baseUrl: 'ttps://tawasolapp.me/api').initializeFcm();
+  NotificationsRemoteDataSourceImpl(
+    baseUrl: 'ttps://tawasolapp.me/api',
+  ).initializeFcm();
 
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
@@ -214,16 +220,30 @@ void main() async {
   final ProfileRemoteDataSourceImpl dataSourceProfile =
       ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
 
-// Initialize notifications components
-  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
-  final notificationsRepository = NotificationRepositoryImpl(notificationDataSource: notificationsRemoteDataSource);
-  final getNotificationsUseCase = GetNotificationsUseCase(notificationsRepository);
-  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(notificationsRepository);
-  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(notificationsRepository);
-  final getUnreadNotificationsUseCase = GetUnreadNotificationsUseCase(notificationsRepository);
+  // Initialize notifications components
+  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(
+    baseUrl: 'https://tawasolapp.me/api',
+  );
+  final notificationsRepository = NotificationRepositoryImpl(
+    notificationDataSource: notificationsRemoteDataSource,
+  );
+  final getNotificationsUseCase = GetNotificationsUseCase(
+    notificationsRepository,
+  );
+  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(
+    notificationsRepository,
+  );
+  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(
+    notificationsRepository,
+  );
+  final getUnreadNotificationsUseCase = GetUnreadNotificationsUseCase(
+    notificationsRepository,
+  );
   final getFcmTokenUseCase = GetFcmTokenUseCase(notificationsRepository);
   final initializeFcmUseCase = InitializeFcmUseCase(notificationsRepository);
-  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(notificationsRepository);
+  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(
+    notificationsRepository,
+  );
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -272,7 +292,9 @@ void main() async {
   final adminRemoteDataSource = AdminRemoteDataSourceImpl(dio);
   final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
   final conversationDataSource = ConversationRemoteDataSource();
-  final messagingRepository = ConversationRepositoryImpl(conversationDataSource);
+  final messagingRepository = ConversationRepositoryImpl(
+    conversationDataSource,
+  );
   await Hive.initFlutter();
   await Hive.openBox('appBox');
 
@@ -307,16 +329,19 @@ void main() async {
                 resendEmailUsecase: resendEmailUsecase,
               ),
         ),
-ChangeNotifierProvider(
-          create: (_) => NotificationsProvider(
-            getNotificationsUseCase: getNotificationsUseCase,
-            markNotificationAsReadUseCase: markNotificationAsReadUseCase,
-            getUnseenNotificationsCountUseCase: getUnseenNotificationsCountUseCase,
-            getUnreadNotificationsUseCase: getUnreadNotificationsUseCase,
-            getFcmTokenUseCase: getFcmTokenUseCase,
-            initializeFcmUseCase: initializeFcmUseCase,
-            subscribeToNotificationsUseCase: subscribeToNotificationsUseCase,
-          )/*..initialize(),*/
+        ChangeNotifierProvider(
+          create:
+              (_) => NotificationsProvider(
+                getNotificationsUseCase: getNotificationsUseCase,
+                markNotificationAsReadUseCase: markNotificationAsReadUseCase,
+                getUnseenNotificationsCountUseCase:
+                    getUnseenNotificationsCountUseCase,
+                getUnreadNotificationsUseCase: getUnreadNotificationsUseCase,
+                getFcmTokenUseCase: getFcmTokenUseCase,
+                initializeFcmUseCase: initializeFcmUseCase,
+                subscribeToNotificationsUseCase:
+                    subscribeToNotificationsUseCase,
+              ) /*..initialize(),*/,
         ),
         ChangeNotifierProvider(
           create:
@@ -439,27 +464,7 @@ ChangeNotifierProvider(
                     ),
                   ),
                 ),
-                GetBlockedListUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
-                BlockUserUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
-                UnblockUserUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
+
                 GetPeopleYouMayKnowUseCase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
@@ -667,6 +672,47 @@ ChangeNotifierProvider(
                 ),
               ),
         ),
+        ChangeNotifierProvider(
+          create:
+              (_) => PrivacyProvider(
+                blockUserUseCase: BlockUserUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                unblockUserUseCase: UnblockUserUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                getBlockedListUseCase: GetBlockedListUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                reportUserUseCase: ReportUserUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                reportPostUseCase: ReportPostUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(create: (_) => PremiumProvider()),
       ],
       child: const MyApp(),
     ),

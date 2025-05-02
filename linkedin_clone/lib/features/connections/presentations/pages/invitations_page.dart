@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/invitations_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:provider/provider.dart';
 import '../provider/connections_provider.dart';
 
@@ -38,6 +38,7 @@ class _InvitationsPageState extends State<InvitationsPage> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           title: Text(
+            key: const ValueKey('invitations_title_text'),
             'Invitations',
             style: Theme.of(context).textTheme.titleLarge,
           ),

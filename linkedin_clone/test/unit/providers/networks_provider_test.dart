@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';

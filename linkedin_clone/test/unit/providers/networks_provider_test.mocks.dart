@@ -11,11 +11,11 @@ import 'package:linkedin_clone/features/connections/domain/entities/people_you_m
     as _i13;
 import 'package:linkedin_clone/features/connections/domain/repository/connections_repository.dart'
     as _i2;
-import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart'
+import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart'
     as _i10;
-import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart'
+import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart'
     as _i9;
-import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart'
+import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart'
     as _i11;
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart'
     as _i8;

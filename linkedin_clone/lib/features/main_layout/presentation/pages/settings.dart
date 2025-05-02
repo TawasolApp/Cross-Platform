@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/Provider/profile_provider.dart';
 
@@ -26,7 +27,6 @@ class _SettingsPageState extends State<SettingsPage> {
     // );
     // profileProvider.fetchProfile("");
     return Scaffold(
-  
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -106,6 +106,14 @@ class _SettingsPageState extends State<SettingsPage> {
             onTap: () {
               // Navigate to Delete Account Page
               context.go(RouteNames.deleteAccount);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.block),
+            title: const Text("Blocked Users"),
+            onTap: () {
+              // Navigate to Blocked Users Page
+              goToBlocked(context);
             },
           ),
           // Admin Panel Access (only for Admins)

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
 

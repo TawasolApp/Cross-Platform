@@ -9,6 +9,7 @@ class PopUpMenuSortBy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      key: const ValueKey('sorty_connections_by_icon'),
       icon: Icon(Icons.tune, size: 25),
       color: Theme.of(context).textTheme.titleLarge?.color,
 
@@ -119,6 +120,7 @@ class PopUpMenuSortBy extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
+                            key: const ValueKey('choose_filter_button'),
                             onPressed: () {
                               connectionsListProvider.setActiveFilter();
                               Navigator.pop(context);

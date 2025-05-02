@@ -27,6 +27,7 @@ class ConnectionsListActions extends StatelessWidget {
           connectionsProvider: connectionsProvider,
         ),
         IconButton(
+          key: const ValueKey('routing_to_chat_button'),
           icon: Transform.rotate(
             angle: 315 * (3.141592653589793 / 180),
             child: Icon(

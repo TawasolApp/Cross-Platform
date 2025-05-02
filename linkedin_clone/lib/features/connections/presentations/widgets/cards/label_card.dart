@@ -23,6 +23,7 @@ class LabelCard extends StatelessWidget {
             ),
             Spacer(),
             IconButton(
+              key: const ValueKey('back_button_label_card'),
               icon: Icon(Icons.arrow_forward),
               color: Theme.of(context).iconTheme.color,
               onPressed: onTap,

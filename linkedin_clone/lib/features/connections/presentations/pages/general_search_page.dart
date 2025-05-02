@@ -57,6 +57,7 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
               ),
             ),
             suffixIcon: IconButton(
+              key: const ValueKey('close_search_button'),
               icon: Icon(Icons.clear),
               onPressed: () {
                 _searchController.clear();
@@ -67,9 +68,6 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
             setState(() {
               searchText = value;
               searchProvider?.isSearching = value.isNotEmpty;
-              print(
-                "🔗🔗🔗🔗🔗🔗🔗isSearching: ${searchProvider?.isSearching}",
-              );
               if (value.isNotEmpty) {
                 searchProvider!.preformSearch(
                   isInitial: true,
@@ -85,6 +83,7 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
           },
         ),
         leading: IconButton(
+          key: const ValueKey('back_button_search_page'),
           icon: Icon(
             Icons.arrow_back,
             color: Theme.of(context).iconTheme.color,
@@ -108,10 +107,12 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
+                          key: const ValueKey('clear_all_button_search_page'),
                           onPressed: () {
                             provider.clearRecentSearches();
                           },
                           child: Text(
+                            key: const ValueKey('clear_all_search_page_text'),
                             "Clear all",
                             style: TextStyle(
                               color: Theme.of(context).primaryColor,
@@ -171,8 +172,10 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: TextButton(
+                    key: const ValueKey('show_all_results_button_search_page'),
                     onPressed: () {},
                     child: Text(
+                      key: const ValueKey('show_all_results_search_page_text'),
                       "Show all Results",
                       style: TextStyle(
                         fontSize: 16,

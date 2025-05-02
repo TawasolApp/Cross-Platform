@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/dialogs/pop_up_menu_sort_by.dart';
 
 class ListPageAppBar extends StatelessWidget {
@@ -46,6 +46,7 @@ class ListPageAppBar extends StatelessWidget {
               Spacer(),
               if (pageType == PageType.connections)
                 IconButton(
+                  key: const ValueKey('search_list_page_button'),
                   icon: Icon(Icons.search, size: 25),
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   onPressed: () {

@@ -3,9 +3,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
@@ -35,16 +32,12 @@ class NetworksProvider with ChangeNotifier {
 
   List<ConnectionsUserEntity>? followingList;
   List<ConnectionsUserEntity>? followersList;
-  List<ConnectionsUserEntity>? blockedList;
   List<PeopleYouMayKnowUserEntity>? peopleYouMayKnowList;
 
   GetFollowingListUseCase getFollowingListUseCase;
   UnfollowUserUseCase unfollowUseCase;
   GetFollowersListUseCase getFollowersListUseCase;
   FollowUserUseCase followUseCase;
-  GetBlockedListUseCase getBlockedListUseCase;
-  BlockUserUseCase blockUserUseCase;
-  UnblockUserUseCase unblockUserUseCase;
   GetPeopleYouMayKnowUseCase getPeopleYouMayKnowUseCase;
   GetFollowersCountUsecase getFollowersCountUsecase;
   GetFollowingsCountUsecase getFollowingsCountUsecase;
@@ -54,9 +47,6 @@ class NetworksProvider with ChangeNotifier {
     this.unfollowUseCase,
     this.getFollowersListUseCase,
     this.followUseCase,
-    this.getBlockedListUseCase,
-    this.blockUserUseCase,
-    this.unblockUserUseCase,
     this.getPeopleYouMayKnowUseCase,
     this.getFollowersCountUsecase,
     this.getFollowingsCountUsecase,
@@ -140,44 +130,6 @@ class NetworksProvider with ChangeNotifier {
     }
   }
 
-  Future<void> getBlockedList({bool isInitial = false}) async {
-    if (_isBusy) return;
-    _isBusy = true;
-    try {
-      _isLoading = true;
-      _error = null;
-      if (isInitial) {
-        _currentPage = 1;
-        _hasMore = true;
-      } else {
-        _currentPage++;
-      }
-      if (_currentPage == 1) {
-        blockedList = await getBlockedListUseCase.call(
-          page: _currentPage,
-          limit: 15,
-        );
-      } else {
-        final newBlockedList = await getFollowersListUseCase.call(
-          page: _currentPage,
-          limit: 15,
-        );
-        if (newBlockedList.isEmpty) {
-          _hasMore = false;
-        } else {
-          blockedList!.addAll(newBlockedList);
-        }
-      }
-    } catch (e) {
-      print('\nNetworksProvider: getBlockedList $e\n');
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      _isBusy = false;
-      notifyListeners();
-    }
-  }
-
   Future<void> getPeopleYouMayKnowList({bool isInitial = false}) async {
     if (_isBusy) return;
     _isBusy = true;
@@ -241,27 +193,6 @@ class NetworksProvider with ChangeNotifier {
       return await followUseCase.call(userId);
     } catch (e) {
       print('\nNetworksProvider: followUser $e\n');
-      _error = e.toString();
-      return false; // Return false if there was an error
-    }
-  }
-
-  Future<bool> blockUser(String userId) async {
-    print('Block user: $userId');
-    try {
-      return await unfollowUseCase.call(userId);
-    } catch (e) {
-      print('\nNetworksProvider: blockUser $e\n');
-      _error = e.toString();
-      return false; // Return false if there was an error
-    }
-  }
-
-  Future<bool> unblockUser(String userId) async {
-    try {
-      return await followUseCase.call(userId);
-    } catch (e) {
-      print('\nNetworksProvider: unblockUser $e\n');
       _error = e.toString();
       return false; // Return false if there was an error
     }

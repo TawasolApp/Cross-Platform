@@ -24,12 +24,15 @@ import 'package:linkedin_clone/features/main_layout/presentation/pages/main_layo
 import 'package:linkedin_clone/features/main_layout/presentation/pages/signin_security.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/update_email.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/update_info.dart';
+import 'package:linkedin_clone/features/premium/presentations/pages/survey_page.dart';
+import 'package:linkedin_clone/features/privacy/presentations/pages/report_page.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_enums.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/user_profile.dart';
 import '../../features/authentication/presentation/pages/onboarding_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/post_detail_page.dart';
 import '../../features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/reactions_page.dart';
 import 'package:linkedin_clone/features/admin_panel/presentation/pages/reports_page.dart';
@@ -133,9 +136,8 @@ class AppRouter {
       GoRoute(
         path: RouteNames.companyPage,
         builder:
-            (context, state) => CompanyProfileScreen(
-              companyId: "elsewedy-electric",
-            ),
+            (context, state) =>
+                CompanyProfileScreen(companyId: "elsewedy-electric"),
       ),
 
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
@@ -234,6 +236,10 @@ class AppRouter {
         builder: (context, state) => ListPage(type: PageType.followers),
       ),
       GoRoute(
+        path: RouteNames.blockedUsers,
+        builder: (context, state) => ListPage(type: PageType.blocked),
+      ),
+      GoRoute(
         path: RouteNames.following,
         builder: (context, state) => ListPage(type: PageType.following),
       ),
@@ -278,13 +284,32 @@ class AppRouter {
         builder: (context, state) => const GeneralSearchPage(),
       ),
       GoRoute(
+        path: RouteNames.premiumSurvey,
+        builder: (context, state) => const SurveyPage(),
+      ),
+      GoRoute(
         path: RouteNames.repostPage,
         builder: (context, state) {
           final postId = state.extra as String;
           return RepostsPage(postId: postId);
         },
       ),
-
+      GoRoute(
+        path: RouteNames.reportUser,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, String?>;
+          final userId = extras['userId'];
+          return ReportPage(reportedId: userId!, reportType: ReportType.user);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.reportPost,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, String?>;
+          final postId = extras['postId'];
+          return ReportPage(reportedId: postId!, reportType: ReportType.post);
+        },
+      ),
     ],
   );
 }

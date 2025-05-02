@@ -18,6 +18,7 @@ class RemoveConnectionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      key: const ValueKey('remove_connection_dialog'),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(7),
       ), // Makes edges sharp

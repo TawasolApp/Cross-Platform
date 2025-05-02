@@ -9,10 +9,11 @@ import 'package:linkedin_clone/features/connections/presentations/provider/conne
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/cconfirmable_action_button.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 import 'user_card_info.dart';
 import '../pending_requests_actions.dart';
 import '../connections_list_actions.dart';
-import '../misc/enums.dart';
+import '../misc/connections_enums.dart';
 import '../misc/routing_functions.dart';
 
 class UserCard extends StatelessWidget {
@@ -26,6 +27,7 @@ class UserCard extends StatelessWidget {
   final PageType cardType;
   final ConnectionsProvider? connectionsProvider;
   final NetworksProvider? networksProvider;
+  final PrivacyProvider? privacyProvider;
 
   const UserCard({
     super.key,
@@ -39,6 +41,7 @@ class UserCard extends StatelessWidget {
     required this.cardType,
     this.connectionsProvider,
     this.networksProvider,
+    this.privacyProvider,
   });
 
   @override
@@ -130,7 +133,7 @@ class UserCard extends StatelessWidget {
       case PageType.blocked:
         return ConfirmableActionButton(
           buttonText: "Unblock",
-          confirmAction: () => networksProvider!.unblockUser(userId),
+          confirmAction: () => privacyProvider!.unblockUser(userId),
           errorDialogAction: () async => Navigator.pop(context),
           confirmTitle: "Unblock $firstName $lastName?",
           confirmMessage:

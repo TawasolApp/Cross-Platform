@@ -15,6 +15,7 @@ class LinkedInIconicButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      key: const ValueKey('linkedin_iconic_button'),
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         padding: EdgeInsets.symmetric(horizontal: width),

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/linkedin_iconic_button.dart';
+import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
+import 'package:linkedin_clone/features/premium/presentations/widgets/choices_card.dart';
+import 'package:linkedin_clone/features/premium/presentations/widgets/premium_survey_card.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -10,17 +14,44 @@ class SurveyPage extends StatefulWidget {
 }
 
 class _SurveyPageState extends State<SurveyPage> {
-  ProfileProvider? profileProvider;
-  String? firstName;
-  double progressValue = 0;
+  PremiumProvider? premiumProvider;
+  List<String> quesitons = [
+    "which of these best describes your primary goal for using Premium?",
+    "how would you like Premium to help?",
+    "You're 2.6x more likely to get hired with Premium. What is the key to you job search?",
+    "I am looking to learn",
+  ];
+  String subText = "We'll recommend the best plan for you";
+  List<List<String>> options = [
+    ["For my personal goals", "For my Job", "Other"],
+    [
+      "Find a job",
+      "Learn professional skills",
+      "Qrow my network or business",
+      "Find leads",
+      "Hire talent",
+      "Other",
+    ],
+
+    [
+      "See my profile views",
+      "See jobs where I'm a top applicant",
+      "Get resume help",
+      "Stand out when I apply to jobs",
+      "Allow recruiters to contact me",
+      "Other",
+    ],
+  ];
+
+  double progressValue = 0.2;
   String? selectedOption;
+  bool firstPage = true;
+  int index = 0;
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      profileProvider = Provider.of<ProfileProvider>(context, listen: false);
-      profileProvider!.fetchProfile("");
-      firstName = profileProvider!.firstName;
+      premiumProvider = Provider.of<PremiumProvider>(context, listen: false);
     });
   }
 
@@ -30,6 +61,7 @@ class _SurveyPageState extends State<SurveyPage> {
       backgroundColor: Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
         leading: IconButton(
+          key: const ValueKey('exit_premium_plan_button'),
           icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
           onPressed: () {
             Navigator.pop(context);
@@ -37,6 +69,7 @@ class _SurveyPageState extends State<SurveyPage> {
         ),
         actions: [
           TextButton(
+            key: const ValueKey('skip_premium_plan_survey_button'),
             onPressed: () {
               //TODO: implement skip functionality
             },
@@ -56,53 +89,85 @@ class _SurveyPageState extends State<SurveyPage> {
               color: const Color.fromARGB(255, 43, 130, 60),
               backgroundColor: Theme.of(context).colorScheme.onSecondary,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             Text(
               "P R E M I U M",
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            Text(
-              "$firstName, which of these best describes your primary goal for using Premium?",
-              style: Theme.of(context).textTheme.titleLarge,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              "We’ll recommend the right plan for you.",
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            const SizedBox(height: 30),
-            CheckboxListTile(
-              title: const Text("For my personal goals"),
-              value: selectedOption == "personal",
-              onChanged: (val) {
-                setState(() {
-                  selectedOption = "personal";
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: const Text("For my job"),
-              value: selectedOption == "job",
-              onChanged: (val) {
-                setState(() {
-                  selectedOption = "job";
-                });
-              },
-            ),
-            CheckboxListTile(
-              title: const Text("Other"),
-              value: selectedOption == "other",
-              onChanged: (val) {
-                setState(() {
-                  selectedOption = "other";
-                });
-              },
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+
+            PremiumSurveyCard(
+              question: quesitons[index],
+              options: options[index],
+              subText: subText,
             ),
             const Spacer(),
-            Row(mainAxisAlignment: MainAxisAlignment.end, children: []),
-            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (!firstPage)
+                  TextButton(
+                    key: const ValueKey('back_premium_plan_surbey_button'),
+                    onPressed: () {
+                      setState(() {
+                        progressValue = progressValue - 0.2;
+                        index--;
+                        if (progressValue <= 0.2) {
+                          progressValue = 0.2;
+                          firstPage = true;
+                        }
+                      });
+                    },
+                    child: Text(
+                      "Back",
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                Consumer<PremiumProvider>(
+                  builder: (context, provider, child) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        key: const ValueKey('next_premium_plan_surbey_button'),
+
+                        onPressed:
+                            provider.optionSelected
+                                ? () {
+                                  setState(() {
+                                    firstPage = false;
+                                    progressValue += 0.2;
+                                    index++;
+                                  });
+                                }
+                                : () {
+                                  print("Please select an option");
+                                },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: MediaQuery.of(context).size.width * 0.1,
+                          ),
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40.0),
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        child: Text(
+                          "Next",
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ],
         ),
       ),

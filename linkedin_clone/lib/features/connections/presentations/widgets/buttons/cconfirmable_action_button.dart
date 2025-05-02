@@ -37,6 +37,7 @@ class ConfirmableActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
+      key: const ValueKey('confirmable_action_button'),
       onPressed: () async {
         final parentContext = context;
         bool result = false;
