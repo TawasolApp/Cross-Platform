@@ -27,28 +27,29 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
     return Material(
       color: Colors.white,
       child: InkWell(
-        onTap: () async {
-          final result = await Navigator.push(
+        onTap: () {
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => JobDetailsScreen(jobId: widget.job.id),
             ),
-          );
+          ).then((result) {
+            if (result == true && mounted) {
+              final companyProvider = Provider.of<CompanyProvider>(
+                context,
+                listen: false,
+              );
+              final jobSearchProvider = Provider.of<JobSearchProvider>(
+                context,
+                listen: false,
+              );
 
-          if (!mounted) return; 
-
-          if (result == true) {
-            await Provider.of<CompanyProvider>(
-              context,
-              listen: false,
-            ).fetchRecentJobs(widget.companyId, reset: true);
-
-            await Provider.of<JobSearchProvider>(
-              context,
-              listen: false,
-            ).fetchJobs(reset: true);
-          }
+              companyProvider.fetchRecentJobs(widget.companyId, reset: true);
+              jobSearchProvider.fetchJobs(reset: true);
+            }
+          });
         },
+
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           child: Column(
