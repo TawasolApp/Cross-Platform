@@ -62,7 +62,17 @@ class _JobFilterScreenState extends State<JobFilterScreen> {
                 });
               },
               items:
-                  ['Entry', 'Mid', 'Senior'].map((level) {
+                  [
+                    'Internship',
+                    'Entry Level',
+                    'Junior',
+                    'Mid Level',
+                    'Senior',
+                    'Lead',
+                    'Manager',
+                    'Director',
+                    'Executive',
+                  ].map((level) {
                     return DropdownMenuItem(value: level, child: Text(level));
                   }).toList(),
               decoration: InputDecoration(
