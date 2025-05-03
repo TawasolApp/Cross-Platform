@@ -1,0 +1,82 @@
+ {"pending": [
+    {
+      "id": "101",
+      "userId": "118",
+      "username": "SarahLee",
+      "profilePicture": "https://randomuser.me/api/portraits/women/18.jpg",
+      "headline": "Financial Analyst at JP Morgan",
+      "createdAt": "2023-01-15T09:20:00Z"
+    },
+    {
+      "id": "102",
+      "userId": "124",
+      "username": "RobertClark",
+      "profilePicture": "https://randomuser.me/api/portraits/men/24.jpg",
+      "headline": "Cybersecurity Specialist at IBM",
+      "createdAt": "2023-01-28T14:45:00Z"
+    },
+    {
+      "id": "103",
+      "userId": "132",
+      "username": "AmandaNguyen",
+      "profilePicture": "https://randomuser.me/api/portraits/women/32.jpg",
+      "headline": "HR Manager at Salesforce",
+      "createdAt": "2023-02-10T11:30:00Z"
+    },
+    {
+      "id": "104",
+      "userId": "145",
+      "username": "ChristopherWalker",
+      "profilePicture": "https://randomuser.me/api/portraits/men/45.jpg",
+      "headline": "Mechanical Engineer at Boeing",
+      "createdAt": "2023-02-22T16:15:00Z"
+    },
+    {
+      "id": "105",
+      "userId": "153",
+      "username": "JenniferKim",
+      "profilePicture": "https://randomuser.me/api/portraits/women/53.jpg",
+      "headline": "Marketing Specialist at Airbnb",
+      "createdAt": "2023-03-07T10:40:00Z"
+    },
+    {
+      "id": "106",
+      "userId": "167",
+      "username": "EthanWright",
+      "profilePicture": "https://randomuser.me/api/portraits/men/67.jpg",
+      "headline": "UI/UX Designer at Figma",
+      "createdAt": "2023-03-19T15:25:00Z"
+    },
+    {
+      "id": "107",
+      "userId": "171",
+      "username": "MadisonChen",
+      "profilePicture": "https://randomuser.me/api/portraits/women/71.jpg",
+      "headline": "Business Analyst at Oracle",
+      "createdAt": "2023-04-02T09:50:00Z"
+    },
+    {
+      "id": "108",
+      "userId": "183",
+      "username": "JonathanPatel",
+      "profilePicture": "https://randomuser.me/api/portraits/men/83.jpg",
+      "headline": "Cloud Architect at AWS",
+      "createdAt": "2023-04-15T14:35:00Z"
+    },
+    {
+      "id": "109",
+      "userId": "192",
+      "username": "AlyssaRobinson",
+      "profilePicture": "https://randomuser.me/api/portraits/women/92.jpg",
+      "headline": "Content Manager at Canva",
+      "createdAt": "2023-04-28T10:05:00Z"
+    },
+    {
+      "id": "110",
+      "userId": "199",
+      "username": "BrandonLopez",
+      "profilePicture": "https://randomuser.me/api/portraits/men/99.jpg",
+      "headline": "Mobile Developer at Uber",
+      "createdAt": "2023-05-10T15:50:00Z"
+    }
+  ]}

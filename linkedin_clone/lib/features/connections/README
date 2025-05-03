@@ -1,0 +1,68 @@
+LinkedIn Clone - Connections Module
+1. Description of Implemented Features
+
+Connections Management: View, add, and manage connections
+Connection Requests: Send, receive, accept, and reject connection requests
+Followers/Following: View and manage followers and people you follow
+Network Management: Discover and connect with people you may know
+Blocking System: Block and unblock users //not implement by backend yet
+
+2. Folder Structure Overview
+connections/
+├── data/                    # Data layer (API integration, models)
+│   ├── datasources/         # Remote and local data sources
+│   ├── models/              # Data models for connections
+│   └── repositories/        # Repository implementations
+├── domain/                  # Domain layer (business logic)
+│   ├── entities/            # Domain entities
+│   ├── repositories/        # Repository interfaces
+│   └── usecases/            # Business logic use cases
+└── presentations/           # Presentation layer (UI)
+    ├── pages/               # Full screens
+    ├── provider/            # State management
+    └── widgets/             # Reusable UI components
+
+3. File Descriptions
+Data Layer
+Datasources
+connections_remote_data_source.dart: Handles API calls to fetch connections data from the backend server.
+Models
+connections_user_model.dart: Data model for representing connected users, including serialization/deserialization logic.
+people_you_may_know_user_model.dart: Data model for representing recommended users in the "People You May Know" feature.
+Repository Implementation
+connections_repository_impl.dart: Implements the repository interfaces defined in the domain layer, handling data flow between data sources and the application.
+Domain Layer
+Entities
+connections_user_entity.dart: Core business entity representing a connected user.
+people_you_may_know_user_entity.dart: Core business entity representing a recommended user.
+Repository
+connections_repository.dart: Defines interfaces for accessing connection-related data.
+Usecases
+get_people_you_may_know_usecase.dart: Business logic for fetching recommended connections.
+search_user_usecase.dart: Business logic for searching users by various criteria.
+connect/: Directory containing connection request use cases.
+endorse/: Directory containing skill endorsement use cases.
+follow/: Directory containing user following use cases.
+Presentations Layer
+Pages
+detailed_search_page.dart: Provides comprehensive search functionality with filters for people, companies, jobs, and posts.
+Other pages for connection management and user interactions.
+Provider
+search_provider.dart: State management for search functionality, handling search queries and results.
+Other providers for managing connection state.
+Widgets
+Contains reusable UI components for connection features, including search result items, connection cards, etc.
+4. User Experience Assumptions
+Connection Privacy: Users must accept connection requests before being connected, preserving privacy and network quality.
+
+Search Filters: Users expect to be able to filter search results by different categories (people, companies, jobs, posts) for more targeted networking.
+
+Recommended Connections: The system provides "People You May Know" recommendations based on mutual connections, similar industries, and educational background.
+
+Endorsements: Users can only endorse skills of people they are connected with to maintain endorsement quality.
+
+Follow vs. Connect: Users can follow others without connecting, allowing for content consumption without reciprocal connection requirements.
+
+Connection Limits: There are no artificial limits on the number of connections a user can have.
+
+Search History: Recent searches are saved temporarily to improve user experience but can be cleared by the user.

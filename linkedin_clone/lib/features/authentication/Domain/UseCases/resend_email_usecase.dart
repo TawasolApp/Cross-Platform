@@ -1,0 +1,13 @@
+import 'package:fpdart/fpdart.dart';
+import 'package:linkedin_clone/core/errors/failures.dart';
+import 'package:linkedin_clone/features/authentication/Domain/Repository/auth_repository.dart';
+
+class ResendEmailUsecase {
+  final AuthRepository repository;
+
+  ResendEmailUsecase(this.repository);
+
+  Future<Either<Failure, void>> call(String email, String type) async {
+    return await repository.resendVerificationEmail(email, type);
+  }
+}
