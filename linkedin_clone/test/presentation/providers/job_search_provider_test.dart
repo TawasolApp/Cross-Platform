@@ -35,6 +35,7 @@ void main() {
     applicationLink: 'https://apply.here',
     isSaved: false,
     status: 'Active',
+    isFlagged: false,
   );
 
   setUp(() {

@@ -39,6 +39,7 @@ void main() {
     applicationLink: 'https://apply.tawasol.com/job/1',
     isSaved: false,
     status: 'active',
+    isFlagged: false,
   );
 
   test('fetches job successfully', () async {
@@ -80,5 +81,4 @@ void main() {
     expect(provider.job, isNull);
     expect(provider.error, isNotNull);
   });
-  
 }
