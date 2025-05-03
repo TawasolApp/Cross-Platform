@@ -41,7 +41,8 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
   }
 
   Color getProgressBarColor(int applicantCount, int maxApplicantCount) {
-    double percentage = maxApplicantCount > 0 ? applicantCount / maxApplicantCount : 0.0;
+    double percentage =
+        maxApplicantCount > 0 ? applicantCount / maxApplicantCount : 0.0;
     if (percentage > 0.75) {
       return Colors.green;
     } else if (percentage > 0.5) {
@@ -80,22 +81,18 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
                 Spacer(),
                 PopupMenuTheme(
                   data: PopupMenuThemeData(
-                    color: Colors.white, 
-                    textStyle: TextStyle(
-                      color: Colors.black,
-                    ), 
+                    color: Colors.white,
+                    textStyle: TextStyle(color: Colors.black),
                   ),
                   child: PopupMenuButton<String>(
+                    key: const ValueKey('company_job_analytics_sort_menu_button'),
                     onSelected: (value) {
                       setState(() {
                         _selectedSort = value;
                         _sortJobs();
                       });
                     },
-                    offset: Offset(
-                      0,
-                      screenHeight * 0.04,
-                    ), 
+                    offset: Offset(0, screenHeight * 0.04),
                     itemBuilder:
                         (context) => [
                           PopupMenuItem(
@@ -122,19 +119,20 @@ class _JobAnalyticsScreenState extends State<JobAnalyticsScreen> {
                 itemCount: jobs.length,
                 itemBuilder: (context, index) {
                   final job = jobs[index];
-                    double progress = maxApplicantCount > 0 
-                      ? job.applicantCount / maxApplicantCount 
-                      : 0.0;
+                  double progress =
+                      maxApplicantCount > 0
+                          ? job.applicantCount / maxApplicantCount
+                          : 0.0;
 
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 5, 
+                    elevation: 5,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white, 
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         boxShadow: [
                           BoxShadow(color: Colors.black12, blurRadius: 2),

@@ -79,14 +79,14 @@ class JobApplicantCard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
+                  key: const ValueKey('view_resume_button'),
                   onPressed: () async {
                     final modifiedUrl = applicant.resumeUrl.replaceAll(
                       '.pdf',
                       '',
                     );
                     final googleViewerUrl =
-                        'https://drive.google.com/viewerng/viewer?embedded=true&url=${Uri.encodeComponent(modifiedUrl)}';
-
+                        'https://drive.google.com/viewerng/viewer?embedded=true&url=$modifiedUrl';
                     if (await canLaunchUrl(Uri.parse(googleViewerUrl))) {
                       await launchUrl(
                         Uri.parse(googleViewerUrl),
@@ -142,6 +142,7 @@ class JobApplicantCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
+                      key: const ValueKey('accept_button'),
                       onPressed: onAccept,
                       icon: const Icon(Icons.check, size: 18),
                       label: const Text('Accept'),
@@ -157,6 +158,7 @@ class JobApplicantCard extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
+                      key: const ValueKey('reject_button'),
                       onPressed: onReject,
                       icon: const Icon(Icons.close, size: 18),
                       label: const Text('Reject'),

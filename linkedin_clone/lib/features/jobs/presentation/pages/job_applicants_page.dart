@@ -122,6 +122,7 @@ class _ApplicantsScreenState extends State<ApplicantsScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Center(
                           child: ElevatedButton(
+                            key: const ValueKey('load_more_applicants_button'),
                             onPressed: () {
                               provider.loadMoreApplicants(widget.jobId);
                             },

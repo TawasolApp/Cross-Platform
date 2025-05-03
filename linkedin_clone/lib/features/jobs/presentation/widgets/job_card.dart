@@ -84,6 +84,7 @@ class _JobCardState extends State<JobCard> {
                   ),
                   // Save/Unsave Job
                   IconButton(
+                    key: const ValueKey('job_card_save_button'),
                     icon: Icon(
                       isSaved ? Icons.bookmark : Icons.bookmark_outline,
                       color: isSaved ? Colors.blue : Colors.grey[700],

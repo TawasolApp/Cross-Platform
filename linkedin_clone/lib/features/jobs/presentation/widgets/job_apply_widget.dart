@@ -87,9 +87,10 @@ class _ApplyForJobWidgetState extends State<ApplyForJobWidget> {
                       child: Text(_cvFileName, overflow: TextOverflow.ellipsis),
                     ),
                   TextButton(
+                    key: const ValueKey('upload_cv_button'),
                     onPressed: () async {
                       print('📤 Upload button pressed');
-                      await _pickAndUploadCV(context); 
+                      await _pickAndUploadCV(context);
                     },
                     child: const Text('Upload CV'),
                   ),
@@ -98,6 +99,7 @@ class _ApplyForJobWidgetState extends State<ApplyForJobWidget> {
               const SizedBox(height: 24),
               const SizedBox(height: 24),
               ElevatedButton(
+                key: const ValueKey('submit_application_button'),
                 onPressed: () => _applyForJob(context),
                 child: const Text('Submit Application'),
               ),
@@ -149,9 +151,12 @@ class _ApplyForJobWidgetState extends State<ApplyForJobWidget> {
         phoneNumber: _phoneNumber.phoneNumber ?? '',
         resumeURL: _uploadedCVUrl ?? '',
       );
-    print('📄 Applying for job with application CV URL: ${application.resumeURL}');
+      print(
+        '📄 Applying for job with application CV URL: ${application.resumeURL}',
+      );
       bool success = await provider.applyForJob(application);
 
+      if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -162,11 +167,9 @@ class _ApplyForJobWidgetState extends State<ApplyForJobWidget> {
           backgroundColor: success ? Colors.green : Colors.red,
         ),
       );
-
       if (success) {
         await Future.delayed(const Duration(milliseconds: 500));
-          Navigator.pop(context, true); 
-
+        Navigator.pop(context, true);
       }
     }
   }

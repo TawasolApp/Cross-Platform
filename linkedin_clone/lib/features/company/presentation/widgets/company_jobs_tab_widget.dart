@@ -47,6 +47,8 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton.icon(
+                                    key: const ValueKey('company_jobs_analytics_button'),
+
                       onPressed:
                           widget.onAnalyticsPressed ??
                           () {
@@ -72,6 +74,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                       ),
                     ),
                     TextButton.icon(
+                                    key: const ValueKey('company_jobs_add_job_button'),
                       onPressed:
                           widget.onEditPressed ??
                           () async {
@@ -132,6 +135,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
+                  key: const ValueKey('company_jobs_load_more_button'),
                   onPressed:
                       () => companyProvider.loadMoreJobs(widget.companyId),
                   child: Text("Load More Jobs"),

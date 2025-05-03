@@ -104,6 +104,7 @@ class EditCompanyScreen extends StatelessWidget {
                       children: [
                         Spacer(),
                         ElevatedButton.icon(
+                          key: const ValueKey('add_admin_button_2'),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -342,6 +343,7 @@ class EditCompanyScreen extends StatelessWidget {
                       ),
                     // Update Company Button
                     ElevatedButton(
+                      key: const ValueKey('update_company_button'),
                       onPressed:
                           provider.isLoading
                               ? null

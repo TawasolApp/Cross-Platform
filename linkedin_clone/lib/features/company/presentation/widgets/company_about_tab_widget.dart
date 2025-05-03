@@ -53,8 +53,7 @@ class CompanyAboutWidget extends StatelessWidget {
                   ? 'No website available'
                   : context.read<CompanyProvider>().company!.website!,
               style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                decoration:
-                    TextDecoration.underline, 
+                decoration: TextDecoration.underline,
               ),
             ),
           ),
@@ -168,6 +167,10 @@ class CompanyAboutWidget extends StatelessWidget {
                                           ),
                                         ),
                                         IconButton(
+                                          key: const ValueKey(
+                                            'company_follow_button',
+                                          ),
+
                                           icon: Icon(
                                             companyProvider.isFollowing(
                                                   relatedCompany.companyId!,

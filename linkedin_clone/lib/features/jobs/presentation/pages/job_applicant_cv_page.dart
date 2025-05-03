@@ -10,8 +10,7 @@ class PdfViewerScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final modifiedUrl = pdfUrl.replaceAll('.pdf', '');
     final googleViewerUrl =
-        'https://drive.google.com/viewerng/viewer?embedded=true&url=${Uri.encodeComponent(modifiedUrl)}';
-
+        'https://drive.google.com/viewerng/viewer?embedded=true&url=$modifiedUrl';
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resume Viewer'),
@@ -19,6 +18,8 @@ class PdfViewerScreen extends StatelessWidget {
       ),
       body: Center(
         child: ElevatedButton(
+                        key: const ValueKey('open_resume_button'),
+
           onPressed: () async {
             if (await canLaunchUrl(Uri.parse(googleViewerUrl))) {
               await launchUrl(

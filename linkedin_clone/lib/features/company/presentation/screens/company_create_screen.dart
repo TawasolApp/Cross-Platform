@@ -221,6 +221,7 @@ class CreateCompanyScreen extends StatelessWidget {
                       SizedBox(height: 16),
                       // ✅ Company Size Field
                       DropdownButtonFormField2<String>(
+                        key: const ValueKey('company_size_field'),
                         value: provider.companySize,
                         onChanged: (value) {
                           if (value != null) {
@@ -520,6 +521,7 @@ class CreateCompanyScreen extends StatelessWidget {
                       provider.isLoading
                           ? Center(child: CircularProgressIndicator())
                           : ElevatedButton(
+                            key: const ValueKey('company_create_button'),
                             onPressed: () => _submitForm(context),
                             child: Text("Create Page"),
                           ),

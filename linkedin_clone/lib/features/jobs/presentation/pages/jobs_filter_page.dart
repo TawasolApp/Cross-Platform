@@ -37,6 +37,7 @@ class _JobFilterScreenState extends State<JobFilterScreen> {
         title: const Text('Filter Jobs'),
         backgroundColor: Theme.of(context).primaryColor,
         leading: IconButton(
+          key: const ValueKey('company_add_admin_back_button'),
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context, null),
         ),
@@ -50,6 +51,7 @@ class _JobFilterScreenState extends State<JobFilterScreen> {
 
             // 🔽 Dropdown for Experience Level
             DropdownButtonFormField<String>(
+              key: const ValueKey('job_search_experience_level_dropdown'),
               value:
                   _experienceController.text.isEmpty
                       ? null
@@ -127,6 +129,7 @@ class _JobFilterScreenState extends State<JobFilterScreen> {
 
             // ✅ Apply Button
             ElevatedButton(
+              key: const ValueKey('job_search_apply_button'),
               onPressed: () {
                 Navigator.pop(context, {
                   'location': _locationController.text.trim(),
@@ -157,6 +160,7 @@ class _JobFilterScreenState extends State<JobFilterScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: TextField(
+        key: const ValueKey('company_add_admin_field'),
         controller: controller,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(

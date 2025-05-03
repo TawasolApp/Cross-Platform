@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
-import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/jobs/presentation/pages/job_applicants_page.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/job_details_provider.dart';
 import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
@@ -11,6 +10,7 @@ import 'package:linkedin_clone/core/utils/number_formatter.dart';
 import 'package:linkedin_clone/core/utils/time_ago.dart';
 import 'package:provider/provider.dart';
 import 'package:confetti/confetti.dart';
+import 'package:share_plus/share_plus.dart';
 
 class JobDetailsScreen extends StatefulWidget {
   final String jobId;
@@ -125,6 +125,8 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
+                key: const ValueKey('job_details_retry_button'),
+
                 onPressed: () {
                   context.read<JobDetailsProvider>().fetchJob(widget.jobId);
                 },
@@ -151,6 +153,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
             backgroundColor: Colors.white,
             elevation: 0,
             leading: IconButton(
+              key: const ValueKey('job_details_back_button'),
               icon: const Icon(Icons.close, color: Colors.black),
               onPressed: () => Navigator.pop(context),
             ),
@@ -293,6 +296,17 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           _tag(job.locationType),
                           const SizedBox(width: 8),
                           _tag(job.employmentType),
+                          IconButton(
+                            key: const ValueKey('job_details_share_button'),
+                            icon: const Icon(Icons.share),
+                            onPressed: () {
+                              final jobUrl =
+                                  'https://tawasolapp.me/jobs/${job.id}';
+                              Share.share(
+                                'Check out this job opportunity: $jobUrl',
+                              );
+                            },
+                          ),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -305,6 +319,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                                 (job.status.isNotEmpty)
                                     ? _buildStatusBadge(job.status)
                                     : ElevatedButton(
+                                      key: const ValueKey('job_details_apply_button'),
                                       style: ElevatedButton.styleFrom(
                                         padding: const EdgeInsets.symmetric(
                                           vertical: 14,
@@ -346,6 +361,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton.icon(
+                              key: const ValueKey('job_details_save_button'),
                               style: OutlinedButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 14,
@@ -398,11 +414,13 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         "About the Job",
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
+
                       const SizedBox(height: 8),
                       Text(
                         job.description,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
+
                       const SizedBox(height: 20),
 
                       // About Company Section
@@ -438,6 +456,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                               (job.status != null && job.status!.isNotEmpty)
                                   ? _buildStatusBadge(job.status!)
                                   : ElevatedButton(
+                                    key: const ValueKey('job_details_apply_button'),
                                     style: ElevatedButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
                                         vertical: 14,
@@ -478,6 +497,7 @@ class _JobDetailsScreenState extends State<JobDetailsScreen> {
                         // Save button remains unchanged
                         Expanded(
                           child: OutlinedButton.icon(
+                            key: const ValueKey('job_details_save_button'),
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               side: const BorderSide(color: Colors.blue),

@@ -83,6 +83,8 @@ class FullRelatedCompaniesScreen extends StatelessWidget {
                           provider.isLoadingState
                               ? CircularProgressIndicator()
                               : ElevatedButton(
+                                              key: const ValueKey('load_more_companies_button'),
+
                                 onPressed: () {
                                   provider.loadMoreCompanies();
                                 },

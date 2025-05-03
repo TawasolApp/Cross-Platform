@@ -69,6 +69,8 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                   Column(
                     children: [
                       IconButton(
+                        key: const ValueKey('company_job_save_button'),
+
                         icon: Icon(
                           isSaved
                               ? Icons.bookmark
@@ -98,6 +100,8 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                       if (companyProvider.isManager &&
                           !companyProvider.isViewingAsUser)
                         IconButton(
+                          key: const ValueKey(' company_job_delete_button'),
+
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {
                             final confirm = await showDialog<bool>(
@@ -110,11 +114,13 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                                     ),
                                     actions: [
                                       TextButton(
+                                        key: const ValueKey('cancel_button'),
                                         onPressed:
                                             () => Navigator.pop(context, false),
                                         child: const Text('Cancel'),
                                       ),
                                       ElevatedButton(
+                                        key: const ValueKey('delete_button'),
                                         onPressed:
                                             () => Navigator.pop(context, true),
                                         child: const Text('Delete'),

@@ -124,8 +124,6 @@ class CompanyProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-  
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -155,6 +153,7 @@ class CompanyProfileScreen extends StatelessWidget {
                 child: AbsorbPointer(
                   absorbing: true,
                   child: TextField(
+                    key: const ValueKey('company_add_admin_field'),
                     controller: TextEditingController(
                       text: provider.company?.name,
                     ),
@@ -523,6 +522,9 @@ class CompanyProfileScreen extends StatelessWidget {
                                                 child,
                                               ) {
                                                 return ElevatedButton(
+                                                  key: const ValueKey(
+                                                    'company_follow_button',
+                                                  ),
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor:
                                                         provider.isFollowing(
@@ -585,6 +587,9 @@ class CompanyProfileScreen extends StatelessWidget {
                                           Flexible(
                                             flex: 3,
                                             child: OutlinedButton(
+                                              key: const ValueKey(
+                                                'company_visit_website_button',
+                                              ),
                                               style: OutlinedButton.styleFrom(
                                                 foregroundColor:
                                                     Theme.of(
@@ -654,6 +659,9 @@ class CompanyProfileScreen extends StatelessWidget {
                                                     BorderRadius.circular(25),
                                               ),
                                               child: IconButton(
+                                                key: const ValueKey(
+                                                  'company_more_button',
+                                                ),
                                                 iconSize: 20,
                                                 padding:
                                                     EdgeInsets

@@ -61,6 +61,7 @@ class _CompanyFollowersScreenState extends State<CompanyFollowersScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
+                    key: const ValueKey('load_more_followers_button'),
                     onPressed: () {
                       provider.loadMoreFollowers(widget.companyId);
                     },

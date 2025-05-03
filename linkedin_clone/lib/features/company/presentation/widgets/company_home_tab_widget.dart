@@ -113,6 +113,8 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
+                  key: const ValueKey('company_see_less_button'),
+
                   onPressed: () {
                     setState(() {
                       isExpanded = false;
@@ -156,6 +158,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
+                  key: const ValueKey('company_see_all_details_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,
@@ -261,6 +264,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               child: SizedBox(
                 width: double.infinity, // Take full width
                 child: TextButton(
+                  key: const ValueKey('company_see_all_posts_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,
