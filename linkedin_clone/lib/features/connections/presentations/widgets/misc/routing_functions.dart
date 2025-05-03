@@ -53,3 +53,7 @@ void goToReportUser(BuildContext context, {String? userId}) {
 void goToReportPost(BuildContext context, {String? postId}) {
   GoRouter.of(context).push(RouteNames.reportPost, extra: {'postId': postId});
 }
+
+void goToChoosePremiumPlan(BuildContext context) {
+  GoRouter.of(context).push(RouteNames.choosePremiumPlan);
+}

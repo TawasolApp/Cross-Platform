@@ -30,7 +30,7 @@ class PrivacyRemoteDataSource {
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 400) {
         throw Exception(
@@ -51,13 +51,14 @@ class PrivacyRemoteDataSource {
   /////////////////// Unblock user
   Future<bool> unblockUser(String userId) async {
     try {
+      print("block user called with userId: $userId");
       final token = await initToken();
-      final response = await client.delete(
+      final response = await client.post(
         Uri.parse('${baseUrl}security/unblock/$userId'),
         headers: {'Authorization': 'Bearer $token'},
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         return true;
       } else if (response.statusCode == 404) {
         throw Exception("PrivacyRemoteDataSource :unblockUser: 404 not found");

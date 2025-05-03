@@ -24,6 +24,7 @@ import 'package:linkedin_clone/features/main_layout/presentation/pages/main_layo
 import 'package:linkedin_clone/features/main_layout/presentation/pages/signin_security.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/update_email.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/update_info.dart';
+import 'package:linkedin_clone/features/premium/presentations/pages/choose_premium_plan_page.dart';
 import 'package:linkedin_clone/features/premium/presentations/pages/survey_page.dart';
 import 'package:linkedin_clone/features/privacy/presentations/pages/report_page.dart';
 import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_enums.dart';
@@ -286,6 +287,10 @@ class AppRouter {
       GoRoute(
         path: RouteNames.premiumSurvey,
         builder: (context, state) => const SurveyPage(),
+      ),
+      GoRoute(
+        path: RouteNames.choosePremiumPlan,
+        builder: (context, state) => ChoosePremiumPlanPage(),
       ),
       GoRoute(
         path: RouteNames.repostPage,

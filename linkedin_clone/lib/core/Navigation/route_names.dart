@@ -41,7 +41,7 @@ class RouteNames {
   static const String detailedSearch = '/detailed_search';
   static const String premiumSurvey = '/premium_survey';
   static const String premiumPlan = '/premiumPlan';
-  static const String premiumFeatures = '/premiumFeatures';
+  static const String choosePremiumPlan = '/choosePremiumPlan';
   static const String reportUser = '/report_user';
   static const String reportPost = '/report_post';
 }

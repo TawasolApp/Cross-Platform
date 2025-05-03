@@ -228,6 +228,13 @@ class _ListPageState extends State<ListPage> {
                   return _buildBody(context);
                 },
               )
+              : widget.type == PageType.blocked
+              ? Consumer<PrivacyProvider>(
+                builder: (context, provider, _) {
+                  privacyProvider = provider;
+                  return _buildBody(context);
+                },
+              )
               : Consumer<NetworksProvider>(
                 builder: (context, provider, _) {
                   networksProvider = provider;
@@ -286,18 +293,32 @@ class _ListPageState extends State<ListPage> {
                   final user = list[index];
                   return Column(
                     children: [
-                      UserCard(
-                        userId: user.userId,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        headLine: user.headLine,
-                        profilePicture: user.profilePicture,
-                        isOnline: false,
-                        time: user.time ?? '',
-                        cardType: widget.type,
-                        networksProvider: networksProvider,
-                        connectionsProvider: connectionsProvider,
-                      ),
+                      if (widget.type != PageType.blocked)
+                        UserCard(
+                          userId: user.userId,
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          headLine: user.headLine ?? '',
+                          profilePicture: user.profilePicture,
+                          isOnline: false,
+                          time: user.time ?? '',
+                          cardType: widget.type,
+                          networksProvider: networksProvider,
+                          connectionsProvider: connectionsProvider,
+                        ),
+                      if (widget.type == PageType.blocked)
+                        UserCard(
+                          userId: user.userId,
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          profilePicture: user.profilePicture,
+                          isOnline: false,
+                          cardType: widget.type,
+                          networksProvider: networksProvider,
+                          connectionsProvider: connectionsProvider,
+                          privacyProvider: privacyProvider,
+                        ),
+
                       Divider(
                         height: 1,
                         thickness: 1,
@@ -347,6 +368,8 @@ class _ListPageState extends State<ListPage> {
   bool _isLoading() {
     if (widget.type == PageType.connections) {
       return connectionsProvider?.isLoading ?? false;
+    } else if (widget.type == PageType.blocked) {
+      return privacyProvider?.isLoading ?? false;
     } else {
       return networksProvider?.isLoading ?? false;
     }

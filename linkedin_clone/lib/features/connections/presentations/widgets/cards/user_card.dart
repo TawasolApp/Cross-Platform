@@ -20,7 +20,7 @@ class UserCard extends StatelessWidget {
   final String userId;
   final String firstName;
   final String lastName;
-  final String headLine;
+  String headLine;
   final String profilePicture;
   final bool isOnline;
   final String time;
@@ -29,12 +29,12 @@ class UserCard extends StatelessWidget {
   final NetworksProvider? networksProvider;
   final PrivacyProvider? privacyProvider;
 
-  const UserCard({
+  UserCard({
     super.key,
     required this.userId,
     required this.firstName,
     required this.lastName,
-    required this.headLine,
+    this.headLine = '',
     required this.profilePicture,
     this.isOnline = false,
     this.time = '',

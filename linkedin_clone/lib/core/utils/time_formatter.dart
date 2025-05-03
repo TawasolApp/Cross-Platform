@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 String formatTime(String connectionDate) {
   if (DateTime.tryParse(connectionDate) == null) {
     return 'Unknown';
@@ -22,4 +24,10 @@ String formatTime(String connectionDate) {
   } else {
     return '${(difference.inDays / 365).floor()} years ago';
   }
+}
+
+String returnDateAfterDays(int days) {
+  DateTime now = DateTime.now();
+  DateTime futureDate = now.add(Duration(days: days));
+  return '${futureDate.day} ${DateFormat.MMMM().format(futureDate)} ${futureDate.year}';
 }

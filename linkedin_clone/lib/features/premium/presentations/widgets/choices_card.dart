@@ -59,7 +59,6 @@ class _ChoicesCardState extends State<ChoicesCard> {
                   } else if (widget.type == ChoiceListType.report) {
                     selectedOption = widget.choices?[index] ?? '';
                     widget.privacyProvider?.reportReasonSelected = val;
-
                     widget.privacyProvider?.reportReason =
                         widget.choices?[index];
                   }

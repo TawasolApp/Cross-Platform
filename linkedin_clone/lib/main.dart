@@ -35,6 +35,9 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:linkedin_clone/features/company/presentation/providers/related_companies_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
+import 'package:linkedin_clone/features/premium/data/datasources/premium_remote_data_source.dart';
+import 'package:linkedin_clone/features/premium/data/repository/premium_repository_impl.dart';
+import 'package:linkedin_clone/features/premium/domain/usecases/subscribe_to_premium_plan_usecase.dart';
 import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
 import 'package:linkedin_clone/features/privacy/data/datasources/privacy_remote_data_source.dart';
 import 'package:linkedin_clone/features/privacy/data/repository/privacy_repository_impl.dart';
@@ -712,7 +715,18 @@ void main() async {
                 ),
               ),
         ),
-        ChangeNotifierProvider(create: (_) => PremiumProvider()),
+        ChangeNotifierProvider(
+          create:
+              (_) => PremiumProvider(
+                subscribeToPremiumPlanUseCase: SubscribeToPremiumPlanUseCase(
+                  PremiumRepositoryImpl(
+                    remoteDataSource: PremiumRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+              ),
+        ),
       ],
       child: const MyApp(),
     ),
