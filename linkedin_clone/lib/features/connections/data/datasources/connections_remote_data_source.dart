@@ -629,7 +629,7 @@ class ConnectionsRemoteDataSource {
         Uri.parse('${baseUrl}connections/$userId/endorse-skill'),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: json.encode({"skillName": skillName}),
       );
@@ -679,9 +679,9 @@ class ConnectionsRemoteDataSource {
       final response = await client.delete(
         Uri.parse('${baseUrl}connections/$userId/endorsement/$skillName'),
         headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json'
-          },
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
       );
 
       if (response.statusCode == 204) {
@@ -790,7 +790,6 @@ class ConnectionsRemoteDataSource {
     int limit = 0,
   }) async {
     try {
-      print('🤩🤩🤩🍫🍫🍫🍫🍫🤩Search word: $searchWord');
       final token = await initToken();
       final response = await client
           .get(
@@ -808,11 +807,8 @@ class ConnectionsRemoteDataSource {
               throw Exception('Request Timeout');
             },
           );
-      print('❤️❤️❤️❤️❤️response: ${response.body}');
+
       if (response.statusCode == 200) {
-        print(
-          '❤️❤️❤️👩🏻‍💻👩🏻‍💻👩🏻‍💻👩🏻‍💻👩🏻‍💻❤️response: ${response.body}  $searchWord',
-        );
         final jsonResponse = jsonDecode(response.body);
 
         if (jsonResponse is List<dynamic>) {

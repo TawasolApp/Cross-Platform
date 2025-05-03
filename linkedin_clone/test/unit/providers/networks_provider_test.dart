@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followings_count_usecase.dart';
 import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart';
 import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart';
 import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart';
@@ -13,6 +15,8 @@ import 'package:linkedin_clone/features/connections/presentations/provider/netwo
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
+import 'networks_provider_test.mocks.dart';
+
 // import 'networks_provider_test.mocks.dart';
 
 @GenerateMocks([
@@ -20,10 +24,9 @@ import 'package:mockito/mockito.dart';
   UnfollowUserUseCase,
   GetFollowersListUseCase,
   FollowUserUseCase,
-  GetBlockedListUseCase,
-  BlockUserUseCase,
-  UnblockUserUseCase,
   GetPeopleYouMayKnowUseCase,
+  GetFollowersCountUsecase,
+  GetFollowingsCountUsecase,
 ])
 void main() {
   late NetworksProvider provider;
@@ -32,143 +35,182 @@ void main() {
   late MockGetFollowersListUseCase mockGetFollowers;
   late MockFollowUserUseCase mockFollow;
   late MockGetPeopleYouMayKnowUseCase mockPeopleYouMayKnow;
-
+  late MockGetFollowersCountUsecase mockGetFollowersCount;
+  late MockGetFollowingsCountUsecase mockGetFollowingsCount;
   setUp(() {
     mockGetFollowing = MockGetFollowingListUseCase();
     mockUnfollow = MockUnfollowUserUseCase();
     mockGetFollowers = MockGetFollowersListUseCase();
     mockFollow = MockFollowUserUseCase();
+    mockPeopleYouMayKnow = MockGetPeopleYouMayKnowUseCase();
+    mockGetFollowersCount = MockGetFollowersCountUsecase();
+    mockGetFollowingsCount = MockGetFollowingsCountUsecase();
 
     provider = NetworksProvider(
       mockGetFollowing,
       mockUnfollow,
       mockGetFollowers,
       mockFollow,
+      mockPeopleYouMayKnow,
+      mockGetFollowersCount,
+      mockGetFollowingsCount,
     );
   });
 
-//   test('initial values are correct', () {
-//     expect(provider.isBusy, false);
-//     expect(provider.isLoading, false);
-//     expect(provider.hasError, false);
-//     expect(provider.currentPage, 1);
-//     expect(provider.hasMore, true);
-//   });
+  test('initial values are correct', () {
+    expect(provider.isBusy, false);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, false);
+    expect(provider.currentPage, 1);
+    expect(provider.hasMore, true);
+  });
 
-//   test('getFollowingList adds users correctly', () async {
-//     final users = [
-//       ConnectionsUserEntity(
-//         userId: '1',
-//         firstName: 'Mariam',
-//         lastName: 'Elsoufy',
-//         headLine: 'Engineer',
-//         time: '2023-10-01T12:00:00Z',
-//         profilePicture: '',
-//       ),
-//     ];
+  test('getFollowingList adds users correctly', () async {
+    final users = [
+      ConnectionsUserEntity(
+        userId: '1',
+        firstName: 'Mariam',
+        lastName: 'Elsoufy',
+        headLine: 'Engineer',
+        time: '2023-10-01T12:00:00Z',
+        profilePicture: '',
+      ),
+    ];
 
-//     when(
-//       mockGetFollowing.call(page: anyNamed('page'), limit: anyNamed('limit')),
-//     ).thenAnswer((_) async => users);
+    when(
+      mockGetFollowing.call(page: anyNamed('page'), limit: anyNamed('limit')),
+    ).thenAnswer((_) async => users);
 
-//     await provider.getFollowingList(isInitial: true);
+    await provider.getFollowingList(isInitial: true);
 
-//     expect(provider.followingList, isNotNull);
-//     expect(provider.followingList!.length, 1);
-//     expect(provider.hasError, false);
-//   });
+    expect(provider.followingList, isNotNull);
+    expect(provider.followingList!.length, 1);
+    expect(provider.hasError, false);
+  });
 
-//   test('getFollowersList adds users correctly', () async {
-//     final users = [
-//       ConnectionsUserEntity(
-//         userId: '2',
-//         firstName: 'Salma',
-//         lastName: 'Mostafa',
-//         headLine: 'Designer',
-//         time: '2023-10-01T12:00:00Z',
-//         profilePicture: '',
-//       ),
-//     ];
+  test('getFollowersList adds users correctly', () async {
+    final users = [
+      ConnectionsUserEntity(
+        userId: '2',
+        firstName: 'Salma',
+        lastName: 'Mostafa',
+        headLine: 'Designer',
+        time: '2023-10-01T12:00:00Z',
+        profilePicture: '',
+      ),
+    ];
 
-//     when(
-//       mockGetFollowers.call(page: anyNamed('page'), limit: anyNamed('limit')),
-//     ).thenAnswer((_) async => users);
+    when(
+      mockGetFollowers.call(page: anyNamed('page'), limit: anyNamed('limit')),
+    ).thenAnswer((_) async => users);
 
-//     await provider.getFollowersList(isInitial: true);
+    await provider.getFollowersList(isInitial: true);
 
     expect(provider.followersList, isNotNull);
     expect(provider.followersList!.length, 1);
     expect(provider.hasError, false);
   });
 
-//   test('getPeopleYouMayKnowList loads successfully', () async {
-//     final users = [
-//       PeopleYouMayKnowUserEntity(
-//         userId: '3',
-//         firstName: 'Ahmed',
-//         lastName: 'Ali',
-//         headLine: 'Dev',
-//         profileImageUrl: '',
-//         headerImageUrl: '',
-//       ),
-//     ];
+  test('getPeopleYouMayKnowList loads successfully', () async {
+    final users = [
+      PeopleYouMayKnowUserEntity(
+        userId: '3',
+        firstName: 'Ahmed',
+        lastName: 'Ali',
+        headLine: 'Dev',
+        profileImageUrl: '',
+        headerImageUrl: '',
+      ),
+    ];
 
-//     when(
-//       mockPeopleYouMayKnow.call(
-//         page: anyNamed('page'),
-//         limit: anyNamed('limit'),
-//       ),
-//     ).thenAnswer((_) async => users);
+    when(
+      mockPeopleYouMayKnow.call(
+        page: anyNamed('page'),
+        limit: anyNamed('limit'),
+      ),
+    ).thenAnswer((_) async => users);
 
-//     await provider.getPeopleYouMayKnowList(isInitial: true);
+    await provider.getPeopleYouMayKnowList(isInitial: true);
 
-//     expect(provider.peopleYouMayKnowList, isNotNull);
-//     expect(provider.peopleYouMayKnowList!.length, 1);
-//   });
+    expect(provider.peopleYouMayKnowList, isNotNull);
+    expect(provider.peopleYouMayKnowList!.length, 1);
+  });
 
-//   test('followUser returns true on success', () async {
-//     when(mockFollow.call('123')).thenAnswer((_) async => true);
-//     final result = await provider.followUser('123');
-//     expect(result, true);
-//   });
+  test('followUser returns true on success', () async {
+    when(mockFollow.call('123')).thenAnswer((_) async => true);
+    final result = await provider.followUser('123');
+    expect(result, true);
+  });
 
-//   test('unfollowUser returns false on error', () async {
-//     when(mockUnfollow.call('123')).thenThrow(Exception('error'));
+  test('unfollowUser returns false on error', () async {
+    when(mockUnfollow.call('123')).thenThrow(Exception('error'));
 
-//     final result = await provider.unfollowUser('123');
-//     expect(result, false);
-//     expect(provider.hasError, true);
-//   });
+    final result = await provider.unfollowUser('123');
+    expect(result, false);
+    expect(provider.hasError, true);
+  });
 
-//   test('blockUser returns false on error', () async {
-//     when(mockUnfollow.call('321')).thenThrow(Exception('error'));
+  test('removePeopleyouMayKnowElement removes user by ID', () {
+    provider.peopleYouMayKnowList = [
+      PeopleYouMayKnowUserEntity(
+        userId: '10',
+        firstName: 'Remove',
+        lastName: 'Me',
+        headLine: '',
+        profileImageUrl: '',
+        headerImageUrl: '',
+      ),
+    ];
 
-//     final result = await provider.blockUser('321');
-//     expect(result, false);
-//     expect(provider.hasError, true);
-//   });
+    provider.removePeopleyouMayKnowElement('10');
+    expect(provider.peopleYouMayKnowList!.isEmpty, true);
+  });
 
-//   test('unblockUser returns true on success', () async {
-//     when(mockFollow.call('321')).thenAnswer((_) async => true);
+  test('getFollowersCount sets count correctly on success', () async {
+    const expectedCount = 42;
 
-//     final result = await provider.unblockUser('321');
-//     expect(result, true);
-//     expect(provider.hasError, false);
-//   });
+    when(mockGetFollowersCount.call()).thenAnswer((_) async => expectedCount);
 
-//   test('removePeopleyouMayKnowElement removes user by ID', () {
-//     provider.peopleYouMayKnowList = [
-//       PeopleYouMayKnowUserEntity(
-//         userId: '10',
-//         firstName: 'Remove',
-//         lastName: 'Me',
-//         headLine: '',
-//         profileImageUrl: '',
-//         headerImageUrl: '',
-//       ),
-//     ];
+    await provider.getFollowersCount();
 
-//     provider.removePeopleyouMayKnowElement('10');
-//     expect(provider.peopleYouMayKnowList!.isEmpty, true);
-//   });
-// }
+    expect(provider.followersCount, expectedCount);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, false);
+  });
+
+  test('getFollowersCount sets count to -1 on error', () async {
+    when(
+      mockGetFollowersCount.call(),
+    ).thenThrow(Exception('Failed to get followers count'));
+
+    await provider.getFollowersCount();
+
+    expect(provider.followersCount, -1);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, true);
+  });
+
+  test('getFollowingsCount sets count correctly on success', () async {
+    const expectedCount = 35;
+
+    when(mockGetFollowingsCount.call()).thenAnswer((_) async => expectedCount);
+
+    await provider.getFollowingsCount();
+
+    expect(provider.followingsCount, expectedCount);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, false);
+  });
+
+  test('getFollowingsCount sets count to -1 on error', () async {
+    when(
+      mockGetFollowingsCount.call(),
+    ).thenThrow(Exception('Failed to get followings count'));
+
+    await provider.getFollowingsCount();
+
+    expect(provider.followingsCount, -1);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, true);
+  });
+}

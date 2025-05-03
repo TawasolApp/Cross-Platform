@@ -39,44 +39,71 @@ class _GrowBodyState extends State<GrowBody> {
     super.dispose();
   }
 
-  Future<void> _onRefresh() async {}
-
   @override
   Widget build(BuildContext context) {
     return Consumer<NetworksProvider>(
+      key: const Key('key_growbody_networks_consumer'),
       builder: (context, networksProvider, _) {
-        return RefreshIndicator(
-          onRefresh: () async {
-            await connectionsProvider?.getInvitations(
-              isInitsent: true,
-              isInitRec: true,
-              refreshRec: true,
-              refreshSent: true,
-            );
-            await networksProvider.getPeopleYouMayKnowList(isInitial: true);
-          },
-          color: Theme.of(context).primaryColor,
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Column(
-              children: [
-                MyNetworksInvitationsCard(),
-                const SizedBox(height: 10),
-                LabelCard(
-                  label: "Manage my network",
-                  onTap: () => goToManageMyNetwork(context),
+        this.networksProvider = networksProvider;
+        return Consumer<ConnectionsProvider>(
+          key: const Key('key_growbody_connections_consumer'),
+          builder: (context, connectionsProvider, _) {
+            this.connectionsProvider = connectionsProvider;
+            return RefreshIndicator(
+              key: const Key('key_growbody_refresh_indicator'),
+              onRefresh: () async {
+                await connectionsProvider.getInvitations(
+                  isInitsent: true,
+                  isInitRec: true,
+                  refreshRec: true,
+                  refreshSent: true,
+                );
+                await networksProvider.getPeopleYouMayKnowList(isInitial: true);
+              },
+              color: Theme.of(context).primaryColor,
+              child: SingleChildScrollView(
+                key: const Key('key_growbody_scrollview'),
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  key: const Key('key_growbody_main_column'),
+                  children: [
+                    MyNetworksInvitationsCard(
+                      key: const Key('key_growbody_invitations_card'),
+                    ),
+                    const SizedBox(
+                      key: Key('key_growbody_spacer_1'),
+                      height: 10,
+                    ),
+                    LabelCard(
+                      key: const Key('key_growbody_manage_network_card'),
+                      label: "Manage my network",
+                      onTap: () => goToManageMyNetwork(context),
+                    ),
+                    const SizedBox(
+                      key: Key('key_growbody_spacer_2'),
+                      height: 10,
+                    ),
+                    PeopleYouMayKnowBody(
+                      key: const Key('key_growbody_people_you_may_know'),
+                      scrollController: _scrollController,
+                    ),
+                    if (networksProvider.isBusy)
+                      const Padding(
+                        key: Key('key_growbody_loading_container'),
+                        padding: EdgeInsets.all(16),
+                        child: Center(
+                          key: Key('key_growbody_loading_center'),
+                          child: CircularProgressIndicator(
+                            key: Key('key_growbody_loading_indicator'),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                PeopleYouMayKnowBody(scrollController: _scrollController),
-                if (networksProvider.isBusy)
-                  const Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );

@@ -3,34 +3,28 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i4;
 
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart'
-    as _i6;
+    as _i5;
 import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart'
-    as _i15;
+    as _i10;
 import 'package:linkedin_clone/features/connections/domain/repository/connections_repository.dart'
     as _i2;
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart'
-    as _i9;
-import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart'
     as _i8;
-import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart'
-    as _i4;
-import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart'
-    as _i7;
-import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart'
-    as _i14;
-import 'package:linkedin_clone/features/privacy/domain/entities/privacy_user_entity.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart'
     as _i11;
-import 'package:linkedin_clone/features/privacy/domain/repository/privacy_repository.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart'
+    as _i7;
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart'
     as _i3;
-import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followings_count_usecase.dart'
     as _i12;
-import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart'
-    as _i10;
-import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart'
-    as _i13;
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart'
+    as _i6;
+import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart'
+    as _i9;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -53,17 +47,11 @@ class _FakeConnectionsRepository_0 extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
-class _FakePrivacyRepository_1 extends _i1.SmartFake
-    implements _i3.PrivacyRepository {
-  _FakePrivacyRepository_1(Object parent, Invocation parentInvocation)
-    : super(parent, parentInvocation);
-}
-
 /// A class which mocks [GetFollowingListUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetFollowingListUseCase extends _i1.Mock
-    implements _i4.GetFollowingListUseCase {
+    implements _i3.GetFollowingListUseCase {
   MockGetFollowingListUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -80,24 +68,24 @@ class MockGetFollowingListUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i5.Future<List<_i6.ConnectionsUserEntity>> call({
+  _i4.Future<List<_i5.ConnectionsUserEntity>> call({
     int? page = 0,
     int? limit = 0,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {#page: page, #limit: limit}),
-            returnValue: _i5.Future<List<_i6.ConnectionsUserEntity>>.value(
-              <_i6.ConnectionsUserEntity>[],
+            returnValue: _i4.Future<List<_i5.ConnectionsUserEntity>>.value(
+              <_i5.ConnectionsUserEntity>[],
             ),
           )
-          as _i5.Future<List<_i6.ConnectionsUserEntity>>);
+          as _i4.Future<List<_i5.ConnectionsUserEntity>>);
 }
 
 /// A class which mocks [UnfollowUserUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUnfollowUserUseCase extends _i1.Mock
-    implements _i7.UnfollowUserUseCase {
+    implements _i6.UnfollowUserUseCase {
   MockUnfollowUserUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -114,19 +102,19 @@ class MockUnfollowUserUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i5.Future<bool> call(String? userId) =>
+  _i4.Future<bool> call(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userId]),
-            returnValue: _i5.Future<bool>.value(false),
+            returnValue: _i4.Future<bool>.value(false),
           )
-          as _i5.Future<bool>);
+          as _i4.Future<bool>);
 }
 
 /// A class which mocks [GetFollowersListUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetFollowersListUseCase extends _i1.Mock
-    implements _i8.GetFollowersListUseCase {
+    implements _i7.GetFollowersListUseCase {
   MockGetFollowersListUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -143,23 +131,23 @@ class MockGetFollowersListUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i5.Future<List<_i6.ConnectionsUserEntity>> call({
+  _i4.Future<List<_i5.ConnectionsUserEntity>> call({
     int? page = 0,
     int? limit = 0,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {#page: page, #limit: limit}),
-            returnValue: _i5.Future<List<_i6.ConnectionsUserEntity>>.value(
-              <_i6.ConnectionsUserEntity>[],
+            returnValue: _i4.Future<List<_i5.ConnectionsUserEntity>>.value(
+              <_i5.ConnectionsUserEntity>[],
             ),
           )
-          as _i5.Future<List<_i6.ConnectionsUserEntity>>);
+          as _i4.Future<List<_i5.ConnectionsUserEntity>>);
 }
 
 /// A class which mocks [FollowUserUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockFollowUserUseCase extends _i1.Mock implements _i9.FollowUserUseCase {
+class MockFollowUserUseCase extends _i1.Mock implements _i8.FollowUserUseCase {
   MockFollowUserUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -176,110 +164,19 @@ class MockFollowUserUseCase extends _i1.Mock implements _i9.FollowUserUseCase {
           as _i2.ConnectionsRepository);
 
   @override
-  _i5.Future<bool> call(String? userId) =>
+  _i4.Future<bool> call(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userId]),
-            returnValue: _i5.Future<bool>.value(false),
+            returnValue: _i4.Future<bool>.value(false),
           )
-          as _i5.Future<bool>);
-}
-
-/// A class which mocks [GetBlockedListUseCase].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockGetBlockedListUseCase extends _i1.Mock
-    implements _i10.GetBlockedListUseCase {
-  MockGetBlockedListUseCase() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.PrivacyRepository get repository =>
-      (super.noSuchMethod(
-            Invocation.getter(#repository),
-            returnValue: _FakePrivacyRepository_1(
-              this,
-              Invocation.getter(#repository),
-            ),
-          )
-          as _i3.PrivacyRepository);
-
-  @override
-  _i5.Future<List<_i11.PrivacyUserEntity>> call({
-    int? page = 0,
-    int? limit = 0,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#call, [], {#page: page, #limit: limit}),
-            returnValue: _i5.Future<List<_i11.PrivacyUserEntity>>.value(
-              <_i11.PrivacyUserEntity>[],
-            ),
-          )
-          as _i5.Future<List<_i11.PrivacyUserEntity>>);
-}
-
-/// A class which mocks [BlockUserUseCase].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockBlockUserUseCase extends _i1.Mock implements _i12.BlockUserUseCase {
-  MockBlockUserUseCase() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.PrivacyRepository get repository =>
-      (super.noSuchMethod(
-            Invocation.getter(#repository),
-            returnValue: _FakePrivacyRepository_1(
-              this,
-              Invocation.getter(#repository),
-            ),
-          )
-          as _i3.PrivacyRepository);
-
-  @override
-  _i5.Future<bool> call(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#call, [userId]),
-            returnValue: _i5.Future<bool>.value(false),
-          )
-          as _i5.Future<bool>);
-}
-
-/// A class which mocks [UnblockUserUseCase].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockUnblockUserUseCase extends _i1.Mock
-    implements _i13.UnblockUserUseCase {
-  MockUnblockUserUseCase() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i3.PrivacyRepository get repository =>
-      (super.noSuchMethod(
-            Invocation.getter(#repository),
-            returnValue: _FakePrivacyRepository_1(
-              this,
-              Invocation.getter(#repository),
-            ),
-          )
-          as _i3.PrivacyRepository);
-
-  @override
-  _i5.Future<bool> call(String? userId) =>
-      (super.noSuchMethod(
-            Invocation.method(#call, [userId]),
-            returnValue: _i5.Future<bool>.value(false),
-          )
-          as _i5.Future<bool>);
+          as _i4.Future<bool>);
 }
 
 /// A class which mocks [GetPeopleYouMayKnowUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetPeopleYouMayKnowUseCase extends _i1.Mock
-    implements _i14.GetPeopleYouMayKnowUseCase {
+    implements _i9.GetPeopleYouMayKnowUseCase {
   MockGetPeopleYouMayKnowUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -296,16 +193,74 @@ class MockGetPeopleYouMayKnowUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i5.Future<List<_i15.PeopleYouMayKnowUserEntity>> call({
+  _i4.Future<List<_i10.PeopleYouMayKnowUserEntity>> call({
     int? page = 0,
     int? limit = 0,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {#page: page, #limit: limit}),
             returnValue:
-                _i5.Future<List<_i15.PeopleYouMayKnowUserEntity>>.value(
-                  <_i15.PeopleYouMayKnowUserEntity>[],
+                _i4.Future<List<_i10.PeopleYouMayKnowUserEntity>>.value(
+                  <_i10.PeopleYouMayKnowUserEntity>[],
                 ),
           )
-          as _i5.Future<List<_i15.PeopleYouMayKnowUserEntity>>);
+          as _i4.Future<List<_i10.PeopleYouMayKnowUserEntity>>);
+}
+
+/// A class which mocks [GetFollowersCountUsecase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetFollowersCountUsecase extends _i1.Mock
+    implements _i11.GetFollowersCountUsecase {
+  MockGetFollowersCountUsecase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.ConnectionsRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeConnectionsRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.ConnectionsRepository);
+
+  @override
+  _i4.Future<int> call() =>
+      (super.noSuchMethod(
+            Invocation.method(#call, []),
+            returnValue: _i4.Future<int>.value(0),
+          )
+          as _i4.Future<int>);
+}
+
+/// A class which mocks [GetFollowingsCountUsecase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetFollowingsCountUsecase extends _i1.Mock
+    implements _i12.GetFollowingsCountUsecase {
+  MockGetFollowingsCountUsecase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.ConnectionsRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeConnectionsRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.ConnectionsRepository);
+
+  @override
+  _i4.Future<int> call() =>
+      (super.noSuchMethod(
+            Invocation.method(#call, []),
+            returnValue: _i4.Future<int>.value(0),
+          )
+          as _i4.Future<int>);
 }

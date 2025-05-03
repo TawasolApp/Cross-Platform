@@ -21,27 +21,38 @@ class RecentUserSearchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double elementSize = MediaQuery.of(context).size.width * 0.05;
     return InkWell(
+      key: const Key('key_recentusersearch_inkwell'),
       onTap: onTap,
       child: Padding(
+        key: const Key('key_recentusersearch_padding'),
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Column(
+          key: const Key('key_recentusersearch_main_column'),
           children: [
             Flexible(
+              key: const Key('key_recentusersearch_flexible'),
               fit: FlexFit.tight,
               child: Column(
+                key: const Key('key_recentusersearch_inner_column'),
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   UserAvatar(
+                    key: const Key('key_recentusersearch_avatar'),
                     profilePicture: profilePricture,
                     isOnline: false,
                     cardType: PageType.connections,
                     avatarSize: elementSize,
                   ),
-                  const SizedBox(width: 4),
+                  const SizedBox(
+                    key: Key('key_recentusersearch_spacer'),
+                    width: 4,
+                  ),
                   SizedBox(
+                    key: const Key('key_recentusersearch_text_container'),
                     width: MediaQuery.of(context).size.width * 0.1,
                     child: Text(
+                      key: const Key('key_recentusersearch_name_text'),
                       '$firstName $lastName',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).textTheme.titleLarge?.color,

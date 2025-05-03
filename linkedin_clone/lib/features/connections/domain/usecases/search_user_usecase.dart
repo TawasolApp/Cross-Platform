@@ -11,7 +11,6 @@ class SearchUserUsecase {
     int limit = 0,
   }) async {
     try {
-      print('🤩🤩🤩🤩Search word: $searchWord');
       return await repository.performSearch(
         searchWord: searchWord,
         page: page,

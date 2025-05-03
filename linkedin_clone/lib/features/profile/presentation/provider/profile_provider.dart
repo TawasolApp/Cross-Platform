@@ -84,6 +84,7 @@ class ProfileProvider extends ChangeNotifier {
   String? _bio;
   String? _location;
   String? _industry;
+  bool? _isPremium;
   List<Skill>? _skills;
   List<Education>? _educations;
   List<Certification>? _certifications;
@@ -169,7 +170,7 @@ class ProfileProvider extends ChangeNotifier {
   List<Endorsement>? get currentEndorsements => _currentEndorsements;
   String? get endorsementsError => _endorsementsError;
   bool get isLoadingEndorsements => _isLoadingEndorsements;
-
+  bool get isPremium => _isPremium ?? false;
   // Expansion state getters
   bool get isExpandedBio => _isExpandedBio;
   bool get isExpandedExperiences => _isExpandedExperiences;
@@ -395,6 +396,7 @@ class ProfileProvider extends ChangeNotifier {
     _connectionCount = profile.connectionCount;
     _connectStatus = profile.connectStatus;
     _followStatus = profile.followStatus;
+    _isPremium = profile.isPremium;
 
     // Add necessary null checks and notifyListeners
     notifyListeners();
@@ -1240,46 +1242,42 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<bool> hasEndorsedSkill(String skillName) async {
-  // Get the current user ID
-  final currentUserId = await TokenService.getUserId();
-  
-  if (currentUserId == null) {
-    return false;
-  }
+    // Get the current user ID
+    final currentUserId = await TokenService.getUserId();
 
-  // Check if we have the endorsements loaded for this skill
-  if (_currentEndorsements != null) {
-    return _currentEndorsements!.any((e) => e.userId == currentUserId);
-  }
+    if (currentUserId == null) {
+      return false;
+    }
 
-  // If endorsements aren't loaded, fetch them first
-  try {
-    _isLoadingEndorsements = true;
-    notifyListeners();
+    // Check if we have the endorsements loaded for this skill
+    if (_currentEndorsements != null) {
+      return _currentEndorsements!.any((e) => e.userId == currentUserId);
+    }
 
-    final params = GetSkillEndorsementsParams(
-      userId: _userId!, // The profile we're viewing
-      skillName: skillName,
-    );
+    // If endorsements aren't loaded, fetch them first
+    try {
+      _isLoadingEndorsements = true;
+      notifyListeners();
 
-    final result = await getSkillEndorsementsUseCase.call(params);
+      final params = GetSkillEndorsementsParams(
+        userId: _userId!, // The profile we're viewing
+        skillName: skillName,
+      );
 
-    return result.fold(
-      (failure) => false,
-      (endorsements) {
+      final result = await getSkillEndorsementsUseCase.call(params);
+
+      return result.fold((failure) => false, (endorsements) {
         _currentEndorsements = endorsements;
         return endorsements.any((e) => e.userId == currentUserId);
-      },
-    );
-  } catch (e) {
-    debugPrint('Error checking endorsement: $e');
-    return false;
-  } finally {
-    _isLoadingEndorsements = false;
-    notifyListeners();
+      });
+    } catch (e) {
+      debugPrint('Error checking endorsement: $e');
+      return false;
+    } finally {
+      _isLoadingEndorsements = false;
+      notifyListeners();
+    }
   }
-}
-
 
   // Helper methods
   void _setLoading(bool loading) {

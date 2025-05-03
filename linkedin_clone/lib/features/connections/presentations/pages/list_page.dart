@@ -40,7 +40,6 @@ class _ListPageState extends State<ListPage> {
       networksProvider = Provider.of<NetworksProvider>(context, listen: false);
     }
     _scrollController = ScrollController()..addListener(_scrollListener);
-
     _fetchInitial();
   }
 
@@ -53,7 +52,6 @@ class _ListPageState extends State<ListPage> {
       case PageType.following:
         networksProvider?.getFollowingList(isInitial: true);
         networksProvider?.getFollowingsCount();
-
         break;
       case PageType.blocked:
         privacyProvider?.getBlockedUsers();
@@ -113,9 +111,12 @@ class _ListPageState extends State<ListPage> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width >= 600;
+    final titleKey = Key('key_${widget.type.name}_title_text');
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
+        key: Key('key_appbar'),
         surfaceTintColor: Theme.of(context).colorScheme.onSecondary,
         elevation: 0,
         toolbarHeight: isWide ? 80 : 65,
@@ -129,9 +130,11 @@ class _ListPageState extends State<ListPage> {
               : widget.type == PageType.manageMyNetwork
               ? "Manage My Network"
               : 'Blocked',
+          key: titleKey,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         leading: IconButton(
+          key: const Key('key_back_button'),
           icon: Icon(
             Icons.arrow_back,
             color: Theme.of(context).iconTheme.color,
@@ -139,123 +142,138 @@ class _ListPageState extends State<ListPage> {
           onPressed: () => Navigator.pop(context),
         ),
         backgroundColor: Theme.of(context).colorScheme.onSecondary,
-        bottom:
-            widget.type == PageType.connections
-                ? PreferredSize(
-                  preferredSize: const Size.fromHeight(42),
-                  child: Consumer<ConnectionsProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.connectionsList == null ||
-                          provider.connectionsList!.isEmpty ||
-                          provider.isLoading ||
-                          provider.hasErrorMain) {
-                        return const SizedBox();
-                      }
-                      return ListPageAppBar(
-                        pageType: widget.type,
-                        count: provider.connectionsCount as int? ?? 0,
-                        connectionsProvider: provider,
-                      );
-                    },
-                  ),
-                )
-                : widget.type == PageType.followers
-                ? PreferredSize(
-                  preferredSize: const Size.fromHeight(42),
-                  child: Consumer<NetworksProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.followersList == null ||
-                          provider.followersList!.isEmpty ||
-                          provider.isLoading ||
-                          provider.hasError) {
-                        return const SizedBox();
-                      }
-                      return ListPageAppBar(
-                        pageType: widget.type,
-                        count: provider.followersCount as int? ?? 0,
-                      );
-                    },
-                  ),
-                )
-                : widget.type == PageType.following
-                ? PreferredSize(
-                  preferredSize: const Size.fromHeight(42),
-                  child: Consumer<NetworksProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.followingList == null ||
-                          provider.followingList!.isEmpty ||
-                          provider.isLoading ||
-                          provider.hasError) {
-                        return const SizedBox();
-                      }
-                      return ListPageAppBar(
-                        pageType: widget.type,
-                        count: provider.followingsCount as int? ?? 0,
-                      );
-                    },
-                  ),
-                )
-                : widget.type == PageType.blocked
-                ? PreferredSize(
-                  preferredSize: const Size.fromHeight(42),
-                  child: Consumer<PrivacyProvider>(
-                    builder: (context, provider, _) {
-                      if (provider.blockedUsers == null ||
-                          provider.blockedUsers!.isEmpty ||
-                          provider.isLoading ||
-                          (provider.hasError ?? false)) {
-                        return const SizedBox();
-                      }
-                      return ListPageAppBar(
-                        pageType: widget.type,
-                        count: provider.blockedUsers!.length,
-                      );
-                    },
-                  ),
-                )
-                : widget.type == PageType.manageMyNetwork
-                ? PreferredSize(
-                  preferredSize: const Size.fromHeight(42),
-                  child: ListPageAppBar(pageType: widget.type, count: 0),
-                )
-                : null,
+        bottom: _buildAppBarBottom(),
       ),
-      body:
-          widget.type == PageType.connections
-              ? Consumer<ConnectionsProvider>(
-                builder: (context, provider, _) {
-                  connectionsProvider = provider;
-                  return _buildBody(context);
-                },
-              )
-              : widget.type == PageType.blocked
-              ? Consumer<PrivacyProvider>(
-                builder: (context, provider, _) {
-                  privacyProvider = provider;
-                  return _buildBody(context);
-                },
-              )
-              : Consumer<NetworksProvider>(
-                builder: (context, provider, _) {
-                  networksProvider = provider;
-                  return _buildBody(context);
-                },
-              ),
+      body: _buildBodyWithConsumer(),
     );
+  }
+
+  PreferredSizeWidget? _buildAppBarBottom() {
+    const appbarHeight = Size.fromHeight(42);
+
+    switch (widget.type) {
+      case PageType.connections:
+        return PreferredSize(
+          preferredSize: appbarHeight,
+          child: Consumer<ConnectionsProvider>(
+            builder: (context, provider, _) {
+              if (provider.connectionsList == null ||
+                  provider.connectionsList!.isEmpty ||
+                  provider.isLoading ||
+                  provider.hasErrorMain) {
+                return const SizedBox();
+              }
+              return ListPageAppBar(
+                pageType: widget.type,
+                count: provider.connectionsCount as int? ?? 0,
+                connectionsProvider: provider,
+              );
+            },
+          ),
+        );
+      case PageType.followers:
+        return PreferredSize(
+          preferredSize: appbarHeight,
+          child: Consumer<NetworksProvider>(
+            builder: (context, provider, _) {
+              if (provider.followersList == null ||
+                  provider.followersList!.isEmpty ||
+                  provider.isLoading ||
+                  provider.hasError) {
+                return const SizedBox();
+              }
+              return ListPageAppBar(
+                pageType: widget.type,
+                count: provider.followersCount as int? ?? 0,
+              );
+            },
+          ),
+        );
+      case PageType.following:
+        return PreferredSize(
+          preferredSize: appbarHeight,
+          child: Consumer<NetworksProvider>(
+            builder: (context, provider, _) {
+              if (provider.followingList == null ||
+                  provider.followingList!.isEmpty ||
+                  provider.isLoading ||
+                  provider.hasError) {
+                return const SizedBox();
+              }
+              return ListPageAppBar(
+                pageType: widget.type,
+                count: provider.followingsCount as int? ?? 0,
+              );
+            },
+          ),
+        );
+      case PageType.blocked:
+        return PreferredSize(
+          preferredSize: appbarHeight,
+          child: Consumer<PrivacyProvider>(
+            builder: (context, provider, _) {
+              if (provider.blockedUsers == null ||
+                  provider.blockedUsers!.isEmpty ||
+                  provider.isLoading ||
+                  (provider.hasError ?? false)) {
+                return const SizedBox();
+              }
+              return ListPageAppBar(
+                pageType: widget.type,
+                count: provider.blockedUsers!.length,
+              );
+            },
+          ),
+        );
+      case PageType.manageMyNetwork:
+        return PreferredSize(
+          preferredSize: appbarHeight,
+          child: ListPageAppBar(pageType: widget.type, count: 0),
+        );
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildBodyWithConsumer() {
+    switch (widget.type) {
+      case PageType.connections:
+        return Consumer<ConnectionsProvider>(
+          builder: (context, provider, _) {
+            connectionsProvider = provider;
+            return _buildBody(context);
+          },
+        );
+      case PageType.blocked:
+        return Consumer<PrivacyProvider>(
+          builder: (context, provider, _) {
+            privacyProvider = provider;
+            return _buildBody(context);
+          },
+        );
+      default:
+        return Consumer<NetworksProvider>(
+          builder: (context, provider, _) {
+            networksProvider = provider;
+            return _buildBody(context);
+          },
+        );
+    }
   }
 
   Widget _buildBody(BuildContext context) {
     if (widget.type == PageType.manageMyNetwork) {
-      // Using FutureBuilder to handle the async operation
       return ManageMyNetworkBody(
         networksProvider: networksProvider,
         connectionsProvider: connectionsProvider,
         userId: widget.userId,
       );
     }
+
     final list = _getList();
 
     return RefreshIndicator(
+      key: const Key('key_refresh_indicator'),
       color: Theme.of(context).primaryColor,
       onRefresh: () async => _fetchInitial(),
       child: Builder(
@@ -263,6 +281,7 @@ class _ListPageState extends State<ListPage> {
           if (_isLoading()) {
             return Center(
               child: CircularProgressIndicator(
+                key: const Key('key_loading_indicator'),
                 color: Theme.of(context).primaryColor,
               ),
             );
@@ -270,7 +289,10 @@ class _ListPageState extends State<ListPage> {
             final errorText =
                 connectionsProvider?.errorMain ?? networksProvider?.error;
             if (errorText == 'Request Timeout') {
-              return NoInternetConnection(onRetry: () => _fetchInitial());
+              return NoInternetConnection(
+                key: const Key('key_no_internet_dialog'),
+                onRetry: () => _fetchInitial(),
+              );
             } else {
               return _emptyPlaceholder();
             }
@@ -279,12 +301,14 @@ class _ListPageState extends State<ListPage> {
               child: Center(
                 child: Text(
                   _getEmptyText(),
+                  key: Key('key_${widget.type.name}_empty_text'),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             );
           } else {
             return ListView.builder(
+              key: const Key('key_list_view'),
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: list.length + 1,
@@ -293,32 +317,23 @@ class _ListPageState extends State<ListPage> {
                   final user = list[index];
                   return Column(
                     children: [
-                      if (widget.type != PageType.blocked)
-                        UserCard(
-                          userId: user.userId,
-                          firstName: user.firstName,
-                          lastName: user.lastName,
-                          headLine: user.headLine ?? '',
-                          profilePicture: user.profilePicture,
-                          isOnline: false,
-                          time: user.time ?? '',
-                          cardType: widget.type,
-                          networksProvider: networksProvider,
-                          connectionsProvider: connectionsProvider,
-                        ),
-                      if (widget.type == PageType.blocked)
-                        UserCard(
-                          userId: user.userId,
-                          firstName: user.firstName,
-                          lastName: user.lastName,
-                          profilePicture: user.profilePicture,
-                          isOnline: false,
-                          cardType: widget.type,
-                          networksProvider: networksProvider,
-                          connectionsProvider: connectionsProvider,
-                          privacyProvider: privacyProvider,
-                        ),
-
+                      UserCard(
+                        key: Key('key_user_card_${user.userId}'),
+                        userId: user.userId,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        headLine: user.headLine ?? '',
+                        profilePicture: user.profilePicture,
+                        isOnline: false,
+                        time: user.time ?? '',
+                        cardType: widget.type,
+                        networksProvider: networksProvider,
+                        connectionsProvider: connectionsProvider,
+                        privacyProvider:
+                            widget.type == PageType.blocked
+                                ? privacyProvider
+                                : null,
+                      ),
                       Divider(
                         height: 1,
                         thickness: 1,
@@ -333,7 +348,11 @@ class _ListPageState extends State<ListPage> {
                   return isBusy
                       ? const Padding(
                         padding: EdgeInsets.all(16),
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            key: Key('key_pagination_loader'),
+                          ),
+                        ),
                       )
                       : const SizedBox(height: 30);
                 }
@@ -375,8 +394,9 @@ class _ListPageState extends State<ListPage> {
     }
   }
 
-  Widget _emptyPlaceholder({Widget? child}) {
+  Widget _emptyPlaceholder({Widget? child, Key? key}) {
     return SingleChildScrollView(
+      key: key ?? const Key('key_listpage_empty_scroll'),
       physics: const AlwaysScrollableScrollPhysics(),
       child: SizedBox(
         height: MediaQuery.of(context).size.height - kToolbarHeight,

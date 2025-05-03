@@ -45,22 +45,27 @@ class _PeopleYouMayKnowBodyState extends State<PeopleYouMayKnowBody> {
     final connectionsProvider = Provider.of<ConnectionsProvider>(context);
 
     return Consumer<NetworksProvider>(
+      key: const Key('key_pymk_networks_consumer'),
       builder: (context, provider, _) {
         final list = provider.peopleYouMayKnowList ?? [];
 
         return Container(
+          key: const Key('key_pymk_container'),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.onSecondary,
           ),
           child: Column(
+            key: const Key('key_pymk_column'),
             children: [
               Text(
                 "People you may know",
+                key: const Key('key_pymk_title'),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              SizedBox(height: 10),
+              const SizedBox(key: Key('key_pymk_spacer'), height: 10),
               GridView.builder(
+                key: const Key('key_pymk_grid'),
                 itemCount: list.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -73,6 +78,7 @@ class _PeopleYouMayKnowBodyState extends State<PeopleYouMayKnowBody> {
                 itemBuilder: (context, index) {
                   final user = list[index];
                   return PeopleYouMayKnowUserCard(
+                    key: Key('key_pymk_card_$index'),
                     firstName: user.firstName,
                     lastName: user.lastName,
                     userId: user.userId,
@@ -84,6 +90,26 @@ class _PeopleYouMayKnowBodyState extends State<PeopleYouMayKnowBody> {
                   );
                 },
               ),
+              if (provider.isBusy)
+                Padding(
+                  key: const Key('key_pymk_loading_container'),
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    key: const Key('key_pymk_loading_center'),
+                    child: CircularProgressIndicator(
+                      key: const Key('key_pymk_loading_indicator'),
+                    ),
+                  ),
+                ),
+              if (provider.hasMore && list.isEmpty && !provider.isBusy)
+                Center(
+                  key: const Key('key_pymk_empty_center'),
+                  child: Text(
+                    "No people to connect with at the moment",
+                    key: const Key('key_pymk_empty_text'),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
             ],
           ),
         );

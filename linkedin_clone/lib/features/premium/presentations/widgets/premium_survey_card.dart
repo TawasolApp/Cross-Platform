@@ -25,23 +25,35 @@ class _PremiumSurveyCardState extends State<PremiumSurveyCard> {
   Widget build(BuildContext context) {
     premiumProvider = Provider.of<PremiumProvider>(context);
     return Column(
+      key: const Key('key_premiumsurvey_main_column'),
       children: [
         Text(
           "${widget.question}?",
+          key: const Key('key_premiumsurvey_question_text'),
           style: Theme.of(context).textTheme.titleLarge,
           maxLines: 4,
           overflow: TextOverflow.ellipsis,
         ),
-        SizedBox(height: MediaQuery.of(context).size.height * 0.01),
+        SizedBox(
+          key: const Key('key_premiumsurvey_question_spacer'),
+          height: MediaQuery.of(context).size.height * 0.01,
+        ),
         Row(
+          key: const Key('key_premiumsurvey_subtext_row'),
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(widget.subText, style: Theme.of(context).textTheme.bodySmall),
+            Text(
+              widget.subText,
+              key: const Key('key_premiumsurvey_subtext'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
         SizedBox(
+          key: const Key('key_premiumsurvey_choices_container'),
           height: MediaQuery.of(context).size.height * 0.6,
           child: ChoicesCard(
+            key: const Key('key_premiumsurvey_choices_card'),
             choices: widget.options,
             type: ChoiceListType.premium,
           ),

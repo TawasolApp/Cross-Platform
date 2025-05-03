@@ -9,3 +9,5 @@ enum PageType {
   manageMyNetwork,
   others,
 }
+
+enum FilterType { general, people, posts, companies, jobs }

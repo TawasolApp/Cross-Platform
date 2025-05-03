@@ -22,4 +22,14 @@ class PremiumRepositoryImpl implements PremiumRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<bool> cancelSubscription() async {
+    try {
+      final response = await remoteDataSource.cancelSubscription();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

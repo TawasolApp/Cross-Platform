@@ -17,16 +17,21 @@ class ErrorDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      key: const ValueKey('error_dialog'),
+      key: const Key('key_errordialog_dialog'),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
-      title: Text(title, style: TextStyle(fontWeight: FontWeight.bold)),
-      content: Text(message),
+      title: Text(
+        title,
+        key: const Key('key_errordialog_title_text'),
+        style: TextStyle(fontWeight: FontWeight.bold),
+      ),
+      content: Text(message, key: const Key('key_errordialog_message_text')),
       actions: [
         TextButton(
-          key: const ValueKey('ok_button_error_dialog'),
+          key: const Key('key_errordialog_button'),
           onPressed: onPressed ?? () => Navigator.of(context).pop(),
           child: Text(
             buttonText ?? 'OK',
+            key: const Key('key_errordialog_button_text'),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ),

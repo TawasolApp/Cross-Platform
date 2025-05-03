@@ -42,6 +42,7 @@ class _MyNetworksInvitationsCardState extends State<MyNetworksInvitationsCard> {
     final connectionsProvider = Provider.of<ConnectionsProvider>(context);
 
     return Container(
+      key: const Key('my_network_invitations_container'),
       color: Theme.of(context).colorScheme.onSecondary,
       child: Consumer<ConnectionsProvider>(
         builder: (context, provider, _) {
@@ -55,8 +56,10 @@ class _MyNetworksInvitationsCardState extends State<MyNetworksInvitationsCard> {
                   ? [connectionsProvider.receivedConnectionRequestsList![0]]
                   : [];
           return Column(
+            key: const Key('my_network_invitations_main_column'),
             children: [
               LabelCard(
+                key: const Key('my_network_invitations_label_card'),
                 label:
                     connectionsProvider.receivedRequestsCount > 0
                         ? "Invitations (${connectionsProvider.receivedRequestsCount})"
@@ -66,12 +69,14 @@ class _MyNetworksInvitationsCardState extends State<MyNetworksInvitationsCard> {
                 },
               ),
               Divider(
+                key: const Key('my_network_invitations_divider'),
                 height: 1,
                 thickness: 1,
                 color: Theme.of(context).dividerColor,
               ),
               provider.receivedRequestsCount > 0
                   ? ListView.builder(
+                    key: const Key('my_network_invitations_listview'),
                     itemCount: list.length,
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -79,8 +84,10 @@ class _MyNetworksInvitationsCardState extends State<MyNetworksInvitationsCard> {
                       final user = list[index];
 
                       return Column(
+                        key: Key('my_network_invitation_column_$index'),
                         children: [
                           UserCard(
+                            key: Key('my_network_invitation_user_card_$index'),
                             userId: user.userId,
                             firstName: user.firstName,
                             lastName: user.lastName,
@@ -95,7 +102,9 @@ class _MyNetworksInvitationsCardState extends State<MyNetworksInvitationsCard> {
                       );
                     },
                   )
-                  : const SizedBox.shrink(),
+                  : const SizedBox.shrink(
+                    key: Key('my_network_invitations_empty_state'),
+                  ),
             ],
           );
         },

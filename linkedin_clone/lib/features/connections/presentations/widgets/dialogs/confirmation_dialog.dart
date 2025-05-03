@@ -23,8 +23,10 @@ class ConfirmationDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      key: const Key('key_confirmationdialog_dialog'),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
       child: Padding(
+        key: const Key('key_confirmationdialog_padding'),
         padding: const EdgeInsets.only(
           top: 16.0,
           left: 16.0,
@@ -32,33 +34,51 @@ class ConfirmationDialog extends StatelessWidget {
           bottom: 10.0,
         ),
         child: Column(
+          key: const Key('key_confirmationdialog_column'),
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            Text(message, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 14),
+            Text(
+              title,
+              key: const Key('key_confirmationdialog_title_text'),
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(
+              key: Key('key_confirmationdialog_spacer1'),
+              height: 10,
+            ),
+            Text(
+              message,
+              key: const Key('key_confirmationdialog_message_text'),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(
+              key: Key('key_confirmationdialog_spacer2'),
+              height: 14,
+            ),
             Row(
+              key: const Key('key_confirmationdialog_buttons_row'),
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
-                  key: const ValueKey('cancel_button_confirmation_dialog'),
+                  key: const Key('key_confirmationdialog_cancel_button'),
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   child: Text(
                     cancelButtonText,
+                    key: const Key('key_confirmationdialog_cancel_text'),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 TextButton(
-                  key: const ValueKey('confirm_button_confirmation_dialog'),
+                  key: const Key('key_confirmationdialog_confirm_button'),
                   onPressed: () {
                     onConfirm();
                   },
                   child: Text(
                     confirmButtonText,
+                    key: const Key('key_confirmationdialog_confirm_text'),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),

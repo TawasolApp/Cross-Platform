@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:provider/provider.dart';
 
-class SearchUsersBody extends StatefulWidget {
+class UserSearchBody extends StatefulWidget {
   final String query;
 
-  const SearchUsersBody({super.key, required this.query});
+  const UserSearchBody({super.key, required this.query});
 
   @override
-  State<SearchUsersBody> createState() => _SearchUsersBodyState();
+  State<UserSearchBody> createState() => _UserSearchBodyState();
 }
 
-class _SearchUsersBodyState extends State<SearchUsersBody> {
+class _UserSearchBodyState extends State<UserSearchBody> {
   late ScrollController _scrollController;
   late SearchProvider _searchProvider;
 
@@ -49,28 +49,8 @@ class _SearchUsersBodyState extends State<SearchUsersBody> {
   Widget build(BuildContext context) {
     List<ConnectionsUserEntity> users = _searchProvider.searchResultsUsers;
 
-    if (users.isEmpty && _searchProvider.isBusy) {
-      return const Center(
-        key: Key('key_searchusers_loading_center'),
-        child: CircularProgressIndicator(
-          key: Key('key_searchusers_loading_indicator'),
-        ),
-      );
-    }
-
-    if (users.isEmpty && !_searchProvider.isBusy) {
-      return Center(
-        key: const Key('key_searchusers_empty_center'),
-        child: Text(
-          'No users found matching "${widget.query}"',
-          key: const Key('key_searchusers_empty_text'),
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      );
-    }
-
     return ListView.builder(
-      key: const Key('key_searchusers_listview'),
+      key: const Key('user_search_listview'),
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: users.length + 1,
@@ -78,43 +58,37 @@ class _SearchUsersBodyState extends State<SearchUsersBody> {
         if (index < users.length) {
           final user = users[index];
           return Column(
-            key: Key('key_searchusers_column_$index'),
+            key: Key('user_item_column_$index'),
             children: [
               UserCard(
-                key: Key('key_searchusers_card_$index'),
+                key: Key('user_card_$index'),
                 userId: user.userId,
                 firstName: user.firstName,
                 lastName: user.lastName,
-                headLine: user.headLine ?? '',
                 profilePicture: user.profilePicture,
-                isOnline: false,
-                time: '',
                 cardType: PageType.search,
               ),
               Divider(
-                key: Key('key_searchusers_divider_$index'),
+                key: Key('user_divider_$index'),
                 height: 1,
                 thickness: 1,
-                color: Theme.of(context).dividerColor,
+                color: Theme.of(context).scaffoldBackgroundColor,
               ),
             ],
           );
         } else {
           return _searchProvider.isBusy
-              ? Padding(
-                key: const Key('key_searchusers_loading_more_container'),
-                padding: const EdgeInsets.all(16),
+              ? const Padding(
+                key: Key('user_loading_more_container'),
+                padding: EdgeInsets.all(16),
                 child: Center(
-                  key: const Key('key_searchusers_loading_more_center'),
+                  key: Key('user_loading_more_center'),
                   child: CircularProgressIndicator(
-                    key: const Key('key_searchusers_loading_more_indicator'),
+                    key: Key('user_loading_more_indicator'),
                   ),
                 ),
               )
-              : SizedBox(
-                key: const Key('key_searchusers_bottom_spacer'),
-                height: 30,
-              );
+              : const SizedBox(key: Key('user_list_bottom_spacer'), height: 30);
         }
       },
     );

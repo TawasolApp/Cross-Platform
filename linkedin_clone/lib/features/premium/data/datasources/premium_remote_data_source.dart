@@ -26,8 +26,6 @@ class PremiumRemoteDataSource {
       print("isYearly: $isYearly, autoRenewal: $autoRenewal");
       String planType = isYearly ? "Yearly" : "Monthly";
       final token = await initToken();
-
-      if (token == null) throw Exception("Token not found");
       final response = await http.post(
         Uri.parse("${baseUrl}premium-plan"),
         headers: {
@@ -52,6 +50,34 @@ class PremiumRemoteDataSource {
     } catch (e) {
       print("Premium request error: $e");
       return null;
+    }
+  }
+
+  Future<bool> cancelSubscription() async {
+    try {
+      final token = await initToken();
+      final response = await http.delete(
+        Uri.parse("${baseUrl}premium-plan"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+      );
+
+      if (response.statusCode == 204) {
+        return true;
+      } else if (response.statusCode == 409) {
+        throw Exception("	User already cancelled their premium plan");
+      } else if (response.statusCode == 400) {
+        throw Exception("User is not a premium plan user.");
+      } else if (response.statusCode == 401) {
+        throw Exception("Not authorized.");
+      } else {
+        throw Exception("Error: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Premium request error: $e");
+      return false;
     }
   }
 }

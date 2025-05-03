@@ -28,7 +28,7 @@ class PrivacyProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isBusy => _isBusy;
   String? get error => _error;
-  bool? get hasError => _error?.isNotEmpty;
+  bool get hasError => _error?.isNotEmpty ?? false;
   bool? get reportReasonSelected => _reportReasonSelected;
   String? get reportReason => _reportReason;
   set reportReason(String? value) {
@@ -38,6 +38,11 @@ class PrivacyProvider with ChangeNotifier {
 
   set reportReasonSelected(bool? value) {
     _reportReasonSelected = value;
+    notifyListeners();
+  }
+
+  set isBusy(bool value) {
+    _isBusy = value;
     notifyListeners();
   }
 

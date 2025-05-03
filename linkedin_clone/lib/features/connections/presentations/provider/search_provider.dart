@@ -1,34 +1,50 @@
 // ignore_for_file: avoid_print, prefer_final_fields
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/features/company/domain/entities/company.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_all_companies.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:hive/hive.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/search_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
+import 'package:linkedin_clone/features/feed/domain/entities/post_entity.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/search_posts_usecase.dart';
 import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
 import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_case.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/profile.dart';
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart';
 
 class SearchProvider with ChangeNotifier {
   SearchUserUsecase searchUserUseCase;
   GetAllCompaniesUseCase getAllCompaniesUseCase;
+  SearchPostsUseCase searchPostsUseCase;
   SearchJobs searchJobsUseCase;
-  var box = Hive.box('appBox');
-  List<ConnectionsUserEntity> _searchResultsUsers = [];
+  GetProfileUseCase getProfileUseCase;
 
+  Profile? myProfile;
+  var box = Hive.box('appBox');
+
+  List<ConnectionsUserEntity> _searchResultsUsers = [];
   List<Company> _searchResultsCompanies = [];
+  List<PostEntity> _searchResultsPosts = [];
   List<Job> _searchResultsJobs = [];
-  List<List<String>> recentSearchesUsers = [
-    [],
-    [],
-    [],
-    [],
-  ]; //0 First name,1 last name 2 profilePicture, 3 userId
+
+  List<List<String>> recentSearchesUsers = [[], [], [], []];
   List<String> recentSearchesWords = [];
+  FilterType _filterType = FilterType.general;
   bool _isLoading = false;
-  int _currentPage = 1;
+  int _currentPageUsers = 1;
+  int _currentPageCompanies = 1;
+  int _currentPageJobs = 1;
+  int _currentPagePosts = 1;
   bool _isBusy = false;
-  bool _hasMore = true;
+  bool _hasMoreUsers = true;
+  bool _hasMoreJobs = true;
+  bool _hasMoreCompanies = true;
+  bool _hasMorePosts = true;
   String? _error;
   bool _isSearching = false;
 
@@ -36,27 +52,46 @@ class SearchProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get hasError => _error != null;
-  bool get hasMore => _hasMore;
-  int get currentPage => _currentPage;
+  bool get hasMoreUsers => _hasMoreUsers;
+  bool get hasMoreJobs => _hasMoreJobs;
+  bool get hasMoreCompanies => _hasMoreCompanies;
+  bool get hasMorePosts => _hasMorePosts;
+  int get currentPagePosts => _currentPagePosts;
+  int get currentPageUsers => _currentPageUsers;
+  int get currentPageCompanies => _currentPageCompanies;
+  int get currentPageJobs => _currentPageJobs;
   bool get isSearching => _isSearching;
   bool get isBusy => _isBusy;
   List<ConnectionsUserEntity> get searchResultsUsers => _searchResultsUsers;
   List<Company> get searchResultsCompanies => _searchResultsCompanies;
   List<Job> get searchResultsJobs => _searchResultsJobs;
-
+  List<PostEntity> get searchResultsPosts => _searchResultsPosts;
+  FilterType get filterType => _filterType;
   set isSearching(bool value) {
     _isSearching = value;
     notifyListeners();
   }
 
-  // Constructor
+  set filterType(FilterType type) {
+    _filterType = type;
+    notifyListeners();
+  }
+
   SearchProvider(
     this.searchUserUseCase,
     this.getAllCompaniesUseCase,
     this.searchJobsUseCase,
+    this.searchPostsUseCase,
+    this.getProfileUseCase,
   );
 
-  // Public Methods
+  Future<String> get userId async {
+    final isCompany = await TokenService.getIsCompany();
+    return isCompany == true
+        ? await TokenService.getCompanyId() ?? ''
+        : await TokenService.getUserId() ?? '';
+  }
+
   Future<void> getRecentsearches() async {
     recentSearchesUsers[0] =
         await box.get('recentSearchesUsersFirstName')?.cast<String>() ?? [];
@@ -76,14 +111,16 @@ class SearchProvider with ChangeNotifier {
 
   void clearSearchResults() {
     _searchResultsUsers.clear();
+    _searchResultsCompanies.clear();
+    _searchResultsPosts.clear();
+    _searchResultsJobs.clear();
     notifyListeners();
   }
 
   void clearRecentSearches() {
-    recentSearchesUsers[0].clear();
-    recentSearchesUsers[1].clear();
-    recentSearchesUsers[2].clear();
-    recentSearchesUsers[3].clear();
+    for (var list in recentSearchesUsers) {
+      list.clear();
+    }
     recentSearchesWords.clear();
     box.put('recentSearchesUsersFirstName', recentSearchesUsers[0]);
     box.put('recentSearchesUsersLastName', recentSearchesUsers[1]);
@@ -94,7 +131,7 @@ class SearchProvider with ChangeNotifier {
   }
 
   void addToRecentSearchesUsers(ConnectionsUserEntity user) {
-    if (!recentSearchesUsers[2].contains(user.userId)) {
+    if (!recentSearchesUsers[3].contains(user.userId)) {
       recentSearchesUsers[0].insert(0, user.firstName);
       recentSearchesUsers[1].insert(0, user.lastName);
       recentSearchesUsers[2].insert(0, user.profilePicture);
@@ -116,41 +153,44 @@ class SearchProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<String> getMyProfile() async {
+    final result = await getProfileUseCase.call("");
+    myProfile = result.fold((failure) => null, (profile) => profile);
+    return userId;
+  }
+
   Future<void> performSearchUser({
     bool isInitial = false,
     String? searchWord,
   }) async {
     _isLoading = true;
-    if (_isBusy) return;
+    while (_isBusy) await Future.delayed(const Duration(milliseconds: 100));
     _isBusy = true;
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
-        _hasMore = true;
+        _currentPageUsers = 1;
+        _hasMoreUsers = true;
       } else {
-        _currentPage++;
+        _currentPageUsers++;
       }
-      if (_currentPage == 1) {
-        _searchResultsUsers = await searchUserUseCase.call(
-          searchWord: searchWord,
-          page: _currentPage,
-          limit: 12,
-        );
+
+      final results = await searchUserUseCase.call(
+        searchWord: searchWord,
+        page: _currentPageUsers,
+        limit: 12,
+      );
+
+      if (_currentPageUsers == 1) {
+        _searchResultsUsers = results;
       } else {
-        final newSearchResultsUsers = await searchUserUseCase.call(
-          searchWord: searchWord,
-          page: _currentPage,
-          limit: 12,
-        );
-        if (newSearchResultsUsers.isEmpty) {
-          _hasMore = false;
+        if (results.isEmpty) {
+          _hasMoreUsers = false;
         } else {
-          _searchResultsUsers.addAll(newSearchResultsUsers);
+          _searchResultsUsers.addAll(results);
         }
       }
     } catch (e) {
-      print('SearchProvider: performSearchUser $e\n');
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -164,36 +204,33 @@ class SearchProvider with ChangeNotifier {
     String? searchWord,
   }) async {
     _isLoading = true;
-    if (_isBusy) return;
+    while (_isBusy) await Future.delayed(const Duration(milliseconds: 100));
     _isBusy = true;
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
-        _hasMore = true;
+        _currentPageUsers = 1;
+        _hasMoreCompanies = true;
       } else {
-        _currentPage++;
+        _currentPageUsers++;
       }
-      if (_currentPage == 1) {
-        _searchResultsCompanies = await getAllCompaniesUseCase.execute(
-          searchWord!,
-          page: _currentPage,
-          limit: 12,
-        );
+
+      final results = await getAllCompaniesUseCase.execute(
+        searchWord!,
+        page: _currentPageUsers,
+        limit: 12,
+      );
+
+      if (_currentPageUsers == 1) {
+        _searchResultsCompanies = results;
       } else {
-        final newSearchResultsCompanies = await getAllCompaniesUseCase.execute(
-          searchWord!,
-          page: _currentPage,
-          limit: 12,
-        );
-        if (newSearchResultsCompanies.isEmpty) {
-          _hasMore = false;
+        if (results.isEmpty) {
+          _hasMoreCompanies = false;
         } else {
-          _searchResultsCompanies.addAll(newSearchResultsCompanies);
+          _searchResultsCompanies.addAll(results);
         }
       }
     } catch (e) {
-      print('SearchProvider: performSearchCompany $e\n');
       _error = e.toString();
     } finally {
       _isLoading = false;
@@ -207,38 +244,87 @@ class SearchProvider with ChangeNotifier {
     String? searchWord,
   }) async {
     _isLoading = true;
-    if (_isBusy) return;
+    while (_isBusy) await Future.delayed(const Duration(milliseconds: 100));
     _isBusy = true;
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
-        _hasMore = true;
+        _currentPageJobs = 1;
+        _hasMoreJobs = true;
       } else {
-        _currentPage++;
+        _currentPageJobs++;
       }
-      if (_currentPage == 1) {
-        _searchResultsJobs = await searchJobsUseCase.call(
-          keyword: searchWord!,
-          page: _currentPage,
-          limit: 12,
-        );
+
+      final results = await searchJobsUseCase.call(
+        keyword: searchWord!,
+        page: _currentPageJobs,
+        limit: 12,
+      );
+
+      if (_currentPageJobs == 1) {
+        _searchResultsJobs = results;
       } else {
-        final newSearchResultsJobs = await searchJobsUseCase.call(
-          keyword: searchWord!,
-          page: _currentPage,
-          limit: 12,
-        );
-        if (newSearchResultsJobs.isEmpty) {
-          _hasMore = false;
+        if (results.isEmpty) {
+          _hasMoreJobs = false;
         } else {
-          _searchResultsJobs.addAll(newSearchResultsJobs);
+          _searchResultsJobs.addAll(results);
         }
       }
     } catch (e) {
-      print('SearchProvider: performSearchJobs $e\n');
       _error = e.toString();
     } finally {
+      _isLoading = false;
+      _isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> performSearchPosts({
+    bool isInitial = false,
+    String? searchWord,
+  }) async {
+    _isLoading = true;
+    while (_isBusy) await Future.delayed(const Duration(milliseconds: 100));
+    _isBusy = true;
+    try {
+      _error = null;
+      if (isInitial) {
+        _currentPagePosts = 1;
+        _hasMorePosts = true;
+      } else {
+        _currentPagePosts++;
+      }
+
+      final userId = await this.userId;
+      final result = await searchPostsUseCase.call(
+        companyId: userId,
+        query: searchWord!,
+        network: false,
+        timeframe: "all",
+        page: _currentPagePosts,
+        limit: 12,
+      );
+      print("😡😡😡😡SearchProvider: performSearchPosts $result");
+
+      result.fold((failure) => _error = failure.message, (posts) {
+        if (_currentPagePosts == 1) {
+          print("🤩🤩🤩🤩🤩SearchProvider: performSearchPosts $posts");
+          _searchResultsPosts = posts;
+          print(
+            "😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️SearchProvider: performSearchPosts $_searchResultsPosts",
+          );
+        } else {
+          if (posts.isEmpty) {
+            _hasMorePosts = false;
+          } else {
+            _searchResultsPosts.addAll(posts);
+          }
+        }
+      });
+    } catch (e) {
+      _error = e.toString();
+    } finally {
+      print("SearchProvider: performSearchPosts $_searchResultsPosts");
       _isLoading = false;
       _isBusy = false;
       notifyListeners();

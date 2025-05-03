@@ -24,7 +24,7 @@ class _ReportPageState extends State<ReportPage> {
       "This person is impersonating someone",
       "This account has been hacked",
       "This account is fake",
-      "Harassment or abusive behavior",
+      "Harassment or abusive behavior",
     ],
     ReportType.post: [
       "Harassment",
@@ -52,8 +52,10 @@ class _ReportPageState extends State<ReportPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('key_report_scaffold'),
       backgroundColor: Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
+        key: const Key('key_report_appbar'),
         leading: IconButton(
           key: const ValueKey('exit_report_page_button'),
           icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
@@ -63,27 +65,34 @@ class _ReportPageState extends State<ReportPage> {
         ),
       ),
       body: Padding(
+        key: const Key('key_report_body_padding'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
+          key: const Key('key_report_main_column'),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(key: Key('key_report_spacer_1'), height: 20),
             Text(
               "Report ${widget.reportType.name}",
+              key: const Key('key_report_title_text'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(key: Key('key_report_spacer_2'), height: 20),
             SizedBox(
+              key: const Key('key_report_choices_container'),
               height: MediaQuery.of(context).size.height * 0.6,
               child: ChoicesCard(
+                key: const Key('key_report_choices_card'),
                 choices: reportOptions[widget.reportType]!,
                 type: ChoiceListType.report,
               ),
             ),
-            const Spacer(),
+            const Spacer(key: Key('key_report_flex_spacer')),
             Consumer<PrivacyProvider>(
+              key: const Key('key_report_privacy_consumer'),
               builder: (context, provider, child) {
                 return Padding(
+                  key: const Key('key_report_button_padding'),
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     key: const ValueKey('report_button'),
@@ -105,9 +114,15 @@ class _ReportPageState extends State<ReportPage> {
                                 Future.delayed(Duration.zero, () {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
+                                      key: const Key(
+                                        'key_report_success_snackbar',
+                                      ),
                                       duration: const Duration(seconds: 2),
                                       content: Text(
                                         "Report submitted successfully",
+                                        key: const Key(
+                                          'key_report_success_text',
+                                        ),
                                         style: TextStyle(
                                           color:
                                               Theme.of(
@@ -127,8 +142,12 @@ class _ReportPageState extends State<ReportPage> {
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
+                                    key: const Key(
+                                      'key_report_failure_snackbar',
+                                    ),
                                     content: Text(
                                       "Failed to submit report",
+                                      key: const Key('key_report_failure_text'),
                                       style: TextStyle(
                                         color:
                                             Theme.of(
@@ -145,8 +164,14 @@ class _ReportPageState extends State<ReportPage> {
                             : () {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
+                                  key: const Key(
+                                    'key_report_missing_reason_snackbar',
+                                  ),
                                   content: Text(
                                     "Please choose a reason to report",
+                                    key: const Key(
+                                      'key_report_missing_reason_text',
+                                    ),
                                     style: TextStyle(
                                       color:
                                           Theme.of(
@@ -174,6 +199,7 @@ class _ReportPageState extends State<ReportPage> {
                     ),
                     child: Text(
                       "Report",
+                      key: const Key('key_report_button_text'),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary,
                       ),
@@ -182,7 +208,7 @@ class _ReportPageState extends State<ReportPage> {
                 );
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(key: Key('key_report_spacer_3'), height: 20),
           ],
         ),
       ),
