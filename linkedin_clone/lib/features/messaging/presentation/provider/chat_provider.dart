@@ -81,13 +81,16 @@ class ChatProvider with ChangeNotifier {
       //   print('⚠️ Duplicate message skipped: ${newMessage.id}');
       //   return;
       // }
-
+  _socketService.markMessagesRead(conversationId);
+    _socketService.markAllDelivered();
   messages.insert(0, newMessage);
   notifyListeners();
 });
       _socketService.listenToTyping((data) {
       print('✏️ Typing event: $data');
       isTyping = true;
+      _socketService.markMessagesRead(conversationId);
+      _socketService.markAllDelivered();
       notifyListeners();
       Future.delayed(const Duration(seconds: 2), () {
         isTyping = false;
@@ -166,6 +169,27 @@ void sendTextMessage(String recipientId, String text) {
     }
     notifyListeners();
   }
+
+  void markConversationAsUnread(String conversationId) {
+  for (int i = 0; i < messages.length; i++) {
+    if (messages[i].conversationId == conversationId &&
+        messages[i].senderId != currentUserId &&
+        messages[i].status == 'Read') {
+      messages[i] = MessageModel(
+        id: messages[i].id,
+        senderId: messages[i].senderId,
+        recieverId: messages[i].recieverId,
+        conversationId: messages[i].conversationId,
+        text: messages[i].text,
+        media: messages[i].media,
+        status: 'Received',
+        sentAt: messages[i].sentAt,
+      );
+    }
+  }
+  notifyListeners();
+}
+
 
 
 }

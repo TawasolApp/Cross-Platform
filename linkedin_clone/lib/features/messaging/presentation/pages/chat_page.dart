@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/messaging_socket_service.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/chat_provider.dart';
 import 'package:linkedin_clone/features/messaging/presentation/widgets/chat_input_bar.dart';
 import 'package:linkedin_clone/features/messaging/presentation/widgets/message_tile.dart';
@@ -51,7 +52,7 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     super.dispose();
   }
-
+  MessagingSocketService _socketService = MessagingSocketService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,6 +101,7 @@ class _ChatPageState extends State<ChatPage> {
                 ),
               ),
              if (provider.isTyping)
+                
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
                   child: Align(
@@ -110,6 +112,7 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                 ),
+                
               ChatInputBar(
                 onTyped: (text) {
                   context.read<ChatProvider>().sendTyping(widget.receiverId);

@@ -30,5 +30,21 @@ class ConversationListProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+  void markConversationAsRead(String conversationId) {
+  final index = conversations.indexWhere((c) => c.id == conversationId);
+  if (index != -1) {
+    conversations[index].unseenCount = 0;
+    notifyListeners();
+  }
+}
+
+void markConversationAsUnread(String conversationId) {
+  final index = conversations.indexWhere((c) => c.id == conversationId);
+  if (index != -1) {
+    conversations[index].unseenCount = 1; // or any number you want
+    notifyListeners();
+  }
+}
+
 
 }

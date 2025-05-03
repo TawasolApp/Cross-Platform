@@ -2,10 +2,10 @@ import 'package:linkedin_clone/features/messaging/domain/entities/message_entity
 import 'package:linkedin_clone/features/messaging/domain/entities/user_preview_entity.dart';
 
 class ConversationEntity {
-  final String id;
-  final MessageEntity lastMessage;
-  final int unseenCount;
-  final UserPreviewEntity otherParticipant;
+ String id;
+  MessageEntity lastMessage;
+   int unseenCount;
+   UserPreviewEntity otherParticipant;
 
   ConversationEntity({
     required this.id,
