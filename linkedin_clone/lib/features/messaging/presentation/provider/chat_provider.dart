@@ -7,7 +7,8 @@ import 'dart:convert';
 
 class ChatProvider with ChangeNotifier {
   final GetChatUseCase getChatUseCase;
-  final MessagingSocketService _socketService = MessagingSocketService();
+  final MessagingSocketService _socketService;
+
 
   List<MessageEntity> messages = [];
   bool isLoading = false;
@@ -17,7 +18,9 @@ class ChatProvider with ChangeNotifier {
   String currentUserId = '';
   bool isTyping = false;
 
-  ChatProvider(this.getChatUseCase);
+  ChatProvider(this.getChatUseCase, [MessagingSocketService? socketService])
+    : _socketService = socketService ?? MessagingSocketService();
+
 
   // Setters
   void setConversationId(String id) {
