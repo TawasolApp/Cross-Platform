@@ -359,4 +359,28 @@ class FeedRepositoryImpl implements FeedRepository {
       (models) => Right(models.map((e) => e.toEntity()).toList()),
     );
   }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final posts = await remoteDataSource.searchPosts(
+        companyId: companyId,
+        query: query,
+        network: network,
+        timeframe: timeframe,
+        page: page,
+        limit: limit,
+      );
+      return Right(posts.map((p) => p.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
 }

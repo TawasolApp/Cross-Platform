@@ -155,6 +155,7 @@ import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usec
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_reposts_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/search_posts_usecase.dart';
 
 import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reported_posts_usecase.dart';
@@ -283,13 +284,16 @@ void main() async {
   final getSavedPostsUsecase = GetSavedPostsUseCase(repository);
   final getPostbyIdUseCase = FetchPostByIdUseCase(repository);
   final getRepostsUseCase = GetRepostsUseCase(repository);
+  final searchPostsUseCase = SearchPostsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
 
   //////admin
   final adminRemoteDataSource = AdminRemoteDataSourceImpl(dio);
   final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
   final conversationDataSource = ConversationRemoteDataSource();
-  final messagingRepository = ConversationRepositoryImpl(conversationDataSource);
+  final messagingRepository = ConversationRepositoryImpl(
+    conversationDataSource,
+  );
   await Hive.initFlutter();
   await Hive.openBox('appBox');
 
@@ -357,6 +361,7 @@ void main() async {
                 getSavedPostsUseCase: getSavedPostsUsecase,
                 fetchPostByIdUseCase: getPostbyIdUseCase,
                 getRepostsUseCase: getRepostsUseCase,
+                searchPostsUseCase: searchPostsUseCase,
               ),
         ),
 

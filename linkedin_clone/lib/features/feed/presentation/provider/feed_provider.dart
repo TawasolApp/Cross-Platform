@@ -23,6 +23,7 @@ import '../../domain/usecases/get_post_by_id_usecase.dart';
 import '../../domain/usecases/get_reposts_usecase.dart';
 import '../../domain/entities/comment_entity.dart';
 import 'package:collection/collection.dart';
+import '../../domain/usecases/search_posts_usecase.dart';
 
 class FeedProvider extends ChangeNotifier {
   final GetPostsUseCase getPostsUseCase;
@@ -41,6 +42,7 @@ class FeedProvider extends ChangeNotifier {
   final GetSavedPostsUseCase getSavedPostsUseCase;
   final FetchPostByIdUseCase fetchPostByIdUseCase;
   final GetRepostsUseCase getRepostsUseCase;
+  final SearchPostsUseCase searchPostsUseCase;
 
   FeedProvider({
     required this.getPostsUseCase,
@@ -59,6 +61,7 @@ class FeedProvider extends ChangeNotifier {
     required this.getSavedPostsUseCase,
     required this.fetchPostByIdUseCase,
     required this.getRepostsUseCase,
+    required this.searchPostsUseCase,
   });
 
   // Pagination state control
@@ -291,7 +294,7 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-    void resetUserPosts() {
+  void resetUserPosts() {
     _userPosts = [];
     _isLoading = false;
     _errorMessage = null;
@@ -832,6 +835,36 @@ class FeedProvider extends ChangeNotifier {
     );
 
     _isLoadingReposts = false;
+    notifyListeners();
+  }
+
+  Future<void> searchCompanyPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final result = await searchPostsUseCase(
+      companyId: companyId,
+      query: query,
+      network: network,
+      timeframe: timeframe,
+      page: page,
+      limit: limit,
+    );
+
+    result.fold(
+      (failure) => _errorMessage = failure.message,
+      (posts) => _posts = posts,
+    );
+
+    _isLoading = false;
     notifyListeners();
   }
 }

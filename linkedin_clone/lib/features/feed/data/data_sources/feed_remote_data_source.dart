@@ -91,6 +91,15 @@ abstract class FeedRemoteDataSource {
     int page,
     int limit,
   });
+
+  Future<List<PostModel>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -687,6 +696,53 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       return Right(posts);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<List<PostModel>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await dio.get(
+        '/posts/$companyId/search',
+        queryParameters: {
+          'q': query,
+          if (network != null) 'network': network,
+          'timeframe': timeframe,
+          'page': page,
+          'limit': limit,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return (response.data as List)
+            .map((json) => PostModel.fromJson(json))
+            .toList();
+      } else if (response.statusCode == 400) {
+        throw ValidationException('Invalid input or missing query.');
+      } else if (response.statusCode == 401) {
+        throw UnauthorizedException('Unauthorized access.');
+      } else {
+        throw ServerException('Unexpected server response.');
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        throw ValidationException(
+          e.response?.data['message'] ?? 'Bad request.',
+        );
+      } else if (e.response?.statusCode == 401) {
+        throw UnauthorizedException(
+          e.response?.data['message'] ?? 'Unauthorized.',
+        );
+      } else {
+        throw ServerException(e.message ?? 'Network error.');
+      }
     }
   }
 }
