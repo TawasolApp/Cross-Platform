@@ -7,6 +7,7 @@ import '../widgets/add_comment_field.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
 import '../widgets/reaction_summary_bar.dart';
 import '../widgets/comment_list.dart';
+import '../../domain/entities/post_entity.dart';
 
 class PostDetailsPage extends StatefulWidget {
   final String postId;
@@ -18,6 +19,7 @@ class PostDetailsPage extends StatefulWidget {
 }
 
 class _PostDetailsPageState extends State<PostDetailsPage> {
+  late Future<PostEntity?> postFuture;
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,8 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
       profile.fetchProfile("");
       feedProvider.fetchComments(widget.postId);
       feedProvider.getPostReactions(widget.postId);
+      final myId = profile.userId ?? '';
+      postFuture = feedProvider.fetchPostById(myId, widget.postId);
     });
   }
 
@@ -36,9 +40,9 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
     final feedProvider = Provider.of<FeedProvider>(context);
     final profile = Provider.of<ProfileProvider>(context);
     final myId = profile.userId;
-    final post =
-        feedProvider.posts.firstWhereOrNull((p) => p.id == widget.postId) ??
-        feedProvider.userPosts.firstWhereOrNull((p) => p.id == widget.postId);
+    final post = feedProvider.fetchPostById(myId ?? '', widget.postId);
+    // feedProvider.posts.firstWhereOrNull((p) => p.id == widget.postId) ??
+    // feedProvider.userPosts.firstWhereOrNull((p) => p.id == widget.postId);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     if (post == null) {
       return Scaffold(
@@ -72,13 +76,36 @@ class _PostDetailsPageState extends State<PostDetailsPage> {
                 SliverToBoxAdapter(
                   child: Column(
                     children: [
-                      PostCard(
-                        post: post,
-                        currentUserId: myId ?? '',
-                        profileImage: profile.profilePicture,
-                        profileName: profile.fullName,
-                        profileTitle: profile.headline,
+                      FutureBuilder<PostEntity?>(
+                        future: postFuture, // your Future<PostEntity?>
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator(); // or shimmer
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else if (!snapshot.hasData ||
+                              snapshot.data == null) {
+                            return const Text('Post not found');
+                          } else {
+                            final actualPost = snapshot.data!;
+                            return PostCard(
+                              post: actualPost,
+                              currentUserId: myId ?? '',
+                              profileImage: actualPost.authorPicture,
+                              profileName: actualPost.authorName,
+                              profileTitle: actualPost.authorBio,
+                            );
+                          }
+                        },
                       ),
+                      // PostCard(
+                      //   post: postFuture as PostEntity,
+                      //   currentUserId: myId ?? '',
+                      //   profileImage: profile.profilePicture,
+                      //   profileName: profile.fullName,
+                      //   profileTitle: profile.headline,
+                      // ),
                       ReactionSummaryBar(postId: widget.postId),
                     ],
                   ),

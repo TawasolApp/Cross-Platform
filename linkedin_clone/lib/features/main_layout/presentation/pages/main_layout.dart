@@ -1,24 +1,277 @@
+// import 'package:flutter/material.dart';
+// import 'package:go_router/go_router.dart';
+// import 'package:linkedin_clone/core/Navigation/route_names.dart';
+// import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
+// import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
+// import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
+// import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
+// import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
+// import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+// import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
+// import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
+// import 'package:linkedin_clone/features/messaging/presentation/pages/chat_page.dart';
+// import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
+// import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
+// import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
+// import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
+// import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
+// import 'package:provider/provider.dart';
+// import '../../../../core/services/token_service.dart';
+// import 'package:linkedin_clone/features/jobs/presentation/pages/jobs_search_page.dart';
+// import '../../../profile/presentation/provider/profile_provider.dart';
+
+// class MainNavigationPage extends StatefulWidget {
+//   const MainNavigationPage({super.key});
+
+//   @override
+//   State<MainNavigationPage> createState() => _MainNavigationPageState();
+// }
+
+// class _MainNavigationPageState extends State<MainNavigationPage> {
+//   int _currentIndex = 0;
+//   String? _userId;
+//   bool _loadingId = true;
+//   String? _profileName;
+
+//   final List<Widget> _pages = [
+//     FeedPage(key: const Key('feedPage')), // Will be replaced by News Feed module
+//     MyNetworkPage(key: const Key('myNetworkPage')), // Will be replaced by Connections module
+//     CompaniesListScreen(key: const Key('companiesListPage')),
+//     JobSearchPage(key: const Key('jobSearchPage')),
+//     NotificationsListPage(key: const Key('notificationsListPage')),
+//     SettingsPage(key: const Key('settingsPage')), // Will be replaced by Settings module
+//   ];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     WidgetsBinding.instance.addPostFrameCallback((_) {
+//       final profile = Provider.of<ProfileProvider>(context, listen: false);
+//       profile.fetchProfile("").then((_) {
+//         setState(() {
+//           _profileName = profile.fullName;
+//         });
+//       });
+//     });
+//     _loadCompanyId();
+//   }
+
+//   Future<void> _loadCompanyId() async {
+//     final isCompany = await TokenService.getIsCompany();
+//     final id =
+//         isCompany == true
+//             ? await TokenService.getCompanyId()
+//             : await TokenService.getUserId();
+
+//     setState(() {
+//       _userId = id;
+//       _loadingId = false;
+//     });
+
+//     print("🔐 Loaded ID for saved posts: $_userId");
+//   }
+
+//   void _onItemTapped(int index) {
+//     setState(() {
+//       _currentIndex = index;
+//     });
+//   }
+
+//   void _goToProfile() {
+//     // Navigate to user profile
+//     context.go(
+//       RouteNames.profile,
+//     ); // Define this route in GoRouter or Navigator
+//   }
+
+//   void _goToChat(String conversationId) {
+//     // Navigate to chat page with the given conversationId
+//     final conversationProvider = Provider.of<ConversationListProvider>(context, listen: false);
+//     final conversation = conversationProvider.getConversationById(conversationId);
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//         builder: (context) => ChatPage(
+//           key: Key('chatPage_${conversation?.id ?? ''}'),
+//           conversationId: conversation?.id ?? '',
+//           receiverId: conversation?.otherParticipant?.id ?? '',
+//           userName:
+//               '${conversation?.otherParticipant?.firstName ?? ''} ${conversation?.otherParticipant?.lastName ?? ''}',
+//           profileImageUrl: conversation?.otherParticipant?.profilePicture ?? '',
+//         ),
+//       ),
+//     );
+//   }
+
+//   void _goToSavedPosts() {
+//     if (_userId == null) return;
+//     print("🔁 Attempting to push to /savedPosts with:");
+//     print("🔹 userId: $_userId");
+//     print("🔹 profileName: $_profileName");
+//     Navigator.pop(context); // close drawer
+//     context.push(
+//       RouteNames.savedPosts,
+//       extra: {'userId': _userId, 'profileName': _profileName},
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     final isDarkMode = theme.brightness == Brightness.dark;
+//     final messagingProvider = Provider.of<ConversationListProvider>(
+//       context,
+//       listen: false,
+//     );
+//     final notificationsProvider = Provider.of<NotificationsProvider>(context);
+
+//     return Scaffold(
+//       drawer: Drawer(
+//         key: const Key('mainDrawer'),
+//         child: ListView(
+//           padding: const EdgeInsets.all(16),
+//           children: [
+//             GestureDetector(
+//               key: const Key('profileDrawerItem'),
+//               onTap: _goToProfile,
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const CircleAvatar(
+//                     key: Key('profileAvatar'),
+//                     radius: 36,
+//                     backgroundImage: AssetImage(
+//                       'assets/images/profile_placeholder.png',
+//                     ), // Replace with user image
+//                   ),
+//                   const SizedBox(height: 12),
+//                   Text(
+//                     "Omar Kaddah\nEx-SWE Intern @Dell",
+//                     key: const Key('profileNameText'),
+//                     style: theme.textTheme.titleMedium?.copyWith(
+//                       color: isDarkMode ? Colors.white : Colors.black,
+//                     ),
+//                   ),
+//                   const SizedBox(height: 8),
+//                   Text(
+//                     "Giza, Egypt",
+//                     key: const Key('profileLocationText'),
+//                     style: theme.textTheme.bodySmall?.copyWith(
+//                       color: isDarkMode ? Colors.white : Colors.black,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//             const Divider(height: 32),
+//             ListTile(
+//               key: const Key('savedPostsDrawerItem'),
+//               title: Text(
+//                 "Saved posts",
+//                 style: theme.textTheme.bodyMedium?.copyWith(
+//                   color: isDarkMode ? Colors.white : Colors.black,
+//                 ),
+//               ),
+//               onTap: _loadingId ? null : _goToSavedPosts,
+//             ),
+//             ListTile(
+//               key: const Key('settingsDrawerItem'),
+//               leading: const Icon(Icons.settings),
+//               title: Text(
+//                 "Settings",
+//                 style: theme.textTheme.bodyMedium?.copyWith(
+//                   color: isDarkMode ? Colors.white : Colors.black,
+//                 ),
+//               ),
+//               onTap: () {
+//                 Navigator.pop(context);
+//                 _onItemTapped(3);
+//               },
+//             ),
+//           ],
+//         ),
+//       ),
+//       body: _pages[_currentIndex],
+//       appBar: AppBar(
+//         actions: [
+//           IconButton(
+//             key: const Key('searchButton'),
+//             icon: const Icon(Icons.search),
+//             onPressed: () {
+//               // Implement search functionality
+//             },
+//           ),
+//           IconButton(
+//             key: const Key('messagesButton'),
+//             icon: const Icon(Icons.message),
+//             onPressed: () {
+//               messagingProvider.fetchConversations();
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) => const ConversationListPage(
+//                     key: Key('conversationListPage'),
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//         ],
+//       ),
+//       bottomNavigationBar: BottomNavigationBar(
+//         key: const Key('bottomNavigationBar'),
+//         currentIndex: _currentIndex,
+//         onTap: _onItemTapped,
+//         selectedItemColor: theme.colorScheme.primary,
+//         unselectedItemColor: theme.unselectedWidgetColor,
+//         backgroundColor: Colors.white,
+//         items: [
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.home, key: Key('homeNavIcon')),
+//             label: "Home",
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.people, key: Key('networkNavIcon')),
+//             label: "My Network",
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.business, key: Key('companiesNavIcon')),
+//             label: "Companies",
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.work, key: Key('jobsNavIcon')),
+//             label: "Jobs",
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.notifications_outlined, key: Key('notificationsNavIcon')),
+//             label: "Notifications",
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.settings, key: Key('settingsNavIcon')),
+//             label: "Settings",
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
-import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/messaging/presentation/pages/chat_page.dart';
 import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
-import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
 import 'package:linkedin_clone/features/notifications/presentation/pages/notifications_list.dart';
 import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
-import 'package:provider/provider.dart';
-import '../../../../core/services/token_service.dart';
 import 'package:linkedin_clone/features/jobs/presentation/pages/jobs_search_page.dart';
+import 'package:provider/provider.dart';
 import '../../../profile/presentation/provider/profile_provider.dart';
+import '../../../../core/services/token_service.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -31,27 +284,13 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
   String? _userId;
   bool _loadingId = true;
-  String? _profileName;
-
-  final List<Widget> _pages = [
-    FeedPage(key: const Key('feedPage')), // Will be replaced by News Feed module
-    MyNetworkPage(key: const Key('myNetworkPage')), // Will be replaced by Connections module
-    CompaniesListScreen(key: const Key('companiesListPage')),
-    JobSearchPage(key: const Key('jobSearchPage')),
-    NotificationsListPage(key: const Key('notificationsListPage')),
-    SettingsPage(key: const Key('settingsPage')), // Will be replaced by Settings module
-  ];
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final profile = Provider.of<ProfileProvider>(context, listen: false);
-      profile.fetchProfile("").then((_) {
-        setState(() {
-          _profileName = profile.fullName;
-        });
-      });
+      profile.fetchProfile("");
     });
     _loadCompanyId();
   }
@@ -71,6 +310,15 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     print("🔐 Loaded ID for saved posts: $_userId");
   }
 
+  List<Widget> get _pages => [
+    const FeedPage(key: Key('feedPage')),
+    const MyNetworkPage(key: Key('myNetworkPage')),
+    const CompaniesListScreen(key: Key('companiesListPage')),
+    const JobSearchPage(key: Key('jobSearchPage')),
+    const NotificationsListPage(key: Key('notificationsListPage')),
+    const SettingsPage(key: Key('settingsPage')),
+  ];
+
   void _onItemTapped(int index) {
     setState(() {
       _currentIndex = index;
@@ -78,40 +326,41 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   }
 
   void _goToProfile() {
-    // Navigate to user profile
-    context.go(
-      RouteNames.profile,
-    ); // Define this route in GoRouter or Navigator
+    context.go(RouteNames.profile);
   }
 
   void _goToChat(String conversationId) {
-    // Navigate to chat page with the given conversationId
-    final conversationProvider = Provider.of<ConversationListProvider>(context, listen: false);
-    final conversation = conversationProvider.getConversationById(conversationId);
+    final conversationProvider = Provider.of<ConversationListProvider>(
+      context,
+      listen: false,
+    );
+    final conversation = conversationProvider.getConversationById(
+      conversationId,
+    );
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatPage(
-          key: Key('chatPage_${conversation?.id ?? ''}'),
-          conversationId: conversation?.id ?? '',
-          receiverId: conversation?.otherParticipant?.id ?? '',
-          userName:
-              '${conversation?.otherParticipant?.firstName ?? ''} ${conversation?.otherParticipant?.lastName ?? ''}',
-          profileImageUrl: conversation?.otherParticipant?.profilePicture ?? '',
-        ),
+        builder:
+            (context) => ChatPage(
+              key: Key('chatPage_${conversation?.id ?? ''}'),
+              conversationId: conversation?.id ?? '',
+              receiverId: conversation?.otherParticipant?.id ?? '',
+              userName:
+                  '${conversation?.otherParticipant?.firstName ?? ''} ${conversation?.otherParticipant?.lastName ?? ''}',
+              profileImageUrl:
+                  conversation?.otherParticipant?.profilePicture ?? '',
+            ),
       ),
     );
   }
 
   void _goToSavedPosts() {
     if (_userId == null) return;
-    print("🔁 Attempting to push to /savedPosts with:");
-    print("🔹 userId: $_userId");
-    print("🔹 profileName: $_profileName");
-    Navigator.pop(context); // close drawer
+    final profile = Provider.of<ProfileProvider>(context, listen: false);
+    context.pop(); // close drawer
     context.push(
       RouteNames.savedPosts,
-      extra: {'userId': _userId, 'profileName': _profileName},
+      extra: {'userId': _userId, 'profileName': profile.fullName},
     );
   }
 
@@ -119,11 +368,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDarkMode = theme.brightness == Brightness.dark;
-    final messagingProvider = Provider.of<ConversationListProvider>(
-      context,
-      listen: false,
-    );
-    final notificationsProvider = Provider.of<NotificationsProvider>(context);
+    final profile = Provider.of<ProfileProvider>(context);
+    final profileImage = profile.profilePicture;
+    final profileName = profile.fullName ?? 'Your Name';
+    final profileHeadline = profile.headline ?? 'Your Title';
+    final profileLocation = profile.location ?? 'Location';
 
     return Scaffold(
       drawer: Drawer(
@@ -137,16 +386,20 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const CircleAvatar(
-                    key: Key('profileAvatar'),
+                  CircleAvatar(
+                    key: const Key('profileAvatar'),
                     radius: 36,
-                    backgroundImage: AssetImage(
-                      'assets/images/profile_placeholder.png',
-                    ), // Replace with user image
+                    backgroundImage:
+                        (profileImage != null && profileImage.isNotEmpty)
+                            ? NetworkImage(profileImage)
+                            : const AssetImage(
+                                  'assets/images/profile_placeholder.png',
+                                )
+                                as ImageProvider,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "Omar Kaddah\nEx-SWE Intern @Dell",
+                    "$profileName\n$profileHeadline",
                     key: const Key('profileNameText'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
@@ -154,10 +407,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Giza, Egypt",
+                    profileLocation,
                     key: const Key('profileLocationText'),
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: isDarkMode ? Colors.white : Colors.black,
+                      color: isDarkMode ? Colors.white70 : Colors.black54,
                     ),
                   ),
                 ],
@@ -185,7 +438,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               ),
               onTap: () {
                 Navigator.pop(context);
-                _onItemTapped(3);
+                _onItemTapped(5);
               },
             ),
           ],
@@ -197,21 +450,24 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           IconButton(
             key: const Key('searchButton'),
             icon: const Icon(Icons.search),
-            onPressed: () {
-              // Implement search functionality
-            },
+            onPressed: () {},
           ),
           IconButton(
             key: const Key('messagesButton'),
             icon: const Icon(Icons.message),
             onPressed: () {
+              final messagingProvider = Provider.of<ConversationListProvider>(
+                context,
+                listen: false,
+              );
               messagingProvider.fetchConversations();
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const ConversationListPage(
-                    key: Key('conversationListPage'),
-                  ),
+                  builder:
+                      (context) => const ConversationListPage(
+                        key: Key('conversationListPage'),
+                      ),
                 ),
               );
             },
@@ -225,29 +481,32 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         selectedItemColor: theme.colorScheme.primary,
         unselectedItemColor: theme.unselectedWidgetColor,
         backgroundColor: Colors.white,
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.home, key: Key('homeNavIcon')),
+            icon: Icon(Icons.home, key: Key('homeNavIcon')),
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.people, key: Key('networkNavIcon')),
+            icon: Icon(Icons.people, key: Key('networkNavIcon')),
             label: "My Network",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.business, key: Key('companiesNavIcon')),
+            icon: Icon(Icons.business, key: Key('companiesNavIcon')),
             label: "Companies",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.work, key: Key('jobsNavIcon')),
+            icon: Icon(Icons.work, key: Key('jobsNavIcon')),
             label: "Jobs",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.notifications_outlined, key: Key('notificationsNavIcon')),
+            icon: Icon(
+              Icons.notifications_outlined,
+              key: Key('notificationsNavIcon'),
+            ),
             label: "Notifications",
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.settings, key: Key('settingsNavIcon')),
+            icon: Icon(Icons.settings, key: Key('settingsNavIcon')),
             label: "Settings",
           ),
         ],
