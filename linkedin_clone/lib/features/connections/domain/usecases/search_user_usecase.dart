@@ -12,7 +12,7 @@ class SearchUserUsecase {
   }) async {
     try {
       print('🤩🤩🤩🤩Search word: $searchWord');
-      return await repository.preformSearch(
+      return await repository.performSearch(
         searchWord: searchWord,
         page: page,
         limit: limit,

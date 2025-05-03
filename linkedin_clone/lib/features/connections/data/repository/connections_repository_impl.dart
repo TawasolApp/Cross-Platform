@@ -211,13 +211,13 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> preformSearch({
+  Future<List<ConnectionsUserEntity>> performSearch({
     String? searchWord,
     int page = 0,
     int limit = 0,
   }) async {
     try {
-      final searchList = await remoteDataSource.preformSearch(
+      final searchList = await remoteDataSource.performSearch(
         searchWord: searchWord,
         page: page,
         limit: limit,

@@ -12,6 +12,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Pages/login_
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/email_verification_page.dart.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
+import 'package:linkedin_clone/features/connections/presentations/pages/detailed_search_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/general_search_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/manage_my_network_body.dart';
@@ -313,6 +314,14 @@ class AppRouter {
           final extras = state.extra as Map<String, String?>;
           final postId = extras['postId'];
           return ReportPage(reportedId: postId!, reportType: ReportType.post);
+        },
+      ),
+      GoRoute(
+        path: RouteNames.detailedSearch,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, String?>;
+          final searchText = extras['searchText'];
+          return DetailedSearchPage(searchText: searchText!);
         },
       ),
     ],

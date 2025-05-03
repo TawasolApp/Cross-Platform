@@ -20,18 +20,17 @@ class _SurveyPageState extends State<SurveyPage> {
     "which of these best describes your primary goal for using Premium?",
     "how would you like Premium to help?",
     "You're 2.6x more likely to get hired with Premium. What is the key to you job search?",
-    "I am looking to learn",
   ];
   String subText = "We'll recommend the best plan for you";
   List<List<String>> options = [
-    ["For my personal goals", "For my Job", "Other"],
+    ["For my personal goals", "For my Job", "Other "],
     [
       "Find a job",
       "Learn professional skills",
       "Qrow my network or business",
       "Find leads",
       "Hire talent",
-      "Other",
+      "Other  ",
     ],
 
     [
@@ -40,7 +39,7 @@ class _SurveyPageState extends State<SurveyPage> {
       "Get resume help",
       "Stand out when I apply to jobs",
       "Allow recruiters to contact me",
-      "Other",
+      "Other   ",
     ],
   ];
 
@@ -121,11 +120,16 @@ class _SurveyPageState extends State<SurveyPage> {
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             if (progressValue < 0.8)
-              PremiumSurveyCard(
-                question: quesitons[index],
-                options: options[index],
-                subText: subText,
+              Consumer<PremiumProvider>(
+                builder: (context, provider, _) {
+                  return PremiumSurveyCard(
+                    question: quesitons[index],
+                    options: options[index],
+                    subText: subText,
+                  );
+                },
               ),
+
             if (progressValue < 0.8) const Spacer(),
             if (progressValue < 0.8)
               Row(
@@ -136,6 +140,8 @@ class _SurveyPageState extends State<SurveyPage> {
                       key: const ValueKey('back_premium_plan_survey_button'),
                       onPressed: () {
                         setState(() {
+                          selectedOption = null;
+                          premiumProvider!.optionSelected = false;
                           progressValue = progressValue - 0.2;
                           index--;
                           if (progressValue <= 0.2) {

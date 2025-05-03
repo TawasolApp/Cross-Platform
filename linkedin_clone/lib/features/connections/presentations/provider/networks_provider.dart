@@ -18,8 +18,8 @@ class NetworksProvider with ChangeNotifier {
   String? _error; // Tracks the error message, if any
   int _currentPage = 1;
   bool _hasMore = true; // Indicates if there are more items to load
-  int _followersCount = 0;
-  int _followingsCount = 0;
+  int? _followersCount;
+  int? _followingsCount;
 
   bool get isBusy => _isBusy;
   bool get isLoading => _isLoading;
@@ -27,8 +27,8 @@ class NetworksProvider with ChangeNotifier {
   int get currentPage => _currentPage;
   bool get hasMore => _hasMore;
   bool get hasError => _error != null;
-  int get followersCount => _followersCount;
-  int get followingsCount => _followingsCount;
+  int? get followersCount => _followersCount;
+  int? get followingsCount => _followingsCount;
 
   List<ConnectionsUserEntity>? followingList;
   List<ConnectionsUserEntity>? followersList;
@@ -200,18 +200,21 @@ class NetworksProvider with ChangeNotifier {
 
   Future<void> getFollowingsCount() async {
     try {
+      _isLoading = true;
       _followingsCount = await getFollowingsCountUsecase.call();
     } catch (e) {
       print('\nNetworksProvider: getFollowingsCount $e\n');
       _error = e.toString();
       _followingsCount = -1; // Return -1 if there was an error
     } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
 
   Future<void> getFollowersCount() async {
     try {
+      _isLoading = true;
       print('Getting followers count...');
       _followersCount = await getFollowersCountUsecase.call();
     } catch (e) {
@@ -219,6 +222,9 @@ class NetworksProvider with ChangeNotifier {
       _error = e.toString();
       _followersCount = -1; // Return -1 if there was an error
     } finally {
+      _isLoading = false;
+      print('Followers count: $_followersCount');
+      print(_isLoading);
       notifyListeners();
     }
   }

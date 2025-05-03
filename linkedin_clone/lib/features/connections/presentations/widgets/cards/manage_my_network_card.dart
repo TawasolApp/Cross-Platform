@@ -5,7 +5,7 @@ class ManageMyNetworkCard extends StatelessWidget {
   final IconData? icon;
   final VoidCallback? onTap;
   final String? userId;
-  final int? count;
+  final String? count;
   const ManageMyNetworkCard({
     super.key,
     this.title,
@@ -21,7 +21,6 @@ class ManageMyNetworkCard extends StatelessWidget {
         MediaQuery.of(context).size.width * 0.1 > 50
             ? 50
             : MediaQuery.of(context).size.width * 0.1;
-    print("ManageMyNetworkCard count: $count $title");
     return Material(
       color: Theme.of(context).colorScheme.onSecondary,
       borderRadius: BorderRadius.zero,

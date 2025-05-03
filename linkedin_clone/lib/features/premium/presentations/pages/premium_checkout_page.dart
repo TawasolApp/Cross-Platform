@@ -23,7 +23,6 @@ class _PremiumCheckoutPageState extends State<PremiumCheckoutPage> {
           ..setNavigationDelegate(
             NavigationDelegate(
               onNavigationRequest: (NavigationRequest request) {
-                print('❤️❤️❤️❤️❤️❤️Navigating to: ${request.url}');
                 if (request.url.contains('current')) {
                   // User completed payment
                   Navigator.pop(context, true); // return true

@@ -42,6 +42,12 @@ void goToGeneralSeachPage(BuildContext context) {
   GoRouter.of(context).push(RouteNames.generalSearch);
 }
 
+void goToDetailedSearchPage(BuildContext context, {String? searchText}) {
+  GoRouter.of(
+    context,
+  ).push(RouteNames.detailedSearch, extra: {'searchText': searchText});
+}
+
 void goToPremiumSurvey(BuildContext context) {
   GoRouter.of(context).push(RouteNames.premiumSurvey);
 }

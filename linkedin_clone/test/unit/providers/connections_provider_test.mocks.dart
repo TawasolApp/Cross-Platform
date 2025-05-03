@@ -23,6 +23,10 @@ import 'package:linkedin_clone/features/connections/domain/usecases/connect/send
     as _i10;
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart'
     as _i11;
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart'
+    as _i12;
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart'
+    as _i13;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -256,6 +260,64 @@ class MockWithdrawConnectionRequestUseCase extends _i1.Mock
   _i4.Future<bool> call(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userId]),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
+}
+
+/// A class which mocks [EndorseSkillUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockEndorseSkillUseCase extends _i1.Mock
+    implements _i12.EndorseSkillUseCase {
+  MockEndorseSkillUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.ConnectionsRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeConnectionsRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.ConnectionsRepository);
+
+  @override
+  _i4.Future<bool> call(String? userId, String? skillId) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [userId, skillId]),
+            returnValue: _i4.Future<bool>.value(false),
+          )
+          as _i4.Future<bool>);
+}
+
+/// A class which mocks [RemoveEndorsementUsecase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveEndorsementUsecase extends _i1.Mock
+    implements _i13.RemoveEndorsementUsecase {
+  MockRemoveEndorsementUsecase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.ConnectionsRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeConnectionsRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.ConnectionsRepository);
+
+  @override
+  _i4.Future<bool> call(String? userId, String? skillId) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [userId, skillId]),
             returnValue: _i4.Future<bool>.value(false),
           )
           as _i4.Future<bool>);

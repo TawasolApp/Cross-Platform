@@ -31,9 +31,6 @@ void main() {
   late MockUnfollowUserUseCase mockUnfollow;
   late MockGetFollowersListUseCase mockGetFollowers;
   late MockFollowUserUseCase mockFollow;
-  late MockGetBlockedListUseCase mockGetBlockedList;
-  late MockBlockUserUseCase mockBlockUser;
-  late MockUnblockUserUseCase mockUnblockUser;
   late MockGetPeopleYouMayKnowUseCase mockPeopleYouMayKnow;
 
   setUp(() {
@@ -41,20 +38,12 @@ void main() {
     mockUnfollow = MockUnfollowUserUseCase();
     mockGetFollowers = MockGetFollowersListUseCase();
     mockFollow = MockFollowUserUseCase();
-    mockGetBlockedList = MockGetBlockedListUseCase();
-    mockBlockUser = MockBlockUserUseCase();
-    mockUnblockUser = MockUnblockUserUseCase();
-    mockPeopleYouMayKnow = MockGetPeopleYouMayKnowUseCase();
 
     provider = NetworksProvider(
       mockGetFollowing,
       mockUnfollow,
       mockGetFollowers,
       mockFollow,
-      mockGetBlockedList,
-      mockBlockUser,
-      mockUnblockUser,
-      mockPeopleYouMayKnow,
     );
   });
 
@@ -110,17 +99,6 @@ void main() {
     expect(provider.followersList, isNotNull);
     expect(provider.followersList!.length, 1);
     expect(provider.hasError, false);
-  });
-
-  test('getBlockedList handles errors', () async {
-    when(
-      mockGetBlockedList.call(page: anyNamed('page'), limit: anyNamed('limit')),
-    ).thenThrow(Exception('Failed to load blocked users'));
-
-    await provider.getBlockedList(isInitial: true);
-
-    expect(provider.blockedList, isNull);
-    expect(provider.hasError, true);
   });
 
   test('getPeopleYouMayKnowList loads successfully', () async {

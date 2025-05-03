@@ -777,7 +777,7 @@ class ConnectionsRemoteDataSource {
     }
   }
 
-  Future<List<ConnectionsUserEntity>> preformSearch({
+  Future<List<ConnectionsUserEntity>> performSearch({
     String? searchWord,
     int page = 0,
     int limit = 0,
@@ -817,21 +817,21 @@ class ConnectionsRemoteDataSource {
         }
       } else if (response.statusCode == 500) {
         throw Exception(
-          'ConnectionsRemoteDataSource :preformSearch: 500 Failed',
+          'ConnectionsRemoteDataSource :performSearch: 500 Failed',
         );
       } else if (response.statusCode == 400) {
         throw Exception(
-          'ConnectionsRemoteDataSource :preformSearch: 400 No query parameter was provided',
+          'ConnectionsRemoteDataSource :performSearch: 400 No query parameter was provided',
         );
       } else if (response.statusCode == 401) {
         throw Exception(
-          "ConnectionsRemoteDataSource :preformSearch: 401 Authentication failed",
+          "ConnectionsRemoteDataSource :performSearch: 401 Authentication failed",
         );
       } else {
         throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print('\nConnectionsRemoteDataSource :preformSearch: ${e.toString()}\n');
+      print('\nConnectionsRemoteDataSource :performSearch: ${e.toString()}\n');
       rethrow;
     }
   }

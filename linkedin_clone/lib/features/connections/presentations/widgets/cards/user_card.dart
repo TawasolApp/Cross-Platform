@@ -128,7 +128,7 @@ class UserCard extends StatelessWidget {
               "Unable to unfollow $firstName $lastName. Please try again.",
           errorButtonText: "Cancel",
         );
-      case PageType.followers:
+      case PageType.followers || PageType.search || PageType.others:
         return const SizedBox(); // No action yet
       case PageType.blocked:
         return ConfirmableActionButton(

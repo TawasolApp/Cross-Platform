@@ -673,6 +673,8 @@ void main() async {
                     ),
                   ),
                 ),
+                GetAllCompaniesUseCase(repository: companyrepos),
+                SearchJobs(jobrepos),
               ),
         ),
         ChangeNotifierProvider(
