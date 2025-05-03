@@ -35,6 +35,7 @@ class PostCreationPageState extends State<PostCreationPage> {
   late final TextEditingController _postCreationController;
   bool _isPostCreationButtonActive = false;
   String? uploadedImageUrl;
+  List<String>? taggedUsers = [];
   @override
   void initState() {
     super.initState();
@@ -77,6 +78,7 @@ class PostCreationPageState extends State<PostCreationPage> {
                           await feedProvider.editPost(
                             postId: widget.postId!,
                             content: content,
+                            //taggedUsers: taggedUsers,
                             visibility: feedProvider.visibility,
                             media:
                                 uploadedImageUrl != null
@@ -109,6 +111,7 @@ class PostCreationPageState extends State<PostCreationPage> {
                           print("parentPostId: ${widget.parentPostId}");
                           await feedProvider.createPost(
                             content: content,
+                            //taggedUsers: taggedUsers,
                             visibility: feedProvider.visibility,
                             parentPostId: widget.parentPostId,
                             isSilentRepost:
@@ -184,6 +187,11 @@ class PostCreationPageState extends State<PostCreationPage> {
               onChanged: (text) {
                 setState(() {
                   _isPostCreationButtonActive = text.trim().isNotEmpty;
+                });
+              },
+              onTagsChanged: (tags) {
+                setState(() {
+                  taggedUsers = tags;
                 });
               },
             ),
