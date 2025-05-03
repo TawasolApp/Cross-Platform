@@ -32,7 +32,9 @@ class _UserPostSectionState extends State<UserPostSection> {
     final profileProvider = Provider.of<ProfileProvider>(context);
 
     // Ensure we have loaded posts for this user
-    if (feedProvider.userPosts.isEmpty && profileProvider.userId != null && !_hasAttemptedLoad) {
+    if (feedProvider.userPosts.isEmpty &&
+        profileProvider.userId != null &&
+        !_hasAttemptedLoad) {
       feedProvider.fetchUserPosts(profileProvider.userId!, forceRefresh: true);
       _hasAttemptedLoad = true;
     }
@@ -48,9 +50,9 @@ class _UserPostSectionState extends State<UserPostSection> {
               "Activity",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-),
+          ),
           const SizedBox(height: 10),
-          
+
           LayoutBuilder(
             builder: (context, constraints) {
               final itemWidth = constraints.maxWidth * 0.8;
