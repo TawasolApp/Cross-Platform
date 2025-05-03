@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28712697120",
+    "project_id": "tawasoolapp",
+    "storage_bucket": "tawasoolapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28712697120:android:15417d7f52b1f99c55eb45",
+        "android_client_info": {
+          "package_name": "com.example.linkedin_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzOUphlTDJlYzsHZi8ai-efPbi9GvkAEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

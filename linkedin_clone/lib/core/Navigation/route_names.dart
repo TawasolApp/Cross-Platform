@@ -1,0 +1,37 @@
+class RouteNames {
+  static const String onboarding = "/onboarding";
+  static const String login = "/login";
+  static const String register = "/register";
+  static const String feed = "/feed";
+  static const String profile = "/profile";
+  static const String home = "/home";
+  static const String addName = "/add_name";
+  static const String addEmail = "/add_email";
+  static const String addPassword = "/add_password";
+  static const String addLocation = "/add_location";
+  static const String verifyEmail = "/verify_email";
+  static const String forgotPassword = "/forgot_password";
+  static const String checkemail = "/check_email";
+  static const String main = "/main";
+  static const String createPost = "/create_post";
+  static const String companyPage = "/company_page";
+  static const String settings = "/settings";
+  static const String deleteAccount = "/delete_account";
+  static const String changePassword = "/change_password";
+  static const String updateEmail = "/update_email";
+  static const String updateInfo = "/update_info";
+  static const String signInAndSecurity = "/sign_in_and_security";
+  static const String postDetails = "/post_details";
+  static const String connections = "/connections";
+  static const String followers = "/followers";
+  static const String following = "/following";
+  static const String invitations = "/invitations";
+  static const String manageMyNetwrok = "/manage_my_network";
+  static const String notifications = "/notifications";
+  static const String reactions = "/reactions";
+  static const String adminReports = '/admin/reports';
+  static const String adminJobs = '/admin/jobs';
+  static const String adminAnalytics = '/admin/analytics';
+  static const String savedPosts = '/saved_posts';
+  static const String adminPanel = '/admin_panel';
+}
