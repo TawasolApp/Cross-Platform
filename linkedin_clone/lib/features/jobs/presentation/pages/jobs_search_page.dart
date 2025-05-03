@@ -39,18 +39,15 @@ class _JobSearchPageState extends State<JobSearchPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Job Search',
-                    style: TextStyle(
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: Colors.white,
-                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
-                    key: const ValueKey('company_add_admin_field'),
-
                     controller: _searchController,
                     onChanged: (value) {
                       Future.microtask(() {
@@ -71,7 +68,6 @@ class _JobSearchPageState extends State<JobSearchPage> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton.icon(
-                      key: const ValueKey('job_search_filter_button'),
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.white,
                       ),
@@ -154,10 +150,6 @@ class _JobSearchPageState extends State<JobSearchPage> {
                                   provider.isLoading
                                       ? const CircularProgressIndicator()
                                       : ElevatedButton(
-                                        key: const ValueKey(
-                                          'load_more_jobs_button',
-                                        ),
-
                                         onPressed: () {
                                           provider.loadMoreJobs();
                                         },

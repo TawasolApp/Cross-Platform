@@ -20,7 +20,12 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Companies'),
+        title:Text(
+  'Companies',
+  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+    color: Colors.white,
+  ),
+),
         backgroundColor: Theme.of(context).primaryColor,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56),
