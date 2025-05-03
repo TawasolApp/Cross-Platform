@@ -241,8 +241,11 @@ class AdminRemoteDataSourceImpl implements AdminRemoteDataSource {
         'https://tawasolapp.me/api/admin/$jobId/ignore',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
-      final message = response.data['message'] ?? 'Job ignored';
-      return Right(message);
+
+      print("[DEBUG] response.data = ${response.data}");
+      // No indexing — treat data as raw string
+      final message = response.data.toString();
+      return Right('');
     } on DioException catch (e) {
       if (e.response?.statusCode == 401) {
         return Left(UnauthorizedFailure("Unauthorized access"));

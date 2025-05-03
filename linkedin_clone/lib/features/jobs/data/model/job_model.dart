@@ -24,6 +24,7 @@ class JobModel extends Job {
     required String applicationLink,
     required bool isSaved,
     required String status,
+    bool isFlagged = false,
   }) : super(
          id: id,
          position: position,
@@ -47,6 +48,7 @@ class JobModel extends Job {
          applicationLink: applicationLink,
          isSaved: isSaved,
          status: status,
+         isFlagged: isFlagged,
        );
 
   factory JobModel.fromJson(Map<String, dynamic> json) {
@@ -73,6 +75,7 @@ class JobModel extends Job {
       applicationLink: json['applicationLink'] ?? '',
       isSaved: json['isSaved'] ?? false,
       status: json['status'] ?? '',
+      isFlagged: json['isFlagged'] ?? false,
     );
   }
 
@@ -100,6 +103,7 @@ class JobModel extends Job {
       'applicationLink': applicationLink,
       'isSaved': isSaved,
       'status': status,
+      'isFlagged': isFlagged,
     };
   }
 }

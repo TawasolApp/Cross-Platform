@@ -10,23 +10,35 @@ class JobAnalyticsPage extends StatelessWidget {
     final job = Provider.of<AdminProvider>(context).jobAnalytics;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Job Analytics")),
+      appBar: AppBar(
+        title: const Text(
+          "Job Analytics",
+          key: ValueKey('job_analytics_title'),
+        ),
+      ),
       body:
           job == null
-              ? const Center(child: Text("No job analytics available."))
+              ? const Center(
+                child: Text(
+                  "No job analytics available.",
+                  key: ValueKey('job_analytics_empty'),
+                ),
+              )
               : SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildStatCard(
+                      key: const ValueKey('job_analytics_total_jobs'),
                       title: "Total Jobs",
                       value: job.totalJobs.toString(),
                       icon: Icons.work,
                       color: Colors.purple,
                     ),
                     _buildStatCard(
-                      title: "Most Applied Company ID",
+                      key: const ValueKey('job_analytics_most_applied_company'),
+                      title: "Most Applied Company",
                       value: job.mostAppliedCompany.id,
                       icon: Icons.apartment,
                       color: Colors.teal,
@@ -36,6 +48,7 @@ class JobAnalyticsPage extends StatelessWidget {
                     const SizedBox(height: 24),
                     const Text(
                       "Most Applied Job",
+                      key: ValueKey('job_analytics_most_applied_job_title'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -43,6 +56,9 @@ class JobAnalyticsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
                     Card(
+                      key: const ValueKey(
+                        'job_analytics_most_applied_job_card',
+                      ),
                       elevation: 3,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -54,9 +70,17 @@ class JobAnalyticsPage extends StatelessWidget {
                             job.mostAppliedJob.companyLogo,
                           ),
                         ),
-                        title: Text(job.mostAppliedJob.position),
+                        title: Text(
+                          job.mostAppliedJob.position,
+                          key: const ValueKey(
+                            'job_analytics_most_applied_job_position',
+                          ),
+                        ),
                         subtitle: Text(
                           "${job.mostAppliedJob.companyName} • ${job.mostAppliedJob.location}",
+                          key: const ValueKey(
+                            'job_analytics_most_applied_job_info',
+                          ),
                         ),
                         trailing: const Icon(
                           Icons.trending_up,
@@ -71,6 +95,7 @@ class JobAnalyticsPage extends StatelessWidget {
   }
 
   Widget _buildStatCard({
+    required Key key,
     required String title,
     required String value,
     required IconData icon,
@@ -78,6 +103,7 @@ class JobAnalyticsPage extends StatelessWidget {
     Color color = Colors.blue,
   }) {
     return Card(
+      key: key,
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -96,18 +122,24 @@ class JobAnalyticsPage extends StatelessWidget {
                 children: [
                   Text(
                     value,
+                    key: ValueKey('${key}_value'),
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: color,
                     ),
                   ),
-                  Text(title, style: const TextStyle(fontSize: 14)),
+                  Text(
+                    title,
+                    key: ValueKey('${key}_title'),
+                    style: const TextStyle(fontSize: 14),
+                  ),
                   if (subtitle != null)
                     Padding(
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
                         subtitle,
+                        key: ValueKey('${key}_subtitle'),
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.grey,

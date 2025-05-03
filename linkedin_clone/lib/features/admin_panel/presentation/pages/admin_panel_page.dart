@@ -9,10 +9,16 @@ class AdminPanelPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Admin Panel')),
+      appBar: AppBar(
+        title: const Text(
+          'Welcome to Admin Panel',
+          key: ValueKey('admin_appbar_title'),
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: GridView(
+          key: const ValueKey('admin_gridview'),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisSpacing: 16,
@@ -20,6 +26,7 @@ class AdminPanelPage extends StatelessWidget {
           ),
           children: [
             _AdminPanelTile(
+              key: const ValueKey('admin_tile_analytics'),
               title: 'Analytics',
               icon: Icons.analytics,
               color: Colors.blueAccent,
@@ -31,6 +38,7 @@ class AdminPanelPage extends StatelessWidget {
               },
             ),
             _AdminPanelTile(
+              key: const ValueKey('admin_tile_jobs'),
               title: 'Job Listings',
               icon: Icons.work_outline,
               color: Colors.orangeAccent,
@@ -44,6 +52,7 @@ class AdminPanelPage extends StatelessWidget {
               },
             ),
             _AdminPanelTile(
+              key: const ValueKey('admin_tile_reports'),
               title: 'Reports',
               icon: Icons.flag_outlined,
               color: Colors.redAccent,
@@ -86,10 +95,16 @@ class _AdminPanelTile extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 48, color: color),
+            Icon(
+              icon,
+              size: 48,
+              color: color,
+              key: ValueKey('admin_icon_$title'),
+            ),
             const SizedBox(height: 10),
             Text(
               title,
+              key: ValueKey('admin_text_$title'),
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,

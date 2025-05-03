@@ -21,6 +21,7 @@ class Job {
   final String applicationLink;
   final bool isSaved;
   final String status;
+  final bool isFlagged;
 
   Job({
     required this.id,
@@ -45,5 +46,6 @@ class Job {
     required this.applicationLink,
     required this.isSaved,
     required this.status,
+    required this.isFlagged,
   });
 }

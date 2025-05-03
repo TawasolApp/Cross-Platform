@@ -223,9 +223,11 @@ class AdminProvider with ChangeNotifier {
   }
 
   Future<void> ignoreJob(String jobId) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+    });
     final result = await ignoreFlaggedJobUseCase(jobId);
     result.fold(
       (failure) {

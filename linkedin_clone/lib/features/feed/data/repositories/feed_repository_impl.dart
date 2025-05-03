@@ -330,13 +330,13 @@ class FeedRepositoryImpl implements FeedRepository {
     required String postId,
   }) async {
     try {
-      final postModel = await remoteDataSource.fetchPostById(
+      final post = await remoteDataSource.fetchPostById(
         userId: userId,
         postId: postId,
       );
-      return Right(postModel.toEntity());
+      return Right(post);
     } catch (e) {
-      return Left(ServerFailure('Repo: Failed to fetch post by ID: $e'));
+      return Left(ServerFailure("Repo: Failed to fetch post by ID: $e"));
     }
   }
 }
