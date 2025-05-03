@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/report_entity.dart';
-import '../../domain/usecases/get_reports_usecase.dart';
+import '../../domain/entities/reported_post_entity.dart';
+import '../../domain/entities/reported_user_entity.dart';
+import '../../domain/usecases/get_reported_posts_usecase.dart';
+import '../../domain/usecases/get_reported_users_usecase.dart';
 import '../../domain/usecases/resolve_report_usecase.dart';
 import '../../domain/entities/job_listing_entity.dart';
 import '../../domain/usecases/get_job_listings_usecase.dart';
@@ -12,9 +14,13 @@ import '../../domain/entities/user_analytics_entity.dart';
 import '../../domain/entities/post_analytics_entity.dart';
 import '../../domain/entities/job_analytics_entity.dart';
 import '../../domain/usecases/ignore_flagged_job_usecase.dart';
+import '../../domain/usecases/delete_reported_post.dart';
+import '../../../jobs/domain/entities/job_entity.dart';
+import '../../../../core/errors/failures.dart';
 
 class AdminProvider with ChangeNotifier {
-  final GetReportsUseCase getReportsUseCase;
+  final FetchReportedPosts getReportedPostsUseCase;
+  final FetchReportedUsers getReportedUsersUseCase;
   final ResolveReportUseCase resolveReportUseCase;
   final GetJobListingsUseCase getJobListingsUseCase;
   final DeleteJobListingUseCase deleteJobListingUseCase;
@@ -22,9 +28,10 @@ class AdminProvider with ChangeNotifier {
   final GetPostAnalyticsUseCase getPostAnalyticsUseCase;
   final GetJobAnalyticsUseCase getJobAnalyticsUseCase;
   final IgnoreFlaggedJobUseCase ignoreFlaggedJobUseCase;
+  final DeleteReportedPostUseCase deleteReportedPostUseCase;
 
   AdminProvider({
-    required this.getReportsUseCase,
+    required this.getReportedPostsUseCase,
     required this.resolveReportUseCase,
     required this.getJobListingsUseCase,
     required this.deleteJobListingUseCase,
@@ -32,77 +39,155 @@ class AdminProvider with ChangeNotifier {
     required this.getUserAnalyticsUseCase,
     required this.getJobAnalyticsUseCase,
     required this.ignoreFlaggedJobUseCase,
+    required this.getReportedUsersUseCase,
+    required this.deleteReportedPostUseCase,
   });
 
   UserAnalytics? userAnalytics;
   PostAnalytics? postAnalytics;
   JobAnalytics? jobAnalytics;
-  bool isLoading = false;
-  String? errorMessage;
-  List<ReportEntity> reports = [];
-  List<JobListingEntity> jobListings = [];
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
+  List<ReportedPost> _reportedPosts = [];
+  List<ReportedPost> get reportedPosts => _reportedPosts;
+  List<ReportedUser> _reportedUsers = [];
+  List<ReportedUser> get reportedUsers => _reportedUsers;
 
-  Future<void> fetchReports({String? status, String? type}) async {
-    isLoading = true;
-    errorMessage = null;
+  List<Job> jobListings = [];
+  List<Job> get getJobListings => jobListings;
+  int _currentPage = 1;
+  bool hasMoreData = true;
+  final int _limit = 10;
+
+  Future<void> fetchReportedPosts({String? status}) async {
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
-      reports = await getReportsUseCase(status: status, type: type);
+      _reportedPosts = await getReportedPostsUseCase(status: status);
     } catch (e) {
-      errorMessage = "Failed to load reports.";
+      _errorMessage = "Failed to load reported posts";
     }
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> resolveReport(
-    String id,
+  Future<void> fetchReportedUsers({String? status}) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _reportedUsers = await getReportedUsersUseCase(status: status);
+    } catch (e) {
+      _errorMessage = "Failed to load reported users";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> resolveUserReport(
+    String reportId,
     String action, {
-    String? comment,
+    String comment = '',
   }) async {
-    try {
-      await resolveReportUseCase(
-        reportId: id,
-        action: action,
-        comment: comment,
-      );
-      reports.removeWhere((r) => r.id == id);
-      notifyListeners();
-    } catch (e) {
-      // optionally set an error state
-    }
+    await resolveReportUseCase(
+      reportId: reportId,
+      action: action,
+      comment: comment,
+    );
+    await fetchReportedUsers(); // refresh
   }
 
-  Future<void> fetchJobListings() async {
-    isLoading = true;
+  Future<void> resolvePostReport(
+    String reportId,
+    String action, {
+    String comment = '',
+  }) async {
+    await resolveReportUseCase(
+      reportId: reportId,
+      action: action,
+      comment: comment,
+    );
+    await fetchReportedPosts(); // refresh
+  }
+
+  Future<void> deleteReportedPost(String companyId, String postId) async {
+    await deleteReportedPostUseCase(companyId: companyId, postId: postId);
+    await fetchReportedPosts();
+  }
+
+  Future<void> fetchJobListings({bool refresh = false}) async {
+    if (isLoading) return;
+
+    if (refresh) {
+      _currentPage = 1;
+      jobListings.clear();
+      hasMoreData = true;
+      notifyListeners();
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    try {
-      jobListings = await getJobListingsUseCase();
-    } catch (_) {}
+    final result = await getJobListingsUseCase(
+      page: _currentPage,
+      limit: _limit,
+    );
 
-    isLoading = false;
+    result.fold(
+      (failure) {
+        _errorMessage = _mapFailure(failure);
+        hasMoreData = false;
+      },
+      (newJobs) {
+        if (newJobs.length < _limit) hasMoreData = false;
+        jobListings.addAll(newJobs);
+        _currentPage++;
+      },
+    );
+
+    _isLoading = false;
     notifyListeners();
   }
 
   Future<void> deleteJob(String jobId) async {
-    await deleteJobListingUseCase(jobId);
-    jobListings.removeWhere((job) => job.id == jobId);
-    notifyListeners();
+    final result = await deleteJobListingUseCase(jobId);
+
+    result.fold(
+      (failure) {
+        _errorMessage = _mapFailure(failure);
+        notifyListeners();
+      },
+      (_) {
+        jobListings.removeWhere((job) => job.id == jobId);
+        notifyListeners();
+      },
+    );
+  }
+
+  String _mapFailure(Failure failure) {
+    return failure is ServerFailure
+        ? failure.message
+        : "Unexpected error occurred.";
   }
 
   Future<void> fetchAnalytics() async {
-    isLoading = true;
-    errorMessage = null;
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     try {
       final userResult = await getUserAnalyticsUseCase();
       userResult.fold(
         (failure) {
-          errorMessage = failure.message;
+          _errorMessage = failure.message;
           print("provider1: Error fetching user analytics: ${failure.message}");
         },
         (data) {
@@ -115,29 +200,39 @@ class AdminProvider with ChangeNotifier {
 
       final postResult = await getPostAnalyticsUseCase();
       postResult.fold(
-        (failure) => errorMessage ??= failure.message,
+        (failure) => _errorMessage ??= failure.message,
         (data) => postAnalytics = data,
       );
 
       final jobResult = await getJobAnalyticsUseCase();
       jobResult.fold(
-        (failure) => errorMessage ??= failure.message,
+        (failure) => _errorMessage ??= failure.message,
         (data) => jobAnalytics = data,
       );
     } catch (e, stack) {
-      errorMessage = "Provider: Unexpected error occurred: $e";
+      _errorMessage = "Provider: Unexpected error occurred: $e";
       print("Provider: Error fetching analytics: $e\n$stack");
     }
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
   }
 
+  void refreshJobs() {
+    fetchJobListings(refresh: true);
+  }
+
   Future<void> ignoreJob(String jobId) async {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _isLoading = true;
+      _errorMessage = null;
+      notifyListeners();
+    });
     final result = await ignoreFlaggedJobUseCase(jobId);
     result.fold(
       (failure) {
-        errorMessage = failure.message;
+        _errorMessage = failure.message;
+        _isLoading = false;
         notifyListeners();
       },
       (message) {

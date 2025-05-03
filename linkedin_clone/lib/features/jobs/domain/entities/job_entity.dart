@@ -21,6 +21,7 @@ class Job {
   final String applicationLink;
   final bool isSaved;
   final String status;
+  final bool isFlagged;
 
   Job({
     required this.id,
@@ -45,5 +46,31 @@ class Job {
     required this.applicationLink,
     required this.isSaved,
     required this.status,
+    required this.isFlagged,
   });
+  factory Job.fake({String id = 'jobId'}) => Job(
+    id: id,
+    position: "Dev",
+    company: "LinkedIn",
+    industry: "Tech",
+    description: "Job desc",
+    location: "Cairo",
+    salary: 10000,
+    experienceLevel: "Mid",
+    locationType: "Remote",
+    employmentType: "Full-time",
+    postedDate: DateTime.now(),
+    applicantCount: 5,
+    isOpen: true,
+    companyId: "c1",
+    companyName: "LinkedIn",
+    companyLogo: "",
+    companyAddress: "Address",
+    companyLocation: "Cairo",
+    companyDescription: "Desc",
+    applicationLink: "",
+    isSaved: false,
+    status: "Open",
+    isFlagged: false,
+  );
 }

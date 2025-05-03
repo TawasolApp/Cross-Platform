@@ -767,12 +767,13 @@ class FeedProvider extends ChangeNotifier {
     }
   }
 
-  Future<PostEntity?> fetchPostById(String postId) async {
+  Future<PostEntity?> fetchPostById(String userId, String postId) async {
     try {
-      final userId =
-          await this.userId; // companyId or userId based on TokenService logic
+      //final userId =
+      //await this.userId; // companyId or userId based on TokenService logic
       final result = await fetchPostByIdUseCase(userId: userId, postId: postId);
-
+      print("Prov: Fetching post by ID: $postId");
+      print("Prov: User ID: $userId");
       return result.fold(
         (failure) {
           print('❌Prov: Failed to fetch parent post: ${failure.message}');

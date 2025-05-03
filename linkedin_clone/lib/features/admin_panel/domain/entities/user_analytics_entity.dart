@@ -17,4 +17,10 @@ class UserAnalytics {
     required this.mostReportedUser,
     required this.userReportedCount,
   });
+  factory UserAnalytics.fake() => UserAnalytics(
+    totalUsers: 100,
+    mostActiveUsers: [],
+    mostReportedUser: 'u1',
+    userReportedCount: 5,
+  );
 }

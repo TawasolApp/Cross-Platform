@@ -157,7 +157,8 @@ import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usec
 import 'package:linkedin_clone/features/feed/domain/usecases/get_reposts_usecase.dart';
 
 import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
-import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reports_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reported_posts_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reported_users_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/resolve_report_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_job_listings_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/delete_job_listing_usecase.dart';
@@ -165,6 +166,7 @@ import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_user_ana
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_post_analytics_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_job_analytics_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/ignore_flagged_job_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/delete_reported_post.dart';
 
 import 'package:linkedin_clone/features/admin_panel/data/repositories/admin_repository_impl.dart';
 import 'package:linkedin_clone/features/admin_panel/data/data_sources/admin_remote_data_source.dart';
@@ -188,11 +190,11 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  NotificationsRemoteDataSourceImpl(baseUrl: 'ttps://tawasolapp.me/api').initializeFcm();
+  NotificationsRemoteDataSourceImpl(
+    baseUrl: 'ttps://tawasolapp.me/api',
+  ).initializeFcm();
 
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
@@ -215,16 +217,30 @@ void main() async {
   final ProfileRemoteDataSourceImpl dataSourceProfile =
       ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
 
-// Initialize notifications components
-  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
-  final notificationsRepository = NotificationRepositoryImpl(notificationDataSource: notificationsRemoteDataSource);
-  final getNotificationsUseCase = GetNotificationsUseCase(notificationsRepository);
-  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(notificationsRepository);
-  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(notificationsRepository);
-  final getUnreadNotificationsUseCase = GetUnreadNotificationsUseCase(notificationsRepository);
+  // Initialize notifications components
+  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(
+    baseUrl: 'https://tawasolapp.me/api',
+  );
+  final notificationsRepository = NotificationRepositoryImpl(
+    notificationDataSource: notificationsRemoteDataSource,
+  );
+  final getNotificationsUseCase = GetNotificationsUseCase(
+    notificationsRepository,
+  );
+  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(
+    notificationsRepository,
+  );
+  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(
+    notificationsRepository,
+  );
+  final getUnreadNotificationsUseCase = GetUnreadNotificationsUseCase(
+    notificationsRepository,
+  );
   final getFcmTokenUseCase = GetFcmTokenUseCase(notificationsRepository);
   final initializeFcmUseCase = InitializeFcmUseCase(notificationsRepository);
-  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(notificationsRepository);
+  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(
+    notificationsRepository,
+  );
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -308,16 +324,19 @@ void main() async {
                 resendEmailUsecase: resendEmailUsecase,
               ),
         ),
-ChangeNotifierProvider(
-          create: (_) => NotificationsProvider(
-            getNotificationsUseCase: getNotificationsUseCase,
-            markNotificationAsReadUseCase: markNotificationAsReadUseCase,
-            getUnseenNotificationsCountUseCase: getUnseenNotificationsCountUseCase,
-            getUnreadNotificationsUseCase: getUnreadNotificationsUseCase,
-            getFcmTokenUseCase: getFcmTokenUseCase,
-            initializeFcmUseCase: initializeFcmUseCase,
-            subscribeToNotificationsUseCase: subscribeToNotificationsUseCase,
-          )/*..initialize(),*/
+        ChangeNotifierProvider(
+          create:
+              (_) => NotificationsProvider(
+                getNotificationsUseCase: getNotificationsUseCase,
+                markNotificationAsReadUseCase: markNotificationAsReadUseCase,
+                getUnseenNotificationsCountUseCase:
+                    getUnseenNotificationsCountUseCase,
+                getUnreadNotificationsUseCase: getUnreadNotificationsUseCase,
+                getFcmTokenUseCase: getFcmTokenUseCase,
+                initializeFcmUseCase: initializeFcmUseCase,
+                subscribeToNotificationsUseCase:
+                    subscribeToNotificationsUseCase,
+              ) /*..initialize(),*/,
         ),
         ChangeNotifierProvider(
           create:
@@ -638,9 +657,14 @@ ChangeNotifierProvider(
         ChangeNotifierProvider(
           create:
               (_) => AdminProvider(
-                getReportsUseCase: GetReportsUseCase(adminRepository),
+                getReportedPostsUseCase: FetchReportedPosts(adminRepository),
+                getReportedUsersUseCase: FetchReportedUsers(adminRepository),
                 resolveReportUseCase: ResolveReportUseCase(adminRepository),
+                deleteReportedPostUseCase: DeleteReportedPostUseCase(
+                  adminRepository,
+                ),
                 getJobListingsUseCase: GetJobListingsUseCase(adminRepository),
+
                 deleteJobListingUseCase: DeleteJobListingUseCase(
                   adminRepository,
                 ),

@@ -133,9 +133,8 @@ class AppRouter {
       GoRoute(
         path: RouteNames.companyPage,
         builder:
-            (context, state) => CompanyProfileScreen(
-              companyId: "elsewedy-electric",
-            ),
+            (context, state) =>
+                CompanyProfileScreen(companyId: "elsewedy-electric"),
       ),
 
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
@@ -259,7 +258,7 @@ class AppRouter {
       ),
       GoRoute(
         path: RouteNames.adminJobs,
-        builder: (context, state) => const JobListingsPage(),
+        builder: (context, state) => const AdminJobListingsPage(),
       ),
       GoRoute(
         path: RouteNames.adminAnalytics,

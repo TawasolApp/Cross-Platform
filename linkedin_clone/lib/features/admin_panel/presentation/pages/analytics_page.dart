@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/admin_provider.dart';
-import 'user_reporting_stats_page.dart';
+import 'user_analytics_page.dart';
+import 'post_analytics_page.dart';
+import 'job_analytics_page.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -22,95 +24,141 @@ class _AnalyticsPageState extends State<AnalyticsPage> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<AdminProvider>(context);
+    final user = provider.userAnalytics;
+    final post = provider.postAnalytics;
+    final job = provider.jobAnalytics;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Admin Analytics Dashboard")),
+      appBar: AppBar(
+        title: const Text(
+          "View Analytics",
+          key: ValueKey('analytics_appbar_title'),
+        ),
+      ),
       body:
           provider.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                child: CircularProgressIndicator(
+                  key: ValueKey('analytics_loader'),
+                ),
+              )
               : provider.errorMessage != null
-              ? Center(child: Text(provider.errorMessage!))
-              : SingleChildScrollView(
+              ? Center(
+                child: Text(
+                  provider.errorMessage!,
+                  key: ValueKey('analytics_error'),
+                ),
+              )
+              : Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
                       "Summary",
+                      key: ValueKey('analytics_summary_title'),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _SummaryCard(
-                          label: "Total Users",
-                          count:
-                              provider.userAnalytics?.totalUsers.toString() ??
-                              '-',
+                          key: const ValueKey('analytics_summary_users'),
+                          label: "Users",
+                          count: user?.totalUsers.toString() ?? '-',
                           color: Colors.blue,
                         ),
                         _SummaryCard(
-                          label: "Total Posts",
-                          count:
-                              provider.postAnalytics?.totalPosts.toString() ??
-                              '-',
+                          key: const ValueKey('analytics_summary_posts'),
+                          label: "Posts",
+                          count: post?.totalPosts.toString() ?? '-',
                           color: Colors.green,
                         ),
                         _SummaryCard(
-                          label: "Total Jobs",
-                          count:
-                              provider.jobAnalytics?.totalJobs.toString() ??
-                              '-',
+                          key: const ValueKey('analytics_summary_jobs'),
+                          label: "Jobs",
+                          count: job?.totalJobs.toString() ?? '-',
                           color: Colors.purple,
                         ),
                       ],
                     ),
                     const SizedBox(height: 30),
-                    const Text(
-                      "Most Active Users",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    if (provider.userAnalytics?.mostActiveUsers.isNotEmpty ??
-                        false)
-                      ...provider.userAnalytics!.mostActiveUsers.map(
-                        (user) => ListTile(
-                          leading: const CircleAvatar(),
-                          title: Text(user.userId),
-                          subtitle: Text(
-                            "Activity Score: ${user.activityScore}",
-                          ),
-                        ),
-                      )
-                    else
-                      const Text("No active users found."),
-                    const SizedBox(height: 40),
                     const Divider(),
                     const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.bar_chart),
-                        label: const Text("View User Reporting Stats"),
-                        onPressed: () {
-                          Navigator.push(
+                    _buildDashboardTile(
+                      key: const ValueKey('analytics_tile_user'),
+                      icon: Icons.person,
+                      label: "User Analytics",
+                      color: Colors.blue,
+                      onTap:
+                          () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const UserReportingStatsPage(),
+                              builder: (_) => const UserAnalyticsPage(),
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                    ),
+                    _buildDashboardTile(
+                      key: const ValueKey('analytics_tile_post'),
+                      icon: Icons.post_add,
+                      label: "Post Analytics",
+                      color: Colors.green,
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const PostAnalyticsPage(),
+                            ),
+                          ),
+                    ),
+                    _buildDashboardTile(
+                      key: const ValueKey('analytics_tile_job'),
+                      icon: Icons.work,
+                      label: "Job Analytics",
+                      color: Colors.purple,
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const JobAnalyticsPage(),
+                            ),
+                          ),
                     ),
                   ],
                 ),
               ),
+    );
+  }
+
+  Widget _buildDashboardTile({
+    required Key key,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color color = Colors.indigo,
+  }) {
+    return Card(
+      key: key,
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(0.15),
+          child: Icon(icon, color: color, key: ValueKey('${key}_icon')),
+        ),
+        title: Text(
+          label,
+          key: ValueKey('${key}_label'),
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+        onTap: onTap,
+      ),
     );
   }
 }
@@ -121,6 +169,7 @@ class _SummaryCard extends StatelessWidget {
   final Color color;
 
   const _SummaryCard({
+    super.key,
     required this.label,
     required this.count,
     required this.color,
@@ -140,6 +189,7 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Text(
             count,
+            key: ValueKey('${key}_count'),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -149,6 +199,7 @@ class _SummaryCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             label,
+            key: ValueKey('${key}_label'),
             style: const TextStyle(fontSize: 13, color: Colors.white70),
             textAlign: TextAlign.center,
           ),

@@ -81,7 +81,7 @@ abstract class FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
-  Future<PostModel> fetchPostById({
+  Future<PostEntity> fetchPostById({
     required String userId,
     required String postId,
   });
@@ -638,56 +638,25 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
   }
 
   @override
-  Future<PostModel> fetchPostById({
+  Future<PostEntity> fetchPostById({
     required String userId,
     required String postId,
   }) async {
     final token = await _getToken();
+
     final response = await dio.get(
       'https://tawasolapp.me/api/posts/$userId/$postId',
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-      ),
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
     );
 
-    if (response.statusCode == 200) {
-      final data = response.data;
-      print('📦 API Response Body: ${response.data}');
-
-      if (data is List && data.isNotEmpty) {
-        return PostModel.fromJson(data.first); // ✅ Take first item from list
-      } else {
-        throw Exception('Unexpected response: Empty list or wrong format.');
-      }
+    if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
+      final data = response.data as Map<String, dynamic>;
+      return PostModel.fromJson(data);
     } else if (response.statusCode == 404) {
-      throw Exception('Post not found.');
+      throw Exception("Post not found");
     } else {
-      throw Exception('Failed to fetch post. Status: ${response.statusCode}');
+      throw Exception("Unexpected response or failed request");
     }
-    // if (data is Map<String, dynamic>) {
-    //   return PostModel.fromJson(data);
-    // } else {
-    //   throw Exception(
-    //     'Unexpected response format: Expected Map<String, dynamic>',
-    //   );
-    // }
-    // } else {
-    //   throw Exception('Failed to fetch post: ${response.statusCode}');
-    // }
-    // } on DioException catch (e) {
-    //   if (e.response != null) {
-    //     throw Exception(
-    //       'Dio error: ${e.response!.statusCode} - ${e.response!.data}',
-    //     );
-    //   } else {
-    //     throw Exception('Dio error: ${e.message}');
-    //   }
-    // } catch (e) {
-    //   throw Exception('Unexpected error: $e');
-    // }
   }
 
   @override
