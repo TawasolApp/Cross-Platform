@@ -52,7 +52,7 @@ class PostCard extends StatelessWidget {
     final mainContent = Padding(
       padding:
           isSilentRepost || isEmbedded
-              ? EdgeInsets.symmetric(horizontal: 8, vertical: 0)
+              ? EdgeInsets.only(top: 8)
               : const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +96,7 @@ class PostCard extends StatelessWidget {
               profileImage: post.parentPost!.authorPicture ?? '',
               profileName: post.parentPost!.authorName,
               profileTitle: post.parentPost!.authorBio,
-              isEmbedded: true, // 🛑 VERY IMPORTANT
+              isEmbedded: false,
             ),
           if (!isSilentRepost)
             PostContent(
@@ -109,9 +109,9 @@ class PostCard extends StatelessWidget {
           if (isRepostWithThoughts)
             MiniPostCard(post: post, currentUserId: currentUserId),
           const SizedBox(height: 8),
-          ReactionSummaryBar(post: post),
+          if (!isSilentRepost && !isEmbedded) ReactionSummaryBar(post: post),
           if (!isSilentRepost) const Divider(height: 2, color: Colors.grey),
-          if (!isSilentRepost)
+          if ((!isSilentRepost || post.parentPostId == null) && !isEmbedded)
             PostFooter(
               post: post,
               comments: post.comments,
