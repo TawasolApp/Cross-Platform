@@ -15,6 +15,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_cre
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../feed/presentation/provider/feed_provider.dart';
 
@@ -55,30 +56,27 @@ class CompanyProfileScreen extends StatelessWidget {
                     ),
                   ),
                   ListTile(
+                    key: const ValueKey('company_share_button'),
                     leading: Icon(Icons.share),
                     title: Text("Share page"),
                     onTap: () {
-                      print("Share Page Clicked");
+                      final companyLink =
+                          "https://tawasolapp.me/company/${companyId}"; 
+                      Share.share("Check out this company: $companyLink");
                       Navigator.pop(context);
                     },
                   ),
+                  // ListTile(
+                  //   leading: Icon(Icons.send),
+                  //   title: Text("Send in a message"),
+                  //   onTap: () {
+                  //     print("Send in Message Clicked");
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
                   ListTile(
-                    leading: Icon(Icons.send),
-                    title: Text("Send in a message"),
-                    onTap: () {
-                      print("Send in Message Clicked");
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.flag),
-                    title: Text("Report abuse"),
-                    onTap: () {
-                      print("Report Abuse Clicked");
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
+                    key: const ValueKey('company_create_page_button'),
+
                     leading: Icon(Icons.add),
                     title: Text("Create a Tawasol Page"),
                     onTap: () {
