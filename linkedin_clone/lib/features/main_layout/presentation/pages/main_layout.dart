@@ -9,6 +9,7 @@ import 'package:linkedin_clone/features/connections/presentations/pages/my_netwo
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
+import 'package:linkedin_clone/features/messaging/presentation/pages/chat_page.dart';
 import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:linkedin_clone/features/notifications/domain/entities/notifications.dart';
@@ -83,6 +84,24 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     context.go(
       RouteNames.profile,
     ); // Define this route in GoRouter or Navigator
+  }
+  void _goToChat(String conversationId) {
+    // Navigate to chat page with the given conversationId
+    final conversationProvider = Provider.of<ConversationListProvider>(context, listen: false);
+    final conversation = conversationProvider.getConversationById(conversationId);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChatPage(
+                            conversationId: conversation?.id ?? '',
+                            receiverId: conversation?.otherParticipant?.id ?? '',
+                            userName:
+                                '${conversation?.otherParticipant?.firstName ?? ''} ${conversation?.otherParticipant?.lastName ?? ''}',
+                            profileImageUrl:
+                                conversation?.otherParticipant?.profilePicture ?? '',
+                          ),
+      ),
+    );
   }
 
   void _goToSavedPosts() {

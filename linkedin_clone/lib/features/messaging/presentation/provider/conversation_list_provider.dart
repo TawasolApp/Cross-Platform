@@ -46,5 +46,12 @@ void markConversationAsUnread(String conversationId) {
   }
 }
 
+ConversationEntity? getConversationById(String conversationId) {
+  try {
+    return conversations.firstWhere((c) => c.id == conversationId);
+  } catch (e) {
+    return null;
+  }
+}
 
 }
