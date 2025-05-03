@@ -125,15 +125,48 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                       Expanded(
                         child:
                             feedProvider.userPosts.isEmpty
-                                ? const Center(
-                                  child: Text(
-                                    "No posts available",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                )
+                                ? (companyProvider.isManager &&
+                                        !companyProvider.isViewingAsUser
+                                    ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.post_add_outlined,
+                                            size: 80,
+                                            color: Colors.grey[400],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'No Posts Yet',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Create your first post to engage with your audience.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey[500],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : const Center(
+                                      child: Text(
+                                        "No posts available",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ))
                                 : UserFeedPage(
                                   companyId: widget.companyId,
                                   userId: widget.companyId,

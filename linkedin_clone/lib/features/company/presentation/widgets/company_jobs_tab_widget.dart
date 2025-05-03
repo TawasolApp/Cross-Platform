@@ -47,7 +47,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton.icon(
-                                    key: const ValueKey('company_jobs_analytics_button'),
+                      key: const ValueKey('company_jobs_analytics_button'),
 
                       onPressed:
                           widget.onAnalyticsPressed ??
@@ -74,7 +74,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                       ),
                     ),
                     TextButton.icon(
-                                    key: const ValueKey('company_jobs_add_job_button'),
+                      key: const ValueKey('company_jobs_add_job_button'),
                       onPressed:
                           widget.onEditPressed ??
                           () async {
@@ -119,19 +119,63 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: jobs.length,
-                itemBuilder: (context, index) {
-                  return CompanyJobCard(
-                    job: jobs[index],
-                    companyId: widget.companyId,
-                  );
-                },
-              ),
+              child:
+                  jobs.isEmpty
+                      ? (companyProvider.isManager &&
+                              !companyProvider.isViewingAsUser
+                          ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.work_outline,
+                                  size: 80,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No Jobs Posted Yet',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Start posting job openings to attract top talent.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[500],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                          : Center(
+                            child: Text(
+                              'No jobs available.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ))
+                      : ListView.builder(
+                        itemCount: jobs.length,
+                        itemBuilder: (context, index) {
+                          return CompanyJobCard(
+                            job: jobs[index],
+                            companyId: widget.companyId,
+                          );
+                        },
+                      ),
             ),
             // "Load More Jobs" Button
             if (!companyProvider.isLoadingJobs &&
-                !companyProvider.isAllJobsLoaded)
+                !companyProvider.isAllJobsLoaded &&
+                jobs.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
@@ -141,7 +185,7 @@ class _CompanyJobsWidgetState extends State<CompanyJobsWidget> {
                   child: Text("Load More Jobs"),
                 ),
               )
-            else if (companyProvider.isAllJobsLoaded)
+            else if (companyProvider.isAllJobsLoaded && jobs.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Center(child: const Text('No more jobs available.')),

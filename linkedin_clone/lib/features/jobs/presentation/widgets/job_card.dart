@@ -34,7 +34,10 @@ class _JobCardState extends State<JobCard> {
 
           if (result == true) {
             // ✅ Trigger jobs refresh
-            await Provider.of<JobSearchProvider>(context, listen: false).fetchJobs();
+            await Provider.of<JobSearchProvider>(
+              context,
+              listen: false,
+            ).fetchJobs();
           }
         },
 
@@ -46,15 +49,20 @@ class _JobCardState extends State<JobCard> {
               Row(
                 children: [
                   // Company logo
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundImage: NetworkImage(
-                      job.companyLogo.isNotEmpty
-                          ? job.companyLogo
-                          : 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/LinkedIn_logo_initials.png/800px-LinkedIn_logo_initials.png',
-                    ),
-                    backgroundColor: Colors.grey[300],
-                  ),
+                  job.companyLogo.isNotEmpty
+                      ? CircleAvatar(
+                        radius: 24,
+                        backgroundImage: NetworkImage(job.companyLogo),
+                      )
+                      : CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.grey[200],
+                        child: Icon(
+                          Icons.business,
+                          size: 24,
+                          color: Colors.grey[600],
+                        ),
+                      ),
                   const SizedBox(width: 12),
                   // Job title and company name
                   Expanded(
