@@ -42,19 +42,25 @@ class _ConversationListPageState extends State<ConversationListPage> {
       appBar: AppBar(
         leading: isSelecting
             ? IconButton(
+                key: const Key('clearSelectionButton'),
                 icon: const Icon(Icons.close),
                 onPressed: clearSelection,
               )
             : IconButton(
+                key: const Key('backButton'),
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.pop(context),
               ),
-        title: Text(isSelecting
-            ? '${selectedConversationIds.length} selected'
-            : 'Messages'),
+        title: Text(
+          isSelecting
+              ? '${selectedConversationIds.length} selected'
+              : 'Messages',
+          key: const Key('appBarTitle'),
+        ),
         actions: isSelecting
             ? [
                 IconButton(
+                  key: const Key('markAsReadButton'),
                   tooltip: 'Mark as Read',
                   icon: const Icon(Icons.mark_email_read_outlined),
                   onPressed: () {
@@ -65,6 +71,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
                   },
                 ),
                 IconButton(
+                  key: const Key('markAsUnreadButton'),
                   tooltip: 'Mark as Unread',
                   icon: const Icon(Icons.mark_email_unread_outlined),
                   onPressed: () {
@@ -78,8 +85,12 @@ class _ConversationListPageState extends State<ConversationListPage> {
             : null,
       ),
       body: conversationProvider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              key: Key('loadingIndicator'),
+              child: CircularProgressIndicator(),
+            )
           : ListView.builder(
+              key: const Key('conversationListView'),
               itemCount: conversationProvider.conversations.length,
               itemBuilder: (context, index) {
                 final conversation = conversationProvider.conversations[index];
@@ -87,6 +98,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
                 final isUnread = conversation.unseenCount > 0;
 
                 return ConversationTile(
+                  key: Key('conversationTile_${conversation.id}'),
                   conversation: conversation,
                   isSelected: isSelected,
                   onTap: () {
@@ -97,6 +109,7 @@ class _ConversationListPageState extends State<ConversationListPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ChatPage(
+                            key: Key('chatPage_${conversation.id}'),
                             conversationId: conversation.id,
                             receiverId: conversation.otherParticipant.id,
                             userName:

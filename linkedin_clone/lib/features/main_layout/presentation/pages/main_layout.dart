@@ -34,13 +34,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   String? _profileName;
 
   final List<Widget> _pages = [
-    FeedPage(), // Will be replaced by News Feed module
-    MyNetworkPage(), // Will be replaced by Connections module
-    CompaniesListScreen(),
-    JobSearchPage(),
-    NotificationsListPage(),
-    
-    SettingsPage(), // Will be replaced by Settings module
+    FeedPage(key: const Key('feedPage')), // Will be replaced by News Feed module
+    MyNetworkPage(key: const Key('myNetworkPage')), // Will be replaced by Connections module
+    CompaniesListScreen(key: const Key('companiesListPage')),
+    JobSearchPage(key: const Key('jobSearchPage')),
+    NotificationsListPage(key: const Key('notificationsListPage')),
+    SettingsPage(key: const Key('settingsPage')), // Will be replaced by Settings module
   ];
 
   @override
@@ -80,11 +79,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   void _goToProfile() {
     // Navigate to user profile
-
     context.go(
       RouteNames.profile,
     ); // Define this route in GoRouter or Navigator
   }
+
   void _goToChat(String conversationId) {
     // Navigate to chat page with the given conversationId
     final conversationProvider = Provider.of<ConversationListProvider>(context, listen: false);
@@ -93,13 +92,13 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       context,
       MaterialPageRoute(
         builder: (context) => ChatPage(
-                            conversationId: conversation?.id ?? '',
-                            receiverId: conversation?.otherParticipant?.id ?? '',
-                            userName:
-                                '${conversation?.otherParticipant?.firstName ?? ''} ${conversation?.otherParticipant?.lastName ?? ''}',
-                            profileImageUrl:
-                                conversation?.otherParticipant?.profilePicture ?? '',
-                          ),
+          key: Key('chatPage_${conversation?.id ?? ''}'),
+          conversationId: conversation?.id ?? '',
+          receiverId: conversation?.otherParticipant?.id ?? '',
+          userName:
+              '${conversation?.otherParticipant?.firstName ?? ''} ${conversation?.otherParticipant?.lastName ?? ''}',
+          profileImageUrl: conversation?.otherParticipant?.profilePicture ?? '',
+        ),
       ),
     );
   }
@@ -128,15 +127,18 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
     return Scaffold(
       drawer: Drawer(
+        key: const Key('mainDrawer'),
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
             GestureDetector(
+              key: const Key('profileDrawerItem'),
               onTap: _goToProfile,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const CircleAvatar(
+                    key: Key('profileAvatar'),
                     radius: 36,
                     backgroundImage: AssetImage(
                       'assets/images/profile_placeholder.png',
@@ -145,6 +147,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                   const SizedBox(height: 12),
                   Text(
                     "Omar Kaddah\nEx-SWE Intern @Dell",
+                    key: const Key('profileNameText'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
@@ -152,6 +155,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                   const SizedBox(height: 8),
                   Text(
                     "Giza, Egypt",
+                    key: const Key('profileLocationText'),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
@@ -161,14 +165,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             ),
             const Divider(height: 32),
             ListTile(
-              title: Text(
-                "Puzzle games",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
-            ListTile(
+              key: const Key('savedPostsDrawerItem'),
               title: Text(
                 "Saved posts",
                 style: theme.textTheme.bodyMedium?.copyWith(
@@ -178,24 +175,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               onTap: _loadingId ? null : _goToSavedPosts,
             ),
             ListTile(
-              title: Text(
-                "Groups",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
-            const Divider(height: 32),
-            ListTile(
-              leading: const Icon(Icons.workspace_premium_outlined),
-              title: Text(
-                "Try Premium for EGP0",
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
-            ),
-            ListTile(
+              key: const Key('settingsDrawerItem'),
               leading: const Icon(Icons.settings),
               title: Text(
                 "Settings",
@@ -215,130 +195,62 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
       appBar: AppBar(
         actions: [
           IconButton(
+            key: const Key('searchButton'),
             icon: const Icon(Icons.search),
             onPressed: () {
               // Implement search functionality
             },
           ),
           IconButton(
+            key: const Key('messagesButton'),
             icon: const Icon(Icons.message),
             onPressed: () {
               messagingProvider.fetchConversations();
-              print("Conversations gayat: ${messagingProvider.conversations.length}");
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ConversationListPage()),
+                MaterialPageRoute(
+                  builder: (context) => const ConversationListPage(
+                    key: Key('conversationListPage'),
+                  ),
+                ),
               );
             },
           ),
         ],
       ),
-
       bottomNavigationBar: BottomNavigationBar(
+        key: const Key('bottomNavigationBar'),
         currentIndex: _currentIndex,
         onTap: _onItemTapped,
         selectedItemColor: theme.colorScheme.primary,
         unselectedItemColor: theme.unselectedWidgetColor,
         backgroundColor: Colors.white,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: const Icon(Icons.home, key: Key('homeNavIcon')),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.people, key: Key('networkNavIcon')),
             label: "My Network",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: const Icon(Icons.business, key: Key('companiesNavIcon')),
             label: "Companies",
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.work), label: "Jobs"),
           BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                const Icon(Icons.notifications_outlined),
-                if (notificationsProvider.unseenNotificationsCount > 0)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(1),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      constraints: BoxConstraints(minWidth: 12, minHeight: 12),
-                      child:
-                          notificationsProvider.unseenNotificationsCount > 9
-                              ? Text(
-                                '9+',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 8,
-                                ),
-                                textAlign: TextAlign.center,
-                              )
-                              : Text(
-                                '${notificationsProvider.unseenNotificationsCount}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 8,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                    ),
-                  ),
-              ],
-            ),
-            label: "Notifications",
-            activeIcon: Stack(
-              children: [
-                const Icon(Icons.notifications),
-                if (notificationsProvider.unseenNotificationsCount > 0)
-                  Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Container(
-                      padding: EdgeInsets.all(1),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      constraints: BoxConstraints(minWidth: 12, minHeight: 12),
-                      child:
-                          notificationsProvider.unseenNotificationsCount > 9
-                              ? Text(
-                                '9+',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 8,
-                                ),
-                                textAlign: TextAlign.center,
-                              )
-                              : Text(
-                                '${notificationsProvider.unseenNotificationsCount}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 8,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                    ),
-                  ),
-              ],
-            ),
+            icon: const Icon(Icons.work, key: Key('jobsNavIcon')),
+            label: "Jobs",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.notifications_outlined, key: Key('notificationsNavIcon')),
+            label: "Notifications",
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings, key: Key('settingsNavIcon')),
             label: "Settings",
           ),
         ],
-        type: BottomNavigationBarType.fixed,
-        selectedFontSize: 12,
-        unselectedFontSize: 10,
-        iconSize: 24,
-        showUnselectedLabels: true,
-        enableFeedback: true,
-        // Allow labels to take more space
-        landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
       ),
     );
   }

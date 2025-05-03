@@ -6,7 +6,6 @@ import 'package:linkedin_clone/features/messaging/presentation/widgets/message_t
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/services/token_service.dart';
 
-
 class ChatPage extends StatefulWidget {
   final String conversationId;
   final String receiverId;
@@ -52,18 +51,22 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     super.dispose();
   }
+
   MessagingSocketService _socketService = MessagingSocketService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
+          key: const Key('backButton'),
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back),
         ),
         title: Row(
           children: [
             CircleAvatar(
+              key: const Key('profileImage'),
               backgroundImage: widget.profileImageUrl.isNotEmpty
                   ? NetworkImage(widget.profileImageUrl)
                   : const AssetImage('assets/images/profile_placeholder.png')
@@ -73,8 +76,16 @@ class _ChatPageState extends State<ChatPage> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.userName, style: const TextStyle(fontSize: 16)),
-                const Text("Active now", style: TextStyle(fontSize: 12, color: Colors.green)),
+                Text(
+                  widget.userName,
+                  key: const Key('userNameText'),
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const Text(
+                  "Active now",
+                  key: Key('activeStatusText'),
+                  style: TextStyle(fontSize: 12, color: Colors.green),
+                ),
               ],
             ),
           ],
@@ -83,37 +94,45 @@ class _ChatPageState extends State<ChatPage> {
       body: Consumer<ChatProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              key: Key('loadingIndicator'),
+              child: CircularProgressIndicator(),
+            );
           }
 
           return Column(
             children: [
               Expanded(
                 child: ListView.builder(
+                  key: const Key('messageListView'),
                   reverse: true,
                   controller: _scrollController,
                   itemCount: provider.messages.length,
                   itemBuilder: (context, index) {
                     final msg = provider.messages[index];
                     final isMe = msg.senderId == currentUserId;
-                    return MessageBubble(message: msg, isMe: isMe);
+                    return MessageBubble(
+                      key: Key('messageBubble_${msg.id}'),
+                      message: msg,
+                      isMe: isMe,
+                    );
                   },
                 ),
               ),
-             if (provider.isTyping)
-                
+              if (provider.isTyping)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
                       "Typing...",
+                      key: const Key('typingIndicator'),
                       style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),
                     ),
                   ),
                 ),
-                
               ChatInputBar(
+                key: const Key('chatInputBar'),
                 onTyped: (text) {
                   context.read<ChatProvider>().sendTyping(widget.receiverId);
                 },

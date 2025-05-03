@@ -26,20 +26,21 @@ class _SettingsPageState extends State<SettingsPage> {
     // );
     // profileProvider.fetchProfile("");
     return Scaffold(
-  
       body: ListView(
+        key: const Key('settingsListView'),
         padding: const EdgeInsets.all(16),
         children: [
           // Profile Image and Name
           GestureDetector(
-            onTap:
-                () => context.go(
-                  RouteNames.profile,
-                  // extra: profileProvider.userId,
-                ),
+            key: const Key('profileTile'),
+            onTap: () => context.go(
+              RouteNames.profile,
+              // extra: profileProvider.userId,
+            ),
             child: Row(
               children: [
                 const CircleAvatar(
+                  key: Key('profileAvatar'),
                   radius: 30,
                   backgroundImage: AssetImage(
                     'assets/images/profile_placeholder.png',
@@ -51,6 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     Text(
                       "Omar Kaddah",
+                      key: const Key('profileNameText'),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isDarkMode ? Colors.white : Colors.black,
@@ -58,6 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     Text(
                       "Ex-SWE Intern @Dell Technologies",
+                      key: const Key('profileSubtitleText'),
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: isDarkMode ? Colors.white70 : Colors.black54,
                       ),
@@ -71,6 +74,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
           // Sign in & Security
           ListTile(
+            key: const Key('signInSecurityTile'),
             leading: const Icon(Icons.lock),
             title: const Text("Sign in & Security"),
             onTap: () {
@@ -81,6 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
           // Visibility
           ListTile(
+            key: const Key('visibilityTile'),
             leading: const Icon(Icons.visibility),
             title: const Text("Visibility"),
             onTap: () {
@@ -90,6 +95,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
           // Notifications
           ListTile(
+            key: const Key('logoutTile'),
             leading: const Icon(Icons.notifications),
             title: const Text("Logout"),
             onTap: () {
@@ -101,6 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           ListTile(
+            key: const Key('deleteAccountTile'),
             leading: const Icon(Icons.delete),
             title: const Text("Delete Account"),
             onTap: () {
@@ -108,7 +115,8 @@ class _SettingsPageState extends State<SettingsPage> {
               context.go(RouteNames.deleteAccount);
             },
           ),
-                    ListTile(
+          ListTile(
+            key: const Key('blockedUsersTile'),
             leading: const Icon(Icons.block),
             title: const Text("Blocked Users"),
             onTap: () {
@@ -118,6 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           // Admin Panel Access (only for Admins)
           ListTile(
+            key: const Key('adminPanelTile'),
             leading: const Icon(Icons.admin_panel_settings),
             title: const Text("Admin Panel"),
             onTap: () {
