@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/core/usecase/usecase.dart';
 import 'package:linkedin_clone/core/api/media.dart';
 import 'package:image_picker/image_picker.dart';
@@ -747,30 +748,42 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Resume methods
-  Future<void> updateResume(String resumeUrl) async {
+  Future<void> updateResume(String resumePath) async {
     _setLoading(true);
     _resumeError = null;
 
-    if (_userId == null) {
-      _resumeError = "User ID is not set";
+    try {
+      // First upload the PDF using the media API
+      final resumeUrl = await uploadImage(XFile(resumePath));
+      
+
+      if (_userId == null) {
+        _resumeError = "User ID is not set";
+        _setLoading(false);
+        return;
+      }
+
+      // Then update the profile with the returned URL
+      final result = await updateResumeUseCase.call(
+        ResumeParams(userId: _userId!, resume: resumeUrl),
+      );
+
+      result.fold(
+        (failure) {
+          _resumeError = _mapFailureToMessage(failure);
+          notifyListeners();
+        },
+        (_) {
+          _resume = resumeUrl;
+          notifyListeners();
+        },
+      );
+    } catch (e) {
+      _resumeError = "Failed to upload resume: ${e.toString()}";
+      notifyListeners();
+    } finally {
       _setLoading(false);
-      return;
     }
-
-    final result = await updateResumeUseCase.call(
-      ResumeParams(userId: _userId!, resume: resumeUrl),
-    );
-
-    result.fold(
-      (failure) {
-        _resumeError = _mapFailureToMessage(failure);
-        notifyListeners();
-      },
-      (_) {
-        _resume = resumeUrl;
-        notifyListeners();
-      },
-    );
 
     _setLoading(false);
   }
@@ -1227,6 +1240,48 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<bool> hasEndorsedSkill(String skillName) async {
+  // Get the current user ID
+  final currentUserId = await TokenService.getUserId();
+  
+  if (currentUserId == null) {
+    return false;
+  }
+
+  // Check if we have the endorsements loaded for this skill
+  if (_currentEndorsements != null) {
+    return _currentEndorsements!.any((e) => e.userId == currentUserId);
+  }
+
+  // If endorsements aren't loaded, fetch them first
+  try {
+    _isLoadingEndorsements = true;
+    notifyListeners();
+
+    final params = GetSkillEndorsementsParams(
+      userId: _userId!, // The profile we're viewing
+      skillName: skillName,
+    );
+
+    final result = await getSkillEndorsementsUseCase.call(params);
+
+    return result.fold(
+      (failure) => false,
+      (endorsements) {
+        _currentEndorsements = endorsements;
+        return endorsements.any((e) => e.userId == currentUserId);
+      },
+    );
+  } catch (e) {
+    debugPrint('Error checking endorsement: $e');
+    return false;
+  } finally {
+    _isLoadingEndorsements = false;
+    notifyListeners();
+  }
+}
+
 
   // Helper methods
   void _setLoading(bool loading) {

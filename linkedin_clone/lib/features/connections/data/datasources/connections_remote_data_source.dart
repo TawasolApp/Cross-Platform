@@ -748,11 +748,15 @@ class ConnectionsRemoteDataSource {
   ///////////////////Endorse skill
   Future<bool> endosreSkill(String userId, String skillName) async {
     try {
+      print("🤡🤡🤡🤡🤡🤡endorse skill $userId $skillName");
       final token = await initToken();
       final response = await client.post(
         Uri.parse('${baseUrl}connections/$userId/endorse-skill'),
-        headers: {'Authorization': 'Bearer $token'},
-        body: jsonEncode({'skillName': skillName}),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
+        body: json.encode({"skillName": skillName}),
       );
 
       if (response.statusCode == 201) {
@@ -798,8 +802,11 @@ class ConnectionsRemoteDataSource {
     try {
       final token = await initToken();
       final response = await client.delete(
-        Uri.parse('${baseUrl}connections/$userId/endorsment/$skillName'),
-        headers: {'Authorization': 'Bearer $token'},
+        Uri.parse('${baseUrl}connections/$userId/endorsement/$skillName'),
+        headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json'
+          },
       );
 
       if (response.statusCode == 204) {
@@ -942,15 +949,15 @@ class ConnectionsRemoteDataSource {
         }
       } else if (response.statusCode == 500) {
         throw Exception(
-          'ConnectionsRemoteDataSource :preformSearch: 500 Failed',
+          'ConnectionsRemoteDataSource :performSearch: 500 Failed',
         );
       } else if (response.statusCode == 400) {
         throw Exception(
-          'ConnectionsRemoteDataSource :preformSearch: 400 No query parameter was provided',
+          'ConnectionsRemoteDataSource :performSearch: 400 No query parameter was provided',
         );
       } else if (response.statusCode == 401) {
         throw Exception(
-          "ConnectionsRemoteDataSource :preformSearch: 401 Authentication failed",
+          "ConnectionsRemoteDataSource :performSearch: 401 Authentication failed",
         );
       } else {
         throw Exception('Unknown error ${response.statusCode}');

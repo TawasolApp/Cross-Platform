@@ -108,7 +108,7 @@ class _EndorsementsListPageState extends State<EndorsementsListPage> {
                   color: Colors.white,
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                   child: Text(
-                    '${endorsements.length} ${endorsements.length == 1 ? 'person has' : 'people have'} endorsed you',
+                    '${endorsements.length} ${endorsements.length == 1 ? 'person has' : 'people have'} endorsed this skill',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.grey.shade700,
                     ),
@@ -187,7 +187,7 @@ class EndorsementListItem extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Text(
-                    'Has endorsed you for this skill',
+                    'Has endorsed for this skill',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Colors.grey.shade600,
                     ),

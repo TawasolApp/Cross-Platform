@@ -139,7 +139,7 @@ class NotificationsProvider extends ChangeNotifier {
   // Modify getNotifications method
   Future<void> getNotifications(String id, {bool loadMore = false}) async {
     if (loadMore && (!_hasMore || _isLoadingMore)) return;
-    
+
     if (!loadMore) {
       _currentPage = 1;
       _hasMore = true;
@@ -148,15 +148,11 @@ class NotificationsProvider extends ChangeNotifier {
       _currentPage++;
       _isLoadingMore = true;
     }
-    
+
     notifyListeners();
 
     final result = await _getNotificationsUseCase(
-      GetNotificationsParams(
-        id: id, 
-        page: _currentPage, 
-        limit: _itemsPerPage,
-      ),
+      GetNotificationsParams(id: id, page: _currentPage, limit: _itemsPerPage),
     );
 
     result.fold(
@@ -168,13 +164,13 @@ class NotificationsProvider extends ChangeNotifier {
       (newNotifications) {
         // Sort by timestamp (newest first)
         newNotifications.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-        
+
         if (loadMore) {
           _notifications.addAll(newNotifications);
         } else {
           _notifications = newNotifications;
         }
-        
+
         // Check if we've reached the end
         _hasMore = newNotifications.length >= _itemsPerPage;
       },
@@ -244,7 +240,11 @@ class NotificationsProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> getUnreadNotifications(String id, {int page = 1, int limit = 10}) async {
+  Future<void> getUnreadNotifications(
+    String id, {
+    int page = 1,
+    int limit = 10,
+  }) async {
     final result = await _getUnreadNotificationsUseCase(
       GetUnreadNotificationsParams(id: id, page: page, limit: limit),
     );
@@ -280,33 +280,12 @@ class NotificationsProvider extends ChangeNotifier {
     );
   }
 
-  // Renamed from _subscribeToNotifications to better reflect its purpose
-  // void _subscribeToNotificationStream() {
-  //   // Cancel existing subscription if any
-  //   _notificationSubscription?.cancel();
-
-  //   // Set up new subscription to the notification stream
-  //   _notificationSubscription = _subscribeToNotificationsUseCase.stream.listen(
-  //     (notificationResult) {
-  //       notificationResult.fold(
-  //         (failure) {
-  //           _hasError = true;
-  //           _errorMessage = failure.message;
-  //         },
-  //         (notification) {
-  //           _notifications.insert(0, notification);
-  //           _unseenNotificationsCount++;
-  //         },
-  //       );
-  //       notifyListeners();
-  //     },
-  //     onError: (error) {
-  //       _hasError = true;
-  //       _errorMessage = error.toString();
-  //       notifyListeners();
-  //     },
-  //   );
-  // }
+  // Add this new method to mark all notifications as seen
+  Future<void> markAllNotificationsAsSeen(String id) async {
+    // Reset the unseen notifications count to zero
+    _unseenNotificationsCount = 0;
+    notifyListeners();
+  }
 
   void resetErrors() {
     _hasError = false;

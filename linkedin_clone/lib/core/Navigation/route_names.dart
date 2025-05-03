@@ -38,4 +38,5 @@ class RouteNames {
   static const String companyProfile = '/company_profile';
   static const String generalSearch = '/general_search';
   static const String detailedSearch = '/detailed_search';
+  static const String jobDetails = '/jobDetails';
 }

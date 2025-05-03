@@ -18,6 +18,7 @@ import 'package:linkedin_clone/features/connections/presentations/widgets/bodies
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/general_search_card.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/create_post_page.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/change_password.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/delete_account.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/main_layout.dart';
@@ -284,7 +285,7 @@ class AppRouter {
           return RepostsPage(postId: postId);
         },
       ),
-
+      
     ],
   );
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class RecentWordSearchCard extends StatelessWidget {
   final String searchWord;

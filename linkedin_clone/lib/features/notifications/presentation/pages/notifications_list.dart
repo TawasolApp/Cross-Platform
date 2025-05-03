@@ -39,6 +39,9 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
 
       provider.initialize();
 
+      // Mark all notifications as seen when the page is opened
+      provider.markAllNotificationsAsSeen(_userId);
+
       // Set up scroll controller for pagination
       _notificationsScrollController.addListener(() {
         final maxScroll =
@@ -212,11 +215,17 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
     switch (notification.type) {
       case 'React':
         // Navigate to post details
-        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        context.push(
+          RouteNames.postDetails,
+          extra: {'postId': notification.rootItemId},
+        );
         break;
       case 'Comment':
         // Navigate to post details with comment focus
-        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        context.push(
+          RouteNames.postDetails,
+          extra: {'postId': notification.rootItemId},
+        );
         break;
       case 'UserConnection':
         // Navigate to profile
