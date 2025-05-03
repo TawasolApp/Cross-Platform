@@ -43,6 +43,7 @@ class ConfirmationDialog extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
+                  key: const ValueKey('cancel_button_confirmation_dialog'),
                   onPressed: () {
                     Navigator.pop(context);
                   },
@@ -52,6 +53,7 @@ class ConfirmationDialog extends StatelessWidget {
                   ),
                 ),
                 TextButton(
+                  key: const ValueKey('confirm_button_confirmation_dialog'),
                   onPressed: () {
                     onConfirm();
                   },

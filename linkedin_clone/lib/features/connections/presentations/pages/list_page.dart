@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/list_page_appbar.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/manage_my_network_body.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 
 import 'package:provider/provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/dialogs/no_internet_connection.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
@@ -23,6 +24,7 @@ class _ListPageState extends State<ListPage> {
   late ScrollController _scrollController;
   ConnectionsProvider? connectionsProvider;
   NetworksProvider? networksProvider;
+  PrivacyProvider? privacyProvider;
 
   @override
   void initState() {
@@ -32,6 +34,8 @@ class _ListPageState extends State<ListPage> {
         context,
         listen: false,
       );
+    } else if (widget.type == PageType.blocked) {
+      privacyProvider = Provider.of<PrivacyProvider>(context, listen: false);
     } else {
       networksProvider = Provider.of<NetworksProvider>(context, listen: false);
     }
@@ -52,7 +56,7 @@ class _ListPageState extends State<ListPage> {
 
         break;
       case PageType.blocked:
-        networksProvider?.getBlockedList(isInitial: true);
+        privacyProvider?.getBlockedUsers();
         break;
       case PageType.connections:
         if (widget.userId != null) {
@@ -91,7 +95,7 @@ class _ListPageState extends State<ListPage> {
             networksProvider!.getFollowingList();
             break;
           case PageType.blocked:
-            networksProvider!.getBlockedList();
+            privacyProvider!.getBlockedUsers();
             break;
           default:
             break;
@@ -194,17 +198,17 @@ class _ListPageState extends State<ListPage> {
                 : widget.type == PageType.blocked
                 ? PreferredSize(
                   preferredSize: const Size.fromHeight(42),
-                  child: Consumer<NetworksProvider>(
+                  child: Consumer<PrivacyProvider>(
                     builder: (context, provider, _) {
-                      if (provider.blockedList == null ||
-                          provider.blockedList!.isEmpty ||
+                      if (provider.blockedUsers == null ||
+                          provider.blockedUsers!.isEmpty ||
                           provider.isLoading ||
-                          provider.hasError) {
+                          (provider.hasError ?? false)) {
                         return const SizedBox();
                       }
                       return ListPageAppBar(
                         pageType: widget.type,
-                        count: provider.blockedList!.length,
+                        count: provider.blockedUsers!.length,
                       );
                     },
                   ),
@@ -221,6 +225,13 @@ class _ListPageState extends State<ListPage> {
               ? Consumer<ConnectionsProvider>(
                 builder: (context, provider, _) {
                   connectionsProvider = provider;
+                  return _buildBody(context);
+                },
+              )
+              : widget.type == PageType.blocked
+              ? Consumer<PrivacyProvider>(
+                builder: (context, provider, _) {
+                  privacyProvider = provider;
                   return _buildBody(context);
                 },
               )
@@ -282,18 +293,32 @@ class _ListPageState extends State<ListPage> {
                   final user = list[index];
                   return Column(
                     children: [
-                      UserCard(
-                        userId: user.userId,
-                        firstName: user.firstName,
-                        lastName: user.lastName,
-                        headLine: user.headLine,
-                        profilePicture: user.profilePicture,
-                        isOnline: false,
-                        time: user.time ?? '',
-                        cardType: widget.type,
-                        networksProvider: networksProvider,
-                        connectionsProvider: connectionsProvider,
-                      ),
+                      if (widget.type != PageType.blocked)
+                        UserCard(
+                          userId: user.userId,
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          headLine: user.headLine ?? '',
+                          profilePicture: user.profilePicture,
+                          isOnline: false,
+                          time: user.time ?? '',
+                          cardType: widget.type,
+                          networksProvider: networksProvider,
+                          connectionsProvider: connectionsProvider,
+                        ),
+                      if (widget.type == PageType.blocked)
+                        UserCard(
+                          userId: user.userId,
+                          firstName: user.firstName,
+                          lastName: user.lastName,
+                          profilePicture: user.profilePicture,
+                          isOnline: false,
+                          cardType: widget.type,
+                          networksProvider: networksProvider,
+                          connectionsProvider: connectionsProvider,
+                          privacyProvider: privacyProvider,
+                        ),
+
                       Divider(
                         height: 1,
                         thickness: 1,
@@ -327,7 +352,7 @@ class _ListPageState extends State<ListPage> {
       case PageType.following:
         return networksProvider?.followingList;
       case PageType.blocked:
-        return networksProvider?.blockedList;
+        return privacyProvider?.blockedUsers;
       case PageType.connections:
         return connectionsProvider?.connectionsList;
       default:
@@ -343,6 +368,8 @@ class _ListPageState extends State<ListPage> {
   bool _isLoading() {
     if (widget.type == PageType.connections) {
       return connectionsProvider?.isLoading ?? false;
+    } else if (widget.type == PageType.blocked) {
+      return privacyProvider?.isLoading ?? false;
     } else {
       return networksProvider?.isLoading ?? false;
     }

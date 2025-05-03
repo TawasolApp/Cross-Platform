@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
 
 class RecentUserSearchCard extends StatelessWidget {

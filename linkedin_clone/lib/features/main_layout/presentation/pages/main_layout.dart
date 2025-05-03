@@ -6,7 +6,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_pro
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/feed/presentation/pages/feed_page.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/pages/settings.dart';
 import 'package:linkedin_clone/features/messaging/presentation/pages/chat_page.dart';

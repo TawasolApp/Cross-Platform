@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
 import 'package:provider/provider.dart';
 import '../../provider/connections_provider.dart';

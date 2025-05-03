@@ -3,6 +3,7 @@ import 'package:linkedin_clone/features/connections/presentations/provider/conne
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/manage_my_network_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
+import 'package:provider/provider.dart';
 
 class ManageMyNetworkBody extends StatefulWidget {
   final ConnectionsProvider? connectionsProvider;
@@ -38,14 +39,22 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
       child: Column(
         children: [
           /// Connections
-          ManageMyNetworkCard(
-            title: 'Connections',
-            icon: Icons.people_alt_rounded,
-            onTap: () {
-              goToConnections(context);
+          Consumer<ConnectionsProvider>(
+            builder: (context, provider, child) {
+              return ManageMyNetworkCard(
+                title: 'Connections',
+                icon: Icons.people_alt_rounded,
+                onTap: () {
+                  goToConnections(context);
+                },
+                count:
+                    provider.connectionsCount != null
+                        ? provider.connectionsCount.toString()
+                        : '',
+              );
             },
-            count: widget.connectionsProvider?.connectionsCount ?? 0,
           ),
+
           Divider(
             height: 1,
             thickness: 1,
@@ -53,14 +62,22 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
           ),
 
           /// Followings
-          ManageMyNetworkCard(
-            title: 'People I follow',
-            icon: Icons.person_2_rounded,
-            onTap: () {
-              goToFollowing(context);
+          Consumer<NetworksProvider>(
+            builder: (context, provider, child) {
+              return ManageMyNetworkCard(
+                title: 'People I follow',
+                icon: Icons.person_2_rounded,
+                onTap: () {
+                  goToFollowing(context);
+                },
+                count:
+                    provider.followingsCount != null
+                        ? provider.followingsCount.toString()
+                        : '',
+              );
             },
-            count: widget.networksProvider?.followingsCount ?? 0,
           ),
+
           Divider(
             height: 1,
             thickness: 1,
@@ -68,14 +85,22 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
           ),
 
           /// Followers
-          ManageMyNetworkCard(
-            title: 'Followers',
-            icon: Icons.person_2_outlined,
-            onTap: () {
-              goToFollowers(context);
+          Consumer<NetworksProvider>(
+            builder: (context, provider, child) {
+              return ManageMyNetworkCard(
+                title: 'Followers',
+                icon: Icons.person_2_outlined,
+                onTap: () {
+                  goToFollowers(context);
+                },
+                count:
+                    provider.followersCount != null
+                        ? provider.followersCount.toString()
+                        : '',
+              );
             },
-            count: widget.networksProvider?.followersCount ?? 0,
           ),
+
           Divider(
             height: 1,
             thickness: 1,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/core/utils/time_formatter.dart';
-import '../misc/enums.dart';
+import '../misc/connections_enums.dart';
 
 class UserCardInfo extends StatelessWidget {
   final String firstName;

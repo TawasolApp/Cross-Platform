@@ -16,6 +16,7 @@ class PopUpMenuUser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+      key: const ValueKey('remove_connection_menu_button'),
       icon: Icon(
         Icons.more_vert,
         size: 20,
@@ -63,6 +64,7 @@ class PopUpMenuUser extends StatelessWidget {
 
               ListTile(
                 leading: IconButton(
+                  key: const ValueKey('remove_connection_button'),
                   icon: Icon(Icons.person_remove_alt_1),
                   color: Theme.of(context).iconTheme.color,
                   onPressed: () {},

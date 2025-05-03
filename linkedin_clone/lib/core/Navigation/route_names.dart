@@ -25,6 +25,7 @@ class RouteNames {
   static const String connections = "/connections";
   static const String followers = "/followers";
   static const String following = "/following";
+  static const String blockedUsers = "/blocked_users";
   static const String invitations = "/invitations";
   static const String manageMyNetwrok = "/manage_my_network";
   static const String notifications = "/notifications";
@@ -39,4 +40,9 @@ class RouteNames {
   static const String generalSearch = '/general_search';
   static const String detailedSearch = '/detailed_search';
   static const String jobDetails = '/jobDetails';
+  static const String premiumSurvey = '/premium_survey';
+  static const String premiumPlan = '/premiumPlan';
+  static const String choosePremiumPlan = '/choosePremiumPlan';
+  static const String reportUser = '/report_user';
+  static const String reportPost = '/report_post';
 }

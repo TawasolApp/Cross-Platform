@@ -26,6 +26,8 @@ class PendingRequestsActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         IconButton(
+          key: const ValueKey('ignore_pending_request_button'),
+
           icon: Icon(
             Icons.cancel_outlined,
             size: double.tryParse(iconSize.toString()),
@@ -54,6 +56,7 @@ class PendingRequestsActions extends StatelessWidget {
           },
         ),
         IconButton(
+          key: const ValueKey('accept_pending_request_button'),
           icon: Icon(
             Icons.check_circle_outline,
             size: double.tryParse(iconSize.toString()),

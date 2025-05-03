@@ -1,14 +1,23 @@
 // ignore_for_file: avoid_print, prefer_final_fields
 
 import 'package:flutter/foundation.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/get_all_companies.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:hive/hive.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/search_user_usecase.dart';
+import 'package:linkedin_clone/features/jobs/domain/entities/job_entity.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_case.dart';
 
 class SearchProvider with ChangeNotifier {
   SearchUserUsecase searchUserUseCase;
+  GetAllCompaniesUseCase getAllCompaniesUseCase;
+  SearchJobs searchJobsUseCase;
   var box = Hive.box('appBox');
-  List<ConnectionsUserEntity> searchResultsUsers = [];
+  List<ConnectionsUserEntity> _searchResultsUsers = [];
+
+  List<Company> _searchResultsCompanies = [];
+  List<Job> _searchResultsJobs = [];
   List<List<String>> recentSearchesUsers = [
     [],
     [],
@@ -31,13 +40,21 @@ class SearchProvider with ChangeNotifier {
   int get currentPage => _currentPage;
   bool get isSearching => _isSearching;
   bool get isBusy => _isBusy;
+  List<ConnectionsUserEntity> get searchResultsUsers => _searchResultsUsers;
+  List<Company> get searchResultsCompanies => _searchResultsCompanies;
+  List<Job> get searchResultsJobs => _searchResultsJobs;
+
   set isSearching(bool value) {
     _isSearching = value;
     notifyListeners();
   }
 
   // Constructor
-  SearchProvider(this.searchUserUseCase);
+  SearchProvider(
+    this.searchUserUseCase,
+    this.getAllCompaniesUseCase,
+    this.searchJobsUseCase,
+  );
 
   // Public Methods
   Future<void> getRecentsearches() async {
@@ -58,7 +75,7 @@ class SearchProvider with ChangeNotifier {
   Future<void> performSearch(String query) async {}
 
   void clearSearchResults() {
-    searchResultsUsers.clear();
+    _searchResultsUsers.clear();
     notifyListeners();
   }
 
@@ -99,12 +116,7 @@ class SearchProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool hasAlphanumeric(String input) {
-    return RegExp(r'[a-zA-Z]').hasMatch(input) ||
-        RegExp(r'[0-9]').hasMatch(input);
-  }
-
-  Future<void> preformSearch({
+  Future<void> performSearchUser({
     bool isInitial = false,
     String? searchWord,
   }) async {
@@ -112,9 +124,6 @@ class SearchProvider with ChangeNotifier {
     if (_isBusy) return;
     _isBusy = true;
     try {
-      print(
-        '🏹🏹🏹🏹🏹preformSearch: preformSearch $searchWord $isSearching\n',
-      );
       _error = null;
       if (isInitial) {
         _currentPage = 1;
@@ -123,7 +132,7 @@ class SearchProvider with ChangeNotifier {
         _currentPage++;
       }
       if (_currentPage == 1) {
-        searchResultsUsers = await searchUserUseCase.call(
+        _searchResultsUsers = await searchUserUseCase.call(
           searchWord: searchWord,
           page: _currentPage,
           limit: 12,
@@ -137,14 +146,99 @@ class SearchProvider with ChangeNotifier {
         if (newSearchResultsUsers.isEmpty) {
           _hasMore = false;
         } else {
-          searchResultsUsers.addAll(newSearchResultsUsers);
+          _searchResultsUsers.addAll(newSearchResultsUsers);
         }
       }
     } catch (e) {
-      print('preformSearch: preformSearch $e\n');
+      print('SearchProvider: performSearchUser $e\n');
       _error = e.toString();
     } finally {
-      print('🏹🏹🏹🏹🏹preformSearch: finally $searchResultsUsers\n');
+      _isLoading = false;
+      _isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> performSearchCompany({
+    bool isInitial = false,
+    String? searchWord,
+  }) async {
+    _isLoading = true;
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _error = null;
+      if (isInitial) {
+        _currentPage = 1;
+        _hasMore = true;
+      } else {
+        _currentPage++;
+      }
+      if (_currentPage == 1) {
+        _searchResultsCompanies = await getAllCompaniesUseCase.execute(
+          searchWord!,
+          page: _currentPage,
+          limit: 12,
+        );
+      } else {
+        final newSearchResultsCompanies = await getAllCompaniesUseCase.execute(
+          searchWord!,
+          page: _currentPage,
+          limit: 12,
+        );
+        if (newSearchResultsCompanies.isEmpty) {
+          _hasMore = false;
+        } else {
+          _searchResultsCompanies.addAll(newSearchResultsCompanies);
+        }
+      }
+    } catch (e) {
+      print('SearchProvider: performSearchCompany $e\n');
+      _error = e.toString();
+    } finally {
+      _isLoading = false;
+      _isBusy = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> performSearchJobs({
+    bool isInitial = false,
+    String? searchWord,
+  }) async {
+    _isLoading = true;
+    if (_isBusy) return;
+    _isBusy = true;
+    try {
+      _error = null;
+      if (isInitial) {
+        _currentPage = 1;
+        _hasMore = true;
+      } else {
+        _currentPage++;
+      }
+      if (_currentPage == 1) {
+        _searchResultsJobs = await searchJobsUseCase.call(
+          keyword: searchWord!,
+          page: _currentPage,
+          limit: 12,
+        );
+      } else {
+        final newSearchResultsJobs = await searchJobsUseCase.call(
+          keyword: searchWord!,
+          page: _currentPage,
+          limit: 12,
+        );
+        if (newSearchResultsJobs.isEmpty) {
+          _hasMore = false;
+        } else {
+          _searchResultsJobs.addAll(newSearchResultsJobs);
+        }
+      }
+    } catch (e) {
+      print('SearchProvider: performSearchJobs $e\n');
+      _error = e.toString();
+    } finally {
       _isLoading = false;
       _isBusy = false;
       notifyListeners();

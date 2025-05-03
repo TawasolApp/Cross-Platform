@@ -1,7 +1,7 @@
-import '../../repository/connections_repository.dart';
+import 'package:linkedin_clone/features/privacy/domain/repository/privacy_repository.dart';
 
 class BlockUserUseCase {
-  final ConnectionsRepository repository;
+  final PrivacyRepository repository;
 
   BlockUserUseCase(this.repository);
 

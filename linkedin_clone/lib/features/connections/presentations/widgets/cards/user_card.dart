@@ -9,36 +9,39 @@ import 'package:linkedin_clone/features/connections/presentations/provider/conne
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/cconfirmable_action_button.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 import 'user_card_info.dart';
 import '../pending_requests_actions.dart';
 import '../connections_list_actions.dart';
-import '../misc/enums.dart';
+import '../misc/connections_enums.dart';
 import '../misc/routing_functions.dart';
 
 class UserCard extends StatelessWidget {
   final String userId;
   final String firstName;
   final String lastName;
-  final String headLine;
+  String headLine;
   final String profilePicture;
   final bool isOnline;
   final String time;
   final PageType cardType;
   final ConnectionsProvider? connectionsProvider;
   final NetworksProvider? networksProvider;
+  final PrivacyProvider? privacyProvider;
 
-  const UserCard({
+  UserCard({
     super.key,
     required this.userId,
     required this.firstName,
     required this.lastName,
-    required this.headLine,
+    this.headLine = '',
     required this.profilePicture,
     this.isOnline = false,
     this.time = '',
     required this.cardType,
     this.connectionsProvider,
     this.networksProvider,
+    this.privacyProvider,
   });
 
   @override
@@ -125,12 +128,12 @@ class UserCard extends StatelessWidget {
               "Unable to unfollow $firstName $lastName. Please try again.",
           errorButtonText: "Cancel",
         );
-      case PageType.followers:
+      case PageType.followers || PageType.search || PageType.others:
         return const SizedBox(); // No action yet
       case PageType.blocked:
         return ConfirmableActionButton(
           buttonText: "Unblock",
-          confirmAction: () => networksProvider!.unblockUser(userId),
+          confirmAction: () => privacyProvider!.unblockUser(userId),
           errorDialogAction: () async => Navigator.pop(context),
           confirmTitle: "Unblock $firstName $lastName?",
           confirmMessage:

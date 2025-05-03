@@ -298,57 +298,6 @@ class ConnectionsRemoteDataSource {
     }
   }
 
-  ///////////////////Get blocked list
-  Future<List<ConnectionsUserEntity>> getBlockedList({
-    int page = 0,
-    int limit = 0,
-  }) async {
-    try {
-      final token = await initToken();
-      final response = await client
-          .get(
-            Uri.parse('${baseUrl}connections/blocked?page=$page&limit=$limit'),
-            headers: {
-              'Accept': 'application/json',
-              'Authorization': 'Bearer $token',
-            },
-          )
-          .timeout(
-            const Duration(seconds: 15),
-            onTimeout: () {
-              throw Exception('Request Timeout');
-            },
-          );
-
-      if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
-        if (jsonResponse is List<dynamic>) {
-          return jsonResponse
-              .map((json) => ConnectionsUserModel.fromJson(json))
-              .toList();
-        } else {
-          throw Exception('Unexpected response format');
-        }
-      } else if (response.statusCode == 500) {
-        throw Exception(
-          'ConnectionsRemoteDataSource :getBlockedList: 500 Failed',
-        );
-      } else if (response.statusCode == 401) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :getBlockedList: 401 Authentication failed",
-        );
-      } else {
-        print(
-          '\nConnectionsRemoteDataSource :getBlockedList: ${response.statusCode}\n',
-        );
-        throw Exception('Unknown error');
-      }
-    } catch (e) {
-      print('\nConnectionsRemoteDataSource :getBlockedList: ${e.toString()}\n');
-      rethrow;
-    }
-  }
-
   ///////////////////remove connection
   Future<bool> removeConnection(String userId) async {
     try {
@@ -618,80 +567,6 @@ class ConnectionsRemoteDataSource {
     }
   }
 
-  ///////////////////block user
-  Future<bool> blockUser(String userId) async {
-    try {
-      final token = await initToken();
-      final response = await client.post(
-        Uri.parse('${baseUrl}connections/block/$userId'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        return true;
-      } else if (response.statusCode == 400) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :blockUser: 400 invalid input",
-        );
-      } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :blockUser: 500 Failed");
-      } else if (response.statusCode == 404) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :blockUser: 404 not found",
-        );
-      } else if (response.statusCode == 401) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :blockUser: 401 Authentication failed",
-        );
-      } else {
-        print('ConnectionsRemoteDataSource :blockUser: ${response.statusCode}');
-        // Handle other status codes as needed
-        throw Exception('Unknown error ${response.statusCode}');
-      }
-    } catch (e) {
-      print('\nConnectionsRemoteDataSource :blockUser: ${e.toString()}\n');
-      return false;
-    }
-  }
-
-  ///////////////////unblock user
-  Future<bool> unblockUser(String userId) async {
-    try {
-      final token = await initToken();
-      final response = await client.delete(
-        Uri.parse('${baseUrl}connections/block/$userId'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        return true;
-      } else if (response.statusCode == 400) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :unblockUser: 400 invalid input",
-        );
-      } else if (response.statusCode == 500) {
-        throw Exception("ConnectionsRemoteDataSource :unblockUser: 500 Failed");
-      } else if (response.statusCode == 404) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :unblockUser: 404 not found",
-        );
-      } else if (response.statusCode == 401) {
-        throw Exception(
-          "ConnectionsRemoteDataSource :unblockUser: 401 Authentication failed",
-        );
-      } else {
-        print(
-          'ConnectionsRemoteDataSource :unblockUser: ${response.statusCode}',
-        );
-        // Handle other status codes as needed
-        throw Exception('Unknown error ${response.statusCode}');
-      }
-    } catch (e) {
-      print('\nConnectionsRemoteDataSource :unblockUser: ${e.toString()}\n');
-      return false;
-    }
-  }
-
   Future<List<PeopleYouMayKnowUserModel>> getPeopleYouMayKnowList({
     int page = 0,
     int limit = 0,
@@ -909,7 +784,7 @@ class ConnectionsRemoteDataSource {
     }
   }
 
-  Future<List<ConnectionsUserEntity>> preformSearch({
+  Future<List<ConnectionsUserEntity>> performSearch({
     String? searchWord,
     int page = 0,
     int limit = 0,
@@ -963,7 +838,7 @@ class ConnectionsRemoteDataSource {
         throw Exception('Unknown error ${response.statusCode}');
       }
     } catch (e) {
-      print('\nConnectionsRemoteDataSource :preformSearch: ${e.toString()}\n');
+      print('\nConnectionsRemoteDataSource :performSearch: ${e.toString()}\n');
       rethrow;
     }
   }

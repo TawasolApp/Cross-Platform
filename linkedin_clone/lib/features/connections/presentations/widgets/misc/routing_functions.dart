@@ -26,6 +26,10 @@ void goToFollowers(BuildContext context) {
   GoRouter.of(context).push(RouteNames.followers);
 }
 
+void goToBlocked(BuildContext context) {
+  GoRouter.of(context).push(RouteNames.blockedUsers);
+}
+
 void goToFollowing(BuildContext context) {
   GoRouter.of(context).push(RouteNames.following);
 }
@@ -38,6 +42,24 @@ void goToGeneralSeachPage(BuildContext context) {
   GoRouter.of(context).push(RouteNames.generalSearch);
 }
 
-void goToMessages(BuildContext context) {
-  MaterialPageRoute(builder: (context) => ConversationListPage());
+void goToDetailedSearchPage(BuildContext context, {String? searchText}) {
+  GoRouter.of(
+    context,
+  ).push(RouteNames.detailedSearch, extra: {'searchText': searchText});
+}
+
+void goToPremiumSurvey(BuildContext context) {
+  GoRouter.of(context).push(RouteNames.premiumSurvey);
+}
+
+void goToReportUser(BuildContext context, {String? userId}) {
+  GoRouter.of(context).push(RouteNames.reportUser, extra: {'userId': userId});
+}
+
+void goToReportPost(BuildContext context, {String? postId}) {
+  GoRouter.of(context).push(RouteNames.reportPost, extra: {'postId': postId});
+}
+
+void goToChoosePremiumPlan(BuildContext context) {
+  GoRouter.of(context).push(RouteNames.choosePremiumPlan);
 }

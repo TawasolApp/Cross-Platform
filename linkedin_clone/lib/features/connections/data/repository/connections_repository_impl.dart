@@ -115,22 +115,6 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> getBlockedList({
-    int page = 0,
-    int limit = 0,
-  }) async {
-    try {
-      final blockedList = await remoteDataSource.getBlockedList(
-        page: page,
-        limit: limit,
-      );
-      return blockedList;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
   Future<bool> sendConnectionRequest(String userId) async {
     try {
       final sent = await remoteDataSource.sendConnectionRequest(userId);
@@ -169,26 +153,6 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       return unfollowed;
     } catch (e) {
       throw Exception('Failed to unfollow user');
-    }
-  }
-
-  @override
-  Future<bool> blockUser(String userId) async {
-    try {
-      final blocked = await remoteDataSource.blockUser(userId);
-      return blocked;
-    } catch (e) {
-      throw Exception('Failed to block user');
-    }
-  }
-
-  @override
-  Future<bool> unblockUser(String userId) async {
-    try {
-      final unBlocked = await remoteDataSource.unblockUser(userId);
-      return unBlocked;
-    } catch (e) {
-      throw Exception('Failed to block user');
     }
   }
 
@@ -246,14 +210,14 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
     }
   }
 
-  Future<List<ConnectionsUserEntity>> preformSearch({
+  @override
+  Future<List<ConnectionsUserEntity>> performSearch({
     String? searchWord,
     int page = 0,
     int limit = 0,
   }) async {
     try {
-      print('🤩🤩🤩🤩🤩😡😡😡😡😡🤩🤩 preformSearch: $searchWord');
-      final searchList = await remoteDataSource.preformSearch(
+      final searchList = await remoteDataSource.performSearch(
         searchWord: searchWord,
         page: page,
         limit: limit,

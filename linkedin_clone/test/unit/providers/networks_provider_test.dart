@@ -1,62 +1,51 @@
-// import 'package:flutter_test/flutter_test.dart';
-// import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
-// import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
-// import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
-// import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
-// import 'package:mockito/annotations.dart';
-// import 'package:mockito/mockito.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
+import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 
 // import 'networks_provider_test.mocks.dart';
 
-// @GenerateMocks([
-//   GetFollowingListUseCase,
-//   UnfollowUserUseCase,
-//   GetFollowersListUseCase,
-//   FollowUserUseCase,
-//   GetBlockedListUseCase,
-//   BlockUserUseCase,
-//   UnblockUserUseCase,
-//   GetPeopleYouMayKnowUseCase,
-// ])
-// void main() {
-//   late NetworksProvider provider;
-//   late MockGetFollowingListUseCase mockGetFollowing;
-//   late MockUnfollowUserUseCase mockUnfollow;
-//   late MockGetFollowersListUseCase mockGetFollowers;
-//   late MockFollowUserUseCase mockFollow;
-//   late MockGetBlockedListUseCase mockGetBlockedList;
-//   late MockBlockUserUseCase mockBlockUser;
-//   late MockUnblockUserUseCase mockUnblockUser;
-//   late MockGetPeopleYouMayKnowUseCase mockPeopleYouMayKnow;
+@GenerateMocks([
+  GetFollowingListUseCase,
+  UnfollowUserUseCase,
+  GetFollowersListUseCase,
+  FollowUserUseCase,
+  GetBlockedListUseCase,
+  BlockUserUseCase,
+  UnblockUserUseCase,
+  GetPeopleYouMayKnowUseCase,
+])
+void main() {
+  late NetworksProvider provider;
+  late MockGetFollowingListUseCase mockGetFollowing;
+  late MockUnfollowUserUseCase mockUnfollow;
+  late MockGetFollowersListUseCase mockGetFollowers;
+  late MockFollowUserUseCase mockFollow;
+  late MockGetPeopleYouMayKnowUseCase mockPeopleYouMayKnow;
 
-//   setUp(() {
-//     mockGetFollowing = MockGetFollowingListUseCase();
-//     mockUnfollow = MockUnfollowUserUseCase();
-//     mockGetFollowers = MockGetFollowersListUseCase();
-//     mockFollow = MockFollowUserUseCase();
-//     mockGetBlockedList = MockGetBlockedListUseCase();
-//     mockBlockUser = MockBlockUserUseCase();
-//     mockUnblockUser = MockUnblockUserUseCase();
-//     mockPeopleYouMayKnow = MockGetPeopleYouMayKnowUseCase();
+  setUp(() {
+    mockGetFollowing = MockGetFollowingListUseCase();
+    mockUnfollow = MockUnfollowUserUseCase();
+    mockGetFollowers = MockGetFollowersListUseCase();
+    mockFollow = MockFollowUserUseCase();
 
-//     provider = NetworksProvider(
-//       mockGetFollowing,
-//       mockUnfollow,
-//       mockGetFollowers,
-//       mockFollow,
-//       mockGetBlockedList,
-//       mockBlockUser,
-//       mockUnblockUser,
-//       mockPeopleYouMayKnow,
-//     );
-//   });
+    provider = NetworksProvider(
+      mockGetFollowing,
+      mockUnfollow,
+      mockGetFollowers,
+      mockFollow,
+    );
+  });
 
 //   test('initial values are correct', () {
 //     expect(provider.isBusy, false);
@@ -107,21 +96,10 @@
 
 //     await provider.getFollowersList(isInitial: true);
 
-//     expect(provider.followersList, isNotNull);
-//     expect(provider.followersList!.length, 1);
-//     expect(provider.hasError, false);
-//   });
-
-//   test('getBlockedList handles errors', () async {
-//     when(
-//       mockGetBlockedList.call(page: anyNamed('page'), limit: anyNamed('limit')),
-//     ).thenThrow(Exception('Failed to load blocked users'));
-
-//     await provider.getBlockedList(isInitial: true);
-
-//     expect(provider.blockedList, isNull);
-//     expect(provider.hasError, true);
-//   });
+    expect(provider.followersList, isNotNull);
+    expect(provider.followersList!.length, 1);
+    expect(provider.hasError, false);
+  });
 
 //   test('getPeopleYouMayKnowList loads successfully', () async {
 //     final users = [

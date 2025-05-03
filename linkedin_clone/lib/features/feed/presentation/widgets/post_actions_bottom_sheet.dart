@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 import 'delete_post_dialog.dart';
 import 'package:provider/provider.dart';
 import '../provider/feed_provider.dart';
@@ -105,14 +106,8 @@ class PostActionsBottomSheet extends StatelessWidget {
             leading: const Icon(Icons.report),
             title: const Text('Report'),
             onTap: () {
+              goToReportPost(context, postId: postId);
               Navigator.pop(context);
-              // Handle report action here (Privacy and Security module)
-              ScaffoldMessenger.of(rootContext).showSnackBar(
-                const SnackBar(
-                  content: Text("Post reported successfully"),
-                  backgroundColor: Colors.red,
-                ),
-              );
             },
           ),
 

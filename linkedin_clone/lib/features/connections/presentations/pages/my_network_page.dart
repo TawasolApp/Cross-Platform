@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/grow_body.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/misc/enums.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/search_bar.dart'
     as search_bar;
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
+import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
@@ -22,6 +24,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
   NetworksProvider? networksProvider;
   ConnectionsProvider? connectionsProvider;
   String? myProfilePircture;
+  ConversationListProvider? messagingProvider;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
@@ -31,6 +34,10 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
       networksProvider = Provider.of<NetworksProvider>(context, listen: false);
       networksProvider = Provider.of<NetworksProvider>(context, listen: false);
       connectionsProvider = Provider.of<ConnectionsProvider>(
+        context,
+        listen: false,
+      );
+      messagingProvider = Provider.of<ConversationListProvider>(
         context,
         listen: false,
       );
@@ -96,9 +103,14 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
               const Divider(height: 32),
               ListTile(
                 leading: const Icon(Icons.workspace_premium_outlined),
-                title: Text(
-                  "Try Premium for EGP0",
-                  style: Theme.of(context).textTheme.bodyMedium,
+                title: TextButton(
+                  child: Text(
+                    "Try Premium for EGP0",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  onPressed: () {
+                    goToPremiumSurvey(context);
+                  },
                 ),
               ),
               ListTile(
@@ -142,8 +154,13 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
                   color: Theme.of(context).iconTheme.color,
                 ),
                 onPressed: () {
-                  //TODO: messaging provider
-                  goToMessages(context);
+                  messagingProvider!.fetchConversations();
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ConversationListPage(),
+                    ),
+                  );
                 },
               ),
             ),
