@@ -45,6 +45,20 @@ class MessageBubble extends StatelessWidget {
               message.text,
               style: TextStyle(color: textColor, fontSize: 15),
             ),
+              if (message.media.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    message.media.first, // ✅ Display first image
+                    width: 180,
+                    height: 180,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Text('Failed to load image'),
+                  ),
+                ),
+              ],
+
             const SizedBox(height: 4),
             if (isMe && message.status == 'Read') ...[
               Row(

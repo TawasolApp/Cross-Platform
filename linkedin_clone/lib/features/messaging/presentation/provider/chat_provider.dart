@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:linkedin_clone/core/api/media.dart';
 import 'package:linkedin_clone/features/messaging/data/models/message_model.dart';
 import 'package:linkedin_clone/features/messaging/domain/entities/message_entity.dart';
 import 'package:linkedin_clone/features/messaging/domain/usecases/get_chat_use_case.dart';
@@ -74,7 +76,7 @@ class ChatProvider with ChangeNotifier {
         recieverId: 'user1',
         conversationId: conversationId,
         text: data['text'],
-        media: [],
+        media: List<String>.from(data['media'] ?? []),
         status: 'Received',
         sentAt: data['sentAt'],
       );
@@ -109,14 +111,15 @@ class ChatProvider with ChangeNotifier {
     _socketService.disconnect();
   }
 
-void sendTextMessage(String recipientId, String text) {
+void sendTextMessage(String recipientId, String text,XFile imageFile) async {
+  final imageUrl = await uploadImage(imageFile); // Upload image and get URL
   final newMessage = MessageModel(
     id: UniqueKey().toString(), // temporary ID for UI rendering
     senderId: currentUserId,
     recieverId: recipientId,
     conversationId: conversationId,
     text: text,
-    media: [],
+    media: [imageUrl], // Add image URL to media list
     status: 'Sent',
     sentAt: DateTime.now().toIso8601String(),
   );
@@ -128,6 +131,7 @@ void sendTextMessage(String recipientId, String text) {
   _socketService.sendMessage({
     'receiverId': recipientId,
     'text': text,
+    'media': [imageUrl], // Send image URL to server
   });
 }
 

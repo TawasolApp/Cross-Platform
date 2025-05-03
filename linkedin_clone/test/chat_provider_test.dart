@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/chat_provider.dart';
 import 'package:linkedin_clone/features/messaging/domain/entities/message_entity.dart';
 import 'package:mockito/mockito.dart';
@@ -50,7 +51,9 @@ void main() {
     when(mockSocketService.sendMessage(any)).thenReturn(null);
 
     // Act
-    chatProvider.sendTextMessage('you', 'Test Message');
+    // Act
+  final dummyImage = XFile(''); // Provide a dummy or test image path
+  chatProvider.sendTextMessage('you', 'Test Message', dummyImage);
 
     // Assert
     expect(chatProvider.messages.first.text, 'Test Message');
