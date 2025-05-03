@@ -20,4 +20,15 @@ class ReportedUser {
     required this.reason,
     required this.reportedAt,
   });
+  factory ReportedUser.fake() => ReportedUser(
+    id: '1',
+    reason: 'Abuse',
+    reportedBy: 'User B',
+    reportedUser: 'User C',
+    reportedUserRole: 'Manager',
+    reportedUserAvatar: null,
+    reporterAvatar: null,
+    reportedAt: DateTime.now(),
+    status: 'Pending',
+  );
 }

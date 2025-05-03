@@ -26,4 +26,18 @@ class ReportedPost {
     required this.reason,
     required this.reportedAt,
   });
+  factory ReportedPost.fake() => ReportedPost(
+    id: '1',
+    reason: 'Spam',
+    reportedBy: 'User A',
+    postAuthor: 'Author X',
+    postAuthorRole: 'Engineer',
+    postAuthorAvatar: null,
+    reporterAvatar: null,
+    postContent: 'Fake content',
+    postMedia: null,
+    reportedAt: DateTime.now(),
+    status: 'Pending',
+    postAuthorType: 'User',
+  );
 }

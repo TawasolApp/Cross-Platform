@@ -16,4 +16,13 @@ class PostAnalytics {
     required this.postReportedCount,
     required this.mostReportedPost,
   });
+  factory PostAnalytics.fake() => PostAnalytics(
+    totalPosts: 200,
+    totalShares: 50,
+    totalComments: 100,
+    totalReacts: 500,
+    postWithMostInteractions: 'p1',
+    postReportedCount: 10,
+    mostReportedPost: 'p2',
+  );
 }
