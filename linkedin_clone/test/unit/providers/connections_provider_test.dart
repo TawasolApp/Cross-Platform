@@ -13,7 +13,6 @@ import 'package:linkedin_clone/features/connections/domain/usecases/connect/with
 import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
-import 'package:linkedin_clone/features/profile/domain/entities/profile_entity.dart';
 import 'package:dartz/dartz.dart';
 
 import 'connections_provider_test.mocks.dart';

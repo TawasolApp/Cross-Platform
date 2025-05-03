@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/profile_header/edit_profile.dart';
@@ -590,18 +591,7 @@ class ProfileHeader extends StatelessWidget {
                               ),
                             ),
                             onTap: () {
-                              Navigator.pop(context);
-                              // Show report dialog or navigate to report page
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text(
-                                    'Report functionality will be implemented soon',
-                                  ),
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
+                              goToReportUser(context, userId: provider.userId);
                             },
                           ),
                           Divider(height: 1, color: Colors.grey[200]),
@@ -653,21 +643,6 @@ class ProfileHeader extends StatelessWidget {
                                         TextButton(
                                           onPressed: () {
                                             Navigator.pop(context);
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: const Text(
-                                                  'Block functionality will be implemented soon',
-                                                ),
-                                                backgroundColor:
-                                                    Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                              ),
-                                            );
                                           },
                                           child: Text(
                                             'BLOCK',
@@ -1298,18 +1273,8 @@ class ProfileHeader extends StatelessWidget {
                               ),
                             ),
                             onTap: () {
-                              Navigator.pop(context);
                               // Show report dialog or navigate to report page
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text(
-                                    'Report functionality will be implemented soon',
-                                  ),
-                                  backgroundColor:
-                                      Theme.of(context).primaryColor,
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
+                              goToReportUser(context, userId: provider.userId);
                             },
                           ),
                           Divider(height: 1, color: Colors.grey[200]),
@@ -1328,8 +1293,6 @@ class ProfileHeader extends StatelessWidget {
                               ),
                             ),
                             onTap: () {
-                              Navigator.pop(context);
-                              // Show block confirmation dialog
                               showDialog(
                                 context: context,
                                 builder:
@@ -1361,21 +1324,6 @@ class ProfileHeader extends StatelessWidget {
                                         TextButton(
                                           onPressed: () {
                                             Navigator.pop(context);
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: const Text(
-                                                  'Block functionality will be implemented soon',
-                                                ),
-                                                backgroundColor:
-                                                    Theme.of(
-                                                      context,
-                                                    ).primaryColor,
-                                                behavior:
-                                                    SnackBarBehavior.floating,
-                                              ),
-                                            );
                                           },
                                           child: Text(
                                             'BLOCK',
@@ -1521,7 +1469,10 @@ class ProfileHeader extends StatelessWidget {
       context,
       listen: false,
     );
-
+    final privacyProvider = Provider.of<PrivacyProvider>(
+      context,
+      listen: false,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -1803,24 +1754,48 @@ class ProfileHeader extends StatelessWidget {
                                                 ),
                                               ),
                                               TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: const Text(
-                                                        'Block functionality will be implemented soon',
+                                                onPressed: () async {
+                                                  bool success =
+                                                      await privacyProvider
+                                                          .blockUser(
+                                                            provider.userId!,
+                                                          );
+                                                  if (success) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: const Text(
+                                                          'User Blocked successfully',
+                                                        ),
+                                                        backgroundColor:
+                                                            Theme.of(
+                                                              context,
+                                                            ).primaryColor,
+                                                        behavior:
+                                                            SnackBarBehavior
+                                                                .floating,
                                                       ),
-                                                      backgroundColor:
-                                                          Theme.of(
-                                                            context,
-                                                          ).primaryColor,
-                                                      behavior:
-                                                          SnackBarBehavior
-                                                              .floating,
-                                                    ),
-                                                  );
+                                                    );
+                                                    Navigator.pop(context);
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: const Text(
+                                                          'Failed to block user',
+                                                        ),
+                                                        backgroundColor:
+                                                            Theme.of(
+                                                              context,
+                                                            ).primaryColor,
+                                                        behavior:
+                                                            SnackBarBehavior
+                                                                .floating,
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                                 child: Text(
                                                   'BLOCK',

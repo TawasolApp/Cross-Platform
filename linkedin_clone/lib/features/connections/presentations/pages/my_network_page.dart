@@ -6,6 +6,7 @@ import 'package:linkedin_clone/features/connections/presentations/widgets/misc/s
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/user_avatar.dart';
 import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
 import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
+import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
@@ -23,6 +24,8 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
   ProfileProvider? profileProvider;
   NetworksProvider? networksProvider;
   ConnectionsProvider? connectionsProvider;
+  PremiumProvider? premiumProvider;
+  bool isPremium = false;
   String? myProfilePircture;
   ConversationListProvider? messagingProvider;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -37,12 +40,14 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
         context,
         listen: false,
       );
+      premiumProvider = Provider.of<PremiumProvider>(context, listen: false);
       messagingProvider = Provider.of<ConversationListProvider>(
         context,
         listen: false,
       );
       profileProvider!.fetchProfile("");
       myProfilePircture = profileProvider!.profilePicture;
+      isPremium = profileProvider!.isPremium;
     });
   }
 
@@ -101,6 +106,15 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
                 ),
               ),
               const Divider(height: 32),
+              if (isPremium)
+                ListTile(
+                  leading: const Icon(Icons.workspace_premium_outlined),
+                  title: Text(
+                    "Cancel Premium Subscription",
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  onTap: () {},
+                ),
               ListTile(
                 leading: const Icon(Icons.workspace_premium_outlined),
                 title: TextButton(

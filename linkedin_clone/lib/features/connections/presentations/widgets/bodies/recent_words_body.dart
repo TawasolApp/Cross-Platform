@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/cards/recent_word_search_card.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
 
 // ignore: must_be_immutable
 class RecentWordsBody extends StatelessWidget {
@@ -15,7 +16,7 @@ class RecentWordsBody extends StatelessWidget {
         return RecentWordSearchCard(
           searchWord: recentWords[index],
           onTap: () {
-            // goToProfile(context, userId: user['userId']);
+            goToDetailedSearchPage(context, searchText: recentWords[index]);
           },
         );
       }),

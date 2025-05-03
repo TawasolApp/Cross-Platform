@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/company/domain/entities/company.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_card.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
-
-import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:provider/provider.dart';
 
-// ignore: must_be_immutable
-class UserSearchCard extends StatelessWidget {
-  final List<ConnectionsUserEntity> users;
+class CompanySearchCard extends StatelessWidget {
+  final List<Company> companies;
   SearchProvider? _searchProvider;
-  UserSearchCard({super.key, required this.users});
+  CompanySearchCard({super.key, required this.companies});
 
   @override
   Widget build(BuildContext context) {
     _searchProvider = Provider.of<SearchProvider>(context);
-    final displayedUsers = users.length > 3 ? users.sublist(0, 3) : users;
+    final displayedCompanies =
+        companies.length > 3 ? companies.sublist(0, 3) : companies;
 
     return Container(
       decoration: BoxDecoration(
@@ -28,40 +27,30 @@ class UserSearchCard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 18.0, left: 16.0),
+
             child: Text(
-              "People",
+              "Companies",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
           const SizedBox(height: 10),
+          Divider(color: Theme.of(context).dividerColor),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
               children:
-                  displayedUsers.map((user) {
-                    return Column(
-                      children: [
-                        Divider(color: Theme.of(context).dividerColor),
-                        UserCard(
-                          userId: user.userId,
-                          firstName: user.firstName,
-                          lastName: user.lastName,
-                          headLine: user.headLine,
-                          profilePicture: user.profilePicture,
-                          cardType: PageType.search,
-                        ),
-                      ],
-                    );
+                  displayedCompanies.map((company) {
+                    return Column(children: [CompanyCard(company: company)]);
                   }).toList(),
             ),
           ),
           Center(
             child: TextButton(
               onPressed: () {
-                _searchProvider?.filterType = FilterType.people;
+                _searchProvider?.filterType = FilterType.companies;
               },
               child: Text(
-                "See all people",
+                "See all companies",
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize: 14,

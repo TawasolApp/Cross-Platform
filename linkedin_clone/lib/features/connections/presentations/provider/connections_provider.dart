@@ -113,7 +113,9 @@ class ConnectionsProvider with ChangeNotifier {
   Future<void> getConnections({bool isInitial = false, String? id}) async {
     _isLoading = true;
     String userId = id ?? await getMyUserId();
-    if (_isBusy) return;
+    while (_isBusy) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     int sortBy = 1;
     if (_activeFilter == 'First name') {
       sortBy = 2;
@@ -194,7 +196,9 @@ class ConnectionsProvider with ChangeNotifier {
   }
 
   Future<void> getReceivedConnectionRequests({bool isInitial = false}) async {
-    if (_isBusy) return;
+    while (_isBusy) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _isBusy = true;
     try {
       _isLoading = true;
@@ -241,7 +245,9 @@ class ConnectionsProvider with ChangeNotifier {
 
   Future<void> getSentConnectionRequests({bool isInitial = false}) async {
     print('getSentConnectionRequests called');
-    if (_isBusy) return;
+    while (_isBusy) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _isBusy = true;
     try {
       _isLoading = true;
@@ -263,7 +269,9 @@ class ConnectionsProvider with ChangeNotifier {
     bool refreshSent = false,
     bool refreshRec = false,
   }) async {
-    if (_isBusy) return;
+    while (_isBusy) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     _isBusy = true;
     try {
       _isLoading = true;

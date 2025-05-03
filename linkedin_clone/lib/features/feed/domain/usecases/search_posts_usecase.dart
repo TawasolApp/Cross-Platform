@@ -15,6 +15,7 @@ class SearchPostsUseCase {
     int page = 1,
     int limit = 10,
   }) {
+    print("🔗🔗🔗🔗🔗SearchPostsUseCase called with query: $query");
     return repository.searchPosts(
       companyId: companyId,
       query: query,

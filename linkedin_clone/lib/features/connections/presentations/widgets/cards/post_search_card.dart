@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/cards/user_card.dart';
-
-import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
+import 'package:linkedin_clone/features/feed/domain/entities/post_entity.dart';
+import 'package:linkedin_clone/features/feed/presentation/widgets/post_card.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/profile.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
-class UserSearchCard extends StatelessWidget {
-  final List<ConnectionsUserEntity> users;
+class PostSearchCard extends StatelessWidget {
+  final List<PostEntity> posts;
+  Profile myProfile;
   SearchProvider? _searchProvider;
-  UserSearchCard({super.key, required this.users});
+  PostSearchCard({super.key, required this.posts, required this.myProfile});
 
   @override
   Widget build(BuildContext context) {
     _searchProvider = Provider.of<SearchProvider>(context);
-    final displayedUsers = users.length > 3 ? users.sublist(0, 3) : users;
+    final displayedCompanies = posts.length > 3 ? posts.sublist(0, 3) : posts;
 
     return Container(
       decoration: BoxDecoration(
@@ -28,8 +29,9 @@ class UserSearchCard extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 18.0, left: 16.0),
+
             child: Text(
-              "People",
+              "Companies",
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
@@ -38,17 +40,17 @@ class UserSearchCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
               children:
-                  displayedUsers.map((user) {
+                  displayedCompanies.map((post) {
                     return Column(
                       children: [
                         Divider(color: Theme.of(context).dividerColor),
-                        UserCard(
-                          userId: user.userId,
-                          firstName: user.firstName,
-                          lastName: user.lastName,
-                          headLine: user.headLine,
-                          profilePicture: user.profilePicture,
-                          cardType: PageType.search,
+                        PostCard(
+                          post: post,
+                          currentUserId: myProfile.userId,
+                          profileImage: myProfile.profilePicture,
+                          profileName:
+                              "${myProfile.firstName} ${myProfile.lastName}",
+                          profileTitle: myProfile.headline,
                         ),
                       ],
                     );
@@ -58,10 +60,10 @@ class UserSearchCard extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: () {
-                _searchProvider?.filterType = FilterType.people;
+                _searchProvider?.filterType = FilterType.posts;
               },
               child: Text(
-                "See all people",
+                "See all posts",
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize: 14,
