@@ -246,14 +246,14 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
         // Navigate to post details
         context.push(
           RouteNames.postDetails,
-          extra: {'postId': notification.rootItemId},
+          extra: notification.rootItemId,
         );
         break;
       case 'Comment':
         // Navigate to post details with comment focus
         context.push(
           RouteNames.postDetails,
-          extra: {'postId': notification.rootItemId},
+          extra: notification.rootItemId,
         );
         break;
       case 'UserConnection':
