@@ -267,6 +267,8 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
       case 'JobOffer':
         // Navigate to job details - implement this when you have the job details route
         // context.push(RouteNames.jobDetails, extra: notification.referenceId);
+        context.push(RouteNames.companyPage, extra: notification.referenceId);
+        
         break;
       default:
         // Default action
