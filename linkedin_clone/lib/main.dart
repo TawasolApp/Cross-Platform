@@ -187,7 +187,9 @@ import 'package:linkedin_clone/features/notifications/domain/usecases/get_unseen
 import 'package:linkedin_clone/features/notifications/domain/usecases/get_fcm_token_usecase.dart';
 import 'package:linkedin_clone/features/notifications/domain/usecases/initialize_fcm_usecase.dart';
 import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
+import 'package:flutter/material.dart';
 
+import 'package:device_preview/device_preview.dart'; //for responsivness testing
 // core Flutter primitives
 import 'package:flutter/foundation.dart';
 // core FlutterFire dependency

@@ -113,6 +113,8 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
+                  key: const ValueKey('company_see_less_button'),
+
                   onPressed: () {
                     setState(() {
                       isExpanded = false;
@@ -156,6 +158,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
+                  key: const ValueKey('company_see_all_details_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,
@@ -198,6 +201,23 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                     builder: (context, constraints) {
                       final itemWidth = constraints.maxWidth * 0.8;
 
+                      // ✅ Check if no posts
+                      if (feedProvider.userPosts.isEmpty) {
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(
+                            child: Text(
+                              "No posts available",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      // ✅ Otherwise, return ListView
                       return SizedBox(
                         height: 300,
                         child: ListView.builder(
@@ -221,6 +241,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
                                         child: CircularProgressIndicator(),
                                       );
                                     }
+
                                     final currentUserId = snapshot.data ?? '';
                                     return CompanyPostCard(
                                       post: post,
@@ -243,6 +264,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               child: SizedBox(
                 width: double.infinity, // Take full width
                 child: TextButton(
+                  key: const ValueKey('company_see_all_posts_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,

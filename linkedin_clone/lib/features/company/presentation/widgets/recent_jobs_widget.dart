@@ -79,6 +79,7 @@ class RecentJobsWidget extends StatelessWidget {
 
                         // Apply Button
                         ElevatedButton(
+                          key: const ValueKey('recent_jobs_apply_button'),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -120,6 +121,7 @@ class RecentJobsWidget extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity, // Take full width
                 child: TextButton(
+                  key: const ValueKey('recent_jobs_show_all_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,

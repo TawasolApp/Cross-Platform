@@ -27,26 +27,29 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
     return Material(
       color: Colors.white,
       child: InkWell(
-        onTap: () async {
-          final result = await Navigator.push(
+        onTap: () {
+          Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => JobDetailsScreen(jobId: widget.job.id,),
+              builder: (_) => JobDetailsScreen(jobId: widget.job.id),
             ),
-          );
+          ).then((result) {
+            if (result == true && mounted) {
+              final companyProvider = Provider.of<CompanyProvider>(
+                context,
+                listen: false,
+              );
+              final jobSearchProvider = Provider.of<JobSearchProvider>(
+                context,
+                listen: false,
+              );
 
-          if (result == true) {
-            // ✅ Trigger jobs refresh
-              await Provider.of<CompanyProvider>(
-                context,
-                listen: false,
-              ).fetchRecentJobs(widget.companyId,reset: true);
-              await Provider.of<JobSearchProvider>(
-                context,
-                listen: false,
-              ).fetchJobs(reset: true);
-          }
+              companyProvider.fetchRecentJobs(widget.companyId, reset: true);
+              jobSearchProvider.fetchJobs(reset: true);
+            }
+          });
         },
+
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           child: Column(
@@ -66,6 +69,8 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                   Column(
                     children: [
                       IconButton(
+                        key: const ValueKey('company_job_save_button'),
+
                         icon: Icon(
                           isSaved
                               ? Icons.bookmark
@@ -95,6 +100,8 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                       if (companyProvider.isManager &&
                           !companyProvider.isViewingAsUser)
                         IconButton(
+                          key: const ValueKey(' company_job_delete_button'),
+
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () async {
                             final confirm = await showDialog<bool>(
@@ -107,11 +114,13 @@ class _CompanyJobCardState extends State<CompanyJobCard> {
                                     ),
                                     actions: [
                                       TextButton(
+                                        key: const ValueKey('cancel_button'),
                                         onPressed:
                                             () => Navigator.pop(context, false),
                                         child: const Text('Cancel'),
                                       ),
                                       ElevatedButton(
+                                        key: const ValueKey('delete_button'),
                                         onPressed:
                                             () => Navigator.pop(context, true),
                                         child: const Text('Delete'),

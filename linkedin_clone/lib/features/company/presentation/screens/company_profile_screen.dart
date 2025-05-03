@@ -15,6 +15,7 @@ import 'package:linkedin_clone/features/company/presentation/screens/company_cre
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/core/utils/number_formatter.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../feed/presentation/provider/feed_provider.dart';
 
@@ -55,30 +56,27 @@ class CompanyProfileScreen extends StatelessWidget {
                     ),
                   ),
                   ListTile(
+                    key: const ValueKey('company_share_button'),
                     leading: Icon(Icons.share),
                     title: Text("Share page"),
                     onTap: () {
-                      print("Share Page Clicked");
+                      final companyLink =
+                          "https://tawasolapp.me/company/${companyId}"; 
+                      Share.share("Check out this company: $companyLink");
                       Navigator.pop(context);
                     },
                   ),
+                  // ListTile(
+                  //   leading: Icon(Icons.send),
+                  //   title: Text("Send in a message"),
+                  //   onTap: () {
+                  //     print("Send in Message Clicked");
+                  //     Navigator.pop(context);
+                  //   },
+                  // ),
                   ListTile(
-                    leading: Icon(Icons.send),
-                    title: Text("Send in a message"),
-                    onTap: () {
-                      print("Send in Message Clicked");
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.flag),
-                    title: Text("Report abuse"),
-                    onTap: () {
-                      print("Report Abuse Clicked");
-                      Navigator.pop(context);
-                    },
-                  ),
-                  ListTile(
+                    key: const ValueKey('company_create_page_button'),
+
                     leading: Icon(Icons.add),
                     title: Text("Create a Tawasol Page"),
                     onTap: () {
@@ -124,8 +122,6 @@ class CompanyProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-  
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -155,6 +151,7 @@ class CompanyProfileScreen extends StatelessWidget {
                 child: AbsorbPointer(
                   absorbing: true,
                   child: TextField(
+                    key: const ValueKey('company_add_admin_field'),
                     controller: TextEditingController(
                       text: provider.company?.name,
                     ),
@@ -523,6 +520,9 @@ class CompanyProfileScreen extends StatelessWidget {
                                                 child,
                                               ) {
                                                 return ElevatedButton(
+                                                  key: const ValueKey(
+                                                    'company_follow_button',
+                                                  ),
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor:
                                                         provider.isFollowing(
@@ -585,6 +585,9 @@ class CompanyProfileScreen extends StatelessWidget {
                                           Flexible(
                                             flex: 3,
                                             child: OutlinedButton(
+                                              key: const ValueKey(
+                                                'company_visit_website_button',
+                                              ),
                                               style: OutlinedButton.styleFrom(
                                                 foregroundColor:
                                                     Theme.of(
@@ -654,6 +657,9 @@ class CompanyProfileScreen extends StatelessWidget {
                                                     BorderRadius.circular(25),
                                               ),
                                               child: IconButton(
+                                                key: const ValueKey(
+                                                  'company_more_button',
+                                                ),
                                                 iconSize: 20,
                                                 padding:
                                                     EdgeInsets

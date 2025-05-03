@@ -23,42 +23,45 @@ class AddJobScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // For responsive padding
     final screenWidth = MediaQuery.of(context).size.width;
-    final padding =
-        screenWidth > 600 ? 32.0 : 16.0; 
+    final padding = screenWidth > 600 ? 32.0 : 16.0;
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Add New Job"),
-        backgroundColor: Theme.of(context).primaryColor, 
+        backgroundColor: Theme.of(context).primaryColor,
       ),
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         padding: EdgeInsets.all(padding),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, 
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTextField(
                 _positionController,
                 "Job Position*",
                 isRequired: true,
+                fieldKey: const ValueKey('job_position_field'),
               ),
               _buildTextField(_industryController, "Industry"),
               _buildTextField(
                 _locationController,
                 "Location*",
                 isRequired: true,
+                fieldKey: const ValueKey('job_location_field'),
               ),
               _buildTextField(
                 _descriptionController,
                 "Job Description",
                 maxLines: 3,
+                fieldKey: const ValueKey('job_description_field'),
               ),
               _buildTextField(
                 _salaryController,
                 "Salary",
                 keyboardType: TextInputType.number,
+                fieldKey: const ValueKey('job_salary_field'),
               ),
               _buildDropdown(
                 controller: _experienceLevelController,
@@ -75,6 +78,7 @@ class AddJobScreen extends StatelessWidget {
                   "Executive",
                 ],
                 isRequired: true,
+                fieldKey: const ValueKey('job_experience_level_field'),
               ),
               SizedBox(height: 10),
               // Location Type Dropdown (required)
@@ -83,6 +87,7 @@ class AddJobScreen extends StatelessWidget {
                 label: "Location Type*",
                 items: ['On-site', 'Remote', 'Hybrid'],
                 isRequired: true,
+                fieldKey: const ValueKey('job_location_type_field'),
               ),
               SizedBox(height: 10),
 
@@ -92,6 +97,7 @@ class AddJobScreen extends StatelessWidget {
                 label: "Employment Type*",
                 items: ['Full-time', 'Part-time', 'Contract'],
                 isRequired: true,
+                fieldKey: const ValueKey('job_employment_type_field'),
               ),
 
               SizedBox(height: 20),
@@ -101,6 +107,7 @@ class AddJobScreen extends StatelessWidget {
                   return companyProvider.isLoadingJobs
                       ? CircularProgressIndicator()
                       : ElevatedButton(
+                        key: const ValueKey('job_submit_button'),
                         onPressed: () => _submitJob(context),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).primaryColor,
@@ -129,10 +136,12 @@ class AddJobScreen extends StatelessWidget {
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
     bool isRequired = false,
+    Key? fieldKey, //for testing
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: TextFormField(
+        key: fieldKey,
         controller: controller,
         decoration: InputDecoration(labelText: label),
         maxLines: maxLines,
@@ -153,10 +162,13 @@ class AddJobScreen extends StatelessWidget {
     required String label,
     required List<String> items,
     bool isRequired = false,
+    Key? fieldKey, //for testing
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: DropdownButtonFormField<String>(
+        
+        key: fieldKey,
         value: controller.text.isNotEmpty ? controller.text : null,
         decoration: InputDecoration(
           labelText: label,
@@ -222,7 +234,7 @@ class AddJobScreen extends StatelessWidget {
         );
 
         // Pop the page if the job was successfully added
-        Navigator.pop(context, true); 
+        Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

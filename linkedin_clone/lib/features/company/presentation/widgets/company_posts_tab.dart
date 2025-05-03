@@ -30,7 +30,7 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
 
   @override
   Widget build(BuildContext context) {
-    print("Company ID: ${widget.companyId}howa daaaaaa");
+    print("Company ID: ${widget.companyId}");
 
     final feedProvider = Provider.of<FeedProvider>(context);
     return Consumer<CompanyProvider>(
@@ -67,7 +67,8 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                                   listen: false,
                                 );
                                 await feedProvider.fetchUserPosts(
-                                  widget.companyId,forceRefresh: true,
+                                  widget.companyId,
+                                  forceRefresh: true,
                                 );
                                 print(
                                   "Posts fetched after creating a new post.",
@@ -122,12 +123,56 @@ class _PostsTabWidgetState extends State<PostsTabWidget> {
                       ),
 
                       Expanded(
-                        child: UserFeedPage(
-                          companyId: widget.companyId,
-                          userId: widget.companyId,
-                          showFAB:
-                              false, // Hide FAB because we already show a create post card
-                        ),
+                        child:
+                            feedProvider.userPosts.isEmpty
+                                ? (companyProvider.isManager &&
+                                        !companyProvider.isViewingAsUser
+                                    ? Center(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.post_add_outlined,
+                                            size: 80,
+                                            color: Colors.grey[400],
+                                          ),
+                                          const SizedBox(height: 16),
+                                          Text(
+                                            'No Posts Yet',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
+                                            'Create your first post to engage with your audience.',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.grey[500],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : const Center(
+                                      child: Text(
+                                        "No posts available",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ))
+                                : UserFeedPage(
+                                  companyId: widget.companyId,
+                                  userId: widget.companyId,
+                                  showFAB:
+                                      false, // Hide FAB because we already show a create post card
+                                ),
                       ),
                     ],
                   ),
