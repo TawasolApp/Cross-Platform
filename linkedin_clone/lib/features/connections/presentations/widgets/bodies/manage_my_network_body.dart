@@ -34,14 +34,18 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      key: const Key('key_managenetwork_container'),
       color: Theme.of(context).scaffoldBackgroundColor,
       borderRadius: BorderRadius.zero,
       child: Column(
+        key: const Key('key_managenetwork_main_column'),
         children: [
           /// Connections
           Consumer<ConnectionsProvider>(
+            key: const Key('key_managenetwork_connections_consumer'),
             builder: (context, provider, child) {
               return ManageMyNetworkCard(
+                key: const Key('key_managenetwork_connections_card'),
                 title: 'Connections',
                 icon: Icons.people_alt_rounded,
                 onTap: () {
@@ -56,6 +60,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
           ),
 
           Divider(
+            key: const Key('key_managenetwork_divider_1'),
             height: 1,
             thickness: 1,
             color: Theme.of(context).dividerColor,
@@ -63,8 +68,10 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
 
           /// Followings
           Consumer<NetworksProvider>(
+            key: const Key('key_managenetwork_following_consumer'),
             builder: (context, provider, child) {
               return ManageMyNetworkCard(
+                key: const Key('key_managenetwork_following_card'),
                 title: 'People I follow',
                 icon: Icons.person_2_rounded,
                 onTap: () {
@@ -79,6 +86,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
           ),
 
           Divider(
+            key: const Key('key_managenetwork_divider_2'),
             height: 1,
             thickness: 1,
             color: Theme.of(context).dividerColor,
@@ -86,8 +94,10 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
 
           /// Followers
           Consumer<NetworksProvider>(
+            key: const Key('key_managenetwork_followers_consumer'),
             builder: (context, provider, child) {
               return ManageMyNetworkCard(
+                key: const Key('key_managenetwork_followers_card'),
                 title: 'Followers',
                 icon: Icons.person_2_outlined,
                 onTap: () {
@@ -102,6 +112,7 @@ class _ManageMyNetworkBodyState extends State<ManageMyNetworkBody> {
           ),
 
           Divider(
+            key: const Key('key_managenetwork_divider_3'),
             height: 1,
             thickness: 1,
             color: Theme.of(context).dividerColor,

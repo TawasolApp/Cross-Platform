@@ -36,7 +36,10 @@ class SearchProvider with ChangeNotifier {
   List<String> recentSearchesWords = [];
   FilterType _filterType = FilterType.general;
   bool _isLoading = false;
-  int _currentPage = 1;
+  int _currentPageUsers = 1;
+  int _currentPageCompanies = 1;
+  int _currentPageJobs = 1;
+  int _currentPagePosts = 1;
   bool _isBusy = false;
   bool _hasMoreUsers = true;
   bool _hasMoreJobs = true;
@@ -53,7 +56,10 @@ class SearchProvider with ChangeNotifier {
   bool get hasMoreJobs => _hasMoreJobs;
   bool get hasMoreCompanies => _hasMoreCompanies;
   bool get hasMorePosts => _hasMorePosts;
-  int get currentPage => _currentPage;
+  int get currentPagePosts => _currentPagePosts;
+  int get currentPageUsers => _currentPageUsers;
+  int get currentPageCompanies => _currentPageCompanies;
+  int get currentPageJobs => _currentPageJobs;
   bool get isSearching => _isSearching;
   bool get isBusy => _isBusy;
   List<ConnectionsUserEntity> get searchResultsUsers => _searchResultsUsers;
@@ -105,6 +111,9 @@ class SearchProvider with ChangeNotifier {
 
   void clearSearchResults() {
     _searchResultsUsers.clear();
+    _searchResultsCompanies.clear();
+    _searchResultsPosts.clear();
+    _searchResultsJobs.clear();
     notifyListeners();
   }
 
@@ -160,19 +169,19 @@ class SearchProvider with ChangeNotifier {
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
+        _currentPageUsers = 1;
         _hasMoreUsers = true;
       } else {
-        _currentPage++;
+        _currentPageUsers++;
       }
 
       final results = await searchUserUseCase.call(
         searchWord: searchWord,
-        page: _currentPage,
+        page: _currentPageUsers,
         limit: 12,
       );
 
-      if (_currentPage == 1) {
+      if (_currentPageUsers == 1) {
         _searchResultsUsers = results;
       } else {
         if (results.isEmpty) {
@@ -200,19 +209,19 @@ class SearchProvider with ChangeNotifier {
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
+        _currentPageUsers = 1;
         _hasMoreCompanies = true;
       } else {
-        _currentPage++;
+        _currentPageUsers++;
       }
 
       final results = await getAllCompaniesUseCase.execute(
         searchWord!,
-        page: _currentPage,
+        page: _currentPageUsers,
         limit: 12,
       );
 
-      if (_currentPage == 1) {
+      if (_currentPageUsers == 1) {
         _searchResultsCompanies = results;
       } else {
         if (results.isEmpty) {
@@ -240,19 +249,19 @@ class SearchProvider with ChangeNotifier {
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
+        _currentPageJobs = 1;
         _hasMoreJobs = true;
       } else {
-        _currentPage++;
+        _currentPageJobs++;
       }
 
       final results = await searchJobsUseCase.call(
         keyword: searchWord!,
-        page: _currentPage,
+        page: _currentPageJobs,
         limit: 12,
       );
 
-      if (_currentPage == 1) {
+      if (_currentPageJobs == 1) {
         _searchResultsJobs = results;
       } else {
         if (results.isEmpty) {
@@ -280,10 +289,10 @@ class SearchProvider with ChangeNotifier {
     try {
       _error = null;
       if (isInitial) {
-        _currentPage = 1;
+        _currentPagePosts = 1;
         _hasMorePosts = true;
       } else {
-        _currentPage++;
+        _currentPagePosts++;
       }
 
       final userId = await this.userId;
@@ -292,13 +301,18 @@ class SearchProvider with ChangeNotifier {
         query: searchWord!,
         network: false,
         timeframe: "all",
-        page: _currentPage,
+        page: _currentPagePosts,
         limit: 12,
       );
+      print("😡😡😡😡SearchProvider: performSearchPosts $result");
 
       result.fold((failure) => _error = failure.message, (posts) {
-        if (_currentPage == 1) {
+        if (_currentPagePosts == 1) {
+          print("🤩🤩🤩🤩🤩SearchProvider: performSearchPosts $posts");
           _searchResultsPosts = posts;
+          print(
+            "😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️😶‍🌫️SearchProvider: performSearchPosts $_searchResultsPosts",
+          );
         } else {
           if (posts.isEmpty) {
             _hasMorePosts = false;
@@ -310,6 +324,7 @@ class SearchProvider with ChangeNotifier {
     } catch (e) {
       _error = e.toString();
     } finally {
+      print("SearchProvider: performSearchPosts $_searchResultsPosts");
       _isLoading = false;
       _isBusy = false;
       notifyListeners();

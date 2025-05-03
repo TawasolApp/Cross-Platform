@@ -42,11 +42,14 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
     final double cardHeight =
         screenHeight * 0.4 > 300 ? 300 : screenHeight * 0.4;
     return InkWell(
+      key: Key('pymk_user_card_inkwell_$userId'),
       onTap: () {
         goToProfile(context, userId: userId);
       },
       child: Center(
+        key: Key('pymk_user_card_center_$userId'),
         child: Container(
+          key: Key('pymk_user_card_container_$userId'),
           width: cardWdith,
           height: cardHeight,
           //padding: const EdgeInsets.all(12),
@@ -56,13 +59,17 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
             border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Column(
+            key: Key('pymk_user_card_main_column_$userId'),
             children: [
               Stack(
+                key: Key('pymk_user_card_stack_$userId'),
                 alignment: Alignment.center,
                 children: [
                   Column(
+                    key: Key('pymk_user_card_header_column_$userId'),
                     children: [
                       ClipRRect(
+                        key: Key('pymk_user_card_header_cliprrect_$userId'),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(8),
                           topRight: Radius.circular(8),
@@ -70,12 +77,18 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
                         child:
                             headerImageUrl != "notavailable"
                                 ? Image.network(
+                                  key: Key(
+                                    'pymk_user_card_header_image_$userId',
+                                  ),
                                   headerImageUrl,
                                   width: double.infinity,
                                   height: cardHeight * 0.25,
                                   fit: BoxFit.cover,
                                 )
                                 : Container(
+                                  key: Key(
+                                    'pymk_user_card_header_fallback_$userId',
+                                  ),
                                   width: double.infinity,
                                   height: cardHeight * 0.25,
                                   color: Theme.of(context)
@@ -104,17 +117,23 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
                                 ),
                       ),
                       SizedBox(
+                        key: Key('pymk_user_card_avatar_spacer_$userId'),
                         height: cardHeight * 0.15,
                         width: double.infinity,
                         child: Container(
+                          key: Key(
+                            'pymk_user_card_avatar_spacer_container_$userId',
+                          ),
                           color: Theme.of(context).colorScheme.onSecondary,
                         ),
                       ),
                     ],
                   ),
                   Positioned(
+                    key: Key('pymk_user_card_avatar_position_$userId'),
                     top: cardHeight * 0.1,
                     child: UserAvatar(
+                      key: Key('pymk_user_card_avatar_$userId'),
                       profilePicture: profileImageUrl,
                       isOnline: false,
                       cardType: PageType.others,
@@ -127,9 +146,12 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
 
               //const SizedBox(height: 8),
               Expanded(
+                key: Key('pymk_user_card_info_expanded_$userId'),
                 child: Padding(
+                  key: Key('pymk_user_card_info_padding_$userId'),
                   padding: const EdgeInsets.all(8.0),
                   child: PeopleYouMayKnowUserCardInfo(
+                    key: Key('pymk_user_card_info_widget_$userId'),
                     firstName: firstName,
                     lastName: lastName,
                     headLine: headLine,
@@ -139,11 +161,14 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
 
               // const SizedBox(height: 8),
               Align(
+                key: Key('pymk_user_card_button_align_$userId'),
                 alignment: Alignment.bottomCenter,
 
                 child: Padding(
+                  key: Key('pymk_user_card_button_padding_$userId'),
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: LinkedInIconicButton(
+                    key: Key('pymk_user_card_connect_button_$userId'),
                     width: cardWdith * 0.3,
                     label: "Connect",
                     onPressed: () async {
@@ -154,6 +179,7 @@ class PeopleYouMayKnowUserCard extends StatelessWidget {
                           context: context,
                           builder: (BuildContext context) {
                             return ErrorDialog(
+                              key: Key('pymk_user_card_error_dialog_$userId'),
                               title: "Connection Request Failed",
                               message:
                                   "Couldn't send connection request to $firstName $lastName.",

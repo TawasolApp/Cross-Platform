@@ -37,6 +37,7 @@ import 'package:linkedin_clone/features/connections/data/datasources/connections
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
 import 'package:linkedin_clone/features/premium/data/datasources/premium_remote_data_source.dart';
 import 'package:linkedin_clone/features/premium/data/repository/premium_repository_impl.dart';
+import 'package:linkedin_clone/features/premium/domain/usecases/cancel_use_case.dart';
 import 'package:linkedin_clone/features/premium/domain/usecases/subscribe_to_premium_plan_usecase.dart';
 import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
 import 'package:linkedin_clone/features/privacy/data/datasources/privacy_remote_data_source.dart';
@@ -734,6 +735,13 @@ void main() async {
           create:
               (_) => PremiumProvider(
                 subscribeToPremiumPlanUseCase: SubscribeToPremiumPlanUseCase(
+                  PremiumRepositoryImpl(
+                    remoteDataSource: PremiumRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                cancelUseCase: CancelUseCase(
                   PremiumRepositoryImpl(
                     remoteDataSource: PremiumRemoteDataSource(
                       client: http.Client(),

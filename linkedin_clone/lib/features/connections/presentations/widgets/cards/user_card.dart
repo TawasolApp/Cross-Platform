@@ -47,31 +47,38 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      key: Key('user_card_material_$userId'),
       color: Theme.of(context).colorScheme.onSecondary,
       borderRadius: BorderRadius.zero,
       child: Padding(
+        key: Key('user_card_padding_$userId'),
         padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: InkWell(
+          key: Key('user_card_inkwell_$userId'),
           onTap: () => goToProfile(context, userId: userId),
           borderRadius: BorderRadius.zero,
           child: Row(
+            key: Key('user_card_main_row_$userId'),
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               /// Profile image and online indicator
               UserAvatar(
+                key: Key('user_card_avatar_$userId'),
                 profilePicture: profilePicture,
                 isOnline: isOnline,
                 cardType: cardType,
               ),
 
-              const SizedBox(width: 8),
+              const SizedBox(key: Key('user_card_avatar_spacing'), width: 8),
 
               /// User info (name, headline, time)
               Flexible(
+                key: Key('user_card_info_flexible_$userId'),
                 fit: FlexFit.tight,
                 child: UserCardInfo(
+                  key: Key('user_card_info_$userId'),
                   firstName: firstName,
                   lastName: lastName,
                   headLine: headLine,
@@ -82,8 +89,10 @@ class UserCard extends StatelessWidget {
 
               /// Right-side action buttons
               Padding(
+                key: Key('user_card_actions_padding_$userId'),
                 padding: const EdgeInsets.all(8.0),
                 child: Align(
+                  key: Key('user_card_actions_align_$userId'),
                   alignment: Alignment.centerRight,
                   child: _buildActions(context),
                 ),
@@ -99,11 +108,13 @@ class UserCard extends StatelessWidget {
     switch (cardType) {
       case PageType.pending:
         return PendingRequestsActions(
+          key: Key('user_card_pending_actions_$userId'),
           userId: userId,
           connectionsProvider: connectionsProvider!,
         );
       case PageType.sent:
         return ConfirmableActionButton(
+          key: Key('user_card_withdraw_button_$userId'),
           buttonText: "Withdraw",
           confirmAction:
               () => connectionsProvider!.withdrawConnectionRequest(userId),
@@ -115,6 +126,7 @@ class UserCard extends StatelessWidget {
         );
       case PageType.following:
         return ConfirmableActionButton(
+          key: Key('user_card_following_button_$userId'),
           buttonText: "Following",
           confirmAction: () => networksProvider!.unfollowUser(userId),
           errorDialogAction: () async => Navigator.pop(context),
@@ -129,9 +141,12 @@ class UserCard extends StatelessWidget {
           errorButtonText: "Cancel",
         );
       case PageType.followers || PageType.search || PageType.others:
-        return const SizedBox(); // No action yet
+        return const SizedBox(
+          key: Key('user_card_no_actions_spacer'),
+        ); // No action yet
       case PageType.blocked:
         return ConfirmableActionButton(
+          key: Key('user_card_unblock_button_$userId'),
           buttonText: "Unblock",
           confirmAction: () => privacyProvider!.unblockUser(userId),
           errorDialogAction: () async => Navigator.pop(context),
@@ -147,13 +162,16 @@ class UserCard extends StatelessWidget {
         );
       case PageType.connections:
         return ConnectionsListActions(
+          key: Key('user_card_connections_actions_$userId'),
           userId: userId,
           connectionsProvider: connectionsProvider!,
           firstName: firstName,
           lastName: lastName,
         );
       default:
-        return const SizedBox(); // No action yet
+        return const SizedBox(
+          key: Key('user_card_default_no_actions'),
+        ); // No action yet
     }
   }
 }

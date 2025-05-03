@@ -31,50 +31,85 @@ class _DetailedSearchBodyState extends State<DetailedSearchBody> {
         _searchProvider.searchResultsUsers;
 
     return SingleChildScrollView(
+      key: const Key('key_detailedsearch_scrollview'),
       child: Column(
+        key: const Key('key_detailedsearch_main_column'),
         children: [
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          SizedBox(
+            key: const Key('key_detailedsearch_spacer_1'),
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
           Consumer<SearchProvider>(
+            key: const Key('key_detailedsearch_users_consumer'),
             builder: (context, searchProvider, child) {
               if (_searchProvider.searchResultsUsers.isNotEmpty) {
-                return UserSearchCard(users: users);
+                return UserSearchCard(
+                  key: const Key('key_detailedsearch_users_card'),
+                  users: users,
+                );
               } else {
-                return SizedBox.shrink();
+                return const SizedBox.shrink(
+                  key: Key('key_detailedsearch_users_empty'),
+                );
               }
             },
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          SizedBox(
+            key: const Key('key_detailedsearch_spacer_2'),
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
           Consumer<SearchProvider>(
+            key: const Key('key_detailedsearch_companies_consumer'),
             builder: (context, searchProvider, child) {
               if (_searchProvider.searchResultsCompanies.isNotEmpty) {
                 return CompanySearchCard(
+                  key: const Key('key_detailedsearch_companies_card'),
                   companies: _searchProvider.searchResultsCompanies,
                 );
               } else {
-                return SizedBox.shrink();
+                return const SizedBox.shrink(
+                  key: Key('key_detailedsearch_companies_empty'),
+                );
               }
             },
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          SizedBox(
+            key: const Key('key_detailedsearch_spacer_3'),
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
           Consumer<SearchProvider>(
+            key: const Key('key_detailedsearch_jobs_consumer'),
             builder: (context, searchProvider, child) {
               if (_searchProvider.searchResultsJobs.isNotEmpty) {
-                return JobSearchCard(jobs: _searchProvider.searchResultsJobs);
+                return JobSearchCard(
+                  key: const Key('key_detailedsearch_jobs_card'),
+                  jobs: _searchProvider.searchResultsJobs,
+                );
               } else {
-                return SizedBox.shrink();
+                return const SizedBox.shrink(
+                  key: Key('key_detailedsearch_jobs_empty'),
+                );
               }
             },
           ),
-          SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+          SizedBox(
+            key: const Key('key_detailedsearch_spacer_4'),
+            height: MediaQuery.of(context).size.height * 0.02,
+          ),
           Consumer<SearchProvider>(
+            key: const Key('key_detailedsearch_posts_consumer'),
             builder: (context, searchProvider, child) {
               if (_searchProvider.searchResultsPosts.isNotEmpty) {
+                print("Posts: ${_searchProvider.searchResultsPosts.length}");
                 return PostSearchCard(
+                  key: const Key('key_detailedsearch_posts_card'),
                   posts: _searchProvider.searchResultsPosts,
                   myProfile: _searchProvider.myProfile!,
                 );
               } else {
-                return SizedBox.shrink();
+                return const SizedBox.shrink(
+                  key: Key('key_detailedsearch_posts_empty'),
+                );
               }
             },
           ),

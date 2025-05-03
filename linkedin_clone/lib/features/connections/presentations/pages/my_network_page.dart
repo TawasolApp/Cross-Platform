@@ -29,6 +29,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
   String? myProfilePircture;
   ConversationListProvider? messagingProvider;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -56,29 +57,34 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
     return DefaultTabController(
       length: 1,
       child: Scaffold(
-        key: _scaffoldKey,
+        key: const ValueKey('my_network_page_scaffold'),
         drawer: Drawer(
+          key: const ValueKey('network_drawer'),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
               GestureDetector(
+                key: const ValueKey('profile_drawer_header'),
                 onTap: () => goToProfile(context, userId: ""),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
+                      key: const ValueKey('drawer_profile_avatar'),
                       radius: 36,
-                      backgroundImage: AssetImage(
+                      backgroundImage: const AssetImage(
                         'assets/images/profile_placeholder.png',
-                      ), // Replace with user image
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Text(
+                      key: const ValueKey('drawer_profile_name'),
                       "Omar Kaddah\nEx-SWE Intern @Dell",
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     Text(
+                      key: const ValueKey('drawer_profile_location'),
                       "Giza, Egypt",
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
@@ -87,19 +93,21 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
               ),
               const Divider(height: 32),
               ListTile(
+                key: const ValueKey('puzzle_games_drawer_item'),
                 title: Text(
                   "Puzzle games",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
               ListTile(
+                key: const ValueKey('saved_posts_drawer_item'),
                 title: Text(
                   "Saved posts",
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                // onTap: _loadingId ? null : _goToSavedPosts,
               ),
               ListTile(
+                key: const ValueKey('groups_drawer_item'),
                 title: Text(
                   "Groups",
                   style: Theme.of(context).textTheme.bodyMedium,
@@ -108,26 +116,51 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
               const Divider(height: 32),
               if (isPremium)
                 ListTile(
+                  key: const ValueKey('cancel_premium_drawer_item'),
                   leading: const Icon(Icons.workspace_premium_outlined),
                   title: Text(
                     "Cancel Premium Subscription",
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  onTap: () {},
-                ),
-              ListTile(
-                leading: const Icon(Icons.workspace_premium_outlined),
-                title: TextButton(
-                  child: Text(
-                    "Try Premium for EGP0",
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  onPressed: () {
-                    goToPremiumSurvey(context);
+                  onTap: () async {
+                    bool result = await premiumProvider!.cancelSubscription();
+                    if (result) {
+                      setState(() {
+                        isPremium = false;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          key: const ValueKey('premium_cancelled_snackbar'),
+                          content: Text("Subscription cancelled successfully"),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          key: const ValueKey('premium_cancel_failed_snackbar'),
+                          content: Text("Failed to cancel subscription"),
+                        ),
+                      );
+                    }
                   },
                 ),
-              ),
+              if (!isPremium)
+                ListTile(
+                  key: const ValueKey('try_premium_drawer_item'),
+                  leading: const Icon(Icons.workspace_premium_outlined),
+                  title: TextButton(
+                    key: const ValueKey('try_premium_button'),
+                    child: Text(
+                      "Try Premium for EGP0",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    onPressed: () {
+                      goToPremiumSurvey(context);
+                    },
+                  ),
+                ),
               ListTile(
+                key: const ValueKey('settings_drawer_item'),
                 leading: const Icon(Icons.settings),
                 title: Text(
                   "Settings",
@@ -135,23 +168,27 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
                 ),
                 onTap: () {
                   Navigator.pop(context);
-                  // _onItemTapped(3);
                 },
               ),
             ],
           ),
         ),
         appBar: AppBar(
+          key: const ValueKey('my_network_app_bar'),
           backgroundColor: Theme.of(context).colorScheme.onSecondary,
           elevation: 0,
-          title: const search_bar.SearchBar(),
+          title: const search_bar.SearchBar(
+            key: ValueKey('network_search_bar'),
+          ),
           leading: InkWell(
+            key: const ValueKey('drawer_menu_button'),
             onTap: () {
               _scaffoldKey.currentState?.openDrawer();
             },
             child: Consumer<ProfileProvider>(
               builder:
                   (context, profileProvider, child) => UserAvatar(
+                    key: const ValueKey('app_bar_profile_avatar'),
                     profilePicture: myProfilePircture ?? 'not available',
                     isOnline: false,
                     cardType: PageType.manageMyNetwork,
@@ -163,6 +200,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: IconButton(
+                key: const ValueKey('messages_button'),
                 icon: Icon(
                   Icons.message_rounded,
                   color: Theme.of(context).iconTheme.color,
@@ -182,20 +220,27 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(48.0),
             child: Container(
+              key: const ValueKey('network_tab_bar_container'),
               color: Theme.of(context).scaffoldBackgroundColor,
               child: TabBar(
+                key: const ValueKey('network_tab_bar'),
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorColor: const Color.fromARGB(255, 43, 109, 46),
                 labelColor: const Color.fromARGB(255, 43, 109, 46),
                 unselectedLabelColor:
                     Theme.of(context).textTheme.bodyMedium?.color,
-                tabs: const [Tab(text: 'Grow')],
+                tabs: const [
+                  Tab(key: ValueKey('grow_network_tab'), text: 'Grow'),
+                ],
                 dividerColor: Theme.of(context).dividerColor,
               ),
             ),
           ),
         ),
-        body: TabBarView(children: [GrowBody()]),
+        body: TabBarView(
+          key: const ValueKey('network_tab_view'),
+          children: [GrowBody(key: const ValueKey('grow_network_body'))],
+        ),
       ),
     );
   }

@@ -858,7 +858,12 @@ class FeedProvider extends ChangeNotifier {
       page: page,
       limit: limit,
     );
-
+    print("Prov: Searching posts for company: $companyId, query: $query");
+    print(
+      "Prov: Network: $network, Timeframe: $timeframe, Page: $page, Limit: $limit",
+    );
+    print("Prov: Result: $result");
+    print("Prov: Posts: ${result.fold((failure) => [], (posts) => posts)}");
     result.fold(
       (failure) => _errorMessage = failure.message,
       (posts) => _posts = posts,

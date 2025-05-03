@@ -930,15 +930,10 @@ class ProfileHeader extends StatelessWidget {
                                   onTap: () {
                                     Navigator.pop(context);
                                     // Show report dialog or navigate to report page
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text(
-                                          'Report functionality will be implemented soon',
-                                        ),
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
+                                    // Show report dialog or navigate to report page
+                                    goToReportUser(
+                                      context,
+                                      userId: provider.userId,
                                     );
                                   },
                                 ),
@@ -1691,17 +1686,10 @@ class ProfileHeader extends StatelessWidget {
                                     ),
                                   ),
                                   onTap: () {
-                                    Navigator.pop(context);
                                     // Show report dialog or navigate to report page
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text(
-                                          'Report functionality will be implemented soon',
-                                        ),
-                                        backgroundColor:
-                                            Theme.of(context).primaryColor,
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
+                                    goToReportUser(
+                                      context,
+                                      userId: provider.userId,
                                     );
                                   },
                                 ),

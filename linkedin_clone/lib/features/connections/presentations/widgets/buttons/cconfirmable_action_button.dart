@@ -37,7 +37,7 @@ class ConfirmableActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      key: const ValueKey('confirmable_action_button'),
+      key: const Key('key_confirmableaction_button'),
       onPressed: () async {
         final parentContext = context;
         bool result = false;
@@ -48,6 +48,7 @@ class ConfirmableActionButton extends StatelessWidget {
             barrierDismissible: true,
             builder:
                 (context) => ConfirmationDialog(
+                  key: const Key('key_confirmableaction_confirmation_dialog'),
                   title: confirmTitle!,
                   message: confirmMessage!,
                   confirmButtonText: confirmButtonText!,
@@ -67,6 +68,7 @@ class ConfirmableActionButton extends StatelessWidget {
                 context: parentContext,
                 builder:
                     (context) => ErrorDialog(
+                      key: const Key('key_confirmableaction_error_dialog'),
                       title: errorTitle,
                       message: errorMessage,
                       buttonText: errorButtonText,
@@ -87,6 +89,9 @@ class ConfirmableActionButton extends StatelessWidget {
                 context: parentContext,
                 builder:
                     (context) => ErrorDialog(
+                      key: const Key(
+                        'key_confirmableaction_error_dialog_direct',
+                      ),
                       title: errorTitle,
                       message: errorMessage,
                       buttonText: errorButtonText,
@@ -101,6 +106,7 @@ class ConfirmableActionButton extends StatelessWidget {
       },
       child: Text(
         buttonText,
+        key: const Key('key_confirmableaction_button_text'),
         style: Theme.of(
           context,
         ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),

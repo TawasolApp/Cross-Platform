@@ -29,14 +29,18 @@ class _ChoicesCardState extends State<ChoicesCard> {
     }
 
     return ListView.builder(
+      key: const Key('key_choicescard_listview'),
       itemCount: widget.choices?.length ?? 0,
       itemBuilder: (context, index) {
         return Column(
+          key: Key('key_choicescard_item_column_$index'),
           children: [
             CheckboxListTile(
+              key: Key('key_choicescard_checkbox_$index'),
               controlAffinity: ListTileControlAffinity.leading,
               title: Text(
                 widget.choices?[index] ?? '',
+                key: Key('key_choicescard_text_$index'),
                 style: Theme.of(context).textTheme.bodyMedium,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -66,6 +70,7 @@ class _ChoicesCardState extends State<ChoicesCard> {
               },
             ),
             Divider(
+              key: Key('key_choicescard_divider_$index'),
               color: Theme.of(context).dividerColor,
               height: 1,
               thickness: 1,

@@ -42,8 +42,18 @@ class _PremiumCheckoutPageState extends State<PremiumCheckoutPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Premium Checkout")),
-      body: WebViewWidget(controller: _controller),
+      key: const Key('premium_checkout_scaffold'),
+      appBar: AppBar(
+        key: const Key('premium_checkout_app_bar'),
+        title: const Text(
+          "Premium Checkout",
+          key: Key('premium_checkout_app_bar_title'),
+        ),
+      ),
+      body: WebViewWidget(
+        key: const Key('premium_checkout_web_view'),
+        controller: _controller,
+      ),
     );
   }
 }

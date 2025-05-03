@@ -19,38 +19,57 @@ class PostSearchCard extends StatelessWidget {
     final displayedCompanies = posts.length > 3 ? posts.sublist(0, 3) : posts;
 
     return Container(
+      key: const Key('key_postsearch_container'),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.onSecondary,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Theme.of(context).colorScheme.onSecondary),
       ),
       child: Column(
+        key: const Key('key_postsearch_main_column'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
+            key: const Key('key_postsearch_title_padding'),
             padding: const EdgeInsets.only(top: 18.0, left: 16.0),
 
             child: Text(
-              "Companies",
+              "Posts",
+              key: const Key('key_postsearch_title_text'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(key: Key('key_postsearch_spacer'), height: 10),
           Padding(
+            key: const Key('key_postsearch_posts_padding'),
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
+              key: const Key('key_postsearch_posts_column'),
               children:
-                  displayedCompanies.map((post) {
+                  displayedCompanies.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    PostEntity post = entry.value;
                     return Column(
+                      key: Key('key_postsearch_post_column_$index'),
                       children: [
-                        Divider(color: Theme.of(context).dividerColor),
-                        PostCard(
-                          post: post,
-                          currentUserId: myProfile.userId,
-                          profileImage: myProfile.profilePicture,
-                          profileName:
-                              "${myProfile.firstName} ${myProfile.lastName}",
-                          profileTitle: myProfile.headline,
+                        Divider(
+                          key: Key('key_postsearch_divider_$index'),
+                          color: Theme.of(context).dividerColor,
+                        ),
+                        FutureBuilder<String>(
+                          key: Key('key_postsearch_future_$index'),
+                          future: _searchProvider!.userId,
+                          builder: (context, snapshot) {
+                            return PostCard(
+                              key: Key('key_postsearch_card_$index'),
+                              post: post,
+                              currentUserId: snapshot.data ?? '',
+                              profileImage: myProfile.profilePicture,
+                              profileName:
+                                  "${myProfile.firstName} ${myProfile.lastName}",
+                              profileTitle: myProfile.headline,
+                            );
+                          },
                         ),
                       ],
                     );
@@ -58,12 +77,15 @@ class PostSearchCard extends StatelessWidget {
             ),
           ),
           Center(
+            key: const Key('key_postsearch_button_center'),
             child: TextButton(
+              key: const Key('key_postsearch_see_all_button'),
               onPressed: () {
                 _searchProvider?.filterType = FilterType.posts;
               },
               child: Text(
                 "See all posts",
+                key: const Key('key_postsearch_see_all_text'),
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontSize: 14,

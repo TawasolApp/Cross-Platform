@@ -38,14 +38,18 @@ class PopUpMenuUser extends StatelessWidget {
       isScrollControlled: true,
       builder: (context) {
         return Padding(
+          key: const Key('key_popupmenuuser_modal_padding'),
           padding: EdgeInsets.all(16),
           child: Column(
+            key: const Key('key_popupmenuuser_modal_column'),
             mainAxisSize: MainAxisSize.min,
             children: [
               // Drag Handle
               Padding(
+                key: const Key('key_popupmenuuser_handle_padding'),
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
+                  key: const Key('key_popupmenuuser_drag_handle'),
                   width:
                       MediaQuery.of(context).size.width * 0.3 > 80
                           ? 80
@@ -63,6 +67,7 @@ class PopUpMenuUser extends StatelessWidget {
               ),
 
               ListTile(
+                key: const Key('key_popupmenuuser_remove_tile'),
                 leading: IconButton(
                   key: const ValueKey('remove_connection_button'),
                   icon: Icon(Icons.person_remove_alt_1),
@@ -71,6 +76,7 @@ class PopUpMenuUser extends StatelessWidget {
                 ),
                 title: Text(
                   'Remove connection',
+                  key: const Key('key_popupmenuuser_remove_text'),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 onTap: () {
@@ -78,6 +84,7 @@ class PopUpMenuUser extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return RemoveConnectionDialog(
+                        key: const Key('key_popupmenuuser_remove_dialog'),
                         userId: userId,
                         userName: userName,
                         connectionsProvider: connectionsProvider,

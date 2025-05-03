@@ -34,15 +34,19 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('key_general_search_scaffold'),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        key: const Key('key_general_search_appbar'),
         backgroundColor: Theme.of(context).colorScheme.onSecondary,
         title: Center(
+          key: const Key('key_general_search_title_center'),
           child: TextField(
+            key: const Key('key_general_search_textfield'),
             textInputAction: TextInputAction.search,
             controller: _searchController,
             decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
+              contentPadding: const EdgeInsets.symmetric(
                 vertical: 10,
                 horizontal: 15,
               ),
@@ -62,8 +66,8 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                 ),
               ),
               suffixIcon: IconButton(
-                key: const ValueKey('close_search_button'),
-                icon: Icon(Icons.clear),
+                key: const Key('key_general_search_clear_button'),
+                icon: const Icon(Icons.clear),
                 onPressed: () {
                   _searchController.clear();
                   setState(() {
@@ -98,7 +102,7 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
           ),
         ),
         leading: IconButton(
-          key: const ValueKey('back_button_search_page'),
+          key: const Key('key_general_search_back_button'),
           icon: Icon(
             Icons.arrow_back,
             color: Theme.of(context).iconTheme.color,
@@ -113,11 +117,14 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
         ),
       ),
       body: SingleChildScrollView(
+        key: const Key('key_general_search_scroll'),
         child: Container(
+          key: const Key('key_general_search_container'),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.onSecondary,
           ),
           child: Column(
+            key: const Key('key_general_search_column'),
             children: [
               Consumer<SearchProvider>(
                 builder: (context, provider, _) {
@@ -127,15 +134,20 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8.0, top: 8.0),
                       child: Row(
+                        key: const Key('key_general_search_clear_row'),
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           TextButton(
-                            key: const ValueKey('clear_all_button_search_page'),
+                            key: const Key(
+                              'key_general_search_clear_all_button',
+                            ),
                             onPressed: () {
                               provider.clearRecentSearches();
                             },
                             child: Text(
-                              key: const ValueKey('clear_all_search_page_text'),
+                              key: const Key(
+                                'key_general_search_clear_all_text',
+                              ),
                               "Clear all",
                               style: TextStyle(
                                 color: Theme.of(context).primaryColor,
@@ -158,11 +170,17 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
 
                   if (recentUsersCount > 0 && !provider.isSearching) {
                     return Padding(
+                      key: const Key(
+                        'key_general_search_recent_users_container',
+                      ),
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: RecentUsersBody(searchProvider: searchProvider),
+                      child: RecentUsersBody(
+                        key: const Key('key_general_search_recent_users_body'),
+                        searchProvider: searchProvider,
+                      ),
                     );
                   } else {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                 },
               ),
@@ -170,9 +188,12 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                 builder: (context, provider, _) {
                   final recentWordsCount = provider.recentSearchesWords.length;
                   if (recentWordsCount > 0 && !provider.isSearching) {
-                    return RecentWordsBody(searchProvider: searchProvider);
+                    return RecentWordsBody(
+                      key: const Key('key_general_search_recent_words_body'),
+                      searchProvider: searchProvider,
+                    );
                   } else {
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   }
                 },
               ),
@@ -182,23 +203,23 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                     final count = provider.searchResultsUsers.length;
                     if (count > 0) {
                       return GeneralSearchResultBody(
+                        key: const Key('key_general_search_results_body'),
                         searchProvider: searchProvider,
                       );
                     } else {
-                      return SizedBox.shrink();
+                      return const SizedBox.shrink();
                     }
                   },
                 ),
 
               if (searchProvider!.isSearching)
                 Align(
+                  key: const Key('key_general_search_show_all_align'),
                   alignment: Alignment.center,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: TextButton(
-                      key: const ValueKey(
-                        'show_all_results_button_search_page',
-                      ),
+                      key: const Key('key_general_search_show_all_button'),
                       onPressed: () {
                         searchProvider!.addToRecentSearchesWords(
                           _searchController.text,
@@ -209,9 +230,7 @@ class _GeneralSearchPageState extends State<GeneralSearchPage> {
                         );
                       },
                       child: Text(
-                        key: const ValueKey(
-                          'show_all_results_search_page_text',
-                        ),
+                        key: const Key('key_general_search_show_all_text'),
                         "Show all Results",
                         style: TextStyle(
                           fontSize: 16,

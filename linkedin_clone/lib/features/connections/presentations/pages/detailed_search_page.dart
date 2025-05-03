@@ -3,6 +3,7 @@ import 'package:linkedin_clone/features/connections/presentations/provider/searc
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/companies_search_body.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/detailed_search_body.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/jobs_search_body.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/post_search_body.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/bodies/user_search_body.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:provider/provider.dart';
@@ -43,17 +44,24 @@ class _DetailedSearchPageState extends State<DetailedSearchPage> {
     final searchProvider = Provider.of<SearchProvider>(context);
 
     return Scaffold(
+      key: const Key('key_detailed_search_scaffold'),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
+        key: const Key('key_detailed_search_appbar'),
         elevation: 0,
         centerTitle: true,
         surfaceTintColor: Theme.of(context).scaffoldBackgroundColor,
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: GestureDetector(
+          key: const Key('key_detailed_search_title_gesture'),
           onTap: () {
+            searchProvider.filterType = FilterType.general;
+            searchProvider.isSearching = false;
+            searchProvider.clearSearchResults();
             Navigator.pop(context);
           },
           child: Container(
+            key: const Key('key_detailed_search_title_container'),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.onSecondary,
@@ -67,6 +75,7 @@ class _DetailedSearchPageState extends State<DetailedSearchPage> {
                 Expanded(
                   child: Text(
                     widget.searchText ?? "Search",
+                    key: const Key('key_detailed_search_text'),
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -75,6 +84,7 @@ class _DetailedSearchPageState extends State<DetailedSearchPage> {
           ),
         ),
         leading: IconButton(
+          key: const Key('key_detailed_search_back_button'),
           color: Theme.of(context).textTheme.titleMedium?.color,
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -86,16 +96,19 @@ class _DetailedSearchPageState extends State<DetailedSearchPage> {
         ),
       ),
       body: Column(
+        key: const Key('key_detailed_search_body'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// Filters Bar
           SingleChildScrollView(
+            key: const Key('key_detailed_search_filters_scroll'),
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(
               horizontal: 8.0,
               vertical: 12.0,
             ),
             child: Row(
+              key: const Key('key_detailed_search_filters_row'),
               children:
                   FilterType.values.map((filter) {
                     final label =
@@ -105,7 +118,11 @@ class _DetailedSearchPageState extends State<DetailedSearchPage> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: ChoiceChip(
-                        label: Text(label),
+                        key: Key('key_filter_chip_${filter.name}'),
+                        label: Text(
+                          label,
+                          key: Key('key_filter_text_${filter.name}'),
+                        ),
                         selected: isSelected,
                         onSelected: (_) {
                           setState(() {
@@ -131,15 +148,29 @@ class _DetailedSearchPageState extends State<DetailedSearchPage> {
               builder: (context) {
                 switch (searchProvider.filterType) {
                   case FilterType.general:
-                    return const DetailedSearchBody();
+                    return const DetailedSearchBody(
+                      key: Key('key_search_body_general'),
+                    );
                   case FilterType.people:
-                    return UserSearchBody(query: widget.searchText ?? "");
+                    return UserSearchBody(
+                      key: const Key('key_search_body_people'),
+                      query: widget.searchText ?? "",
+                    );
                   case FilterType.posts:
-                    return const DetailedSearchBody();
+                    return PostSearchBody(
+                      key: const Key('key_search_body_posts'),
+                      query: widget.searchText ?? "",
+                    );
                   case FilterType.companies:
-                    return CompanySearchBody(query: widget.searchText ?? "");
+                    return CompanySearchBody(
+                      key: const Key('key_search_body_companies'),
+                      query: widget.searchText ?? "",
+                    );
                   case FilterType.jobs:
-                    return JobSearchBody(query: widget.searchText ?? "");
+                    return JobSearchBody(
+                      key: const Key('key_search_body_jobs'),
+                      query: widget.searchText ?? "",
+                    );
                 }
               },
             ),

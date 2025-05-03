@@ -58,6 +58,7 @@ class _InvitationsBodyState extends State<InvitationsBody> {
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
+      key: const Key('key_invitationsbody_refresh_indicator'),
       color: Theme.of(context).primaryColor,
       onRefresh: () async {
         if (widget.cardType == PageType.pending) {
@@ -69,6 +70,7 @@ class _InvitationsBodyState extends State<InvitationsBody> {
         }
       },
       child: Consumer<ConnectionsProvider>(
+        key: const Key('key_invitationsbody_consumer'),
         builder: (context, provider, _) {
           final isLoading = provider.isLoading;
           final hasError = provider.hasErrorMain;
@@ -80,13 +82,16 @@ class _InvitationsBodyState extends State<InvitationsBody> {
 
           if (isLoading) {
             return Center(
+              key: const Key('key_invitationsbody_loading_center'),
               child: CircularProgressIndicator(
+                key: const Key('key_invitationsbody_loading_indicator'),
                 color: Theme.of(context).primaryColor,
               ),
             );
           } else if (hasError) {
             if (errorText.contains('Request Timeout')) {
               return NoInternetConnection(
+                key: const Key('key_invitationsbody_no_internet'),
                 onRetry: () async {
                   await connectionsProvider.getInvitations(
                     isInitsent: true,
@@ -97,21 +102,27 @@ class _InvitationsBodyState extends State<InvitationsBody> {
                 },
               );
             } else {
-              return _emptyPlaceholder();
+              return _emptyPlaceholder(
+                key: const Key('key_invitationsbody_error_placeholder'),
+              );
             }
           } else if (list == null || list.isEmpty) {
             return _emptyPlaceholder(
+              key: const Key('key_invitationsbody_empty_placeholder'),
               child: Center(
+                key: const Key('key_invitationsbody_empty_center'),
                 child: Text(
                   widget.cardType == PageType.pending
                       ? 'No Pending Connection Requests'
                       : 'No Sent Connection Requests',
+                  key: const Key('key_invitationsbody_empty_text'),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ),
             );
           } else {
             return ListView.builder(
+              key: const Key('key_invitationsbody_list'),
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               itemCount: list.length + 1,
@@ -119,8 +130,10 @@ class _InvitationsBodyState extends State<InvitationsBody> {
                 if (index < list.length) {
                   final request = list[index];
                   return Column(
+                    key: Key('key_invitationsbody_item_column_$index'),
                     children: [
                       UserCard(
+                        key: Key('key_invitationsbody_user_card_$index'),
                         userId: request.userId,
                         firstName: request.firstName,
                         lastName: request.lastName,
@@ -130,16 +143,34 @@ class _InvitationsBodyState extends State<InvitationsBody> {
                         time: request.time,
                         cardType: widget.cardType,
                       ),
-                      Divider(height: 1, color: Theme.of(context).dividerColor),
+                      Divider(
+                        key: Key('key_invitationsbody_divider_$index'),
+                        height: 1,
+                        color: Theme.of(context).dividerColor,
+                      ),
                     ],
                   );
                 } else {
                   return provider.isBusy
-                      ? const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16),
-                        child: Center(child: CircularProgressIndicator()),
+                      ? Padding(
+                        key: const Key(
+                          'key_invitationsbody_loading_more_padding',
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          key: const Key(
+                            'key_invitationsbody_loading_more_center',
+                          ),
+                          child: CircularProgressIndicator(
+                            key: const Key(
+                              'key_invitationsbody_loading_more_indicator',
+                            ),
+                          ),
+                        ),
                       )
-                      : const SizedBox.shrink();
+                      : const SizedBox.shrink(
+                        key: Key('key_invitationsbody_list_end'),
+                      );
                 }
               },
             );
@@ -149,10 +180,12 @@ class _InvitationsBodyState extends State<InvitationsBody> {
     );
   }
 
-  Widget _emptyPlaceholder({Widget? child}) {
+  Widget _emptyPlaceholder({Widget? child, Key? key}) {
     return SingleChildScrollView(
+      key: key ?? const Key('key_invitationsbody_empty_scroll'),
       physics: const AlwaysScrollableScrollPhysics(),
       child: SizedBox(
+        key: const Key('key_invitationsbody_empty_container'),
         height: MediaQuery.of(context).size.height - kToolbarHeight,
         width: MediaQuery.of(context).size.width,
         child: child,

@@ -18,11 +18,12 @@ class RemoveConnectionDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      key: const ValueKey('remove_connection_dialog'),
+      key: const Key('key_removeconnection_dialog'),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(7),
       ), // Makes edges sharp
       child: Padding(
+        key: const Key('key_removeconnection_padding'),
         padding: const EdgeInsets.only(
           top: 16.0,
           left: 16.0,
@@ -30,33 +31,46 @@ class RemoveConnectionDialog extends StatelessWidget {
           bottom: 10.0,
         ),
         child: Column(
+          key: const Key('key_removeconnection_column'),
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Remove Connection?",
+              key: const Key('key_removeconnection_title_text'),
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: 10),
+            SizedBox(
+              key: const Key('key_removeconnection_spacer1'),
+              height: 10,
+            ),
             Text(
               "Are you sure you want to remove $userName from your connections?",
+              key: const Key('key_removeconnection_message_text'),
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            SizedBox(height: 14),
+            SizedBox(
+              key: const Key('key_removeconnection_spacer2'),
+              height: 14,
+            ),
             Row(
+              key: const Key('key_removeconnection_buttons_row'),
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 TextButton(
+                  key: const Key('key_removeconnection_cancel_button'),
                   onPressed: () {
                     Navigator.pop(context); // Close dialog
                     Navigator.pop(context); // Close pop-up menu
                   },
                   child: Text(
                     "Cancel",
+                    key: const Key('key_removeconnection_cancel_text'),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
                 TextButton(
+                  key: const Key('key_removeconnection_remove_button'),
                   onPressed: () async {
                     if (await connectionsProvider.removeConnection(userId)) {
                       Navigator.pop(context); // Close remove connection dialog
@@ -80,6 +94,7 @@ class RemoveConnectionDialog extends StatelessWidget {
                   },
                   child: Text(
                     "Remove",
+                    key: const Key('key_removeconnection_remove_text'),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),

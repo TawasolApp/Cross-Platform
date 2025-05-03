@@ -50,6 +50,7 @@ class _JobSearchBodyState extends State<JobSearchBody> {
     List<Job> jobs = _searchProvider.searchResultsJobs;
 
     return ListView.builder(
+      key: const Key('key_jobsearch_listview'),
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: jobs.length + 1,
@@ -57,22 +58,27 @@ class _JobSearchBodyState extends State<JobSearchBody> {
         if (index < jobs.length) {
           final job = jobs[index];
           return Column(
+            key: Key('key_jobsearch_column_$index'),
             children: [
-              JobCard(job: job),
-              Divider(
-                height: 1,
-                thickness: 1,
-                color: Theme.of(context).scaffoldBackgroundColor,
-              ),
+              JobCard(key: Key('key_jobsearch_card_$index'), job: job),
             ],
           );
         } else {
           return _searchProvider.isBusy
-              ? const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
+              ? Padding(
+                key: const Key('key_jobsearch_loading_container'),
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                  key: const Key('key_jobsearch_loading_center'),
+                  child: CircularProgressIndicator(
+                    key: const Key('key_jobsearch_loading_indicator'),
+                  ),
+                ),
               )
-              : const SizedBox(height: 30);
+              : SizedBox(
+                key: const Key('key_jobsearch_bottom_spacer'),
+                height: 30,
+              );
         }
       },
     );

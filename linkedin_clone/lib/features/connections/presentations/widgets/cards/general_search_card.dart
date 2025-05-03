@@ -20,30 +20,42 @@ class GeneralSearchCard extends StatelessWidget {
     double elementSize = MediaQuery.of(context).size.width * 0.05;
 
     return Padding(
+      key: const Key('key_generalsearch_padding'),
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
+        key: const Key('key_generalsearch_inkwell'),
         onTap: () {
           provider.isSearching = false;
           provider.addToRecentSearchesUsers(user);
           goToProfile(context, userId: user.userId);
         },
         child: SizedBox(
+          key: const Key('key_generalsearch_container'),
           width: double.infinity,
           child: Row(
+            key: const Key('key_generalsearch_main_row'),
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
+                key: const Key('key_generalsearch_search_icon'),
                 Icons.search,
                 size: elementSize,
                 color: Theme.of(context).textTheme.bodyLarge?.color,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(
+                key: Key('key_generalsearch_icon_spacer'),
+                width: 8,
+              ),
               Expanded(
+                key: const Key('key_generalsearch_content_expanded'),
                 child: Row(
+                  key: const Key('key_generalsearch_text_row'),
                   children: [
                     Flexible(
+                      key: const Key('key_generalsearch_name_flexible'),
                       child: Text(
                         '${user.firstName} ${user.lastName}',
+                        key: const Key('key_generalsearch_name_text'),
                         style: Theme.of(context).textTheme.titleMedium,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -51,8 +63,10 @@ class GeneralSearchCard extends StatelessWidget {
                     ),
                     if (user.headLine.isNotEmpty)
                       Flexible(
+                        key: const Key('key_generalsearch_headline_flexible'),
                         child: Text(
                           '  •  $user.headLine',
+                          key: const Key('key_generalsearch_headline_text'),
                           style: Theme.of(context).textTheme.bodySmall,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -62,8 +76,12 @@ class GeneralSearchCard extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 8),
+              const SizedBox(
+                key: Key('key_generalsearch_avatar_spacer'),
+                width: 8,
+              ),
               UserAvatar(
+                key: const Key('key_generalsearch_avatar'),
                 profilePicture: user.profilePicture,
                 isOnline: false,
                 cardType: PageType.connections,

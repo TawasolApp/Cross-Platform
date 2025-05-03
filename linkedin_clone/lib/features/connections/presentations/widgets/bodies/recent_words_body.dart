@@ -12,8 +12,10 @@ class RecentWordsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> recentWords = searchProvider!.recentSearchesWords;
     return Column(
+      key: const Key('recent_words_column'),
       children: List.generate(recentWords.length, (index) {
         return RecentWordSearchCard(
+          key: Key('recent_word_card_$index'),
           searchWord: recentWords[index],
           onTap: () {
             goToDetailedSearchPage(context, searchText: recentWords[index]);

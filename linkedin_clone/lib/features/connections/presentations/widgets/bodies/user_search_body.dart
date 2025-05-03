@@ -50,6 +50,7 @@ class _UserSearchBodyState extends State<UserSearchBody> {
     List<ConnectionsUserEntity> users = _searchProvider.searchResultsUsers;
 
     return ListView.builder(
+      key: const Key('user_search_listview'),
       controller: _scrollController,
       physics: const AlwaysScrollableScrollPhysics(),
       itemCount: users.length + 1,
@@ -57,8 +58,10 @@ class _UserSearchBodyState extends State<UserSearchBody> {
         if (index < users.length) {
           final user = users[index];
           return Column(
+            key: Key('user_item_column_$index'),
             children: [
               UserCard(
+                key: Key('user_card_$index'),
                 userId: user.userId,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -66,6 +69,7 @@ class _UserSearchBodyState extends State<UserSearchBody> {
                 cardType: PageType.search,
               ),
               Divider(
+                key: Key('user_divider_$index'),
                 height: 1,
                 thickness: 1,
                 color: Theme.of(context).scaffoldBackgroundColor,
@@ -75,10 +79,16 @@ class _UserSearchBodyState extends State<UserSearchBody> {
         } else {
           return _searchProvider.isBusy
               ? const Padding(
+                key: Key('user_loading_more_container'),
                 padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
+                child: Center(
+                  key: Key('user_loading_more_center'),
+                  child: CircularProgressIndicator(
+                    key: Key('user_loading_more_indicator'),
+                  ),
+                ),
               )
-              : const SizedBox(height: 30);
+              : const SizedBox(key: Key('user_list_bottom_spacer'), height: 30);
         }
       },
     );

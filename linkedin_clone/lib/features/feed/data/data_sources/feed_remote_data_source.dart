@@ -711,8 +711,9 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     print("🥶🥶🥶🥶🥶🥶Searching posts with query: $query");
     final token = await _getToken();
     try {
+      print("inside try block with id: $companyId and query $query");
       final response = await dio.get(
-        '/posts/$companyId/search',
+        'https://tawasolapp.me/api/posts/$companyId/search',
         queryParameters: {
           'q': query,
           if (network != null) 'network': network,
@@ -727,8 +728,10 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
           },
         ),
       );
+      print("Response status code: ${response.statusCode}");
 
       if (response.statusCode == 200) {
+        print("Response data: ${response.data}");
         return (response.data as List)
             .map((json) => PostModel.fromJson(json))
             .toList();
@@ -741,14 +744,17 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
     } on DioException catch (e) {
       if (e.response?.statusCode == 400) {
+        print("error 400");
         throw ValidationException(
           e.response?.data['message'] ?? 'Bad request.',
         );
       } else if (e.response?.statusCode == 401) {
+        print("error 401");
         throw UnauthorizedException(
           e.response?.data['message'] ?? 'Unauthorized.',
         );
       } else {
+        print("last else search ${e.message}");
         throw ServerException(e.message ?? 'Network error.');
       }
     }

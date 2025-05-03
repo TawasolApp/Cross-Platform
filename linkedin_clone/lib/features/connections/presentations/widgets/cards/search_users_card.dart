@@ -26,6 +26,7 @@ class _SearchUsersCardState extends State<SearchUsersCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      key: const Key('search_users_card_container'),
       color: Theme.of(context).colorScheme.onSecondary,
       child: Consumer<SearchProvider>(
         builder: (context, provider, _) {
@@ -36,15 +37,22 @@ class _SearchUsersCardState extends State<SearchUsersCard> {
                   ? [widget.searchProvider!.searchResultsUsers[0]]
                   : [];
           return Column(
+            key: const Key('search_users_card_main_column'),
             children: [
-              LabelCard(label: "People", onTap: () {}),
+              LabelCard(
+                key: const Key('search_users_card_label_card'),
+                label: "People",
+                onTap: () {},
+              ),
               Divider(
+                key: const Key('search_users_card_divider'),
                 height: 1,
                 thickness: 1,
                 color: Theme.of(context).dividerColor,
               ),
               widget.searchProvider!.searchResultsUsers.isNotEmpty
                   ? ListView.builder(
+                    key: const Key('search_users_card_listview'),
                     itemCount: list.length,
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -52,8 +60,10 @@ class _SearchUsersCardState extends State<SearchUsersCard> {
                       final user = list[index];
 
                       return Column(
+                        key: Key('search_users_card_user_column_$index'),
                         children: [
                           UserCard(
+                            key: Key('search_users_card_user_$index'),
                             userId: user.userId,
                             firstName: user.firstName,
                             lastName: user.lastName,
@@ -67,7 +77,9 @@ class _SearchUsersCardState extends State<SearchUsersCard> {
                       );
                     },
                   )
-                  : const SizedBox.shrink(),
+                  : const SizedBox.shrink(
+                    key: Key('search_users_card_empty_state'),
+                  ),
             ],
           );
         },
