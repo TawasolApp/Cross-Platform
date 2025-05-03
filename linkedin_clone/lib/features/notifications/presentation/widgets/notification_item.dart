@@ -17,12 +17,16 @@ class NotificationItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
       child: Row(
+        key: Key('notification_item_${notification.notificationId}'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildAvatar(),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
+              key: Key(
+                'notification_content_column_${notification.notificationId}',
+              ),
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildContent(context),
@@ -38,17 +42,21 @@ class NotificationItem extends StatelessWidget {
 
   Widget _buildAvatar() {
     return CircleAvatar(
+      key: Key('notification_avatar_${notification.notificationId}'),
       radius: 24,
       backgroundColor: Colors.grey[300],
-      backgroundImage: notification.profilePicture.isNotEmpty
-          ? NetworkImage(notification.profilePicture)
-          : null,
-      child: notification.profilePicture.isEmpty
-          ? Icon(
-              _getNotificationIcon(),
-              color: Colors.grey[700],
-            )
-          : null,
+      backgroundImage:
+          notification.profilePicture.isNotEmpty
+              ? NetworkImage(notification.profilePicture)
+              : null,
+      child:
+          notification.profilePicture.isEmpty
+              ? Icon(
+                _getNotificationIcon(),
+                key: Key('notification_icon_${notification.notificationId}'),
+                color: Colors.grey[700],
+              )
+              : null,
     );
   }
 
@@ -60,16 +68,12 @@ class NotificationItem extends StatelessWidget {
     );
 
     return RichText(
+      key: Key('notification_content_${notification.notificationId}'),
       text: TextSpan(
         style: Theme.of(context).textTheme.bodyMedium,
         children: [
-          TextSpan(
-            text: notification.userName,
-            style: nameStyle,
-          ),
-          TextSpan(
-            text: ' ${notification.content}',
-          ),
+          TextSpan(text: notification.userName, style: nameStyle),
+          TextSpan(text: ' ${notification.content}'),
         ],
       ),
     );
@@ -78,10 +82,8 @@ class NotificationItem extends StatelessWidget {
   Widget _buildTimeStamp() {
     return Text(
       timeago.format(notification.timestamp),
-      style: TextStyle(
-        color: Colors.grey[600],
-        fontSize: 12,
-      ),
+      key: Key('notification_timestamp_${notification.notificationId}'),
+      style: TextStyle(color: Colors.grey[600], fontSize: 12),
     );
   }
 

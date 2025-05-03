@@ -39,6 +39,9 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
 
       provider.initialize();
 
+      // Mark all notifications as seen when the page is opened
+      provider.markAllNotificationsAsSeen(_userId);
+
       // Set up scroll controller for pagination
       _notificationsScrollController.addListener(() {
         final maxScroll =
@@ -64,23 +67,31 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const Key('notifications_list_page'),
       body: Consumer<NotificationsProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.notifications.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(
+                key: Key('notifications_loading_indicator'),
+              ),
+            );
           }
 
           if (provider.hasError) {
             return Center(
               child: Column(
+                key: const Key('notifications_error_container'),
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     'Error: ${provider.errorMessage}',
+                    key: const Key('notifications_error_text'),
                     style: const TextStyle(color: Colors.red),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
+                    key: const Key('notifications_retry_button'),
                     onPressed: () async {
                       provider.resetErrors();
                       await provider.getNotifications(_userId);
@@ -93,6 +104,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
           }
 
           return Stack(
+            key: const Key('notifications_stack'),
             children: [
               _buildNotificationsList(
                 provider.notifications,
@@ -106,6 +118,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
                   bottom: 20,
                   right: 20,
                   child: FloatingActionButton.small(
+                    key: const Key('notifications_scroll_to_top_button'),
                     onPressed:
                         () => _notificationsScrollController.animateTo(
                           0,
@@ -114,7 +127,6 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
                         ),
                     child: const Icon(
                       Icons.keyboard_arrow_up_rounded,
-
                       color: Colors.white,
                       size: 24,
                     ),
@@ -135,16 +147,23 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
     String emptyMessage,
   ) {
     if (notifications.isEmpty && !isLoading) {
-      return Center(child: Text(emptyMessage));
+      return Center(
+        child: Text(
+          emptyMessage,
+          key: const Key('notifications_empty_message'),
+        ),
+      );
     }
 
     return RefreshIndicator(
+      key: const Key('notifications_refresh_indicator'),
       onRefresh: () async {
         await provider.getNotifications(_userId);
         await provider.getUnreadNotifications(_userId);
         await provider.getUnseenNotificationsCount(_userId);
       },
       child: ListView.builder(
+        key: const Key('notifications_list_view'),
         controller: scrollController,
         itemCount: notifications.length + (provider.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
@@ -152,7 +171,11 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
           if (index >= notifications.length) {
             return const Padding(
               padding: EdgeInsets.all(16.0),
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(
+                child: CircularProgressIndicator(
+                  key: Key('notifications_loading_more_indicator'),
+                ),
+              ),
             );
           }
 
@@ -168,6 +191,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
     NotificationsProvider provider,
   ) {
     return InkWell(
+      key: Key('notification_inkwell_${notification.notificationId}'),
       onTap: () async {
         if (!notification.isRead) {
           await provider.markNotificationAsRead(
@@ -178,6 +202,7 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
         _handleNotificationTap(context, notification);
       },
       child: Container(
+        key: Key('notification_container_${notification.notificationId}'),
         decoration: BoxDecoration(
           color:
               notification.isRead ? Colors.white : Colors.blue.withOpacity(0.1),
@@ -189,7 +214,14 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (!notification.isRead)
-              Container(width: 4, height: 80, color: Colors.blue),
+              Container(
+                key: Key(
+                  'notification_unread_indicator_${notification.notificationId}',
+                ),
+                width: 4,
+                height: 80,
+                color: Colors.blue,
+              ),
             Expanded(
               child: NotificationItem(
                 notification: notification,
@@ -212,11 +244,17 @@ class _NotificationsListPageState extends State<NotificationsListPage> {
     switch (notification.type) {
       case 'React':
         // Navigate to post details
-        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        context.push(
+          RouteNames.postDetails,
+          extra: {'postId': notification.rootItemId},
+        );
         break;
       case 'Comment':
         // Navigate to post details with comment focus
-        context.push(RouteNames.postDetails, extra: notification.rootItemId);
+        context.push(
+          RouteNames.postDetails,
+          extra: {'postId': notification.rootItemId},
+        );
         break;
       case 'UserConnection':
         // Navigate to profile
