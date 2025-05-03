@@ -748,14 +748,12 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   // Resume methods
-  Future<void> updateResume(String resumePath) async {
+  Future<void> updateResume(String resumeUrl) async {
     _setLoading(true);
     _resumeError = null;
 
     try {
-      // First upload the PDF using the media API
-      final resumeUrl = await uploadImage(XFile(resumePath));
-      
+  
 
       if (_userId == null) {
         _resumeError = "User ID is not set";

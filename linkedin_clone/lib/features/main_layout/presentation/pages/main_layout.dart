@@ -494,29 +494,101 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people, key: Key('networkNavIcon')),
-            label: "My Network",
+        icon: Icon(Icons.people),
+        label: "My Network",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business, key: Key('companiesNavIcon')),
-            label: "Companies",
+        icon: Icon(Icons.business),
+        label: "Companies",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.work, key: Key('jobsNavIcon')),
-            label: "Jobs",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications_outlined,
-              key: Key('notificationsNavIcon'),
+        icon: Stack(
+          children: [
+            const Icon(Icons.notifications_outlined),
+            if (notificationsProvider.unseenNotificationsCount > 0)
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Container(
+              padding: EdgeInsets.all(1),
+              decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(6),
+              ),
+              constraints: BoxConstraints(minWidth: 12, minHeight: 12),
+              child:
+              notificationsProvider.unseenNotificationsCount > 9
+              ? Text(
+                '9+',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                ),
+                textAlign: TextAlign.center,
+              )
+              : Text(
+                '${notificationsProvider.unseenNotificationsCount}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            label: "Notifications",
+          ),
+          ],
+        ),
+        label: "Notifications",
+        activeIcon: Stack(
+          children: [
+            const Icon(Icons.notifications),
+            if (notificationsProvider.unseenNotificationsCount > 0)
+          Positioned(
+            right: 0,
+            top: 0,
+            child: Container(
+              padding: EdgeInsets.all(1),
+              decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(6),
+              ),
+              constraints: BoxConstraints(minWidth: 12, minHeight: 12),
+              child:
+              notificationsProvider.unseenNotificationsCount > 9
+              ? Text(
+                '9+',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                ),
+                textAlign: TextAlign.center,
+              )
+              : Text(
+                '${notificationsProvider.unseenNotificationsCount}',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 8,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          ],
+        ),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings, key: Key('settingsNavIcon')),
-            label: "Settings",
+        icon: Icon(Icons.settings),
+        label: "Settings",
           ),
         ],
+        type: BottomNavigationBarType.fixed,
+        selectedFontSize: 10,
+        unselectedFontSize: 9,
+        iconSize: 22,
+        showUnselectedLabels: true,
+        enableFeedback: true,
+        // Allow labels to take more space
+        landscapeLayout: BottomNavigationBarLandscapeLayout.spread,
       ),
     );
   }

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:linkedin_clone/features/company/domain/usecases/upload_document_use_case.dart';
+import 'package:linkedin_clone/features/jobs/presentation/pages/job_applicant_cv_page.dart';
 
 class ResumeSection extends StatefulWidget {
   final String? resumeUrl;
@@ -227,12 +231,12 @@ class _ResumeSectionState extends State<ResumeSection> {
             onPressed: () => _viewResume(resumeUrl),
             color: Theme.of(context).primaryColor,
           ),
-          IconButton(
-            icon: const Icon(Icons.download_outlined),
-            tooltip: 'Download',
-            onPressed: () => _downloadResume(resumeUrl),
-            color: Theme.of(context).primaryColor,
-          ),
+          // IconButton(
+          //   icon: const Icon(Icons.download_outlined),
+          //   tooltip: 'Download',
+          //   onPressed: () => _downloadResume(resumeUrl),
+          //   color: Theme.of(context).primaryColor,
+          // ),
         ],
       ),
     );
@@ -264,6 +268,8 @@ class _ResumeSectionState extends State<ResumeSection> {
   }
 
   Future<void> _pickResumeFile(ProfileProvider provider) async {
+    print('📤 Upload resume function triggered');
+
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -271,36 +277,116 @@ class _ResumeSectionState extends State<ResumeSection> {
       );
 
       if (result != null && result.files.single.path != null) {
-        File file = File(result.files.single.path!);
-        // Here we would typically upload the file and get a URL
-        // For now, we'll simulate it with a direct update
-        String mockUploadedUrl =
-            'https://example.com/uploads/${path.basename(file.path)}';
-        await provider.updateResume(mockUploadedUrl);
+        final path = result.files.single.path!;
+        final pickedFile = XFile(path);
+        print('📁 File picked: ${pickedFile.name}');
+
+        // Show loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Uploading resume...'),
+            duration: Duration(seconds: 30),
+          ),
+        );
+
+        final mediaRepository = Provider.of<MediaRepository>(
+          context,
+          listen: false,
+        );
+
+        try {
+          final url = await mediaRepository.uploadDocument(pickedFile);
+          print('✅ Upload completed. URL: $url');
+
+          // Update the resume in the provider with the actual URL
+          await provider.updateResume(url);
+
+          // Hide the loading indicator and show success message
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Resume uploaded successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } catch (e) {
+          print('❌ Upload failed: $e');
+          // Hide any existing snackbar and show error message
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error uploading resume: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        print('❌ No file selected');
       }
     } catch (e) {
+      print('❌ Error picking file: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading resume: ${e.toString()}')),
+        SnackBar(
+          content: Text('Error selecting file: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
   Future<void> _viewResume(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
-    } else {
+    print('👁️ Viewing resume file: $url');
+
+    try {
+      // Navigate to the PdfViewerScreen instead of launching URL directly
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PdfViewerScreen(pdfUrl: url)),
+      );
+      print('✅ PDF viewer opened successfully');
+    } catch (e) {
+      print('❌ Error opening PDF viewer: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not open the resume file')),
+        SnackBar(
+          content: Text('Error opening resume: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
 
   Future<void> _downloadResume(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
+    print('⬇️ Downloading resume file: $url');
+
+    try {
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        print('🔗 Launching download URL');
+        await launchUrl(uri);
+        print('✅ Download initiated successfully');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Resume download started'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        print('❌ Cannot launch download URL: $url');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not download the resume file'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('❌ Error downloading resume: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Could not download the resume file')),
+        SnackBar(
+          content: Text('Error downloading resume: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }

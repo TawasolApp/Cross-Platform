@@ -138,9 +138,11 @@ class AppRouter {
       GoRoute(path: RouteNames.feed, builder: (context, state) => FeedPage()),
       GoRoute(
         path: RouteNames.companyPage,
-        builder:
-            (context, state) => CompanyProfileScreen(companyId: "elsewedy-electric"), 
-            ),
+        builder: (context, state) {
+          final companyId = state.extra as String;
+          return CompanyProfileScreen(companyId: companyId);
+        },
+      ),
 
       GoRoute(path: RouteNames.home, builder: (context, state) => HomePage()),
       GoRoute(
@@ -179,10 +181,10 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: RouteNames.companyPage,
-        builder: (context, state) => CompaniesListScreen(),
-      ),
+      // GoRoute(
+      //   path: RouteNames.companyPage,
+      //   builder: (context, state) => CompaniesListScreen(),
+      // ),
       GoRoute(
         path: RouteNames.profile,
         builder: (context, state) => UserProfile(),
@@ -324,6 +326,13 @@ class AppRouter {
           return DetailedSearchPage(searchText: searchText!);
         },
       ),
+      GoRoute(
+        path: RouteNames.jobDetails,
+        builder: (context, state) {
+          final jobId = state.extra as String;
+          return JobDetailsScreen(jobId: jobId);
+        },
+      )
     ],
   );
 }
