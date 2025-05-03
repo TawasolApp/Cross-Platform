@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
 import 'package:linkedin_clone/features/company/presentation/screens/companies_list_screen.dart';
-import 'package:linkedin_clone/features/company/presentation/screens/company_profile_screen.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
@@ -34,12 +33,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   String? _profileName;
 
   final List<Widget> _pages = [
-    FeedPage(key: const Key('feedPage')), // Will be replaced by News Feed module
-    MyNetworkPage(key: const Key('myNetworkPage')), // Will be replaced by Connections module
+    FeedPage(key: const Key('feedPage')),
+    MyNetworkPage(key: const Key('myNetworkPage')),
     CompaniesListScreen(key: const Key('companiesListPage')),
     JobSearchPage(key: const Key('jobSearchPage')),
     NotificationsListPage(key: const Key('notificationsListPage')),
-    SettingsPage(key: const Key('settingsPage')), // Will be replaced by Settings module
+    SettingsPage(key: const Key('settingsPage')),
   ];
 
   @override
@@ -58,10 +57,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   Future<void> _loadCompanyId() async {
     final isCompany = await TokenService.getIsCompany();
-    final id =
-        isCompany == true
-            ? await TokenService.getCompanyId()
-            : await TokenService.getUserId();
+    final id = isCompany == true
+        ? await TokenService.getCompanyId()
+        : await TokenService.getUserId();
 
     setState(() {
       _userId = id;
@@ -78,15 +76,12 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   }
 
   void _goToProfile() {
-    // Navigate to user profile
-    context.go(
-      RouteNames.profile,
-    ); // Define this route in GoRouter or Navigator
+    context.go(RouteNames.profile);
   }
 
   void _goToChat(String conversationId) {
-    // Navigate to chat page with the given conversationId
-    final conversationProvider = Provider.of<ConversationListProvider>(context, listen: false);
+    final conversationProvider =
+        Provider.of<ConversationListProvider>(context, listen: false);
     final conversation = conversationProvider.getConversationById(conversationId);
     Navigator.push(
       context,
@@ -142,7 +137,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                     radius: 36,
                     backgroundImage: AssetImage(
                       'assets/images/profile_placeholder.png',
-                    ), // Replace with user image
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -191,33 +186,35 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
           ],
         ),
       ),
-      body: _pages[_currentIndex],
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            key: const Key('searchButton'),
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              // Implement search functionality
-            },
-          ),
-          IconButton(
-            key: const Key('messagesButton'),
-            icon: const Icon(Icons.message),
-            onPressed: () {
-              messagingProvider.fetchConversations();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ConversationListPage(
-                    key: Key('conversationListPage'),
-                  ),
+      appBar: _currentIndex == 1
+          ? null
+          : AppBar(
+              actions: [
+                IconButton(
+                  key: const Key('searchButton'),
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    // Implement search functionality
+                  },
                 ),
-              );
-            },
-          ),
-        ],
-      ),
+                IconButton(
+                  key: const Key('messagesButton'),
+                  icon: const Icon(Icons.message),
+                  onPressed: () {
+                    messagingProvider.fetchConversations();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ConversationListPage(
+                          key: Key('conversationListPage'),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+      body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         key: const Key('bottomNavigationBar'),
         currentIndex: _currentIndex,
