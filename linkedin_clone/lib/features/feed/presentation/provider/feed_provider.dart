@@ -168,6 +168,8 @@ class FeedProvider extends ChangeNotifier {
     return isCompany ?? false;
   }
 
+  get searchResults => null;
+
   void setVisibility(String newVisibility) {
     _visibility = newVisibility;
     notifyListeners();
@@ -867,4 +869,12 @@ class FeedProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  searchPosts(
+    String s, {
+    required companyId,
+    required String query,
+    required page,
+    required limit,
+  }) {}
 }

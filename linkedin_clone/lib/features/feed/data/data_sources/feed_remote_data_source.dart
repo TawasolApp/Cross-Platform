@@ -708,6 +708,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   }) async {
+    final token = await _getToken();
     try {
       final response = await dio.get(
         '/posts/$companyId/search',
@@ -718,6 +719,12 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
           'page': page,
           'limit': limit,
         },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
       );
 
       if (response.statusCode == 200) {

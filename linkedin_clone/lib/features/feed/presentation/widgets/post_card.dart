@@ -89,7 +89,9 @@ class PostCard extends StatelessWidget {
               authorType: post.authorType,
             ),
           const SizedBox(height: 8),
-          if (isSilentRepost && post.parentPost != null)
+          if (isSilentRepost &&
+              post.parentPost != null &&
+              post.parentPost!.parentPost == null)
             PostCard(
               post: post.parentPost!,
               currentUserId: currentUserId,
