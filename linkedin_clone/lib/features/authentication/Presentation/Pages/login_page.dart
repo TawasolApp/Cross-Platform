@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/navigation/route_names.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
 import 'package:linkedin_clone/core/themes/text_styles.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Pages/forgot_password_page.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
@@ -8,6 +9,7 @@ import 'package:linkedin_clone/features/authentication/Presentation/Widgets/logi
 import 'package:linkedin_clone/features/authentication/Presentation/Widgets/text_field.dart';
 import 'package:linkedin_clone/features/authentication/presentation/widgets/social_login_buttons.dart';
 import 'package:linkedin_clone/features/authentication/presentation/widgets/primary_button.dart';
+import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,10 +22,12 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String email = '';
   String password = '';
+  bool isPasswordVisible = false; // Add this state variable
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    final notificationProvider = Provider.of<NotificationsProvider>(context);
     final theme = Theme.of(context);
     final textColor = theme.textTheme.bodyMedium?.color;
     final primaryColor = theme.colorScheme.primary;
@@ -87,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                   GestureDetector(
                     onTap: () => context.go(RouteNames.addName),
                     child: Text(
-                      "Join LinkedIn",
+                      "Join Tawasol",
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: primaryColor,
                         fontWeight: FontWeight.bold,
@@ -109,8 +113,19 @@ class _LoginPageState extends State<LoginPage> {
               CustomTextField(
                 keyboardType: TextInputType.visiblePassword,
                 hintText: "Password",
-                isPassword: true,
+                isPassword: !isPasswordVisible, // Toggle password visibility
                 onChanged: (value) => password = value,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: isDarkMode ? const Color(0xFFE5E5E5) : Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isPasswordVisible = !isPasswordVisible;
+                    });
+                  },
+                ),
               ),
               const SizedBox(height: 10),
 
@@ -146,8 +161,18 @@ class _LoginPageState extends State<LoginPage> {
                   if (!context.mounted) return;
 
                   if (success) {
-                    context.go(RouteNames.main);
+                    await TokenService.getUserId().then((id) async {
+                      // Subscribe to company notifications
+                      await notificationProvider.subscribeToNotifications(id!);
+                    });
+                    final bool? isAdmin = await TokenService.getIsAdmin();
+                    if(isAdmin != null && isAdmin){
+                    context.go(RouteNames.adminPanel);
+                    }else{
+                      context.go(RouteNames.main);
+                    }
                   } else {
+                    print("Login failed");
                     showModalBottomSheet(
                       context: context,
                       backgroundColor: Colors.transparent,

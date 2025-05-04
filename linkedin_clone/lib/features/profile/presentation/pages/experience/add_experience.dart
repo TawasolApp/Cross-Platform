@@ -30,9 +30,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
 
   // Company search variables - reduce debounce time for faster response
   final _debouncer = Debouncer<String>(
-    const Duration(
-      milliseconds: 300,
-    ), // Reduced from 500ms for quicker response
+    const Duration(milliseconds: 300),
     initialValue: '',
   );
   bool _isSearching = false;
@@ -40,7 +38,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
   String? _selectedCompanyId;
   String? _selectedCompanyLogo;
   Company? _selectedCompany;
-  bool _isCustomCompany = false; // Explicitly track if using custom company
+  bool _isCustomCompany = false;
 
   // Define dropdown options
   static const List<String> employmentTypes = [
@@ -70,17 +68,13 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
     _descriptionFocusNode.addListener(_onFocusChange);
   }
 
-  // Special handler for company field focus
   void _onCompanyFocusChange() {
-    // When focus gained, show results if text exists
     if (_companyFocusNode.hasFocus && _companyController.text.isNotEmpty) {
       _searchCompanies(_companyController.text);
       setState(() {
         _showCompanyResults = true;
       });
-    }
-    // When focus lost, hide results after a short delay (to allow clicking on results)
-    else if (!_companyFocusNode.hasFocus) {
+    } else if (!_companyFocusNode.hasFocus) {
       Future.delayed(const Duration(milliseconds: 200), () {
         if (mounted && !_companyFocusNode.hasFocus) {
           setState(() {
@@ -91,7 +85,6 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
     }
   }
 
-  // Handle focus changes to hide the company results dropdown
   void _onFocusChange() {
     if (!_companyFocusNode.hasFocus && _showCompanyResults) {
       Future.delayed(const Duration(milliseconds: 200), () {
@@ -105,17 +98,37 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
   }
 
   void _onCompanyTextChanged() {
-    // If text is changed, mark as potentially custom company
+    if (_companyController.text.isNotEmpty &&
+        (_selectedCompany == null ||
+            _companyController.text != _selectedCompany!.name)) {
+      setState(() {
+        _selectedCompany = null;
+        _selectedCompanyId = null;
+        _selectedCompanyLogo = null;
+        _isCustomCompany = true;
+      });
+    }
+
+    // Clear selection if text changes and doesn't match selected company
     if (_selectedCompany != null &&
         _companyController.text != _selectedCompany!.name) {
-      _useCustomCompany();
+      setState(() {
+        _selectedCompany = null;
+        _selectedCompanyId = null;
+        _selectedCompanyLogo = null;
+        _isCustomCompany = true;
+      });
+    }
+
+    // Always mark as custom if there's text but no selected company
+    if (_companyController.text.isNotEmpty && _selectedCompany == null) {
+      setState(() {
+        _isCustomCompany = true;
+      });
     }
 
     if (_companyController.text.isNotEmpty) {
-      // Trigger search with the current text
       _debouncer.value = _companyController.text;
-
-      // Show results dropdown immediately if field has focus
       setState(() {
         _showCompanyResults = _companyFocusNode.hasFocus;
       });
@@ -125,12 +138,11 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
         _selectedCompany = null;
         _selectedCompanyId = null;
         _selectedCompanyLogo = null;
-        _isCustomCompany = false; // Empty company name
+        _isCustomCompany = false;
       });
     }
   }
 
-  // Add a dedicated method for using a custom company
   void _useCustomCompany() {
     setState(() {
       _selectedCompany = null;
@@ -161,7 +173,6 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
       companyProvider.resetProvider();
       await companyProvider.fetchCompanies(query);
 
-      // Only show results if text still matches and field has focus
       if (mounted &&
           _companyController.text == query &&
           _companyFocusNode.hasFocus) {
@@ -197,11 +208,10 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
       _isCustomCompany = false;
     });
 
-    // Show confirmation
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Selected verified company: ${company.name}'),
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
       ),
     );
 
@@ -212,7 +222,6 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
   void dispose() {
     _companyController.removeListener(_onCompanyTextChanged);
 
-    // Dispose focus nodes
     _titleFocusNode.removeListener(_onFocusChange);
     _companyFocusNode.removeListener(_onCompanyFocusChange);
     _locationFocusNode.removeListener(_onFocusChange);
@@ -355,7 +364,6 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Custom company option at the top for easier access
           Material(
             color: Colors.transparent,
             child: InkWell(
@@ -363,7 +371,6 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 _useCustomCompany();
                 _showCompanyResults = false;
                 FocusScope.of(context).unfocus();
-                // Show confirmation
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -407,7 +414,6 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           ),
           const Divider(height: 1),
 
-          // Company results
           if (companyProvider.companies.isEmpty)
             const Padding(
               padding: EdgeInsets.all(16.0),
@@ -464,511 +470,771 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text("Add Experience"),
+        elevation: 0,
+        title: Text(
+          "Add Experience",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: theme.primaryColor,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: theme.primaryColor),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         actions: [
-          TextButton(
+          TextButton.icon(
             onPressed: _isSaving ? null : _saveExperience,
-            child:
+            icon:
                 _isSaving
-                    ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                    ? SizedBox(
+                      width: 16,
+                      height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.0,
-                        color: Colors.white,
+                        color: theme.primaryColor,
                       ),
                     )
-                    : const Text(
-                      "Save",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    : Icon(Icons.check, color: theme.primaryColor),
+            label: Text(
+              "Save",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.primaryColor,
+              ),
+            ),
           ),
         ],
       ),
       body: GestureDetector(
         onTap: () {
-          // Hide keyboard when tapping on background
           FocusScope.of(context).unfocus();
+          setState(() {
+            _showCompanyResults = false;
+          });
         },
-        // This ensures the gesture detector doesn't block taps on interactive elements
         behavior: HitTestBehavior.translucent,
         child: Form(
           key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Company Logo Placeholder
-                Card(
-                  shape: const CircleBorder(),
-                  elevation: 4,
-                  child: Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.white,
-                      backgroundImage:
-                          _selectedCompanyLogo != null
-                              ? NetworkImage(_selectedCompanyLogo!)
-                              : null,
-                      child:
-                          _selectedCompanyLogo == null
-                              ? const Icon(
-                                Icons.business,
-                                size: 40,
-                                color: Colors.blueGrey,
-                              )
-                              : null,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // Job Title
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _titleController,
-                      focusNode: _titleFocusNode,
-                      decoration: const InputDecoration(
-                        labelText: "Job Title*",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      validator:
-                          (value) => value?.isEmpty ?? true ? "Required" : null,
-                    ),
-                  ),
-                ),
-
-                // Company Name with search
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            children: [
+              // Company Logo Section
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
                   children: [
-                    Card(
-                      color: Colors.white,
-                      elevation: 1,
-                      margin: EdgeInsets.zero,
-                      shape:
-                          _showCompanyResults
-                              ? const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(12),
-                                ),
-                              )
-                              : RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 4.0,
-                        ),
-                        child: TextFormField(
-                          controller: _companyController,
-                          focusNode: _companyFocusNode,
-                          decoration: InputDecoration(
-                            labelText: "Company*",
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 8.0,
-                            ),
-                            suffixIcon: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (_companyController.text.isNotEmpty)
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.clear,
-                                      color: Colors.grey,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _companyController.text = '';
-                                        _selectedCompany = null;
-                                        _selectedCompanyId = null;
-                                        _selectedCompanyLogo = null;
-                                        _isCustomCompany = false;
-                                        _showCompanyResults = false;
-                                      });
-                                    },
-                                  ),
-                                IconButton(
-                                  icon: Icon(
-                                    _showCompanyResults
-                                        ? Icons.arrow_drop_up
-                                        : Icons.arrow_drop_down,
-                                    color: Colors.blueGrey,
-                                  ),
-                                  onPressed: () {
-                                    if (_companyController.text.isEmpty) {
-                                      // If empty, show a hint
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Start typing to search for companies',
-                                          ),
-                                          duration: Duration(seconds: 2),
-                                        ),
-                                      );
-                                      return;
-                                    }
-
-                                    setState(() {
-                                      _showCompanyResults =
-                                          !_showCompanyResults;
-                                      if (_showCompanyResults) {
-                                        // Re-trigger search when manually showing dropdown
-                                        _searchCompanies(
-                                          _companyController.text,
-                                        );
-                                      }
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 5,
                           ),
-                          onTap: () {
-                            // Only show results if there's text to search
-                            if (_companyController.text.isNotEmpty) {
-                              _searchCompanies(_companyController.text);
-                              setState(() {
-                                _showCompanyResults = true;
-                              });
-                            }
-                          },
-                          validator:
-                              (value) =>
-                                  value?.isEmpty ?? true ? "Required" : null,
-                        ),
+                        ],
                       ),
-                    ),
-                    _buildCompanyResults(),
-                    _buildCompanySelectionIndicator(),
-                  ],
-                ),
-
-                // Add margin after the company search block
-                const SizedBox(height: 16),
-
-                // Location
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _locationController,
-                      focusNode: _locationFocusNode,
-                      decoration: const InputDecoration(
-                        labelText: "Location*",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      validator:
-                          (value) => value?.isEmpty ?? true ? "Required" : null,
-                    ),
-                  ),
-                ),
-
-                // Employment Type
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: DropdownButtonFormField<String>(
-                      value: _employmentType,
-                      items:
-                          employmentTypes
-                              .map(
-                                (e) => DropdownMenuItem<String>(
-                                  value: e,
-                                  child: Text(e),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _employmentType = value);
-                        }
-                      },
-                      decoration: const InputDecoration(
-                        labelText: "Employment Type*",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.blueGrey,
-                      ),
-                      dropdownColor: Colors.white,
-                    ),
-                  ),
-                ),
-
-                // Location Type
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: DropdownButtonFormField<String>(
-                      value: _locationType,
-                      items:
-                          locationTypes
-                              .map(
-                                (e) => DropdownMenuItem<String>(
-                                  value: e,
-                                  child: Text(e),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _locationType = value);
-                        }
-                      },
-                      decoration: const InputDecoration(
-                        labelText: "Location Type*",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      icon: const Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.blueGrey,
-                      ),
-                      dropdownColor: Colors.white,
-                    ),
-                  ),
-                ),
-
-                // Start Date
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _startDateController,
-                      decoration: const InputDecoration(
-                        labelText: "Start Date* (YYYY-MM)",
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 8.0),
-                      ),
-                      readOnly: true,
-                      onTap: () => _selectDate(context, _startDateController),
-                      validator:
-                          (value) => value?.isEmpty ?? true ? "Required" : null,
-                    ),
-                  ),
-                ),
-
-                // End Date and Currently Working
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _endDateController,
-                      decoration: InputDecoration(
-                        labelText:
-                            "End Date" +
-                            (_isCurrentlyWorking ? " (Present)" : " (YYYY-MM)"),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                        ),
-                        suffixIcon:
-                            _isCurrentlyWorking
-                                ? const Icon(
-                                  Icons.lock_outline,
-                                  color: Colors.grey,
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.grey[200],
+                        backgroundImage:
+                            _selectedCompanyLogo != null
+                                ? NetworkImage(_selectedCompanyLogo!)
+                                : null,
+                        child:
+                            _selectedCompanyLogo == null
+                                ? Icon(
+                                  Icons.business,
+                                  size: 55,
+                                  color: Colors.grey[400],
                                 )
                                 : null,
                       ),
-                      readOnly: true,
-                      enabled: !_isCurrentlyWorking,
-                      onTap:
-                          () =>
-                              _isCurrentlyWorking
-                                  ? null
-                                  : _selectDate(context, _endDateController),
-                      validator: (value) {
-                        if (!_isCurrentlyWorking && (value?.isEmpty ?? true)) {
-                          return "Required unless currently working";
-                        }
-                        return null;
-                      },
                     ),
+                    const SizedBox(height: 12),
+                    if (_companyController.text.isNotEmpty)
+                      Text(
+                        _companyController.text,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    if (_titleController.text.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          _titleController.text,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Job Information Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Job Information",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                      ),
+
+                      // Job Title Field
+                      _buildTextField(
+                        controller: _titleController,
+                        focusNode: _titleFocusNode,
+                        label: "Job Title",
+                        icon: Icons.work_outline,
+                        required: true,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Company Field with Search
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TextFormField(
+                            controller: _companyController,
+                            focusNode: _companyFocusNode,
+                            decoration: InputDecoration(
+                              labelText: "Company *",
+                              prefixIcon: Icon(
+                                Icons.business_center_outlined,
+                                color: Colors.grey[600],
+                              ),
+                              suffixIcon: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (_companyController.text.isNotEmpty)
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.clear,
+                                        color: Colors.grey,
+                                        size: 20,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _companyController.text = '';
+                                          _selectedCompany = null;
+                                          _selectedCompanyId = null;
+                                          _selectedCompanyLogo = null;
+                                          _isCustomCompany = false;
+                                          _showCompanyResults = false;
+                                        });
+                                      },
+                                    ),
+                                  IconButton(
+                                    icon: Icon(
+                                      _showCompanyResults
+                                          ? Icons.arrow_drop_up
+                                          : Icons.arrow_drop_down,
+                                      color: Colors.grey[600],
+                                    ),
+                                    onPressed: () {
+                                      if (_companyController.text.isEmpty) {
+                                        // If empty, show a hint
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Start typing to search for companies',
+                                            ),
+                                            behavior: SnackBarBehavior.floating,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        _showCompanyResults =
+                                            !_showCompanyResults;
+                                        if (_showCompanyResults) {
+                                          // Re-trigger search when manually showing dropdown
+                                          _searchCompanies(
+                                            _companyController.text,
+                                          );
+                                        }
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: Colors.grey[300]!,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: theme.primaryColor,
+                                  width: 2,
+                                ),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                  color: theme.colorScheme.error,
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              // Only show results if there's text to search
+                              if (_companyController.text.isNotEmpty) {
+                                _searchCompanies(_companyController.text);
+                                setState(() {
+                                  _showCompanyResults = true;
+                                });
+                              }
+                            },
+                            validator:
+                                (value) =>
+                                    value?.isEmpty ?? true
+                                        ? "This field is required"
+                                        : null,
+                          ),
+                          if (_showCompanyResults) _buildCompanyResults(),
+                          _buildCompanySelectionIndicator(),
+                        ],
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Location Field
+                      _buildTextField(
+                        controller: _locationController,
+                        focusNode: _locationFocusNode,
+                        label: "Location",
+                        icon: Icons.location_on_outlined,
+                        required: true,
+                        hint: "City, Country",
+                      ),
+                    ],
                   ),
                 ),
+              ),
 
-                Card(
+              // Employment Details Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
                   color: Colors.white,
-                  elevation: 0,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      children: [
-                        Switch(
-                          value: _isCurrentlyWorking,
-                          onChanged: (value) {
-                            setState(() {
-                              _isCurrentlyWorking = value;
-                              // Clear end date when "currently working" is selected
-                              if (value) {
-                                _endDateController.clear();
-                                // Set display text to "Present" - will be cleared before saving
-                                _endDateController.text = "Present";
-                              } else {
-                                _endDateController.clear();
-                              }
-                            });
-                          },
-                          activeColor: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Employment Details",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
                         ),
-                        const Text(
+                      ),
+
+                      // Employment Type Dropdown
+                      Card(
+                        color: Colors.white,
+                        elevation: 1,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 4.0,
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _employmentType,
+                            items:
+                                employmentTypes
+                                    .map(
+                                      (e) => DropdownMenuItem<String>(
+                                        value: e,
+                                        child: Text(e),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() => _employmentType = value);
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              labelText: "Employment Type*",
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.blueGrey,
+                            ),
+                            dropdownColor: Colors.white,
+                          ),
+                        ),
+                      ),
+
+                      // Location Type Dropdown
+                      Card(
+                        color: Colors.white,
+                        elevation: 1,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8.0,
+                            vertical: 4.0,
+                          ),
+                          child: DropdownButtonFormField<String>(
+                            value: _locationType,
+                            items:
+                                locationTypes
+                                    .map(
+                                      (e) => DropdownMenuItem<String>(
+                                        value: e,
+                                        child: Text(e),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() => _locationType = value);
+                              }
+                            },
+                            decoration: const InputDecoration(
+                              labelText: "Location Type*",
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                            ),
+                            icon: const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.blueGrey,
+                            ),
+                            dropdownColor: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Employment Period Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Employment Period",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                      ),
+
+                      // Start Date Field
+                      TextFormField(
+                        controller: _startDateController,
+                        decoration: InputDecoration(
+                          labelText: "Start Date *",
+                          hintText: "YYYY-MM",
+                          prefixIcon: Icon(
+                            Icons.calendar_today,
+                            color: Colors.grey[600],
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: theme.primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        readOnly: true,
+                        onTap: () => _selectDate(context, _startDateController),
+                        validator:
+                            (value) =>
+                                value?.isEmpty ?? true
+                                    ? "This field is required"
+                                    : null,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // End Date Field
+                      TextFormField(
+                        controller: _endDateController,
+                        decoration: InputDecoration(
+                          labelText:
+                              "End Date" +
+                              (_isCurrentlyWorking ? " (Present)" : " *"),
+                          hintText: _isCurrentlyWorking ? "Present" : "YYYY-MM",
+                          prefixIcon: Icon(
+                            Icons.calendar_today,
+                            color: Colors.grey[600],
+                          ),
+                          suffixIcon:
+                              _isCurrentlyWorking
+                                  ? const Icon(
+                                    Icons.lock_outline,
+                                    color: Colors.grey,
+                                  )
+                                  : null,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: theme.primaryColor,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        readOnly: true,
+                        enabled: !_isCurrentlyWorking,
+                        onTap:
+                            () =>
+                                _isCurrentlyWorking
+                                    ? null
+                                    : _selectDate(context, _endDateController),
+                        validator: (value) {
+                          if (!_isCurrentlyWorking &&
+                              (value?.isEmpty ?? true)) {
+                            return "Required unless currently working";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Currently Working Switch
+                      SwitchListTile(
+                        title: const Text(
                           "I currently work here",
                           style: TextStyle(fontWeight: FontWeight.w500),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                // Description
-                Card(
-                  color: Colors.white,
-                  elevation: 1,
-                  margin: const EdgeInsets.only(bottom: 24),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    child: TextFormField(
-                      controller: _descriptionController,
-                      focusNode: _descriptionFocusNode,
-                      decoration: const InputDecoration(
-                        labelText: "Description*",
-                        border: InputBorder.none,
-                        alignLabelWithHint: true,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8.0,
+                        value: _isCurrentlyWorking,
+                        onChanged: (value) {
+                          setState(() {
+                            _isCurrentlyWorking = value;
+                            // Clear end date when "currently working" is selected
+                            if (value) {
+                              _endDateController.clear();
+                              // Set display text to "Present" - will be cleared before saving
+                              _endDateController.text = "Present";
+                            } else {
+                              _endDateController.clear();
+                            }
+                          });
+                        },
+                        activeColor: theme.primaryColor,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8,
                         ),
                       ),
-                      maxLines: 5,
-                      validator:
-                          (value) => value?.isEmpty ?? true ? "Required" : null,
-                    ),
+                    ],
                   ),
                 ),
+              ),
 
-                // Save Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isSaving ? null : _saveExperience,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                      backgroundColor: Theme.of(context).primaryColor,
+              // Description Section
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0, 1),
                     ),
-                    child:
-                        _isSaving
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                color: Colors.white,
-                              ),
-                            )
-                            : const Text(
-                              "Save Experience",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
+                  ],
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Text(
+                          "Description",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: theme.primaryColor,
+                          ),
+                        ),
+                      ),
+
+                      // Description Field
+                      TextFormField(
+                        controller: _descriptionController,
+                        focusNode: _descriptionFocusNode,
+                        decoration: InputDecoration(
+                          hintText:
+                              "Describe your responsibilities, achievements, and experience in this role",
+                          hintStyle: TextStyle(
+                            color: Colors.grey[400],
+                            fontSize: 14,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 16.0,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.grey[300]!),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(
+                              color: theme.primaryColor,
+                              width: 2,
                             ),
+                          ),
+                        ),
+                        maxLines: 6,
+                        validator:
+                            (value) =>
+                                value?.isEmpty ?? true
+                                    ? "This field is required"
+                                    : null,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              // Save Button
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: _isSaving ? null : _saveExperience,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 2,
+                    backgroundColor: theme.primaryColor,
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: Colors.grey[300],
+                  ),
+                  child:
+                      _isSaving
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.0,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                "Saving...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )
+                          : const Text(
+                            "Save Experience",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  // Add this indicator below the company text field if a company has been selected
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool required = false,
+    String? hint,
+    FocusNode? focusNode,
+  }) {
+    return TextFormField(
+      controller: controller,
+      focusNode: focusNode,
+      decoration: InputDecoration(
+        labelText: required ? "$label *" : label,
+        hintText: hint,
+        prefixIcon: Icon(icon, color: Colors.grey[600]),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: Theme.of(context).colorScheme.error,
+            width: 2,
+          ),
+        ),
+      ),
+      validator:
+          required
+              ? (value) =>
+                  value?.trim().isEmpty ?? true
+                      ? "This field is required"
+                      : null
+              : null,
+      style: const TextStyle(fontSize: 15),
+    );
+  }
+
   Widget _buildCompanySelectionIndicator() {
     if (_selectedCompany != null) {
       return Padding(

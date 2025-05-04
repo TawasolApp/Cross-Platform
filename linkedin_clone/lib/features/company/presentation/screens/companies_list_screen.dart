@@ -20,13 +20,20 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Companies'),
+        title: Text(
+          'Companies',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: Colors.white),
+        ),
         backgroundColor: Theme.of(context).primaryColor,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
             child: TextField(
+              key: const ValueKey('company_search_field'),
+
               controller: _searchController,
               onChanged: (value) {
                 // Reset provider and fetch companies based on new query
@@ -64,29 +71,24 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (provider.error != null) {
-                  return Center(child: Text('Error: ${provider.error}'));
-                }
-
-                if (provider.companies.isEmpty) {
+                if (provider.companies.isEmpty || provider.error != null) {
                   return const Center(child: Text('No companies found.'));
                 }
 
                 return ListView.separated(
-                  itemCount:
-                      provider.companies.length + 1,
+                  itemCount: provider.companies.length + 1,
                   separatorBuilder: (_, __) => const Divider(),
                   itemBuilder: (context, index) {
                     if (index < provider.companies.length) {
                       final company = provider.companies[index];
                       return ListTile(
                         leading:
-                            company.logo == null
+                            company.logo == null || company.logo!.isEmpty
                                 ? const CircleAvatar(
                                   backgroundColor: Colors.grey,
                                   child: Icon(
                                     Icons.business,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 )
                                 : CircleAvatar(
@@ -102,7 +104,6 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                               builder:
                                   (context) => CompanyProfileScreen(
                                     companyId: company.companyId!,
-                                    title: company.name,
                                   ),
                             ),
                           );
@@ -121,6 +122,7 @@ class _CompaniesListScreenState extends State<CompaniesListScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         child: Center(
                           child: ElevatedButton(
+                            key: const ValueKey('load_more_button'),
                             onPressed: () {
                               provider.loadMoreCompanies(
                                 _searchController.text.trim(),

@@ -51,6 +51,8 @@ class _AddAdminScreenState extends State<AddAdminScreen> {
             child: Column(
               children: [
                 TextField(
+                  key: const ValueKey('company_add_admin_field'),
+
                   controller: searchController,
                   onChanged: (query) {
                     setState(() {
@@ -173,10 +175,11 @@ Widget buildUserTile(User user, {VoidCallback? onTap}) {
             ? CircleAvatar(backgroundImage: NetworkImage(imageUrl))
             : const CircleAvatar(child: Icon(Icons.person)),
     title: Text('${user.firstName} ${user.lastName}'),
-    subtitle: Text(user.headline),
+    subtitle: Text(user.headline!),
     trailing:
         onTap != null
             ? IconButton(
+              key: const ValueKey('add_admin_button'),
               icon: const Icon(Icons.person_add_alt_1),
               color: Colors.blue,
               onPressed: onTap,

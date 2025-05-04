@@ -5,8 +5,8 @@ class UserModel extends User {
     required super.userId,
     required super.firstName,
     required super.lastName,
-    required super.profilePicture,
-    required super.headline
+    super.profilePicture,
+    super.headline,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -14,8 +14,8 @@ class UserModel extends User {
       userId: json['userId'],
       firstName: json['firstName'],
       lastName: json['lastName'],
-      profilePicture: json['profilePicture'] ?? "", 
-      headline: json['headline']
+      profilePicture: json['profilePicture'],
+      headline: json['headline'],
     );
   }
 
@@ -25,7 +25,7 @@ class UserModel extends User {
       'name': firstName,
       'lastName': lastName,
       'profile_image_url': profilePicture,
-      'headline':headline
+      'headline': headline,
     };
   }
 }

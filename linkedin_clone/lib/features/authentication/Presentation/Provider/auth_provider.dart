@@ -41,6 +41,7 @@ void setEmail(String value) {
 Future<bool> login(String email, String password) async {
 
   final result = await loginUseCase.call(email, password);
+  print("Login result: $result");
 
   return result.fold(
     (failure) {

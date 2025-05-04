@@ -1,9 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart';
 import 'package:linkedin_clone/features/connections/domain/entities/people_you_may_know_user_entity.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followings_count_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
@@ -15,15 +17,16 @@ import 'package:mockito/mockito.dart';
 
 import 'networks_provider_test.mocks.dart';
 
+// import 'networks_provider_test.mocks.dart';
+
 @GenerateMocks([
   GetFollowingListUseCase,
   UnfollowUserUseCase,
   GetFollowersListUseCase,
   FollowUserUseCase,
-  GetBlockedListUseCase,
-  BlockUserUseCase,
-  UnblockUserUseCase,
   GetPeopleYouMayKnowUseCase,
+  GetFollowersCountUsecase,
+  GetFollowingsCountUsecase,
 ])
 void main() {
   late NetworksProvider provider;
@@ -31,30 +34,26 @@ void main() {
   late MockUnfollowUserUseCase mockUnfollow;
   late MockGetFollowersListUseCase mockGetFollowers;
   late MockFollowUserUseCase mockFollow;
-  late MockGetBlockedListUseCase mockGetBlockedList;
-  late MockBlockUserUseCase mockBlockUser;
-  late MockUnblockUserUseCase mockUnblockUser;
   late MockGetPeopleYouMayKnowUseCase mockPeopleYouMayKnow;
-
+  late MockGetFollowersCountUsecase mockGetFollowersCount;
+  late MockGetFollowingsCountUsecase mockGetFollowingsCount;
   setUp(() {
     mockGetFollowing = MockGetFollowingListUseCase();
     mockUnfollow = MockUnfollowUserUseCase();
     mockGetFollowers = MockGetFollowersListUseCase();
     mockFollow = MockFollowUserUseCase();
-    mockGetBlockedList = MockGetBlockedListUseCase();
-    mockBlockUser = MockBlockUserUseCase();
-    mockUnblockUser = MockUnblockUserUseCase();
     mockPeopleYouMayKnow = MockGetPeopleYouMayKnowUseCase();
+    mockGetFollowersCount = MockGetFollowersCountUsecase();
+    mockGetFollowingsCount = MockGetFollowingsCountUsecase();
 
     provider = NetworksProvider(
       mockGetFollowing,
       mockUnfollow,
       mockGetFollowers,
       mockFollow,
-      mockGetBlockedList,
-      mockBlockUser,
-      mockUnblockUser,
       mockPeopleYouMayKnow,
+      mockGetFollowersCount,
+      mockGetFollowingsCount,
     );
   });
 
@@ -112,17 +111,6 @@ void main() {
     expect(provider.hasError, false);
   });
 
-  test('getBlockedList handles errors', () async {
-    when(
-      mockGetBlockedList.call(page: anyNamed('page'), limit: anyNamed('limit')),
-    ).thenThrow(Exception('Failed to load blocked users'));
-
-    await provider.getBlockedList(isInitial: true);
-
-    expect(provider.blockedList, isNull);
-    expect(provider.hasError, true);
-  });
-
   test('getPeopleYouMayKnowList loads successfully', () async {
     final users = [
       PeopleYouMayKnowUserEntity(
@@ -162,22 +150,6 @@ void main() {
     expect(provider.hasError, true);
   });
 
-  test('blockUser returns false on error', () async {
-    when(mockUnfollow.call('321')).thenThrow(Exception('error'));
-
-    final result = await provider.blockUser('321');
-    expect(result, false);
-    expect(provider.hasError, true);
-  });
-
-  test('unblockUser returns true on success', () async {
-    when(mockFollow.call('321')).thenAnswer((_) async => true);
-
-    final result = await provider.unblockUser('321');
-    expect(result, true);
-    expect(provider.hasError, false);
-  });
-
   test('removePeopleyouMayKnowElement removes user by ID', () {
     provider.peopleYouMayKnowList = [
       PeopleYouMayKnowUserEntity(
@@ -192,5 +164,53 @@ void main() {
 
     provider.removePeopleyouMayKnowElement('10');
     expect(provider.peopleYouMayKnowList!.isEmpty, true);
+  });
+
+  test('getFollowersCount sets count correctly on success', () async {
+    const expectedCount = 42;
+
+    when(mockGetFollowersCount.call()).thenAnswer((_) async => expectedCount);
+
+    await provider.getFollowersCount();
+
+    expect(provider.followersCount, expectedCount);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, false);
+  });
+
+  test('getFollowersCount sets count to -1 on error', () async {
+    when(
+      mockGetFollowersCount.call(),
+    ).thenThrow(Exception('Failed to get followers count'));
+
+    await provider.getFollowersCount();
+
+    expect(provider.followersCount, -1);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, true);
+  });
+
+  test('getFollowingsCount sets count correctly on success', () async {
+    const expectedCount = 35;
+
+    when(mockGetFollowingsCount.call()).thenAnswer((_) async => expectedCount);
+
+    await provider.getFollowingsCount();
+
+    expect(provider.followingsCount, expectedCount);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, false);
+  });
+
+  test('getFollowingsCount sets count to -1 on error', () async {
+    when(
+      mockGetFollowingsCount.call(),
+    ).thenThrow(Exception('Failed to get followings count'));
+
+    await provider.getFollowingsCount();
+
+    expect(provider.followingsCount, -1);
+    expect(provider.isLoading, false);
+    expect(provider.hasError, true);
   });
 }

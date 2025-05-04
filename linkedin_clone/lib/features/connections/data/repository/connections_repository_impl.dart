@@ -115,22 +115,6 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<List<ConnectionsUserEntity>> getBlockedList({
-    int page = 0,
-    int limit = 0,
-  }) async {
-    try {
-      final blockedList = await remoteDataSource.getBlockedList(
-        page: page,
-        limit: limit,
-      );
-      return blockedList;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
   Future<bool> sendConnectionRequest(String userId) async {
     try {
       final sent = await remoteDataSource.sendConnectionRequest(userId);
@@ -173,26 +157,6 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
   }
 
   @override
-  Future<bool> blockUser(String userId) async {
-    try {
-      final blocked = await remoteDataSource.blockUser(userId);
-      return blocked;
-    } catch (e) {
-      throw Exception('Failed to block user');
-    }
-  }
-
-  @override
-  Future<bool> unblockUser(String userId) async {
-    try {
-      final unBlocked = await remoteDataSource.unblockUser(userId);
-      return unBlocked;
-    } catch (e) {
-      throw Exception('Failed to block user');
-    }
-  }
-
-  @override
   Future<List<PeopleYouMayKnowUserEntity>> getPeopleYouMayKnowList({
     int page = 0,
     int limit = 0,
@@ -201,6 +165,64 @@ class ConnectionsRepositoryImpl implements ConnectionsRepository {
       final peopleYouMayKnowList = await remoteDataSource
           .getPeopleYouMayKnowList(page: page, limit: limit);
       return peopleYouMayKnowList;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> endorseSkill(String userId, String skillName) async {
+    try {
+      bool endorsed = await remoteDataSource.endosreSkill(userId, skillName);
+      return endorsed;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> removeEndorsement(String userId, String skillName) async {
+    try {
+      bool removed = await remoteDataSource.removeEndorsment(userId, skillName);
+      return removed;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getFollowersCount() async {
+    try {
+      final count = await remoteDataSource.getFollowersCount();
+      return count;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getFollowingsCount() async {
+    try {
+      final count = await remoteDataSource.getFollowingsCount();
+      return count;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ConnectionsUserEntity>> performSearch({
+    String? searchWord,
+    int page = 0,
+    int limit = 0,
+  }) async {
+    try {
+      final searchList = await remoteDataSource.performSearch(
+        searchWord: searchWord,
+        page: page,
+        limit: limit,
+      );
+      return searchList;
     } catch (e) {
       rethrow;
     }

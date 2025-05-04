@@ -61,6 +61,7 @@ class _CompanyFollowersScreenState extends State<CompanyFollowersScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
+                    key: const ValueKey('load_more_followers_button'),
                     onPressed: () {
                       provider.loadMoreFollowers(widget.companyId);
                     },
@@ -97,7 +98,7 @@ class _CompanyFollowersScreenState extends State<CompanyFollowersScreen> {
                 ? CircleAvatar(backgroundImage: NetworkImage(imageUrl))
                 : const CircleAvatar(child: Icon(Icons.person)),
         title: Text('${user.firstName} ${user.lastName}'),
-        subtitle: Text(user.headline),
+        subtitle: Text(user.headline ?? 'No headline'),
       ),
     );
   }

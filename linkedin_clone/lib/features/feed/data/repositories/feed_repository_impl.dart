@@ -323,4 +323,64 @@ class FeedRepositoryImpl implements FeedRepository {
       return Left(ServerFailure('Failed to load saved posts'));
     }
   }
+
+  @override
+  Future<Either<Failure, PostEntity>> fetchPostById({
+    required String userId,
+    required String postId,
+  }) async {
+    try {
+      final post = await remoteDataSource.fetchPostById(
+        userId: userId,
+        postId: postId,
+      );
+      return Right(post);
+    } catch (e) {
+      return Left(ServerFailure("Repo: Failed to fetch post by ID: $e"));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> getReposts({
+    required String userId,
+    required String postId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final result = await remoteDataSource.getReposts(
+      userId: userId,
+      postId: postId,
+      page: page,
+      limit: limit,
+    );
+
+    return result.fold(
+      (failure) => Left(failure),
+      (models) => Right(models.map((e) => e.toEntity()).toList()),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<PostEntity>>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final posts = await remoteDataSource.searchPosts(
+        companyId: companyId,
+        query: query,
+        network: network,
+        timeframe: timeframe,
+        page: page,
+        limit: limit,
+      );
+      return Right(posts.map((p) => p.toEntity()).toList());
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
 }

@@ -14,6 +14,7 @@ class PostHeader extends StatelessWidget {
   final String authorId;
   final String currentUserId;
   final String authorType;
+  final bool isMiniPostCard;
   const PostHeader({
     super.key,
     required this.profileImage,
@@ -26,6 +27,7 @@ class PostHeader extends StatelessWidget {
     required this.authorId,
     required this.currentUserId,
     required this.authorType,
+    this.isMiniPostCard = false,
   });
 
   @override
@@ -38,13 +40,20 @@ class PostHeader extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            context.go(RouteNames.profile, extra: authorId);
+            if (authorType == "User") {
+              context.push(RouteNames.profile, extra: authorId);
+            } else {
+              context.push(
+                RouteNames.companyProfile,
+                extra: {'companyId': authorId, 'companyTitle': authorTitle},
+              );
+            }
           },
           child:
               authorType == "User"
                   ? CircleAvatar(
                     backgroundImage: NetworkImage(profileImage),
-                    radius: 22,
+                    radius: isMiniPostCard ? 16 : 22,
                   )
                   : ClipRRect(
                     borderRadius: BorderRadius.circular(6),
@@ -67,6 +76,7 @@ class PostHeader extends StatelessWidget {
                 authorName,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
+                  fontSize: isMiniPostCard ? 14 : 16,
                   color: isDarkMode ? Colors.white : Colors.black,
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -74,7 +84,7 @@ class PostHeader extends StatelessWidget {
               Text(
                 authorTitle,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: isMiniPostCard ? 11 : 12,
                   color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
                 ),
                 overflow: TextOverflow.ellipsis,
@@ -82,33 +92,34 @@ class PostHeader extends StatelessWidget {
               Text(
                 postTime,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: isMiniPostCard ? 10 : 12,
                   color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
                 ),
               ),
             ],
           ),
         ),
-        IconButton(
-          icon: const Icon(Icons.more_horiz),
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder:
-                  (_) => PostActionsBottomSheet(
-                    postId: postId,
-                    postContent: postContent,
-                    authorImage: profileImage,
-                    authorName: authorName,
-                    authorTitle: authorTitle,
-                    visibility: visibility,
-                    authorId: authorId,
-                    currentUserId: currentUserId,
-                    rootContext: context,
-                  ),
-            );
-          },
-        ),
+        if (!isMiniPostCard)
+          IconButton(
+            icon: const Icon(Icons.more_horiz),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder:
+                    (_) => PostActionsBottomSheet(
+                      postId: postId,
+                      postContent: postContent,
+                      authorImage: profileImage,
+                      authorName: authorName,
+                      authorTitle: authorTitle,
+                      visibility: visibility,
+                      authorId: authorId,
+                      currentUserId: currentUserId,
+                      rootContext: context,
+                    ),
+              );
+            },
+          ),
       ],
     );
   }

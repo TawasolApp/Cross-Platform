@@ -7,13 +7,23 @@ import '../../../../core/utils/reaction_type.dart';
 
 class ReactionSummaryBar extends StatelessWidget {
   final String postId;
+  final String postType;
 
-  const ReactionSummaryBar({super.key, required this.postId});
+  const ReactionSummaryBar({
+    super.key,
+    this.postType = "Post",
+    required this.postId,
+  });
 
   @override
   Widget build(BuildContext context) {
     final feedProvider = Provider.of<FeedProvider>(context);
-    final reactions = feedProvider.postReactions;
+    final reactions =
+        postType == "Post"
+            ? feedProvider.postReactions
+            : feedProvider.commentReactions[postId] ?? [];
+
+    //final reactions = feedProvider.postReactions;
 
     if (reactions.isEmpty) return const SizedBox();
 

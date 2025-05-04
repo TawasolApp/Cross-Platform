@@ -3,27 +3,40 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
+import 'package:fpdart/fpdart.dart' as _i16;
+import 'package:linkedin_clone/core/errors/failures.dart' as _i17;
 import 'package:linkedin_clone/features/connections/domain/entities/connections_user_entity.dart'
-    as _i5;
+    as _i6;
 import 'package:linkedin_clone/features/connections/domain/repository/connections_repository.dart'
     as _i2;
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/accept_ignore_connection_request_usecase.dart'
-    as _i9;
-import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart'
-    as _i3;
-import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_received_connection_requests_usecase.dart'
-    as _i7;
-import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_sent_connection_requests_usecase.dart'
-    as _i8;
-import 'package:linkedin_clone/features/connections/domain/usecases/connect/remove_connection_usecase.dart'
-    as _i6;
-import 'package:linkedin_clone/features/connections/domain/usecases/connect/send_connection_request_usecase.dart'
     as _i10;
-import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart'
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart'
+    as _i4;
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_received_connection_requests_usecase.dart'
+    as _i8;
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_sent_connection_requests_usecase.dart'
+    as _i9;
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/remove_connection_usecase.dart'
+    as _i7;
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/send_connection_request_usecase.dart'
     as _i11;
+import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart'
+    as _i12;
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart'
+    as _i13;
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart'
+    as _i14;
+import 'package:linkedin_clone/features/profile/domain/entities/profile.dart'
+    as _i18;
+import 'package:linkedin_clone/features/profile/domain/repositories/profile_repository.dart'
+    as _i3;
+import 'package:linkedin_clone/features/profile/domain/usecases/profile/get_profile.dart'
+    as _i15;
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i19;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -45,11 +58,17 @@ class _FakeConnectionsRepository_0 extends _i1.SmartFake
     : super(parent, parentInvocation);
 }
 
+class _FakeProfileRepository_1 extends _i1.SmartFake
+    implements _i3.ProfileRepository {
+  _FakeProfileRepository_1(Object parent, Invocation parentInvocation)
+    : super(parent, parentInvocation);
+}
+
 /// A class which mocks [GetConnectionsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetConnectionsUseCase extends _i1.Mock
-    implements _i3.GetConnectionsUseCase {
+    implements _i4.GetConnectionsUseCase {
   MockGetConnectionsUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -66,7 +85,7 @@ class MockGetConnectionsUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<List<_i5.ConnectionsUserEntity>> call({
+  _i5.Future<List<_i6.ConnectionsUserEntity>> call({
     String? userId,
     String? search,
     int? page = 0,
@@ -81,18 +100,18 @@ class MockGetConnectionsUseCase extends _i1.Mock
               #limit: limit,
               #sortBy: sortBy,
             }),
-            returnValue: _i4.Future<List<_i5.ConnectionsUserEntity>>.value(
-              <_i5.ConnectionsUserEntity>[],
+            returnValue: _i5.Future<List<_i6.ConnectionsUserEntity>>.value(
+              <_i6.ConnectionsUserEntity>[],
             ),
           )
-          as _i4.Future<List<_i5.ConnectionsUserEntity>>);
+          as _i5.Future<List<_i6.ConnectionsUserEntity>>);
 }
 
 /// A class which mocks [RemoveConnectionUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockRemoveConnectionUseCase extends _i1.Mock
-    implements _i6.RemoveConnectionUseCase {
+    implements _i7.RemoveConnectionUseCase {
   MockRemoveConnectionUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -109,19 +128,19 @@ class MockRemoveConnectionUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<bool> call(String? userId) =>
+  _i5.Future<bool> call(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userId]),
-            returnValue: _i4.Future<bool>.value(false),
+            returnValue: _i5.Future<bool>.value(false),
           )
-          as _i4.Future<bool>);
+          as _i5.Future<bool>);
 }
 
 /// A class which mocks [GetReceivedConnectionRequestsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetReceivedConnectionRequestsUseCase extends _i1.Mock
-    implements _i7.GetReceivedConnectionRequestsUseCase {
+    implements _i8.GetReceivedConnectionRequestsUseCase {
   MockGetReceivedConnectionRequestsUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -138,24 +157,24 @@ class MockGetReceivedConnectionRequestsUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<List<_i5.ConnectionsUserEntity>> call({
+  _i5.Future<List<_i6.ConnectionsUserEntity>> call({
     int? page = 0,
     int? limit = 0,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {#page: page, #limit: limit}),
-            returnValue: _i4.Future<List<_i5.ConnectionsUserEntity>>.value(
-              <_i5.ConnectionsUserEntity>[],
+            returnValue: _i5.Future<List<_i6.ConnectionsUserEntity>>.value(
+              <_i6.ConnectionsUserEntity>[],
             ),
           )
-          as _i4.Future<List<_i5.ConnectionsUserEntity>>);
+          as _i5.Future<List<_i6.ConnectionsUserEntity>>);
 }
 
 /// A class which mocks [GetSentConnectionRequestsUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetSentConnectionRequestsUseCase extends _i1.Mock
-    implements _i8.GetSentConnectionRequestsUseCase {
+    implements _i9.GetSentConnectionRequestsUseCase {
   MockGetSentConnectionRequestsUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -172,24 +191,24 @@ class MockGetSentConnectionRequestsUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<List<_i5.ConnectionsUserEntity>> call({
+  _i5.Future<List<_i6.ConnectionsUserEntity>> call({
     int? page = 0,
     int? limit = 0,
   }) =>
       (super.noSuchMethod(
             Invocation.method(#call, [], {#page: page, #limit: limit}),
-            returnValue: _i4.Future<List<_i5.ConnectionsUserEntity>>.value(
-              <_i5.ConnectionsUserEntity>[],
+            returnValue: _i5.Future<List<_i6.ConnectionsUserEntity>>.value(
+              <_i6.ConnectionsUserEntity>[],
             ),
           )
-          as _i4.Future<List<_i5.ConnectionsUserEntity>>);
+          as _i5.Future<List<_i6.ConnectionsUserEntity>>);
 }
 
 /// A class which mocks [AcceptIgnoreConnectionRequestUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAcceptIgnoreConnectionRequestUseCase extends _i1.Mock
-    implements _i9.AcceptIgnoreConnectionRequestUseCase {
+    implements _i10.AcceptIgnoreConnectionRequestUseCase {
   MockAcceptIgnoreConnectionRequestUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -206,19 +225,19 @@ class MockAcceptIgnoreConnectionRequestUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<bool> call(String? userId, bool? accept) =>
+  _i5.Future<bool> call(String? userId, bool? accept) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userId, accept]),
-            returnValue: _i4.Future<bool>.value(false),
+            returnValue: _i5.Future<bool>.value(false),
           )
-          as _i4.Future<bool>);
+          as _i5.Future<bool>);
 }
 
 /// A class which mocks [SendConnectionRequestUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockSendConnectionRequestUseCase extends _i1.Mock
-    implements _i10.SendConnectionRequestUseCase {
+    implements _i11.SendConnectionRequestUseCase {
   MockSendConnectionRequestUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -235,28 +254,120 @@ class MockSendConnectionRequestUseCase extends _i1.Mock
           as _i2.ConnectionsRepository);
 
   @override
-  _i4.Future<bool> call(String? userID) =>
+  _i5.Future<bool> call(String? userID) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userID]),
-            returnValue: _i4.Future<bool>.value(false),
+            returnValue: _i5.Future<bool>.value(false),
           )
-          as _i4.Future<bool>);
+          as _i5.Future<bool>);
 }
 
 /// A class which mocks [WithdrawConnectionRequestUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockWithdrawConnectionRequestUseCase extends _i1.Mock
-    implements _i11.WithdrawConnectionRequestUseCase {
+    implements _i12.WithdrawConnectionRequestUseCase {
   MockWithdrawConnectionRequestUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<bool> call(String? userId) =>
+  _i5.Future<bool> call(String? userId) =>
       (super.noSuchMethod(
             Invocation.method(#call, [userId]),
-            returnValue: _i4.Future<bool>.value(false),
+            returnValue: _i5.Future<bool>.value(false),
           )
-          as _i4.Future<bool>);
+          as _i5.Future<bool>);
+}
+
+/// A class which mocks [EndorseSkillUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockEndorseSkillUseCase extends _i1.Mock
+    implements _i13.EndorseSkillUseCase {
+  MockEndorseSkillUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.ConnectionsRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeConnectionsRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.ConnectionsRepository);
+
+  @override
+  _i5.Future<bool> call(String? userId, String? skillId) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [userId, skillId]),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+}
+
+/// A class which mocks [RemoveEndorsementUsecase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockRemoveEndorsementUsecase extends _i1.Mock
+    implements _i14.RemoveEndorsementUsecase {
+  MockRemoveEndorsementUsecase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.ConnectionsRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeConnectionsRepository_0(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i2.ConnectionsRepository);
+
+  @override
+  _i5.Future<bool> call(String? userId, String? skillId) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [userId, skillId]),
+            returnValue: _i5.Future<bool>.value(false),
+          )
+          as _i5.Future<bool>);
+}
+
+/// A class which mocks [GetProfileUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetProfileUseCase extends _i1.Mock implements _i15.GetProfileUseCase {
+  MockGetProfileUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i3.ProfileRepository get repository =>
+      (super.noSuchMethod(
+            Invocation.getter(#repository),
+            returnValue: _FakeProfileRepository_1(
+              this,
+              Invocation.getter(#repository),
+            ),
+          )
+          as _i3.ProfileRepository);
+
+  @override
+  _i5.Future<_i16.Either<_i17.Failure, _i18.Profile>> call(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#call, [id]),
+            returnValue:
+                _i5.Future<_i16.Either<_i17.Failure, _i18.Profile>>.value(
+                  _i19.dummyValue<_i16.Either<_i17.Failure, _i18.Profile>>(
+                    this,
+                    Invocation.method(#call, [id]),
+                  ),
+                ),
+          )
+          as _i5.Future<_i16.Either<_i17.Failure, _i18.Profile>>);
 }

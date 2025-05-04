@@ -5,15 +5,13 @@ class CustomTextField extends StatelessWidget {
   final TextInputType keyboardType; 
   final bool isPassword;
   final Color? textColor;
-  // Removed isDarkMode field as it is not needed
-
   final Function(String) onChanged;
   final EdgeInsetsGeometry? contentPadding;
   final String? errorText;
+  final Widget? suffixIcon; // Added suffixIcon parameter
 
   const CustomTextField({
     super.key,
-
     required this.keyboardType,
     required this.hintText,
     this.isPassword = false,
@@ -21,6 +19,7 @@ class CustomTextField extends StatelessWidget {
     this.contentPadding,
     this.errorText,
     this.textColor,
+    this.suffixIcon, // Initialize suffixIcon
   });
 
   @override
@@ -45,6 +44,7 @@ class CustomTextField extends StatelessWidget {
           borderSide: BorderSide(color: theme.dividerColor),
         ),
         contentPadding: contentPadding ?? const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        suffixIcon: suffixIcon, // Pass suffixIcon to InputDecoration
       ),
     );
   }

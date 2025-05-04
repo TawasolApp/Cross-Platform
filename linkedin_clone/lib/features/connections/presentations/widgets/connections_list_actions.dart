@@ -1,7 +1,7 @@
 // ignore_for_file: use_super_parameters
 
 import 'package:flutter/material.dart';
-import 'pop_up_menu_user.dart';
+import 'dialogs/pop_up_menu_user.dart';
 
 class ConnectionsListActions extends StatelessWidget {
   final String userId;
@@ -20,26 +20,27 @@ class ConnectionsListActions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      key: Key('connections_list_actions_row_$userId'),
       children: [
         PopUpMenuUser(
+          key: Key('connections_list_popup_menu_$userId'),
           userId: userId,
           userName: '$firstName $lastName',
           connectionsProvider: connectionsProvider,
         ),
         IconButton(
+          key: const Key('routing_to_chat_button'),
           icon: Transform.rotate(
+            key: Key('connections_list_send_icon_transform_$userId'),
             angle: 315 * (3.141592653589793 / 180),
             child: Icon(
               Icons.send,
+              key: Key('connections_list_send_icon_$userId'),
               size: 23,
               color: Theme.of(context).textTheme.titleLarge?.color,
             ),
           ),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Routing to Messaging page')),
-            );
-          },
+          onPressed: () {},
         ),
       ],
     );

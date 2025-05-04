@@ -12,11 +12,20 @@ class PostFooter extends StatefulWidget {
   final PostEntity post;
   final int comments;
   final int shares;
+  final String? profileImage;
+  final String profileName;
+  final String? profileTitle;
+  final bool showRepostButton;
+
   const PostFooter({
     super.key,
     required this.post,
     required this.comments,
     required this.shares,
+    this.profileImage = '',
+    required this.profileName,
+    this.profileTitle = '',
+    this.showRepostButton = false,
   });
 
   @override
@@ -30,6 +39,7 @@ class _PostFooterState extends State<PostFooter> {
       builder:
           (_) => ReactionPopup(
             postId: widget.post.id,
+            postType: "Post",
             onReactionSelected: (reaction) {
               setState(() {});
             },
@@ -60,6 +70,7 @@ class _PostFooterState extends State<PostFooter> {
     final icon = hasReacted ? reaction.icon : Icons.thumb_up_off_alt;
     final color = hasReacted ? reaction.color : Colors.grey;
     final label = hasReacted ? reaction.name : 'Like';
+    final isSilentRepost = widget.post.isSilentRepost == true;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -101,13 +112,26 @@ class _PostFooterState extends State<PostFooter> {
 
           GestureDetector(
             onTap: () {
-              showRepostBottomSheet(context, widget.post.id);
+              showRepostBottomSheet(
+                context,
+                widget.post.id,
+                widget.profileImage,
+                widget.profileName,
+                widget.profileTitle,
+              );
             },
 
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.loop, size: 20, color: Colors.grey),
+                Icon(
+                  Icons.loop,
+                  size: 20,
+                  color:
+                      widget.post.parentPost != null
+                          ? Colors.blue
+                          : Colors.grey,
+                ),
                 const SizedBox(height: 2),
                 Text(
                   "Repost",

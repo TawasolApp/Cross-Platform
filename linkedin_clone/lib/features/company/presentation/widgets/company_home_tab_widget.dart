@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/presentation/widgets/company_posts_tab.dart';
+import 'package:linkedin_clone/core/services/token_service.dart';
+import 'package:linkedin_clone/features/company/presentation/widgets/company_post_card.dart';
 import 'package:linkedin_clone/features/company/presentation/widgets/recent_jobs_widget.dart';
 import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
-import 'package:linkedin_clone/features/feed/presentation/widgets/post_card.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/company/presentation/providers/company_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,16 +18,27 @@ class CompanyHomeTab extends StatefulWidget {
 
 class _CompanyHomeTabState extends State<CompanyHomeTab> {
   bool isExpanded = false;
+  bool _hasInitialized = false;
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final feedProvider = Provider.of<FeedProvider>(context, listen: false);
-      final profile = Provider.of<ProfileProvider>(context, listen: false);
-      profile.fetchProfile("");
-      if (feedProvider.posts.isEmpty && !feedProvider.isLoading) {
-        feedProvider.fetchUserPosts(widget.companyId);
-        print("Fetching posts for companyId: ${widget.companyId}");
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted || _hasInitialized) return;
+      _hasInitialized = true;
+
+      final feedProvider = context.read<FeedProvider>();
+
+      // Reset user posts
+      feedProvider.resetUserPosts();
+
+      // Wait for userId to resolve before fetching posts
+      final userId = await TokenService.getUserId();
+      print('User ID: $userId');
+      if (userId != null &&
+          feedProvider.userPosts.isEmpty &&
+          !feedProvider.isLoading) {
+        await feedProvider.fetchUserPosts(widget.companyId);
       }
     });
   }
@@ -102,6 +113,8 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton(
+                  key: const ValueKey('company_see_less_button'),
+
                   onPressed: () {
                     setState(() {
                       isExpanded = false;
@@ -145,6 +158,7 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
               child: SizedBox(
                 width: double.infinity,
                 child: TextButton(
+                  key: const ValueKey('company_see_all_details_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,
@@ -175,44 +189,82 @@ class _CompanyHomeTabState extends State<CompanyHomeTab> {
             Divider(color: Colors.grey[300]),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text(
-                "Page posts",
-                style: Theme.of(context).textTheme.headlineSmall,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Page posts",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 10),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final itemWidth = constraints.maxWidth * 0.8;
+
+                      // ✅ Check if no posts
+                      if (feedProvider.userPosts.isEmpty) {
+                        return const SizedBox(
+                          height: 100,
+                          child: Center(
+                            child: Text(
+                              "No posts available",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      // ✅ Otherwise, return ListView
+                      return SizedBox(
+                        height: 300,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: feedProvider.userPosts.length.clamp(0, 4),
+                          itemBuilder: (context, index) {
+                            final post = feedProvider.userPosts[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                              child: SizedBox(
+                                width: itemWidth,
+                                child: FutureBuilder<String?>(
+                                  future: TokenService.getCompanyId(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }
+
+                                    final currentUserId = snapshot.data ?? '';
+                                    return CompanyPostCard(
+                                      post: post,
+                                      currentUserId: currentUserId,
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
-            ),
-            SizedBox(
-              height: 300,
-              child:
-                  feedProvider.isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : feedProvider.posts.isEmpty
-                      ? Center(child: Text("No posts available"))
-                      : ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount:
-                            feedProvider.posts.length < 4
-                                ? feedProvider.posts.length
-                                : 4,
-                        itemBuilder: (context, index) {
-                          final post = feedProvider.posts[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 6,
-                            ),
-                            child: Container(
-                              width: 200, // Add a width constraint
-                              //child: PostCard(post: post, ), // Render PostCard
-                            ),
-                          );
-                        },
-                      ),
             ),
 
             Center(
               child: SizedBox(
                 width: double.infinity, // Take full width
                 child: TextButton(
+                  key: const ValueKey('company_see_all_posts_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,

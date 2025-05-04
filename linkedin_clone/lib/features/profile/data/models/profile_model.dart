@@ -24,6 +24,7 @@ class ProfileModel extends Equatable {
   final int? connectionCount;
   final String connectStatus;
   final String followStatus;
+  final bool isPremium;
 
   const ProfileModel({
     required this.userId,
@@ -44,6 +45,7 @@ class ProfileModel extends Equatable {
     this.connectionCount,
     this.connectStatus = "Owner",
     this.followStatus = "Owner",
+    this.isPremium = false,
   });
 
   // Convert to Entity
@@ -67,6 +69,7 @@ class ProfileModel extends Equatable {
       connectionCount: connectionCount,
       connectStatus: connectStatus,
       followStatus: followStatus,
+      isPremium: isPremium,
     );
   }
 
@@ -101,6 +104,7 @@ class ProfileModel extends Equatable {
       connectionCount: entity.connectionCount,
       connectStatus: entity.connectStatus,
       followStatus: entity.followStatus,
+      isPremium: entity.isPremium,
     );
   }
 
@@ -148,6 +152,7 @@ class ProfileModel extends Equatable {
       connectionCount: json['connectionCount'] as int?,
       connectStatus: json['connectStatus'] as String? ?? "Owner",
       followStatus: json['followStatus'] as String? ?? "Owner",
+      isPremium: json['isPremium'] as bool? ?? false,
     );
   }
 
@@ -171,6 +176,7 @@ class ProfileModel extends Equatable {
       'connectionCount': connectionCount,
       'connectStatus': connectStatus,
       'followStatus': followStatus,
+      'isPremium': isPremium,
     };
   }
 
@@ -193,6 +199,7 @@ class ProfileModel extends Equatable {
     int? connectionCount,
     String? connectStatus,
     String? followStatus,
+    bool? isPremium,
   }) {
     return ProfileModel(
       userId: userId ?? this.userId,
@@ -213,6 +220,7 @@ class ProfileModel extends Equatable {
       connectionCount: connectionCount ?? this.connectionCount,
       connectStatus: connectStatus ?? this.connectStatus,
       followStatus: followStatus ?? this.followStatus,
+      isPremium: isPremium ?? this.isPremium,
     );
   }
 
@@ -236,5 +244,6 @@ class ProfileModel extends Equatable {
     connectionCount,
     connectStatus,
     followStatus,
+    isPremium,
   ];
 }

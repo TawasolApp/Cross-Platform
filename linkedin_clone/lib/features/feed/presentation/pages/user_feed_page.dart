@@ -53,6 +53,9 @@ class _UserFeedPageState extends State<UserFeedPage> {
                   return PostCard(
                     post: post,
                     currentUserId: myId ?? '',
+                    profileImage: profile.profilePicture,
+                    profileName: profile.fullName,
+                    profileTitle: profile.headline,
                   ); ///////
                 },
               ),

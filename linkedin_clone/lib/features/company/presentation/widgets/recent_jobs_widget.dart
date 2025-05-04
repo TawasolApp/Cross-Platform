@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:linkedin_clone/features/company/presentation/widgets/job_details.dart';
+import 'package:linkedin_clone/features/jobs/presentation/widgets/job_details_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/company_provider.dart';
 
@@ -79,19 +79,17 @@ class RecentJobsWidget extends StatelessWidget {
 
                         // Apply Button
                         ElevatedButton(
+                          key: const ValueKey('recent_jobs_apply_button'),
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder:
                                     (context) => JobDetailsScreen(
-                                      job: job, 
-                                      companyProvider: companyProvider,
-                                      companyId:
-                                          companyProvider.company?.companyId ??
-                                          '',
-                                    ),
+                                  jobId: job.id,
                               ),
+                                ),
+                              
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -123,6 +121,7 @@ class RecentJobsWidget extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity, // Take full width
                 child: TextButton(
+                  key: const ValueKey('recent_jobs_show_all_button'),
                   onPressed: () {
                     DefaultTabController.of(
                       context,

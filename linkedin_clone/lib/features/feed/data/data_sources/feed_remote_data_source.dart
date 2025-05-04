@@ -81,6 +81,25 @@ abstract class FeedRemoteDataSource {
     int page = 1,
     int limit = 10,
   });
+  Future<PostEntity> fetchPostById({
+    required String userId,
+    required String postId,
+  });
+  Future<Either<Failure, List<PostModel>>> getReposts({
+    required String userId,
+    required String postId,
+    int page,
+    int limit,
+  });
+
+  Future<List<PostModel>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  });
 }
 
 class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
@@ -193,7 +212,7 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         ),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         final postModel = PostModel.fromJson(response.data);
         return Right(postModel);
       } else {
@@ -206,7 +225,9 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
         } else if (e.response!.statusCode == 401) {
           return Left(UnauthorizedFailure("Unauthorized access"));
         } else {
-          return Left(ServerFailure("Server error: ${e.response!.data}"));
+          return Left(
+            ServerFailure("Data Source Server error: ${e.response!.data}"),
+          );
         }
       }
       return Left(NetworkFailure("Network error: ${e.message}"));
@@ -622,6 +643,118 @@ class FeedRemoteDataSourceImpl implements FeedRemoteDataSource {
       }
     } catch (e) {
       return Left(NetworkFailure('Failed to connect to server: $e'));
+    }
+  }
+
+  @override
+  Future<PostEntity> fetchPostById({
+    required String userId,
+    required String postId,
+  }) async {
+    final token = await _getToken();
+
+    final response = await dio.get(
+      'https://tawasolapp.me/api/posts/$userId/$postId',
+      options: Options(headers: {'Authorization': 'Bearer $token'}),
+    );
+
+    if (response.statusCode == 200 && response.data is Map<String, dynamic>) {
+      final data = response.data as Map<String, dynamic>;
+      return PostModel.fromJson(data);
+    } else if (response.statusCode == 404) {
+      throw Exception("Post not found");
+    } else {
+      throw Exception("Unexpected response or failed request");
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<PostModel>>> getReposts({
+    required String userId,
+    required String postId,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final token = await _getToken();
+      final response = await dio.get(
+        'https://tawasolapp.me/api/posts/$userId/$postId/reposts',
+        queryParameters: {'page': page, 'limit': limit},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      final posts =
+          (response.data as List)
+              .map((json) => PostModel.fromJson(json))
+              .toList();
+
+      return Right(posts);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<List<PostModel>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe = 'all',
+    int page = 1,
+    int limit = 10,
+  }) async {
+    final token = await _getToken();
+    try {
+      print("inside try block with id: $companyId and query $query");
+      final response = await dio.get(
+        'https://tawasolapp.me/api/posts/$companyId/search',
+        queryParameters: {
+          'q': query,
+          if (network != null) 'network': network,
+          'timeframe': timeframe,
+          'page': page,
+          'limit': limit,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print("Response data: ${response.data}");
+        return (response.data as List)
+            .map((json) => PostModel.fromJson(json))
+            .toList();
+      } else if (response.statusCode == 400) {
+        throw ValidationException('Invalid input or missing query.');
+      } else if (response.statusCode == 401) {
+        throw UnauthorizedException('Unauthorized access.');
+      } else {
+        throw ServerException('Unexpected server response.');
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 400) {
+        print("error 400");
+        throw ValidationException(
+          e.response?.data['message'] ?? 'Bad request.',
+        );
+      } else if (e.response?.statusCode == 401) {
+        print("error 401");
+        throw UnauthorizedException(
+          e.response?.data['message'] ?? 'Unauthorized.',
+        );
+      } else {
+        print("last else search ${e.message}");
+        throw ServerException(e.message ?? 'Network error.');
+      }
     }
   }
 }

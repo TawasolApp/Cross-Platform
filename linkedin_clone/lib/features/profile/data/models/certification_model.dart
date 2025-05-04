@@ -96,9 +96,9 @@ class CertificationModel extends Equatable {
     if (companyId != null) {
       data['companyId'] = companyId;
     }
-    if (expiryDate != null) {
-      data['expiryDate'] = expiryDate;
-    }
+
+    data['expiryDate'] = expiryDate;
+
 
     return data;
   }

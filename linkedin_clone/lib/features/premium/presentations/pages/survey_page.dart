@@ -1,0 +1,279 @@
+import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/connections/presentations/widgets/buttons/linkedin_iconic_button.dart';
+import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
+import 'package:linkedin_clone/features/premium/presentations/widgets/choices_card.dart';
+import 'package:linkedin_clone/features/premium/presentations/widgets/premium_survey_card.dart';
+import 'package:linkedin_clone/features/premium/presentations/widgets/start_premium_card.dart';
+import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
+import 'package:provider/provider.dart';
+
+class SurveyPage extends StatefulWidget {
+  const SurveyPage({super.key});
+
+  @override
+  State<SurveyPage> createState() => _SurveyPageState();
+}
+
+class _SurveyPageState extends State<SurveyPage> {
+  PremiumProvider? premiumProvider;
+  List<String> quesitons = [
+    "which of these best describes your primary goal for using Premium?",
+    "how would you like Premium to help?",
+    "You're 2.6x more likely to get hired with Premium. What is the key to you job search?",
+  ];
+  String subText = "We'll recommend the best plan for you";
+  List<List<String>> options = [
+    ["For my personal goals", "For my Job", "Other "],
+    [
+      "Find a job",
+      "Learn professional skills",
+      "Qrow my network or business",
+      "Find leads",
+      "Hire talent",
+      "Other  ",
+    ],
+
+    [
+      "See my profile views",
+      "See jobs where I'm a top applicant",
+      "Get resume help",
+      "Stand out when I apply to jobs",
+      "Allow recruiters to contact me",
+      "Other   ",
+    ],
+  ];
+
+  double progressValue = 0.2;
+  String? selectedOption;
+  bool firstPage = true;
+  int index = 0;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      premiumProvider = Provider.of<PremiumProvider>(context, listen: false);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: const ValueKey('premium_survey_scaffold'),
+      backgroundColor: Theme.of(context).colorScheme.onSecondary,
+      appBar: AppBar(
+        key: const ValueKey('premium_survey_appbar'),
+        surfaceTintColor: Theme.of(context).colorScheme.onSecondary,
+        elevation: 0,
+        leading: IconButton(
+          key: const ValueKey('exit_premium_plan_button'),
+          icon: Icon(
+            Icons.close,
+            key: const ValueKey('exit_premium_plan_icon'),
+            color: Theme.of(context).iconTheme.color,
+          ),
+          onPressed: () {
+            index = 0;
+            progressValue = 0.2;
+            firstPage = true;
+            premiumProvider!.optionSelected = false;
+            selectedOption = null;
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          if (progressValue < 0.8)
+            TextButton(
+              key: const ValueKey('skip_premium_plan_survey_button'),
+              onPressed: () {
+                setState(() {
+                  progressValue = 0.8;
+                });
+              },
+              child: Text(
+                "Skip",
+                key: const ValueKey('skip_premium_plan_survey_text'),
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+        ],
+        backgroundColor: Theme.of(context).colorScheme.onSecondary,
+      ),
+      body: Padding(
+        key: const ValueKey('premium_survey_body_padding'),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          key: const ValueKey('premium_survey_main_column'),
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              key: const ValueKey('premium_survey_progress_row'),
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  "${(progressValue * 100).toInt()}%",
+                  key: ValueKey('premium_plan_survey_text_progress_precent'),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            LinearProgressIndicator(
+              key: const ValueKey('premium_survey_progress_indicator'),
+              value: progressValue,
+              color: const Color.fromARGB(255, 43, 130, 60),
+              backgroundColor: Theme.of(context).colorScheme.onSecondary,
+            ),
+            SizedBox(
+              key: const ValueKey('premium_survey_spacing_1'),
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            Text(
+              "P R E M I U M",
+              key: const ValueKey('premium_survey_title_text'),
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            SizedBox(
+              key: const ValueKey('premium_survey_spacing_2'),
+              height: MediaQuery.of(context).size.height * 0.02,
+            ),
+            if (progressValue < 0.8)
+              Consumer<PremiumProvider>(
+                key: const ValueKey('premium_survey_provider_consumer'),
+                builder: (context, provider, _) {
+                  return PremiumSurveyCard(
+                    key: ValueKey('premium_survey_card_${index}'),
+                    question: quesitons[index],
+                    options: options[index],
+                    subText: subText,
+                  );
+                },
+              ),
+
+            if (progressValue < 0.8)
+              const Spacer(key: ValueKey('premium_survey_spacer')),
+            if (progressValue < 0.8)
+              Row(
+                key: const ValueKey('premium_survey_actions_row'),
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (!firstPage)
+                    TextButton(
+                      key: const ValueKey('back_premium_plan_survey_button'),
+                      onPressed: () {
+                        setState(() {
+                          selectedOption = null;
+                          premiumProvider!.optionSelected = false;
+                          progressValue = progressValue - 0.2;
+                          index--;
+                          if (progressValue <= 0.2) {
+                            progressValue = 0.2;
+                            firstPage = true;
+                          }
+                        });
+                      },
+                      child: Text(
+                        "Back",
+                        key: const ValueKey('back_premium_plan_survey_text'),
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                  Consumer<PremiumProvider>(
+                    key: const ValueKey('premium_survey_next_button_consumer'),
+                    builder: (context, provider, child) {
+                      return Padding(
+                        key: const ValueKey(
+                          'premium_survey_next_button_padding',
+                        ),
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          key: const ValueKey(
+                            'next_premium_plan_survey_button',
+                          ),
+
+                          onPressed:
+                              provider.optionSelected
+                                  ? () {
+                                    setState(() {
+                                      firstPage = false;
+                                      progressValue += 0.2;
+                                      index++;
+                                      selectedOption = null;
+                                      provider.optionSelected = false;
+                                    });
+                                  }
+                                  : () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        key: const ValueKey(
+                                          'premium_survey_error_snackbar',
+                                        ),
+                                        content: Text(
+                                          key: const ValueKey(
+                                            'snackbar_premium_plan_text',
+                                          ),
+                                          "Please select an option",
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSecondary,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.1,
+                            ),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40.0),
+                              side: BorderSide(
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                              ),
+                            ),
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          child: Text(
+                            key: const ValueKey(
+                              'next_premium_plan_survey_text',
+                            ),
+                            "Next",
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            if (progressValue >= 0.8)
+              Expanded(
+                key: const ValueKey('premium_survey_final_expanded'),
+                child: SingleChildScrollView(
+                  key: const ValueKey('premium_survey_final_scrollview'),
+                  child: Column(
+                    key: const ValueKey('premium_survey_final_column'),
+                    children: [
+                      StartPremiumCard(
+                        key: const ValueKey(
+                          'premium_survey_start_premium_card',
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}

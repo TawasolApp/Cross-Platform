@@ -25,11 +25,24 @@ class RouteNames {
   static const String connections = "/connections";
   static const String followers = "/followers";
   static const String following = "/following";
+  static const String blockedUsers = "/blocked_users";
   static const String invitations = "/invitations";
   static const String manageMyNetwrok = "/manage_my_network";
+  static const String notifications = "/notifications";
   static const String reactions = "/reactions";
   static const String adminReports = '/admin/reports';
   static const String adminJobs = '/admin/jobs';
   static const String adminAnalytics = '/admin/analytics';
-  static const String savedPosts = '/saved_posts';
+  static const String savedPosts = '/savedPosts';
+  static const String adminPanel = '/admin_panel';
+  static const String repostPage = '/reposts';
+  static const String companyProfile = '/company_profile';
+  static const String generalSearch = '/general_search';
+  static const String detailedSearch = '/detailed_search';
+  static const String jobDetails = '/jobDetails';
+  static const String premiumSurvey = '/premium_survey';
+  static const String premiumPlan = '/premiumPlan';
+  static const String choosePremiumPlan = '/choosePremiumPlan';
+  static const String reportUser = '/report_user';
+  static const String reportPost = '/report_post';
 }

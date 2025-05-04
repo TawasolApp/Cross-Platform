@@ -5,14 +5,18 @@ import '../../../../core/utils/reaction_type.dart';
 
 class LikeButton extends StatelessWidget {
   final PostEntity post;
+
   const LikeButton({super.key, required this.post});
 
   void _showReactionPopup(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder:
-          (_) =>
-              ReactionPopup(postId: post.id, onReactionSelected: (String) {}),
+          (_) => ReactionPopup(
+            postId: post.id,
+            postType: "Post",
+            onReactionSelected: (String) {},
+          ),
     );
   }
 

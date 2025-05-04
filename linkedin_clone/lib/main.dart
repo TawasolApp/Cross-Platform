@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:http/http.dart' as http;
 import 'package:linkedin_clone/core/Navigation/app_router.dart';
 import 'package:linkedin_clone/features/authentication/Data/Data_Sources/auth_remote_data_source.dart';
@@ -14,11 +16,11 @@ import 'package:linkedin_clone/features/authentication/Domain/UseCases/resend_em
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/auth_provider.dart';
 import 'package:linkedin_clone/features/authentication/Presentation/Provider/register_provider.dart';
 import 'package:linkedin_clone/features/company/data/datasources/company_remote_data_source.dart';
-import 'package:linkedin_clone/features/company/data/datasources/job_remote_data_source.dart';
+import 'package:linkedin_clone/features/jobs/data/datasource/job_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/datasources/media_remote_data_source.dart.dart';
 import 'package:linkedin_clone/features/company/data/datasources/user_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/data/repositories/company_repository_impl.dart';
-import 'package:linkedin_clone/features/company/data/repositories/job_repository_impl.dart';
+import 'package:linkedin_clone/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:linkedin_clone/features/company/data/repositories/user_repository_impl.dart';
 import 'package:linkedin_clone/features/company/domain/repositories/media_repository.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_related_companies_usecase.dart';
@@ -33,12 +35,25 @@ import 'package:linkedin_clone/features/company/presentation/providers/company_p
 import 'package:linkedin_clone/features/company/presentation/providers/related_companies_provider.dart';
 import 'package:linkedin_clone/features/connections/data/datasources/connections_remote_data_source.dart';
 import 'package:linkedin_clone/features/connections/data/repository/connections_repository_impl.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/block_user_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/get_blocked_list_usecase.dart';
-import 'package:linkedin_clone/features/connections/domain/usecases/block/unblock_user_usecase.dart';
+import 'package:linkedin_clone/features/premium/data/datasources/premium_remote_data_source.dart';
+import 'package:linkedin_clone/features/premium/data/repository/premium_repository_impl.dart';
+import 'package:linkedin_clone/features/premium/domain/usecases/cancel_use_case.dart';
+import 'package:linkedin_clone/features/premium/domain/usecases/subscribe_to_premium_plan_usecase.dart';
+import 'package:linkedin_clone/features/premium/presentations/provider/premium_provider.dart';
+import 'package:linkedin_clone/features/privacy/data/datasources/privacy_remote_data_source.dart';
+import 'package:linkedin_clone/features/privacy/data/repository/privacy_repository_impl.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/block_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/get_blocked_list_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/report_post_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/report_user_usecase.dart';
+import 'package:linkedin_clone/features/privacy/domain/usecases/unblock_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/get_connections_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/endorse_skill_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/endorse/remove_endorsement_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_following_list_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followers_list_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/follow/get_followings_count_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/unfollow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/follow/follow_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/remove_connection_usecase.dart';
@@ -49,20 +64,42 @@ import 'package:linkedin_clone/features/connections/domain/usecases/connect/acce
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/send_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/connect/withdraw_connection_request_usecase.dart';
 import 'package:linkedin_clone/features/connections/domain/usecases/get_people_you_may_know_usecase.dart';
+import 'package:linkedin_clone/features/connections/domain/usecases/search_user_usecase.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/list_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/pages/my_network_page.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/widgets/test_page.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/search_provider.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_post_reactions_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_saved_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/react_to_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/save_post_usecase.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/apply_for_job_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/get_applicants_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/search_jobs_use_case.dart';
+import 'package:linkedin_clone/features/jobs/domain/usecases/update_application_status_use_case.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_applicants_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_apply_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_details_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/job_search_provider.dart';
+import 'package:linkedin_clone/features/jobs/presentation/providers/saved_jobs_provider.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/change_password_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/delete_account_usecase.dart';
 import 'package:linkedin_clone/features/main_layout/domain/UseCases/update_email_usecase.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/get_all_companies.dart';
 import 'package:linkedin_clone/features/main_layout/presentation/provider/settings_provider.dart';
+import 'package:linkedin_clone/features/messaging/data/data_sources/conversation_remote_data_source.dart';
+import 'package:linkedin_clone/features/messaging/data/data_sources/mock_conversation_remote_data_source.dart';
+import 'package:linkedin_clone/features/messaging/data/repository/conversation_repository.dart';
+import 'package:linkedin_clone/features/messaging/domain/repository/repository_impl.dart';
+import 'package:linkedin_clone/features/messaging/domain/usecases/get_chat_use_case.dart';
+import 'package:linkedin_clone/features/messaging/domain/usecases/get_conversations_usecase.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/chat_provider.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/get_unread_notifications_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/subscribe_to_notifications_usecase.dart';
+import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -112,7 +149,6 @@ import 'package:linkedin_clone/features/profile/domain/usecases/skills/get_skill
 
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:linkedin_clone/core/network/connection_checker.dart';
-import 'package:linkedin_clone/features/profile/data/data_sources/mock_profile_remote_data_source.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart'; // Ensure this is the correct path
 import 'package:linkedin_clone/features/connections/presentations/pages/invitations_page.dart';
@@ -121,22 +157,57 @@ import 'package:linkedin_clone/features/feed/domain/usecases/fetch_comments_usec
 import 'package:linkedin_clone/features/company/domain/entities/company_update_entity.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/add_admin_use_case.dart';
 import 'package:linkedin_clone/features/company/domain/usecases/update_company_details_use_case.dart';
-import 'features/connections/presentations/widgets/page_type_enum.dart';
+import 'features/connections/presentations/widgets/misc/connections_enums.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/edit_comment_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/unsave_post_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/get_user_posts_usecase.dart';
 import 'package:linkedin_clone/features/feed/domain/usecases/delete_comment_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_post_by_id_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/get_reposts_usecase.dart';
+import 'package:linkedin_clone/features/feed/domain/usecases/search_posts_usecase.dart';
 
 import 'package:linkedin_clone/features/admin_panel/presentation/provider/admin_provider.dart';
-import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reports_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reported_posts_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_reported_users_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/resolve_report_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_job_listings_usecase.dart';
 import 'package:linkedin_clone/features/admin_panel/domain/usecases/delete_job_listing_usecase.dart';
-import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_analytics_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_user_analytics_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_post_analytics_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/get_job_analytics_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/ignore_flagged_job_usecase.dart';
+import 'package:linkedin_clone/features/admin_panel/domain/usecases/delete_reported_post.dart';
+
 import 'package:linkedin_clone/features/admin_panel/data/repositories/admin_repository_impl.dart';
 import 'package:linkedin_clone/features/admin_panel/data/data_sources/admin_remote_data_source.dart';
+import 'package:linkedin_clone/features/notifications/data/data_sources/notifications_remote_data_source.dart';
+import 'package:linkedin_clone/features/notifications/data/repository/notifications_repository_impl.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/get_notifications_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/mark_notification_as_read_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/get_unseen_notifications_count_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/get_fcm_token_usecase.dart';
+import 'package:linkedin_clone/features/notifications/domain/usecases/initialize_fcm_usecase.dart';
+import 'package:linkedin_clone/features/notifications/presentation/provider/notifications_provider.dart';
+import 'package:flutter/material.dart';
 
-void main() {
+import 'package:device_preview/device_preview.dart'; //for responsivness testing
+// core Flutter primitives
+import 'package:flutter/foundation.dart';
+// core FlutterFire dependency
+import 'package:firebase_core/firebase_core.dart';
+// generated by
+import 'firebase_options.dart';
+// FlutterFire's Firebase Cloud Messaging plugin
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  NotificationsRemoteDataSourceImpl(
+    baseUrl: 'ttps://tawasolapp.me/api',
+  ).initializeFcm();
+
   // Initialize InternetConnectionCheckerPlus instance
   // final internetConnection = InternetConnection();
 
@@ -157,6 +228,31 @@ void main() {
   // Initialize data source and repository
   final ProfileRemoteDataSourceImpl dataSourceProfile =
       ProfileRemoteDataSourceImpl(baseUrl: 'https://tawasolapp.me/api');
+
+  // Initialize notifications components
+  final notificationsRemoteDataSource = NotificationsRemoteDataSourceImpl(
+    baseUrl: 'https://tawasolapp.me/api',
+  );
+  final notificationsRepository = NotificationRepositoryImpl(
+    notificationDataSource: notificationsRemoteDataSource,
+  );
+  final getNotificationsUseCase = GetNotificationsUseCase(
+    notificationsRepository,
+  );
+  final markNotificationAsReadUseCase = MarkNotificationAsReadUseCase(
+    notificationsRepository,
+  );
+  final getUnseenNotificationsCountUseCase = GetUnseenNotificationsCountUseCase(
+    notificationsRepository,
+  );
+  final getUnreadNotificationsUseCase = GetUnreadNotificationsUseCase(
+    notificationsRepository,
+  );
+  final getFcmTokenUseCase = GetFcmTokenUseCase(notificationsRepository);
+  final initializeFcmUseCase = InitializeFcmUseCase(notificationsRepository);
+  final subscribeToNotificationsUseCase = SubscribeToNotificationsUseCase(
+    notificationsRepository,
+  );
 
   final profileRepository = ProfileRepositoryImpl(
     profileRemoteDataSource: dataSourceProfile,
@@ -197,15 +293,34 @@ void main() {
   final getUserPostsUseCase = GetUserPostsUseCase(repository);
   final deleteCommentUseCase = DeleteCommentUseCase(repository);
   final getSavedPostsUsecase = GetSavedPostsUseCase(repository);
+  final getPostbyIdUseCase = FetchPostByIdUseCase(repository);
+  final getRepostsUseCase = GetRepostsUseCase(repository);
+  final searchPostsUseCase = SearchPostsUseCase(repository);
   WebViewPlatform.instance = AndroidWebViewPlatform();
 
   //////admin
-  final adminRemoteDataSource = AdminRemoteDataSource(dio);
+  final adminRemoteDataSource = AdminRemoteDataSourceImpl(dio);
   final adminRepository = AdminRepositoryImpl(adminRemoteDataSource);
+  final conversationDataSource = ConversationRemoteDataSource();
+  final messagingRepository = ConversationRepositoryImpl(
+    conversationDataSource,
+  );
+  await Hive.initFlutter();
+  await Hive.openBox('appBox');
 
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(
+          create: (_) => ChatProvider(GetChatUseCase(messagingRepository)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ConversationListProvider(
+                GetConversationsUseCase(messagingRepository),
+              ),
+        ),
+
         ChangeNotifierProvider(
           create: (_) => AuthProvider(loginUseCase, forgotPassUseCase),
         ),
@@ -224,7 +339,20 @@ void main() {
                 resendEmailUsecase: resendEmailUsecase,
               ),
         ),
-
+        ChangeNotifierProvider(
+          create:
+              (_) => NotificationsProvider(
+                getNotificationsUseCase: getNotificationsUseCase,
+                markNotificationAsReadUseCase: markNotificationAsReadUseCase,
+                getUnseenNotificationsCountUseCase:
+                    getUnseenNotificationsCountUseCase,
+                getUnreadNotificationsUseCase: getUnreadNotificationsUseCase,
+                getFcmTokenUseCase: getFcmTokenUseCase,
+                initializeFcmUseCase: initializeFcmUseCase,
+                subscribeToNotificationsUseCase:
+                    subscribeToNotificationsUseCase,
+              ) /*..initialize(),*/,
+        ),
         ChangeNotifierProvider(
           create:
               (_) => FeedProvider(
@@ -242,6 +370,9 @@ void main() {
                 getUserPostsUseCase: getUserPostsUseCase,
                 deleteCommentUseCase: deleteCommentUseCase,
                 getSavedPostsUseCase: getSavedPostsUsecase,
+                fetchPostByIdUseCase: getPostbyIdUseCase,
+                getRepostsUseCase: getRepostsUseCase,
+                searchPostsUseCase: searchPostsUseCase,
               ),
         ),
 
@@ -297,6 +428,20 @@ void main() {
                     ),
                   ),
                 ),
+                RemoveEndorsementUsecase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                EndorseSkillUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
               ),
         ),
         ChangeNotifierProvider(
@@ -330,28 +475,22 @@ void main() {
                     ),
                   ),
                 ),
-                GetBlockedListUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
-                BlockUserUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
-                UnblockUserUseCase(
-                  ConnectionsRepositoryImpl(
-                    remoteDataSource: ConnectionsRemoteDataSource(
-                      client: http.Client(),
-                    ),
-                  ),
-                ),
+
                 GetPeopleYouMayKnowUseCase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetFollowersCountUsecase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetFollowingsCountUsecase(
                   ConnectionsRepositoryImpl(
                     remoteDataSource: ConnectionsRemoteDataSource(
                       client: http.Client(),
@@ -479,11 +618,49 @@ void main() {
               ),
         ),
         ChangeNotifierProvider(
+          create: (_) => JobSearchProvider(searchJobs: SearchJobs(jobrepos)),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ApplyJobProvider(
+                applyForJobUseCase: ApplyForJobUseCase(repository: jobrepos),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => ApplicantsProvider(
+                getApplicantsUseCase: GetApplicantsUseCase(
+                  repository: JobRepositoryImpl(
+                    remoteDataSource: JobRemoteDataSource(),
+                  ),
+                ),
+                updateStatusUseCase: UpdateApplicationStatusUseCase(
+                  repository: JobRepositoryImpl(
+                    remoteDataSource: JobRemoteDataSource(),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SavedJobsProvider(repository: jobrepos),
+        ),
+        Provider<MediaRepository>(
+          create:
+              (_) => MediaRepository(
+                mediaRemoteDataSource: MediaRemoteDataSource(),
+              ),
+        ),
+        ChangeNotifierProvider(
           create:
               (_) => AdminProvider(
-                getReportsUseCase: GetReportsUseCase(adminRepository),
+                getReportedPostsUseCase: FetchReportedPosts(adminRepository),
+                getReportedUsersUseCase: FetchReportedUsers(adminRepository),
                 resolveReportUseCase: ResolveReportUseCase(adminRepository),
+                deleteReportedPostUseCase: DeleteReportedPostUseCase(
+                  adminRepository,
+                ),
                 getJobListingsUseCase: GetJobListingsUseCase(adminRepository),
+
                 deleteJobListingUseCase: DeleteJobListingUseCase(
                   adminRepository,
                 ),
@@ -494,6 +671,90 @@ void main() {
                   adminRepository,
                 ),
                 getJobAnalyticsUseCase: GetJobAnalyticsUseCase(adminRepository),
+                ignoreFlaggedJobUseCase: IgnoreFlaggedJobUseCase(
+                  adminRepository,
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => SearchProvider(
+                SearchUserUsecase(
+                  ConnectionsRepositoryImpl(
+                    remoteDataSource: ConnectionsRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                GetAllCompaniesUseCase(repository: companyrepos),
+                SearchJobs(jobrepos),
+                SearchPostsUseCase(repository),
+                GetProfileUseCase(profileRepository),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => PrivacyProvider(
+                blockUserUseCase: BlockUserUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                unblockUserUseCase: UnblockUserUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                getBlockedListUseCase: GetBlockedListUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                reportUserUseCase: ReportUserUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                reportPostUseCase: ReportPostUseCase(
+                  PrivacyRepositoryImpl(
+                    remoteDataSource: PrivacyRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => PremiumProvider(
+                subscribeToPremiumPlanUseCase: SubscribeToPremiumPlanUseCase(
+                  PremiumRepositoryImpl(
+                    remoteDataSource: PremiumRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+                cancelUseCase: CancelUseCase(
+                  PremiumRepositoryImpl(
+                    remoteDataSource: PremiumRemoteDataSource(
+                      client: http.Client(),
+                    ),
+                  ),
+                ),
+              ),
+        ),
+        ChangeNotifierProvider(
+          create:
+              (_) => JobDetailsProvider(
+                JobRepositoryImpl(remoteDataSource: JobRemoteDataSource()),
               ),
         ),
       ],

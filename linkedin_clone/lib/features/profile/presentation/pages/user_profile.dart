@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkedin_clone/core/Navigation/route_names.dart';
+import 'package:linkedin_clone/features/feed/presentation/pages/user_feed_page.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/profile_header.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/experience_section.dart';
@@ -9,9 +10,11 @@ import 'package:linkedin_clone/features/profile/presentation/widgets/about_secti
 import 'package:linkedin_clone/features/profile/presentation/widgets/education_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/certifications_section.dart';
 import 'package:linkedin_clone/features/profile/presentation/widgets/resume_section.dart';
+import 'package:linkedin_clone/features/profile/presentation/widgets/user_post_section.dart';
 import 'package:provider/provider.dart';
-import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart'; // Add this import
-import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart'; // Add this import
+import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
+import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
+import 'package:linkedin_clone/features/feed/presentation/provider/feed_provider.dart';
 
 class UserProfile extends StatefulWidget {
   final String? userId;
@@ -238,7 +241,7 @@ class _UserProfileState extends State<UserProfile> {
                           isPending ? 'Pending' : 'Connect',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                         if (isPending) ...[
@@ -323,7 +326,7 @@ class _UserProfileState extends State<UserProfile> {
                           isFollowing ? 'Following' : 'Follow',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                           ),
                         ),
                         if (isFollowing) ...[
@@ -342,53 +345,43 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-  Widget _buildShowAllPostsButton(BuildContext context, String userId) {
+  Widget _buildShowAllPostsButton(BuildContext context) {
+    final profileProvider = context.read<ProfileProvider>();
+    final userId = profileProvider.userId;
+    
     return Container(
-      width: double.infinity,
       color: Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 4.0, bottom: 12.0),
-            child: Text(
-              "Activity",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-          ),
-          Divider(thickness: 1, color: Colors.grey[300]),
-          OutlinedButton(
+      child: Center(
+        child: SizedBox(
+          width: double.infinity, // Take full width
+          child: TextButton(
             onPressed: () {
-              // Navigate to user posts page with the userId
-              // context.push('${RouteNames.userPosts}/$userId');
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.grey[700],
-              backgroundColor: Colors.white, // Background color
-              side: BorderSide.none, // Remove border
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.article_outlined, size: 20, color: Colors.grey[700]),
-                const SizedBox(width: 8),
-                Text(
-                  'Show all posts',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 16,
-                    color: Colors.grey[700],
+              if (userId != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => UserFeedPage(
+                          companyId: userId,
+                          userId: userId,
+                        ),
                   ),
+                );
+              }
+            },
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Show all posts",
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
+                const SizedBox(width: 5),
+                Icon(Icons.arrow_forward, color: Colors.grey[700]),
               ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -422,8 +415,7 @@ class _UserProfileState extends State<UserProfile> {
           if (isOwner) // Only show refresh for owner
             IconButton(
               icon: const Icon(Icons.refresh),
-              onPressed:
-                  _loadProfileData, // This calls the fixed _loadProfileData method
+              onPressed: _loadProfileData,
               tooltip: 'Refresh Profile',
             ),
         ],
@@ -488,6 +480,19 @@ class _UserProfileState extends State<UserProfile> {
                           profileProvider.bio!.trim().isNotEmpty)
                         const SizedBox(height: 10),
 
+                      // User posts widget - using the UserPostSection component
+                      if (!showPrivateMessage)
+                        Container(
+                          color: Colors.white,
+                          child: const UserPostSection(),
+                        ),
+
+                      // Show All Posts button
+                      if (!showPrivateMessage)
+                        _buildShowAllPostsButton(context),
+
+                      const SizedBox(height: 10),
+
                       // Resume section (only visible to owner)
                       Container(
                         color: Colors.white,
@@ -497,15 +502,6 @@ class _UserProfileState extends State<UserProfile> {
                           errorMessage: profileProvider.resumeError,
                         ),
                       ),
-                      const SizedBox(height: 10),
-
-                      // Show All Posts button - add at the end
-                      if (!showPrivateMessage && profileProvider.userId != null)
-                        _buildShowAllPostsButton(
-                          context,
-                          profileProvider.userId!,
-                        ),
-
                       const SizedBox(height: 10),
 
                       // Experience section

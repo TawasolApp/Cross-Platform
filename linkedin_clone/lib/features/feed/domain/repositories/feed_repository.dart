@@ -74,4 +74,23 @@ abstract class FeedRepository {
     int page,
     int limit,
   });
+  Future<Either<Failure, PostEntity>> fetchPostById({
+    required String userId,
+    required String postId,
+  });
+
+  Future<Either<Failure, List<PostEntity>>> getReposts({
+    required String userId,
+    required String postId,
+    int page,
+    int limit,
+  });
+  Future<Either<Failure, List<PostEntity>>> searchPosts({
+    required String companyId,
+    required String query,
+    bool? network,
+    String timeframe,
+    int page,
+    int limit,
+  });
 }

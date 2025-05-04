@@ -243,9 +243,6 @@ class CompanyRemoteDataSource {
       },
     );
     print('Response body for fetch company followers: ${response.body}');
-    print(
-      'Response status code for fetch company followers: ${response.statusCode}',
-    );
     if (response.statusCode == 200) {
       // If the server returns a successful response
       List<dynamic> data = json.decode(response.body);
