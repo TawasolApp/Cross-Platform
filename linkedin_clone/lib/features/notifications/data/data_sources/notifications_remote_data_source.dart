@@ -127,11 +127,11 @@ class NotificationsRemoteDataSourceImpl implements NotificationDataSource {
   Future<void> initializeFcm() async {
     try {
       // Request permission for notifications
-      await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      // await FirebaseMessaging.instance.requestPermission(
+      //   alert: true,
+      //   badge: true,
+      //   sound: true,
+      // );
 
       // Handle foreground messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
@@ -165,15 +165,15 @@ class NotificationsRemoteDataSourceImpl implements NotificationDataSource {
       final apiRoute = Uri.parse('$baseUrl/notifications/$id/subscribe-fcm');
 
       // Request notification permission
-      await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        announcement: true,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
+      // await FirebaseMessaging.instance.requestPermission(
+      //   alert: true,
+      //   announcement: true,
+      //   badge: true,
+      //   carPlay: false,
+      //   criticalAlert: false,
+      //   provisional: false,
+      //   sound: true,
+      // );
 
       // Get FCM token
       String? token;
