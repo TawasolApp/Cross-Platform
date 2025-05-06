@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkedin_clone/features/connections/presentations/widgets/misc/routing_functions.dart';
+import 'package:linkedin_clone/features/messaging/presentation/pages/conversation_list_page.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/conversation_list_provider.dart';
 import 'package:linkedin_clone/features/privacy/presentations/provider/privacy_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/provider/profile_provider.dart';
 import 'package:linkedin_clone/features/profile/presentation/pages/profile_header/edit_profile.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/connections_provider.dart';
 import 'package:linkedin_clone/features/connections/presentations/provider/networks_provider.dart';
+import 'package:linkedin_clone/features/messaging/presentation/provider/chat_provider.dart';
 
 class ProfileHeader extends StatelessWidget {
   final String? errorMessage;
@@ -427,7 +430,11 @@ class ProfileHeader extends StatelessWidget {
       context,
       listen: false,
     );
-
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    final privacyProvider = Provider.of<PrivacyProvider>(
+      context,
+      listen: false,
+    );
     return Row(
       key: const Key('profile_action_buttons_row'),
       children: [
@@ -437,7 +444,53 @@ class ProfileHeader extends StatelessWidget {
             height: 36,
             child: ElevatedButton(
               key: const Key('profile_message_button'),
-              onPressed: () {}, // Message action
+              onPressed: () {
+                Provider.of<ChatProvider>(
+                  context,
+                  listen: false,
+                ).sendTextMessage(provider.userId!, "Hi let's Message!");
+
+                showDialog(
+                  context: context,
+                  builder:
+                      (context) => AlertDialog(
+                        title: const Text("Message Sent"),
+                        content: const Text(
+                          "Would you like to navigate to the chat?",
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("Cancel"),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context); // Close the dialog
+
+                              final conversationListProvider =
+                                  Provider.of<ConversationListProvider>(
+                                    context,
+                                    listen: false,
+                                  );
+                              conversationListProvider.fetchConversations();
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const ConversationListPage(
+                                        key: Key('conversationListPage'),
+                                      ),
+                                ),
+                              );
+                            },
+                            child: const Text("Go to Chat"),
+                          ),
+                        ],
+                      ),
+                );
+              },
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).primaryColor,
                 foregroundColor: Colors.white,
@@ -641,8 +694,32 @@ class ProfileHeader extends StatelessWidget {
                                           ),
                                         ),
                                         TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
+                                          onPressed: () async {
+                                            bool result = await privacyProvider
+                                                .blockUser(provider.userId!);
+                                            if (result) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: const Text(
+                                                    'User blocked successfully',
+                                                  ),
+                                                  backgroundColor: Colors.green,
+                                                ),
+                                              );
+                                            } else {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: const Text(
+                                                    'Failed to block user',
+                                                  ),
+                                                  backgroundColor: Colors.red,
+                                                ),
+                                              );
+                                            }
                                           },
                                           child: Text(
                                             'BLOCK',
@@ -685,6 +762,10 @@ class ProfileHeader extends StatelessWidget {
       listen: false,
     );
     final connectionsProvider = Provider.of<ConnectionsProvider>(
+      context,
+      listen: false,
+    );
+    final privacyProvider = Provider.of<PrivacyProvider>(
       context,
       listen: false,
     );
@@ -986,24 +1067,38 @@ class ProfileHeader extends StatelessWidget {
                                                 ),
                                               ),
                                               TextButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context);
-                                                  ScaffoldMessenger.of(
-                                                    context,
-                                                  ).showSnackBar(
-                                                    SnackBar(
-                                                      content: const Text(
-                                                        'Block functionality will be implemented soon',
+                                                onPressed: () async {
+                                                  // Block user action
+                                                  bool result =
+                                                      await privacyProvider
+                                                          .blockUser(
+                                                            provider.userId!,
+                                                          );
+                                                  if (result) {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: const Text(
+                                                          'User blocked successfully',
+                                                        ),
+                                                        backgroundColor:
+                                                            Colors.green,
                                                       ),
-                                                      backgroundColor:
-                                                          Theme.of(
-                                                            context,
-                                                          ).primaryColor,
-                                                      behavior:
-                                                          SnackBarBehavior
-                                                              .floating,
-                                                    ),
-                                                  );
+                                                    );
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                      context,
+                                                    ).showSnackBar(
+                                                      SnackBar(
+                                                        content: const Text(
+                                                          'Failed to block user',
+                                                        ),
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                      ),
+                                                    );
+                                                  }
                                                 },
                                                 child: Text(
                                                   'BLOCK',

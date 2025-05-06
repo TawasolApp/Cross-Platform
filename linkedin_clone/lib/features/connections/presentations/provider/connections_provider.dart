@@ -359,6 +359,7 @@ class ConnectionsProvider with ChangeNotifier {
       return -1;
     }, (profile) => profile.connectionCount!);
     _isLoading = false;
+    print('🥳🥳🥳🥳Connections count: $_connectionsCount');
     notifyListeners();
   }
 

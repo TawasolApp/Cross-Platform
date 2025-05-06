@@ -25,7 +25,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
   NetworksProvider? networksProvider;
   ConnectionsProvider? connectionsProvider;
   PremiumProvider? premiumProvider;
-  bool isPremium = false;
+  bool? isPremium = false;
   String? myProfilePircture;
   ConversationListProvider? messagingProvider;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -49,6 +49,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
       profileProvider!.fetchProfile("");
       myProfilePircture = profileProvider!.profilePicture;
       isPremium = profileProvider!.isPremium;
+      print("isPremium: $isPremium");
     });
   }
 
@@ -57,7 +58,7 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
     return DefaultTabController(
       length: 1,
       child: Scaffold(
-        key: const ValueKey('my_network_page_scaffold'),
+        key: _scaffoldKey,
         drawer: Drawer(
           key: const ValueKey('network_drawer'),
           child: ListView(
@@ -114,7 +115,23 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
                 ),
               ),
               const Divider(height: 32),
-              if (isPremium)
+
+              if (isPremium == false)
+                ListTile(
+                  key: const ValueKey('try_premium_drawer_item'),
+                  leading: const Icon(Icons.workspace_premium_outlined),
+                  title: TextButton(
+                    key: const ValueKey('try_premium_button'),
+                    child: Text(
+                      "Try Premium for EGP0",
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    onPressed: () {
+                      goToPremiumSurvey(context);
+                    },
+                  ),
+                ),
+              if (isPremium == true)
                 ListTile(
                   key: const ValueKey('cancel_premium_drawer_item'),
                   leading: const Icon(Icons.workspace_premium_outlined),
@@ -143,21 +160,6 @@ class _MyNetworkPageState extends State<MyNetworkPage> {
                       );
                     }
                   },
-                ),
-              if (!isPremium)
-                ListTile(
-                  key: const ValueKey('try_premium_drawer_item'),
-                  leading: const Icon(Icons.workspace_premium_outlined),
-                  title: TextButton(
-                    key: const ValueKey('try_premium_button'),
-                    child: Text(
-                      "Try Premium for EGP0",
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    onPressed: () {
-                      goToPremiumSurvey(context);
-                    },
-                  ),
                 ),
               ListTile(
                 key: const ValueKey('settings_drawer_item'),

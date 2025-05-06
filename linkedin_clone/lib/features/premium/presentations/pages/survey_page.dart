@@ -32,7 +32,6 @@ class _SurveyPageState extends State<SurveyPage> {
       "Hire talent",
       "Other  ",
     ],
-
     [
       "See my profile views",
       "See jobs where I'm a top applicant",
@@ -47,6 +46,7 @@ class _SurveyPageState extends State<SurveyPage> {
   String? selectedOption;
   bool firstPage = true;
   int index = 0;
+
   @override
   void initState() {
     super.initState();
@@ -58,19 +58,12 @@ class _SurveyPageState extends State<SurveyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: const ValueKey('premium_survey_scaffold'),
       backgroundColor: Theme.of(context).colorScheme.onSecondary,
       appBar: AppBar(
-        key: const ValueKey('premium_survey_appbar'),
         surfaceTintColor: Theme.of(context).colorScheme.onSecondary,
         elevation: 0,
         leading: IconButton(
-          key: const ValueKey('exit_premium_plan_button'),
-          icon: Icon(
-            Icons.close,
-            key: const ValueKey('exit_premium_plan_icon'),
-            color: Theme.of(context).iconTheme.color,
-          ),
+          icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
           onPressed: () {
             index = 0;
             progressValue = 0.2;
@@ -83,7 +76,6 @@ class _SurveyPageState extends State<SurveyPage> {
         actions: [
           if (progressValue < 0.8)
             TextButton(
-              key: const ValueKey('skip_premium_plan_survey_button'),
               onPressed: () {
                 setState(() {
                   progressValue = 0.8;
@@ -91,7 +83,6 @@ class _SurveyPageState extends State<SurveyPage> {
               },
               child: Text(
                 "Skip",
-                key: const ValueKey('skip_premium_plan_survey_text'),
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -99,19 +90,15 @@ class _SurveyPageState extends State<SurveyPage> {
         backgroundColor: Theme.of(context).colorScheme.onSecondary,
       ),
       body: Padding(
-        key: const ValueKey('premium_survey_body_padding'),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
-          key: const ValueKey('premium_survey_main_column'),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
-              key: const ValueKey('premium_survey_progress_row'),
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
                   "${(progressValue * 100).toInt()}%",
-                  key: ValueKey('premium_plan_survey_text_progress_precent'),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -119,47 +106,33 @@ class _SurveyPageState extends State<SurveyPage> {
               ],
             ),
             LinearProgressIndicator(
-              key: const ValueKey('premium_survey_progress_indicator'),
               value: progressValue,
               color: const Color.fromARGB(255, 43, 130, 60),
               backgroundColor: Theme.of(context).colorScheme.onSecondary,
             ),
-            SizedBox(
-              key: const ValueKey('premium_survey_spacing_1'),
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             Text(
               "P R E M I U M",
-              key: const ValueKey('premium_survey_title_text'),
               style: Theme.of(context).textTheme.titleSmall,
             ),
-            SizedBox(
-              key: const ValueKey('premium_survey_spacing_2'),
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.02),
             if (progressValue < 0.8)
               Consumer<PremiumProvider>(
-                key: const ValueKey('premium_survey_provider_consumer'),
                 builder: (context, provider, _) {
                   return PremiumSurveyCard(
-                    key: ValueKey('premium_survey_card_${index}'),
                     question: quesitons[index],
                     options: options[index],
                     subText: subText,
                   );
                 },
               ),
-
-            if (progressValue < 0.8)
-              const Spacer(key: ValueKey('premium_survey_spacer')),
+            if (progressValue < 0.8) const Spacer(),
             if (progressValue < 0.8)
               Row(
-                key: const ValueKey('premium_survey_actions_row'),
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   if (!firstPage)
                     TextButton(
-                      key: const ValueKey('back_premium_plan_survey_button'),
                       onPressed: () {
                         setState(() {
                           selectedOption = null;
@@ -174,23 +147,14 @@ class _SurveyPageState extends State<SurveyPage> {
                       },
                       child: Text(
                         "Back",
-                        key: const ValueKey('back_premium_plan_survey_text'),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
                   Consumer<PremiumProvider>(
-                    key: const ValueKey('premium_survey_next_button_consumer'),
                     builder: (context, provider, child) {
                       return Padding(
-                        key: const ValueKey(
-                          'premium_survey_next_button_padding',
-                        ),
                         padding: const EdgeInsets.all(8.0),
                         child: ElevatedButton(
-                          key: const ValueKey(
-                            'next_premium_plan_survey_button',
-                          ),
-
                           onPressed:
                               provider.optionSelected
                                   ? () {
@@ -205,13 +169,7 @@ class _SurveyPageState extends State<SurveyPage> {
                                   : () {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                        key: const ValueKey(
-                                          'premium_survey_error_snackbar',
-                                        ),
                                         content: Text(
-                                          key: const ValueKey(
-                                            'snackbar_premium_plan_text',
-                                          ),
                                           "Please select an option",
                                           style: TextStyle(
                                             color:
@@ -240,9 +198,6 @@ class _SurveyPageState extends State<SurveyPage> {
                             visualDensity: VisualDensity.compact,
                           ),
                           child: Text(
-                            key: const ValueKey(
-                              'next_premium_plan_survey_text',
-                            ),
                             "Next",
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onSecondary,
@@ -256,19 +211,8 @@ class _SurveyPageState extends State<SurveyPage> {
               ),
             if (progressValue >= 0.8)
               Expanded(
-                key: const ValueKey('premium_survey_final_expanded'),
                 child: SingleChildScrollView(
-                  key: const ValueKey('premium_survey_final_scrollview'),
-                  child: Column(
-                    key: const ValueKey('premium_survey_final_column'),
-                    children: [
-                      StartPremiumCard(
-                        key: const ValueKey(
-                          'premium_survey_start_premium_card',
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Column(children: [StartPremiumCard()]),
                 ),
               ),
           ],

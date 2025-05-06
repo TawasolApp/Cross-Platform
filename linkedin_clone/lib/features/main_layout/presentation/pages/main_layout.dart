@@ -50,9 +50,10 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
 
   Future<void> _loadCompanyId() async {
     final isCompany = await TokenService.getIsCompany();
-    final id = isCompany == true
-        ? await TokenService.getCompanyId()
-        : await TokenService.getUserId();
+    final id =
+        isCompany == true
+            ? await TokenService.getCompanyId()
+            : await TokenService.getUserId();
 
     setState(() {
       _userId = id;
@@ -83,15 +84,21 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ChatPage(
-          key: Key('chatPage_\${conversation?.id ?? ''}'),
-          conversationId: conversation?.id ?? '',
-          receiverId: conversation?.otherParticipant?.id ?? '',
-          userName:
-              '\${conversation?.otherParticipant?.firstName ?? ''} \${conversation?.otherParticipant?.lastName ?? ''}',
-          profileImageUrl:
-              conversation?.otherParticipant?.profilePicture ?? '',
-        ),
+        builder:
+            (context) => ChatPage(
+              key: Key(
+                'chatPage_\${conversation?.id ?? '
+                '}',
+              ),
+              conversationId: conversation?.id ?? '',
+              receiverId: conversation?.otherParticipant?.id ?? '',
+              userName:
+                  '\${conversation?.otherParticipant?.firstName ?? '
+                  '} \${conversation?.otherParticipant?.lastName ?? '
+                  '}',
+              profileImageUrl:
+                  conversation?.otherParticipant?.profilePicture ?? '',
+            ),
       ),
     );
   }
@@ -137,13 +144,13 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                         (profileImage != null && profileImage.isNotEmpty)
                             ? NetworkImage(profileImage)
                             : const AssetImage(
-                                    'assets/images/profile_placeholder.png',
-                                  )
+                                  'assets/images/profile_placeholder.png',
+                                )
                                 as ImageProvider,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "\$profileName\n\$profileHeadline",
+                    "$profileName\n $profileHeadline",
                     key: const Key('profileNameText'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,
@@ -189,37 +196,39 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
         ),
       ),
       body: _pages[_currentIndex],
-      appBar: _currentIndex == 1
-          ? null
-          : AppBar(
-              actions: [
-                IconButton(
-                  key: const Key('searchButton'),
-                  icon: const Icon(Icons.search),
-                  onPressed: () {},
-                ),
-                IconButton(
-                  key: const Key('messagesButton'),
-                  icon: const Icon(Icons.message),
-                  onPressed: () {
-                    final messagingProvider =
-                        Provider.of<ConversationListProvider>(
-                      context,
-                      listen: false,
-                    );
-                    messagingProvider.fetchConversations();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ConversationListPage(
-                          key: Key('conversationListPage'),
+      appBar:
+          _currentIndex == 1
+              ? null
+              : AppBar(
+                actions: [
+                  IconButton(
+                    key: const Key('searchButton'),
+                    icon: const Icon(Icons.search),
+                    onPressed: () {},
+                  ),
+                  IconButton(
+                    key: const Key('messagesButton'),
+                    icon: const Icon(Icons.message),
+                    onPressed: () {
+                      final messagingProvider =
+                          Provider.of<ConversationListProvider>(
+                            context,
+                            listen: false,
+                          );
+                      messagingProvider.fetchConversations();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => const ConversationListPage(
+                                key: Key('conversationListPage'),
+                              ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                      );
+                    },
+                  ),
+                ],
+              ),
       bottomNavigationBar: BottomNavigationBar(
         key: const Key('bottomNavigationBar'),
         currentIndex: _currentIndex,
@@ -260,28 +269,30 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      constraints:
-                          const BoxConstraints(minWidth: 12, minHeight: 12),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
                       child:
                           notificationsProvider.unseenNotificationsCount > 9
                               ? const Text(
-                                  '9+',
-                                  key: Key('notificationBadgeText_9plus'),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )
-                              : Text(
-                                  '${notificationsProvider.unseenNotificationsCount}',
-                                  key: Key('notificationBadgeText'),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                '9+',
+                                key: Key('notificationBadgeText_9plus'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
                                 ),
+                                textAlign: TextAlign.center,
+                              )
+                              : Text(
+                                '${notificationsProvider.unseenNotificationsCount}',
+                                key: Key('notificationBadgeText'),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                     ),
                   ),
               ],
@@ -302,28 +313,30 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                         color: Colors.red,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      constraints:
-                          const BoxConstraints(minWidth: 12, minHeight: 12),
+                      constraints: const BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
                       child:
                           notificationsProvider.unseenNotificationsCount > 9
                               ? const Text(
-                                  '9+',
-                                  key: Key('notificationBadgeTextActive_9plus'),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )
-                              : Text(
-                                  '${notificationsProvider.unseenNotificationsCount}',
-                                  key: Key('notificationBadgeTextActive'),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                '9+',
+                                key: Key('notificationBadgeTextActive_9plus'),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
                                 ),
+                                textAlign: TextAlign.center,
+                              )
+                              : Text(
+                                '${notificationsProvider.unseenNotificationsCount}',
+                                key: Key('notificationBadgeTextActive'),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                     ),
                   ),
               ],
