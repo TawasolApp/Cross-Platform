@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from capabilities import get_capabilities
 import utils
 
-def test_search_by_location():
+def test_search_by_company():
 
     user = utils.get_user("userNatalia")
 
@@ -43,20 +43,18 @@ def test_search_by_location():
     form_button = driver.find_element(AppiumBy.XPATH, '//android.widget.Button[@content-desc="Sign in"]')
     form_button.click()
 
-    time.sleep(5)
+    time.sleep(10)
 
     # go to jobs tab
     driver.find_element(by="accessibility id", value="Jobs\nTab 4 of 6").click()
     time.sleep(5)
 
-    # search for jobs by location
+    # search for jobs by experience level
     driver.find_element(by="accessibility id", value="Filters").click()
     time.sleep(5)
-    driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)').click()
+    driver.find_element(by="accessibility id", value="Experience Level").click()
     time.sleep(5)
-    driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(0)').send_keys("Castle Lane")
-    time.sleep(5)
-    driver.hide_keyboard()
+    driver.find_element(by="accessibility id", value="Director").click()
     time.sleep(5)
     driver.find_element(by="accessibility id", value="Apply Filters").click()
     time.sleep(5)

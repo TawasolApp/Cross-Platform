@@ -49,7 +49,7 @@ def test_search_by_salary():
     driver.find_element(by="accessibility id", value="Jobs\nTab 4 of 6").click()
     time.sleep(5)
 
-    # search for jobs by industry
+    # search for jobs by salary
     driver.find_element(by="accessibility id", value="Filters").click()
     time.sleep(5)
     driver.find_element(AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().className("android.widget.EditText").instance(3)').click()
