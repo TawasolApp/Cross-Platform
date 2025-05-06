@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from capabilities import get_capabilities
 import utils
 
-
+# TEST: CREATE COMPANY POST
 def create_company_post_test():
 
     user = utils.get_user("userDallas")
