@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from capabilities import get_capabilities
 import utils
 
-def test_search_by_keyword():
+def test_search_save_apply():
 
     user = utils.get_user("userNatalia")
 
