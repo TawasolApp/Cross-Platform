@@ -201,11 +201,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               ? null
               : AppBar(
                 actions: [
-                  IconButton(
-                    key: const Key('searchButton'),
-                    icon: const Icon(Icons.search),
-                    onPressed: () {},
-                  ),
+                  // IconButton(
+                  //   key: const Key('searchButton'),
+                  //   icon: const Icon(Icons.search),
+                  //   onPressed: () {},
+                  // ),
                   IconButton(
                     key: const Key('messagesButton'),
                     icon: const Icon(Icons.message),
