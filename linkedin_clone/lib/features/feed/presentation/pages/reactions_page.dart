@@ -52,28 +52,40 @@ class _ReactionsPageState extends State<ReactionsPage>
     };
 
     return Scaffold(
+      backgroundColor:
+          Theme.of(context).brightness == Brightness.dark
+              ? Colors.black
+              : Colors.white,
       appBar: AppBar(
         title: const Text('Reactions'),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          indicatorColor: Colors.blue,
-          tabs:
-              filterTypes.map((type) {
-                final count = grouped[type]?.length ?? 0;
-                final icon = getReactionIcon(type);
-                final color = getReactionColor(type);
-                return Tab(
-                  child: Row(
-                    children: [
-                      if (type != 'All') Icon(icon, size: 16, color: color),
-                      if (type != 'All') const SizedBox(width: 4),
-                      Text('$count'),
-                    ],
-                  ),
-                );
-              }).toList(),
+
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48),
+          child: Container(
+            color: Colors.white,
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold),
+
+              indicatorColor: Colors.blue,
+              tabs:
+                  filterTypes.map((type) {
+                    final count = grouped[type]?.length ?? 0;
+                    final icon = getReactionIcon(type);
+                    final color = getReactionColor(type);
+                    return Tab(
+                      child: Row(
+                        children: [
+                          if (type != 'All') Icon(icon, size: 16, color: color),
+                          if (type != 'All') const SizedBox(width: 4),
+                          Text('$count'),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -87,7 +99,8 @@ class _ReactionsPageState extends State<ReactionsPage>
 
               return ListView.separated(
                 itemCount: reactions.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder:
+                    (_, __) => const Divider(height: 1, color: Colors.grey),
                 itemBuilder: (context, index) {
                   final r = reactions[index];
                   final reactionType = getReactionTypeFromName(r.type);

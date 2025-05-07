@@ -150,7 +150,7 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    "$profileName\n $profileHeadline",
+                    "$profileName\n$profileHeadline",
                     key: const Key('profileNameText'),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black,

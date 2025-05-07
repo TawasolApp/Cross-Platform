@@ -287,13 +287,13 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
 
-          // Admin Panel
-          ListTile(
-            key: const Key('adminPanelTile'),
-            leading: const Icon(Icons.admin_panel_settings),
-            title: const Text("Admin Panel"),
-            onTap: () => context.push(RouteNames.adminPanel),
-          ),
+          // // Admin Panel
+          // ListTile(
+          //   key: const Key('adminPanelTile'),
+          //   leading: const Icon(Icons.admin_panel_settings),
+          //   title: const Text("Admin Panel"),
+          //   onTap: () => context.push(RouteNames.adminPanel),
+          // ),
         ],
       ),
     );

@@ -43,10 +43,7 @@ class PostHeader extends StatelessWidget {
             if (authorType == "User") {
               context.push(RouteNames.profile, extra: authorId);
             } else {
-              context.push(
-                RouteNames.companyProfile,
-                extra: {'companyId': authorId, 'companyTitle': authorTitle},
-              );
+              context.push(RouteNames.companyPage, extra: authorId);
             }
           },
           child:
