@@ -1,0 +1,131 @@
+import 'package:flutter/material.dart';
+import 'package:linkedin_clone/features/profile/domain/entities/education.dart';
+
+class EducationWidget extends StatelessWidget {
+  final Education education;
+  final bool showPresent;
+
+  const EducationWidget({
+    super.key,
+    required this.education,
+    this.showPresent = false,
+  });
+
+  // Format degree type for display in a consistent way
+  String _formatDegreeType(String? type) {
+    // Return empty string if null
+    return type?.trim() ?? '';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String formattedDegree = _formatDegreeType(education.degree);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // School Logo
+          Container(
+            margin: const EdgeInsets.only(right: 12.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(8.0),
+              child:
+                  education.companyLogo != null
+                      ? Image.network(
+                        education.companyLogo!,
+                        width: 54,
+                        height: 54,
+                        fit: BoxFit.cover,
+                      )
+                      : Container(
+                        width: 54,
+                        height: 54,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.school, color: Colors.grey),
+                      ),
+            ),
+          ),
+          // Education Details
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  education.school,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+
+                // Only show degree and field if they exist
+                if (education.degree != null && education.field != null) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      Text(
+                        formattedDegree,
+                        style: const TextStyle(fontSize: 14),
+                      ),
+                      const Text(
+                        " · ",
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      Text(
+                        education.field ?? '',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ] else if (education.degree != null) ...[
+                  const SizedBox(height: 2),
+                  Text(formattedDegree, style: const TextStyle(fontSize: 14)),
+                ] else if (education.field != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    education.field ?? '',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
+
+                // Date range - only show if startDate exists
+                if (education.startDate != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    showPresent
+                        ? "${education.startDate} - Present"
+                        : "${education.startDate} - ${education.endDate ?? ''}",
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
+
+                // Grade if available
+                if (education.grade != null && education.grade!.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    "Grade: ${education.grade}",
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  ),
+                ],
+
+                // Description
+                if (education.description != null &&
+                    education.description!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    education.description!,
+                    style: const TextStyle(fontSize: 14),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

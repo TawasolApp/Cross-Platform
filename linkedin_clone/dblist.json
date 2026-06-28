@@ -1,0 +1,83 @@
+{
+  "list": [
+    {
+      "id": "1",
+      "userId": "8",
+      "username": "OliviaMartinez",
+      "profilePicture": "https://randomuser.me/api/portraits/women/8.jpg",
+      "headline": "Marketing Manager at Tesla",
+      "createdAt": "2021-10-08T14:30:00Z"
+    },
+    {
+      "id": "2",
+      "userId": "12",
+      "username": "MichaelJohnson",
+      "profilePicture": "https://randomuser.me/api/portraits/men/12.jpg",
+      "headline": "Senior Software Engineer at Google",
+      "createdAt": "2021-11-15T09:45:00Z"
+    },
+    {
+      "id": "3",
+      "userId": "23",
+      "username": "EmmaWilson",
+      "profilePicture": "https://randomuser.me/api/portraits/women/23.jpg",
+      "headline": "Data Scientist at Amazon",
+      "createdAt": "2022-01-22T16:20:00Z"
+    },
+    {
+      "id": "4",
+      "userId": "37",
+      "username": "DanielSmith",
+      "profilePicture": "https://randomuser.me/api/portraits/men/37.jpg",
+      "headline": "Product Manager at Microsoft",
+      "createdAt": "2022-02-14T11:10:00Z"
+    },
+    {
+      "id": "5",
+      "userId": "42",
+      "username": "SophiaBrown",
+      "profilePicture": "https://randomuser.me/api/portraits/women/42.jpg",
+      "headline": "UX Designer at Apple",
+      "createdAt": "2022-03-30T13:55:00Z"
+    },
+    {
+      "id": "6",
+      "userId": "51",
+      "username": "JamesDavis",
+      "profilePicture": "https://randomuser.me/api/portraits/men/51.jpg",
+      "headline": "Frontend Developer at Netflix",
+      "createdAt": "2022-05-18T10:25:00Z"
+    },
+    {
+      "id": "7",
+      "userId": "64",
+      "username": "IsabellaGarcia",
+      "profilePicture": "https://randomuser.me/api/portraits/women/64.jpg",
+      "headline": "Project Manager at Adobe",
+      "createdAt": "2022-07-09T15:40:00Z"
+    },
+    {
+      "id": "8",
+      "userId": "73",
+      "username": "AlexanderTaylor",
+      "profilePicture": "https://randomuser.me/api/portraits/men/73.jpg",
+      "headline": "DevOps Engineer at Spotify",
+      "createdAt": "2022-08-27T09:15:00Z"
+    },
+    {
+      "id": "9",
+      "userId": "86",
+      "username": "MilaRodriguez",
+      "profilePicture": "https://randomuser.me/api/portraits/women/86.jpg",
+      "headline": "Content Strategist at Twitter",
+      "createdAt": "2022-10-14T17:05:00Z"
+    },
+    {
+      "id": "10",
+      "userId": "94",
+      "username": "WilliamThomas",
+      "profilePicture": "https://randomuser.me/api/portraits/men/94.jpg",
+      "headline": "Blockchain Developer at Coinbase",
+      "createdAt": "2022-12-03T12:50:00Z"
+    }
+  ]}

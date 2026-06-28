@@ -1,0 +1,63 @@
+Privacy Module
+1. Description of Implemented Features
+User Blocking System: Block, unblock, and manage blocked users
+Reporting System: Report inappropriate users and content
+Content Moderation: Report and flag inappropriate content
+Safety Features: Tools to protect users from harassment and unwanted interactions
+2. Folder Structure Overview
+privacy/
+├── data/                    # Data layer (API integration, models)
+│   ├── datasources/         # Remote data sources
+│   ├── models/              # Data models for privacy features
+│   └── repository/          # Repository implementations
+├── domain/                  # Domain layer (business logic)
+│   ├── entities/            # Domain entities
+│   ├── repository/          # Repository interfaces
+│   └── usecases/            # Business logic use cases
+└── presentations/           # Presentation layer (UI)
+    ├── pages/               # Full screens
+    ├── provider/            # State management
+    └── widgets/             # Reusable UI components
+
+    3. File Descriptions
+Data Layer
+Datasources
+Privacy_remote_data_source.dart: Handles API calls to interact with privacy-related features on the backend server.
+Models
+privacy_user_model.dart: Data model for storing privacy-related user information, including serialization/deserialization logic.
+Repository Implementation
+privacy_repository_impl.dart: Implements the privacy repository interface defined in the domain layer, handling data flow between data sources and the application.
+Domain Layer
+Entities
+privacy_user_entity.dart: Core business entity representing user privacy data and preferences.
+Repository
+privacy_repository.dart: Defines interfaces for accessing privacy-related data.
+Usecases
+block_user_usecase.dart: Business logic for blocking a user.
+unblock_user_usecase.dart: Business logic for unblocking a previously blocked user.
+get_blocked_list_usecase.dart: Business logic for retrieving the list of blocked users.
+report_user_usecase.dart: Business logic for reporting inappropriate user profiles or behavior.
+report_post_usecase.dart: Business logic for reporting inappropriate post content.
+Presentations Layer
+Pages
+report_page.dart: UI for reporting users and content with reason selection.
+Provider
+privacy_enums.dart: Enumerations for privacy settings, report types, and other privacy-related constants.
+privacy_provider.dart: State management for privacy features, handling user actions and UI state.
+Widgets
+Contains reusable UI components for privacy features such as report forms, blocking confirmations, etc.
+4. User Experience Assumptions
+Block Privacy: When a user blocks someone, the blocked user cannot see their profile, posts, or interact with them in any way.
+
+Report Anonymity: User reports are processed anonymously, and reported users are not notified who reported them.
+
+Report Categories: Users must select a specific reason when reporting content or users to help with moderation.
+
+Block List Management: Users can view and manage their list of blocked users at any time.
+
+Two-way Blocking: When a user blocks someone, the connection between them is severed in both directions.
+
+Moderate Before Action: Content that is reported undergoes review by moderators before any action is taken.
+
+Reporting Feedback: Users receive acknowledgment when their report is submitted but may not be informed of the final outcome.
+
