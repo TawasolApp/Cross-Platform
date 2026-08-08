@@ -125,6 +125,11 @@ To run the application on your desired platform, follow these instructions:
 ## 📂 Folder Structure
 ```
 linkedin_clone/
+|── appium/                   # E2E Tests
+│   ├── android/              # Android Tests
+│   ├── desktop/              # Windows (Desktop) Tests
+│   ├── utils/                # Testing Utilities
+│   ├── requirements.txt      # Testing Dependencies
 │── lib/
 │   ├── core/                 # Global utilities (Shared across the app)
 │   │   ├── api/              # API service classes (Backend communication)
@@ -199,3 +204,100 @@ Use the following test credentials for login and registration (until the API is 
 
 - **Email:** `test@example.com`
 - **Password:** `123456`
+
+## 🧪 E2E Testing
+
+Before running the tests, ensure you have the following dependencies installed on your system:
+
+### 1. **Install Python** (If not already installed)
+   - Download and install Python 3.x from [python.org](https://www.python.org/downloads/).
+   - Make sure to add Python to your PATH during the installation process.
+   - You can verify the installation by running the following command:
+     ```bash
+     python --version
+     ```
+
+### 2. **Install Java Development Kit (JDK)**
+   Appium requires JDK for Android automation. You can download it from [Oracle's website](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) or use OpenJDK.
+
+   - After installing JDK, set the `JAVA_HOME` environment variable to point to your JDK installation directory.
+   - You can verify the JDK installation by running:
+     ```bash
+     java -version
+     ```
+
+### 3. **Install Android SDK**
+   For Android testing, you will need to have the Android SDK installed.
+
+   - You can install the Android SDK via [Android Studio](https://developer.android.com/studio) or by installing the standalone SDK.
+   - Set the `ANDROID_HOME` environment variable to the directory where the Android SDK is installed.
+   - Ensure the following environment variables are added to the system PATH:
+   ```bash
+   %ANDROID_HOME%/platform-tools
+   %ANDROID_HOME%/cmdline-tools/latest/bin
+   %ANDROID_HOME%/build-tools/<version>
+   %ANDROID_HOME%/emulator
+   ```
+   where version could be something like 36.0.0 and %ANDROID_HOME% is the directory where the ANDROID SDK is installed
+
+   - You can verify the Android SDK installation by running:
+     ```bash
+     adb --version
+     ```
+
+### 4. **Install Appium Server**
+   Appium is the framework that runs the tests. You can install it globally using npm.
+
+   - Install Node.js and npm from [nodejs.org](https://nodejs.org/).
+   - After Node.js and npm are installed, run the following command to install Appium globally:
+     ```bash
+     npm install -g appium
+     ```
+   - You can verify the installation by running:
+     ```bash
+     appium --version
+     ```
+
+### 5. **Install Appium Drivers**
+   After Appium is installed, run the following commands to install Android driver:
+   
+   - Android:
+     ```bash
+     appium driver install UiAutomator2
+     ```
+
+### 6. **Install Python Dependencies**
+   Install the required Python libraries for both Android and Windows tests:
+   ```bash
+   cd appium
+   pip install -r requirements.txt
+   ```
+
+After everything is installed, follow the next steps to run the E2E tests:
+
+### 1. **Start Appium Server**
+
+   Start the Appium server by running the following command:
+   ```bash
+   appium
+   ```
+
+### 2. **Build Flutter Application**
+
+   Build Android app:
+   ```bash
+   flutter build apk
+   ```
+
+### 3. **Run Android Tests**
+   First, make sure you have a connected physical device or a running emulator. Then, go to appium/android/capabilities.py and update the 'deviceName' with the name of your device.
+
+   You can get a list of the detected devices by running:
+   ```bash
+   adb devices
+   ```
+
+   After, just run the following command to run the tests:
+   ```bash
+   pytest appium/android
+   ```
